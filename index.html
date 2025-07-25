@@ -211,6 +211,7 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
+            min-width: 50px;
         }
         .voice-input-btn:hover {
             background: rgba(78, 205, 196, 0.3);
@@ -219,6 +220,16 @@
             background: rgba(255, 107, 107, 0.3);
             border-color: #ff6b6b;
             color: #ff6b6b;
+            animation: pulse 1.5s infinite;
+        }
+        .voice-input-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
         /* 左右分割レイアウトのスタイル */
@@ -327,7 +338,7 @@
 </head>
 <body>
     <div class="header-container">
-        <img src="./NH_bar_logo_fin_white.png"
+         <img src="./NH_bar_logo_fin_white.png"
      alt="NH Bar Logo" 
      class="logo"
      onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjAiIHN0cm9rZT0iIzRlY2RjNCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjx0ZXh0IHg9IjI1IiB5PSIzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzRlY2RjNCIgZm9udC1zaXplPSIxMiI+5piI44Gu5pyIPC90ZXh0Pgo8L3N2Zz4K';">
@@ -396,10 +407,12 @@
                 <h3 class="text-lg font-bold mb-2">追加の好みや要望</h3>
                 <div class="flex gap-2">
                     <textarea id="additionalPreferences" class="flex-1 p-3 bg-gray-800 border border-gray-600 rounded-lg" placeholder="例：バニラがある、甘い感じの味がいい。"></textarea>
-                    <button id="voiceInputBtn" class="voice-input-btn">
+                    <button id="voiceInputBtn" class="voice-input-btn" title="音声入力">
                         <i class="fas fa-microphone"></i>
                     </button>
                 </div>
+                <div id="voiceError" class="error" style="display: none;"></div>
+                <div id="voiceSuccess" class="success" style="display: none;"></div>
             </div>
         </div>
         
@@ -655,7 +668,6 @@
                     {id: "8", name: "BUNNAHABHAIN12年　８０年代", price: "¥3,000", amount: "¥20,000", category: "Whiskey", region: "Scotland (Islay)", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "1980年代のブナハーブン12年は、典型的なアイラモルトよりもピートが控えめで、穏やかな海の特徴を持っています。ナッティなシェリー、ドライフルーツ、バニラ、キャラメルの風味に、微かな海塩、軽いハチミツ、トーストしたオークが調和しています。フィニッシュはスムーズで、ナッツとスパイスの余韻が続きます。"},
                     {id: "9", name: "ABERFELDY18年1999", price: "¥4,000", amount: "¥30,000", category: "Whiskey", region: "Scotland", subcategory: "Highland Single Malt Scotch", tastingNote_ja: "アバフェルディ18年（1999年ヴィンテージ）は、蒸留所の特徴である豊かな蜂蜜とヘザーの風味を持ち、長期熟成による複雑さが加わっています。スイートモルト、バニラ、ドライフルーツ、そして穏やかなオークスパイスが感じられ、滑らかで余韻の長い後味とダークチョコレートの微妙な香りが特徴です。"},
                     {id: "10", name: "ISLAY KILDALTON13年（アードベッグ）2009-2022", price: "¥5,000", amount: "¥38,000", category: "Whiskey", region: "Scotland (Islay)", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "アイラ島キルダルトン海岸のアードベッグ蒸溜所による13年熟成（2009-2022）の特徴的な強烈なピート香りが際立ち、海の塩気と柑橘系のノートとバランスしています。薬品的な特徴、タール、ヨードの風味に、バニラやトロピカルフルーツの甘みが底流に感じられます。フィニッシュは長く、スモーキーで、灰や香辛料のヒントを伴う複雑な余韻が続きます。"}
-                    // さらに他のウィスキーデータも追加...
                 ];
 
                 this.buildIndexes();
@@ -833,6 +845,10 @@
                 this.eventManager = new EventManager();
                 this.currentPosition = { x: 0.5, y: 0.5 };
                 this.isInitialized = false;
+                
+                // 音声認識関連プロパティ
+                this.recognition = null;
+                this.isRecording = false;
             }
 
             async initialize() {
@@ -933,11 +949,159 @@
             }
 
             initializeVoiceRecognition() {
-                // 音声認識の実装（簡略化）
+                // Web Speech API対応チェック
+                if ('webkitSpeechRecognition' in window) {
+                    this.recognition = new webkitSpeechRecognition();
+                } else if ('SpeechRecognition' in window) {
+                    this.recognition = new SpeechRecognition();
+                } else {
+                    console.warn('このブラウザは音声認識をサポートしていません');
+                    this.showVoiceError('お使いのブラウザは音声認識をサポートしていません。Chrome、Edge、またはSafariをご利用ください。');
+                    document.getElementById('voiceInputBtn').disabled = true;
+                    return;
+                }
+
+                // 音声認識設定
+                this.recognition.continuous = false;
+                this.recognition.interimResults = false;
+                this.recognition.lang = 'ja-JP';
+
+                // 開始イベント
+                this.recognition.onstart = () => {
+                    console.log('音声認識開始');
+                    this.isRecording = true;
+                    const btn = document.getElementById('voiceInputBtn');
+                    btn.classList.add('recording');
+                    btn.innerHTML = '<i class="fas fa-stop"></i>';
+                    btn.title = '音声入力停止';
+                    this.hideVoiceMessages();
+                };
+
+                // 結果取得
+                this.recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    const textarea = document.getElementById('additionalPreferences');
+                    const currentText = textarea.value;
+                    const newText = currentText ? currentText + ' ' + transcript : transcript;
+                    textarea.value = newText;
+                    
+                    console.log('音声認識結果:', transcript);
+                    this.showVoiceSuccess('音声が認識されました: "' + transcript + '"');
+                };
+
+                // エラー処理
+                this.recognition.onerror = (event) => {
+                    console.error('音声認識エラー:', event.error);
+                    this.handleVoiceError(event.error);
+                };
+
+                // 終了イベント
+                this.recognition.onend = () => {
+                    console.log('音声認識終了');
+                    this.isRecording = false;
+                    const btn = document.getElementById('voiceInputBtn');
+                    btn.classList.remove('recording');
+                    btn.innerHTML = '<i class="fas fa-microphone"></i>';
+                    btn.title = '音声入力';
+                };
             }
 
             toggleVoiceInput() {
-                // 音声入力切り替え
+                if (!this.recognition) {
+                    this.showVoiceError('音声認識が利用できません。ブラウザを確認してください。');
+                    return;
+                }
+
+                if (this.isRecording) {
+                    // 録音停止
+                    try {
+                        this.recognition.stop();
+                    } catch (error) {
+                        console.error('音声認識停止エラー:', error);
+                        this.handleVoiceError('stop-error');
+                    }
+                } else {
+                    // 録音開始
+                    try {
+                        this.hideVoiceMessages();
+                        this.recognition.start();
+                    } catch (error) {
+                        console.error('音声認識開始エラー:', error);
+                        this.handleVoiceError('start-error');
+                    }
+                }
+            }
+
+            handleVoiceError(error) {
+                let errorMessage = '';
+                
+                switch (error) {
+                    case 'not-allowed':
+                        errorMessage = 'マイクへのアクセスが拒否されました。ブラウザの設定でマイクを許可してください。\n\n許可方法：\n1. ブラウザのアドレスバー左側の🔒アイコンをクリック\n2. マイクの設定を「許可」に変更\n3. ページをリロードしてお試しください';
+                        break;
+                    case 'no-speech':
+                        errorMessage = '音声が検出されませんでした。マイクに向かって話してください。';
+                        break;
+                    case 'audio-capture':
+                        errorMessage = 'マイクが見つかりません。マイクが接続されているか確認してください。';
+                        break;
+                    case 'network':
+                        errorMessage = 'ネットワークエラーが発生しました。インターネット接続を確認してください。';
+                        break;
+                    case 'aborted':
+                        errorMessage = '音声認識が中断されました。';
+                        break;
+                    case 'start-error':
+                        errorMessage = '音声認識の開始に失敗しました。しばらく待ってから再度お試しください。';
+                        break;
+                    case 'stop-error':
+                        errorMessage = '音声認識の停止に失敗しました。';
+                        break;
+                    default:
+                        errorMessage = `音声認識エラーが発生しました: ${error}`;
+                }
+                
+                this.showVoiceError(errorMessage);
+                
+                // 録音状態をリセット
+                this.isRecording = false;
+                const btn = document.getElementById('voiceInputBtn');
+                btn.classList.remove('recording');
+                btn.innerHTML = '<i class="fas fa-microphone"></i>';
+                btn.title = '音声入力';
+            }
+
+            showVoiceError(message) {
+                const errorElement = document.getElementById('voiceError');
+                const successElement = document.getElementById('voiceSuccess');
+                
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                successElement.style.display = 'none';
+                
+                // 10秒後に自動的に非表示
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 10000);
+            }
+
+            showVoiceSuccess(message) {
+                const errorElement = document.getElementById('voiceError');
+                const successElement = document.getElementById('voiceSuccess');
+                
+                successElement.textContent = message;
+                successElement.style.display = 'block';
+                errorElement.style.display = 'none';
+                
+                // 5秒後に自動的に非表示
+                setTimeout(() => {
+                    successElement.style.display = 'none';
+                }, 5000);
+            }
+
+            hideVoiceMessages() {
+                document.getElementById('voiceError').style.display = 'none';
+                document.getElementById('voiceSuccess').style.display = 'none';
             }
 
             async getRecommendation(isRefresh = false) {
@@ -1083,15 +1247,5 @@
             await whiskySystem.initialize();
         });
     </script>
-<script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"rayId":"9647f0122d4ae39c","serverTiming":{"name":{"cfExtPri":true,"cfEdge":true,"cfOrigin":true,"cfL4":true,"cfSpeedBrain":true,"cfCacheStatus":true}},"version":"2025.7.0","token":"4edd5f8ec12a48cfa682ab8261b80a79"}' crossorigin="anonymous"></script>
 </body>
 </html>
-    <script id="html_badge_script1">
-        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDgsrl8iJt0zkT6MmwMyIvjLjEiYUqnaWwojmQ%2BGs5ocp0P6rNY8fhsq3lubT8MOqB79a9w2V%2BBxXEUBhjxJ0T%2FBT5td1M2Jj8m6OvorZic3U2hrRN8drCpo6xYQmWwhyIRRHqV31afdfo1%2FZZWczAD6nYLIUXXUfvQ2lwFoh2TtB6rlW3xtHa5PYpLZv68vCPX8sK7ES44WGLWcRIUyxmUeU0T3SDNmsgHOUUQHT82j1SEpY3IUTc09k0DRR4Z8PPTUdjuQ74glFLrYwLJzOh8RHgY86crhHeVo8FtXxY3Ft%2BFSyXmTEkYKfURA273GUJDmG5Fr1HAzMKDJBGjxwRUrbh8MhPSSC3MurgeK2VuFFs1lLnpuY%2Btv0FgCz3tIb4gS5aUvgLEEq4ht8VLlxK34XHDTBbJW%2FBebkHMFA4dmsMSOPW8pXKBSrEgdEvRvOOyODaPxlXA8px8dObDLPoIR1GdDjMMJKxuuG2RtKukBdjDwe7Ckb7GSp7nnPEXmMjHlF7U82XB9Zguv2z3yrisE%3D";
-        window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDgsrl8iJt0zkT6MmwMyIvjLjEiYUqnaWwojmQ+Gs5ocp0P6rNY8fhsq3lubT8MOqB79a9w2V+BxXEUBhjxJ0T/BT5td1M2Jj8m6OvorZic3U2hrRN8drCpo6xYQmWwhyIRRHqV31afdfo1/ZZWczAD6nYLIUXXUfvQ2lwFoh2TtB6rlW3xtHa5PYpLZv68vCPX8sK7ES44WGLWcRIUyxmUeU0T3SDNmsgHOUUQHT82j1SEpY3IUTc09k0DRR4Z8PPTUdjuQ74glFLrYwLJzOh8RHgY86crhHeVo8FtXxY3Ft+FSyXmTEkYKfURA273GUJDmG5Fr1HAzMKDJBGjxwRUrbh8MhPSSC3MurgeK2VuFFs1lLnpuY+tv0FgCz3tIb4gS5aUvgLEEq4ht8VLlxK34XHDTBbJW/BebkHMFA4dmsMSOPW8pXKBSrEgdEvRvOOyODaPxlXA8px8dObDLPoIR1GdDjMMJKxuuG2RtKukBdjDwe7Ckb7GSp7nnPEXmMjHlF7U82XB9Zguv2z3yrisE=";
-    </script>
-    
-    <script id="html_notice_dialog_script" src="https://www.genspark.ai/notice_dialog.js"></script>
-    
