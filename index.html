@@ -33,20 +33,11 @@
             left: 20px;
             object-fit: contain;
             border-radius: 8px;
-            background: rgba(78, 205, 196, 0.2);
-            border: 2px solid #4ecdc4;
+            background: rgba(78, 205, 197, 0);
+            border: 2px solid #4ecdc500;
             padding: 5px;
         }
-        .logo::before {
-            content: "昼の月";
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            color: #4ecdc4;
-            font-weight: bold;
-            height: 100%;
-        }
+        
         .header-title {
             color: #fff;
             font-size: 24px;
@@ -661,11 +652,10 @@
       box-sizing: border-box;
       width: 100%;
     }
-  </style></head>
+</style></head>
 <body>
     <div class="header-container">
-        <img class="logo" src="./index_files/NH_bar_logo_fin_white.png" alt="昼の月バーロゴ" onerror="this.style.display=&#39;none&#39;; this.nextElementSibling.style.display=&#39;flex&#39;;" style="display: none;">
-        <div class="logo" style="display: flex;"></div>
+        <img class="logo" src="NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
         <h1 class="header-title">昼の月。AIソムリエ</h1>
     </div>
     
@@ -699,11 +689,11 @@
             </h2>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block mb-2">下限価格: <span id="minPriceDisplay">¥5,000</span></label>
+                    <label class="block mb-2">下限価格: <span id="minPriceDisplay">¥1,000</span></label>
                     <input type="range" id="minPrice" class="price-slider" min="1" max="80" value="5" step="1">
                 </div>
                 <div>
-                    <label class="block mb-2">上限価格: <span id="maxPriceDisplay">¥50,000</span></label>
+                    <label class="block mb-2">上限価格: <span id="maxPriceDisplay">¥10,000</span></label>
                     <input type="range" id="maxPrice" class="price-slider" min="1" max="80" value="50" step="1">
                 </div>
             </div>
@@ -760,10 +750,10 @@
             
             <div class="chat-examples">
                 <div class="mb-3 text-sm text-gray-300">質問例（クリックで入力）：</div>
-                <div class="question-example" data-question="マッカランについて詳しく教えて">💎 "マッカランについて詳しく教えて"</div>
-                <div class="question-example" data-question="5000円以下のおすすめは？">🎯 "5000円以下のおすすめは？"</div>
-                <div class="question-example" data-question="アイラ島のウィスキーはある？">🌊 "アイラ島のウィスキーはある？"</div>
-                <div class="question-example" data-question="フルーティーなウィスキーを探している">🍯 "フルーティーなウィスキーを探している"</div>
+                <div class="question-example" data-question="マッカランについて詳しく教えて">💎 マッカランについて詳しく教えて</div>
+                <div class="question-example" data-question="5000円以下のおすすめは？">🎯 5000円以下のおすすめは？</div>
+                <div class="question-example" data-question="アイラ島のウィスキーはある？">🌊 スモーキーだけど芳醇なウィスキーはある？</div>
+                <div class="question-example" data-question="フルーティーなウィスキーを探している">🍯 フルーティーなウィスキーを探している</div>
             </div>
 
             <div class="chat-input-container">
@@ -950,16 +940,17 @@
             
             const prompt = `
             あなたは「昼の月バー」の専門ウィスキーソムリエです。
+            ここでは多くの高級、希少な銘柄を取り揃えています。
             
             【顧客質問】
             ${question}
             
             【回答指示】
-            - 100文字以内で詳しく回答
+            - 200文字程度で詳しく回答
             - 具体的で建設的な内容
-            - フレンドリーで専門的
+            - フレンドリーで専門的で、お客さんの好みに合わせた提案をします。
             - 完全な文章で終わらせる
-            - JSONは使用禁止
+            - JSONは検索可能とし、銘柄、単価、テイストの概要を簡潔に回答するものとし、チャットボットの回答速度を最優先すること
             `;
             
             try {
