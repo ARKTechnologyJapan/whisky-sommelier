@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0136)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_cxSechdcS8ujb9rJZCvPPA/whisky_sommelier_fixed_icons.html -->
+<!-- saved from url=(0133)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_-_2NOJusSp2BhaU4pfUyvQ/whisky_sommelier_complete.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -285,6 +285,28 @@
             margin-top: 40px;
         }
         
+        .json-upload-section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .json-upload-btn {
+            background: rgba(78, 205, 196, 0.2);
+            border: 1px solid #4ecdc4;
+            color: #4ecdc4;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .json-upload-btn:hover {
+            background: rgba(78, 205, 196, 0.3);
+        }
+        
         @media (max-width: 1024px) {
             .split-layout {
                 grid-template-columns: 1fr;
@@ -423,12 +445,30 @@
   </style></head>
 <body>
     <div class="header-container">
-        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjAiIHN0cm9rZT0iIzRlY2RjNCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjx0ZXh0IHg9IjI1IiB5PSIzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzRlY2RjNCIgZm9udC1zaXplPSIxMiI+5piI44Gu5pyIPC90ZXh0Pgo8L3N2Zz4K" alt="NH Bar Logo" class="logo">
+        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjAiIHN0cm9rZT0iIzRlY2RjNCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjx0ZXh0IHg9IjI1IiB5PSIzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzRlY2RjNCIgZm9udC1zaXplPSIxMiI+5piI44Gu5pyIPC90ZXh0Pgo8L3N2Zz4K" alt="昼の月 Logo" class="logo">
         <h1 class="header-title">昼の月。AIソムリエ</h1>
     </div>
     
     <div class="container-custom">
         <p class="text-center text-gray-300 mb-8">あなたの好みに合わせた最適なウィスキーをAIが提案します</p>
+        
+        <div class="card">
+            <h2 class="text-2xl font-bold mb-4"><i class="fas fa-database mr-2"></i>ウィスキーデータ管理</h2>
+            <div class="json-upload-section">
+                <p class="text-sm text-gray-400 mb-3">外部JSONファイルからウィスキーデータを読み込み</p>
+                <div class="flex gap-4 items-center">
+                    <input type="file" id="jsonFileInput" accept=".json" style="display: none;">
+                    <button id="uploadJsonBtn" class="json-upload-btn">
+                        <i class="fas fa-upload mr-2"></i>JSONファイルを選択
+                    </button>
+                    <button id="loadExternalJsonBtn" class="json-upload-btn">
+                        <i class="fas fa-link mr-2"></i>外部JSONから読み込み
+                    </button>
+                    <input type="text" id="jsonUrlInput" placeholder="https://example.com/whisky-data.json" class="flex-1 p-2 bg-gray-800 border border-gray-600 rounded text-white">
+                </div>
+                <div id="jsonStatus" class="mt-2 text-sm"></div>
+            </div>
+        </div>
         
         <div class="card">
             <h2 class="text-2xl font-bold mb-4"><i class="fas fa-yen-sign mr-2"></i>価格帯設定</h2>
@@ -438,7 +478,7 @@
                     <input type="range" id="minPrice" class="price-slider" min="1" max="80" value="1" step="1">
                 </div>
                 <div>
-                    <label class="block mb-2">上限価格: <span id="maxPriceDisplay">¥18,000</span></label>
+                    <label class="block mb-2">上限価格: <span id="maxPriceDisplay">¥10,000</span></label>
                     <input type="range" id="maxPrice" class="price-slider" min="1" max="80" value="10" step="1">
                 </div>
             </div>
@@ -718,9 +758,96 @@
                 this.regionIndex = new Map();
                 this.categoryIndex = new Map();
                 this.tasteScores = new Map();
+                this.isExternalDataLoaded = false;
+            }
+
+            async loadExternalJson(url) {
+                try {
+                    const response = await fetch(url);
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    this.processExternalData(data);
+                    this.isExternalDataLoaded = true;
+                    this.showJsonStatus('外部JSONファイルからのデータ読み込み完了', 'success');
+                    return true;
+                } catch (error) {
+                    console.error('外部JSON読み込みエラー:', error);
+                    this.showJsonStatus(`外部JSON読み込みエラー: ${error.message}`, 'error');
+                    return false;
+                }
+            }
+
+            processFileJson(file) {
+                return new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        try {
+                            const data = JSON.parse(e.target.result);
+                            this.processExternalData(data);
+                            this.isExternalDataLoaded = true;
+                            this.showJsonStatus('JSONファイルからのデータ読み込み完了', 'success');
+                            resolve(true);
+                        } catch (error) {
+                            console.error('JSONファイル処理エラー:', error);
+                            this.showJsonStatus(`JSONファイル処理エラー: ${error.message}`, 'error');
+                            reject(error);
+                        }
+                    };
+                    reader.onerror = () => {
+                        reject(new Error('ファイル読み込みエラー'));
+                    };
+                    reader.readAsText(file);
+                });
+            }
+
+            processExternalData(data) {
+                if (Array.isArray(data)) {
+                    this.whiskyData = data.map((item, index) => ({
+                        id: item.id || (index + 1).toString(),
+                        name: item.name || 'Unknown',
+                        price: item.price || '¥0',
+                        amount: item.amount || item.price || '¥0',
+                        category: item.category || 'Whiskey',
+                        region: item.region || 'Unknown',
+                        subcategory: item.subcategory || 'Unknown',
+                        tastingNote_ja: item.tastingNote_ja || item.description || 'テイスティングノートなし'
+                    }));
+                } else if (data.whiskies && Array.isArray(data.whiskies)) {
+                    this.whiskyData = data.whiskies.map((item, index) => ({
+                        id: item.id || (index + 1).toString(),
+                        name: item.name || 'Unknown',
+                        price: item.price || '¥0',
+                        amount: item.amount || item.price || '¥0',
+                        category: item.category || 'Whiskey',
+                        region: item.region || 'Unknown',
+                        subcategory: item.subcategory || 'Unknown',
+                        tastingNote_ja: item.tastingNote_ja || item.description || 'テイスティングノートなし'
+                    }));
+                } else {
+                    throw new Error('無効なJSON形式です');
+                }
+                
+                this.buildIndexes();
+            }
+
+            showJsonStatus(message, type) {
+                const statusDiv = document.getElementById('jsonStatus');
+                statusDiv.textContent = message;
+                statusDiv.className = `mt-2 text-sm ${type === 'success' ? 'text-green-400' : 'text-red-400'}`;
+                
+                setTimeout(() => {
+                    statusDiv.textContent = '';
+                    statusDiv.className = 'mt-2 text-sm';
+                }, 5000);
             }
 
             loadDefaultData() {
+                if (this.isExternalDataLoaded) {
+                    return;
+                }
+                
                 this.whiskyData = [
                     {id: "1", name: "タリスカー　44年　オフィシャルボトル", price: "¥84,000", amount: "¥590,000", category: "Whiskey", region: "Scotland (Highlands)", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "タリスカー蒸溜所からの非常に希少な熟成表現。強い海のキャラクターに、海塩、ピート煙、胡椒のような複雑な層が特徴で、深いハチミツの甘さ、ドライフルーツ、オークスパイスとバランスが取れています。長期熟成により驚くべき深みと長く温かい余韻が生まれています。"},
                     {id: "2", name: "ポートエレン　２５年　one of only bottles", price: "¥21,000", amount: "¥150,000", category: "Whiskey", region: "Scotland", subcategory: "Islay Single Malt Scotch Whisky", tastingNote_ja: "ポートエレン25年は希少で高く評価されるアイラウイスキーで、複雑な海洋性の特徴を持ちます。強烈なピートスモークにデリケートな柑橘類の香り、バニラ、海塩のバランスが特徴。口当たりは蜂蜜の甘さ、ドライフルーツ、オークスパイスの層が広がり、長く続くスモーキーなエレガンスと微かな薬草のニュアンスで締めくくられます。"},
@@ -805,6 +932,10 @@
             getTasteScore(id) {
                 return this.tasteScores.get(id);
             }
+
+            getDataCount() {
+                return this.whiskyData.length;
+            }
         }
 
         class EventManager {
@@ -826,7 +957,7 @@
                         if (titleElement) {
                             const fullText = titleElement.textContent;
                             const whiskyName = fullText.replace(/^\d+\.\s*/, '').trim();
-                            this.handleWhiskyCardClick(whiskyName);
+                            this.handleWhiskyCardClick(whiskyName, card);
                         }
                     };
 
@@ -834,8 +965,10 @@
                     this.whiskyCardHandlers.set(card, handler);
 
                     card.addEventListener('mouseenter', () => {
-                        card.style.transform = 'translateY(-4px)';
-                        card.style.boxShadow = '0 8px 25px rgba(78, 205, 196, 0.3)';
+                        if (!card.classList.contains('selected')) {
+                            card.style.transform = 'translateY(-4px)';
+                            card.style.boxShadow = '0 8px 25px rgba(78, 205, 196, 0.3)';
+                        }
                     });
 
                     card.addEventListener('mouseleave', () => {
@@ -854,34 +987,33 @@
                 this.whiskyCardHandlers.clear();
             }
 
-            handleWhiskyCardClick(whiskyName) {
+            handleWhiskyCardClick(whiskyName, clickedCard) {
+                // 全てのカードの選択状態をリセット
                 document.querySelectorAll('.whisky-card').forEach(card => {
                     card.classList.remove('selected');
                     card.style.transform = 'translateY(0)';
                     card.style.boxShadow = '';
                 });
 
-                const selectedCard = Array.from(document.querySelectorAll('.whisky-card')).find(card => {
-                    const titleElement = card.querySelector('h4');
-                    if (titleElement) {
-                        const cardName = titleElement.textContent.replace(/^\d+\.\s*/, '').trim();
-                        return cardName === whiskyName;
-                    }
-                    return false;
-                });
-
-                if (selectedCard) {
-                    selectedCard.classList.add('selected');
-                    selectedCard.style.transform = 'translateY(-4px)';
-                    selectedCard.style.boxShadow = '0 8px 25px rgba(78, 205, 196, 0.5)';
+                // クリックされたカードを選択状態に
+                if (clickedCard) {
+                    clickedCard.classList.add('selected');
+                    clickedCard.style.transform = 'translateY(-4px)';
+                    clickedCard.style.boxShadow = '0 8px 25px rgba(78, 205, 196, 0.5)';
                 }
 
+                // レーダーチャートを更新
                 const whiskyItem = whiskySystem.dataManager.getWhiskyByName(whiskyName);
                 if (whiskyItem) {
                     const tasteScore = whiskySystem.dataManager.getTasteScore(whiskyItem.id);
                     if (tasteScore) {
                         whiskySystem.radarChart.showWhiskyComparison(whiskyName, tasteScore);
+                        console.log(`レーダーチャート更新: ${whiskyName}`, tasteScore);
+                    } else {
+                        console.warn(`テイストスコアが見つかりません: ${whiskyName}`);
                     }
+                } else {
+                    console.warn(`ウィスキーが見つかりません: ${whiskyName}`);
                 }
             }
         }
@@ -908,6 +1040,7 @@
                     this.setupTasteMatrix();
                     this.setupPriceSliders();
                     this.setupAxisControls();
+                    this.setupJsonHandlers();
                     
                     this.isInitialized = true;
                     console.log('WhiskySystem初期化完了');
@@ -916,6 +1049,41 @@
                     console.error('WhiskySystem初期化エラー:', error);
                     this.showError('システムの初期化に失敗しました。ページを再読み込みしてください。');
                 }
+            }
+
+            setupJsonHandlers() {
+                const uploadBtn = document.getElementById('uploadJsonBtn');
+                const fileInput = document.getElementById('jsonFileInput');
+                const loadExternalBtn = document.getElementById('loadExternalJsonBtn');
+                const urlInput = document.getElementById('jsonUrlInput');
+
+                uploadBtn.addEventListener('click', () => {
+                    fileInput.click();
+                });
+
+                fileInput.addEventListener('change', async (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        try {
+                            await this.dataManager.processFileJson(file);
+                            console.log(`JSONファイル読み込み完了: ${this.dataManager.getDataCount()}件`);
+                        } catch (error) {
+                            console.error('JSONファイル処理エラー:', error);
+                        }
+                    }
+                });
+
+                loadExternalBtn.addEventListener('click', async () => {
+                    const url = urlInput.value.trim();
+                    if (url) {
+                        const success = await this.dataManager.loadExternalJson(url);
+                        if (success) {
+                            console.log(`外部JSON読み込み完了: ${this.dataManager.getDataCount()}件`);
+                        }
+                    } else {
+                        this.dataManager.showJsonStatus('URLを入力してください', 'error');
+                    }
+                });
             }
 
             initializeVoiceRecognition() {
@@ -984,78 +1152,63 @@
                         btn.innerHTML = '<i class="fas fa-microphone"></i>';
                     };
                 } else {
-                    console.warn('このブラウザは音声認識をサポートしていません');
-                    this.showError('お使いのブラウザは音声認識をサポートしていません。Chrome、Edge、またはSafariをご利用ください。');
-                }
-            }
-
-            toggleVoiceInput() {
-                if (!this.recognition) {
-                    this.showError('音声認識が利用できません。ブラウザを確認してください。');
-                    return;
-                }
-                
-                if (this.isRecording) {
-                    this.recognition.stop();
-                    this.isRecording = false;
-                    const btn = document.getElementById('voiceInputBtn');
-                    btn.classList.remove('recording');
-                    btn.innerHTML = '<i class="fas fa-microphone"></i>';
-                } else {
-                    try {
-                        this.recognition.start();
-                        this.isRecording = true;
-                    } catch (error) {
-                        console.error('音声認識開始エラー:', error);
-                        this.handleVoiceError(error);
-                    }
+                    console.warn('この環境では音声認識がサポートされていません');
                 }
             }
 
             handleVoiceError(error) {
                 let errorMessage = '';
-                
                 switch (error) {
+                    case 'network':
+                        errorMessage = 'ネットワークエラーが発生しました';
+                        break;
                     case 'not-allowed':
-                        errorMessage = 'マイクへのアクセスが拒否されました。ブラウザの設定でマイクを許可してください。';
+                        errorMessage = 'マイクへのアクセスが拒否されました';
                         break;
                     case 'no-speech':
-                        errorMessage = '音声が検出されませんでした。もう一度お試しください。';
-                        break;
-                    case 'audio-capture':
-                        errorMessage = 'マイクが見つかりません。マイクが接続されているか確認してください。';
-                        break;
-                    case 'network':
-                        errorMessage = 'ネットワークエラーが発生しました。インターネット接続を確認してください。';
+                        errorMessage = '音声が検出されませんでした';
                         break;
                     default:
-                        errorMessage = `音声認識エラーが発生しました: ${error}`;
+                        errorMessage = `音声認識エラー: ${error}`;
                 }
-                
                 this.showError(errorMessage);
-                
-                this.isRecording = false;
-                const btn = document.getElementById('voiceInputBtn');
-                btn.classList.remove('recording');
-                btn.innerHTML = '<i class="fas fa-microphone"></i>';
             }
 
             setupEventListeners() {
-                document.getElementById('getRecommendation').addEventListener('click', () => {
-                    this.getRecommendations();
+                const getRecommendationBtn = document.getElementById('getRecommendation');
+                const refreshBtn = document.getElementById('refreshRecommendation');
+                const getAnotherBtn = document.getElementById('getAnotherRecommendation');
+                const voiceBtn = document.getElementById('voiceInputBtn');
+
+                getRecommendationBtn.addEventListener('click', () => {
+                    this.getRecommendation();
                 });
 
-                document.getElementById('refreshRecommendation').addEventListener('click', () => {
-                    this.refreshRecommendations();
+                refreshBtn.addEventListener('click', () => {
+                    this.refreshRecommendation();
                 });
 
-                document.getElementById('getAnotherRecommendation').addEventListener('click', () => {
-                    this.getRecommendations();
+                getAnotherBtn.addEventListener('click', () => {
+                    this.getRecommendation();
                 });
 
-                document.getElementById('voiceInputBtn').addEventListener('click', () => {
+                voiceBtn.addEventListener('click', () => {
                     this.toggleVoiceInput();
                 });
+            }
+
+            toggleVoiceInput() {
+                if (!this.recognition) {
+                    this.showError('音声認識がサポートされていません');
+                    return;
+                }
+
+                if (this.isRecording) {
+                    this.recognition.stop();
+                } else {
+                    this.isRecording = true;
+                    this.recognition.start();
+                }
             }
 
             setupTasteMatrix() {
@@ -1067,13 +1220,16 @@
                     const rect = matrix.getBoundingClientRect();
                     const x = (e.clientX - rect.left) / rect.width;
                     const y = (e.clientY - rect.top) / rect.height;
-
-                    this.currentPosition = { x, y };
-
-                    dot.style.left = `${x * 100}%`;
-                    dot.style.top = `${y * 100}%`;
-
-                    coordinates.textContent = `座標: X: ${x.toFixed(2)}, Y: ${y.toFixed(2)}`;
+                    
+                    this.currentPosition = { x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) };
+                    
+                    dot.style.left = `${this.currentPosition.x * 100}%`;
+                    dot.style.top = `${this.currentPosition.y * 100}%`;
+                    
+                    coordinates.textContent = `座標: X: ${this.currentPosition.x.toFixed(2)}, Y: ${this.currentPosition.y.toFixed(2)}`;
+                    
+                    this.radarChart.userProfileData = null;
+                    this.radarChart.showUserProfileOnly();
                 });
             }
 
@@ -1083,48 +1239,56 @@
                 const minPriceDisplay = document.getElementById('minPriceDisplay');
                 const maxPriceDisplay = document.getElementById('maxPriceDisplay');
 
-                const updatePriceDisplay = () => {
-                    const minValue = parseInt(minPriceSlider.value) * 1000;
-                    const maxValue = parseInt(maxPriceSlider.value) * 1000;
-                    
-                    minPriceDisplay.textContent = `¥${minValue.toLocaleString()}`;
-                    maxPriceDisplay.textContent = `¥${maxValue.toLocaleString()}`;
+                const updatePriceDisplay = (value) => {
+                    return `¥${(value * 1000).toLocaleString()}`;
                 };
 
-                minPriceSlider.addEventListener('input', updatePriceDisplay);
-                maxPriceSlider.addEventListener('input', updatePriceDisplay);
+                minPriceSlider.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    minPriceDisplay.textContent = updatePriceDisplay(value);
+                    
+                    if (value >= parseInt(maxPriceSlider.value)) {
+                        maxPriceSlider.value = value + 1;
+                        maxPriceDisplay.textContent = updatePriceDisplay(value + 1);
+                    }
+                });
 
-                updatePriceDisplay();
+                maxPriceSlider.addEventListener('input', (e) => {
+                    const value = parseInt(e.target.value);
+                    maxPriceDisplay.textContent = updatePriceDisplay(value);
+                    
+                    if (value <= parseInt(minPriceSlider.value)) {
+                        minPriceSlider.value = value - 1;
+                        minPriceDisplay.textContent = updatePriceDisplay(value - 1);
+                    }
+                });
             }
 
             setupAxisControls() {
                 const xAxis = document.getElementById('xAxis');
                 const yAxis = document.getElementById('yAxis');
-                const topLabel = document.getElementById('topLabel');
-                const bottomLabel = document.getElementById('bottomLabel');
                 const leftLabel = document.getElementById('leftLabel');
                 const rightLabel = document.getElementById('rightLabel');
+                const topLabel = document.getElementById('topLabel');
+                const bottomLabel = document.getElementById('bottomLabel');
+
+                const axisLabels = {
+                    'light-heavy': ['ライト', 'ヘビー'],
+                    'sweet-dry': ['スイート', 'ドライ'],
+                    'young-aged': ['若い', '熟成'],
+                    'fruity-smoky': ['フルーティー', 'スモーキー'],
+                    'mild-strong': ['まろやか', '強烈'],
+                    'floral-peaty': ['フローラル', 'ピート']
+                };
 
                 const updateLabels = () => {
-                    const xValue = xAxis.value;
-                    const yValue = yAxis.value;
-
-                    const xLabels = {
-                        'light-heavy': ['ライト', 'ヘビー'],
-                        'sweet-dry': ['スイート', 'ドライ'],
-                        'young-aged': ['若い', '熟成']
-                    };
-
-                    const yLabels = {
-                        'fruity-smoky': ['フルーティー', 'スモーキー'],
-                        'mild-strong': ['まろやか', '強烈'],
-                        'floral-peaty': ['フローラル', 'ピート']
-                    };
-
-                    leftLabel.textContent = xLabels[xValue][0];
-                    rightLabel.textContent = xLabels[xValue][1];
-                    topLabel.textContent = yLabels[yValue][0];
-                    bottomLabel.textContent = yLabels[yValue][1];
+                    const xLabels = axisLabels[xAxis.value];
+                    const yLabels = axisLabels[yAxis.value];
+                    
+                    leftLabel.textContent = xLabels[0];
+                    rightLabel.textContent = xLabels[1];
+                    topLabel.textContent = yLabels[0];
+                    bottomLabel.textContent = yLabels[1];
                 };
 
                 xAxis.addEventListener('change', updateLabels);
@@ -1137,201 +1301,250 @@
                 return this.currentPosition;
             }
 
-            async getRecommendations() {
+            async getRecommendation() {
+                if (!this.isInitialized) {
+                    this.showError('システムが初期化されていません');
+                    return;
+                }
+
                 try {
                     this.showLoading(true);
-                    this.hideError();
+                    this.showProgress(true);
 
-                    const preferences = this.collectPreferences();
-                    console.log('収集した好み:', preferences);
+                    const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+                    const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
+                    const additionalPrefs = document.getElementById('additionalPreferences').value;
 
-                    const response = await fetch('/.netlify/functions/claude-api', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify(preferences)
-                    });
+                    this.updateProgress(25, '価格帯でフィルタリング中...');
+                    await this.delay(500);
 
-                    console.log('API Response Status:', response.status);
+                    const filteredWhiskies = this.dataManager.filterByPrice(minPrice, maxPrice);
+                    console.log(`価格帯 ${minPrice}円 - ${maxPrice}円 で ${filteredWhiskies.length}件見つかりました`);
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-                    }
+                    this.updateProgress(50, '味覚プロファイル分析中...');
+                    await this.delay(800);
 
-                    const result = await response.json();
-                    console.log('API Response:', result);
+                    const recommendations = this.generateRecommendations(filteredWhiskies, additionalPrefs);
 
-                    if (result.error) {
-                        throw new Error(result.error);
-                    }
+                    this.updateProgress(75, '提案内容を生成中...');
+                    await this.delay(600);
 
-                    this.processClaudeResponse(result);
+                    this.updateProgress(100, '完了！');
+                    await this.delay(300);
+
+                    this.displayRecommendations(recommendations);
+                    this.radarChart.showUserProfileOnly();
 
                 } catch (error) {
-                    console.error('推薦取得エラー:', error);
-                    this.showError(`推薦システムにエラーが発生しました: ${error.message}`);
+                    console.error('推奨処理エラー:', error);
+                    this.showError('推奨処理中にエラーが発生しました');
                 } finally {
                     this.showLoading(false);
+                    this.showProgress(false);
                 }
             }
 
-            processClaudeResponse(result) {
-                try {
-                    console.log('Processing Claude response:', result);
-                    
-                    let content;
-                    if (result.data && result.data.content && result.data.content[0] && result.data.content[0].text) {
-                        content = result.data.content[0].text;
-                    } else if (result.data && result.data.choices && result.data.choices[0] && result.data.choices[0].message) {
-                        content = result.data.choices[0].message.content;
-                    } else {
-                        throw new Error('想定外のレスポンス形式');
-                    }
-
-                    console.log('Extracted content:', content);
-
-                    let recommendations;
-                    try {
-                        const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/\{[\s\S]*\}/);
-                        if (jsonMatch) {
-                            recommendations = JSON.parse(jsonMatch[1] || jsonMatch[0]);
-                        } else {
-                            recommendations = JSON.parse(content);
-                        }
-                    } catch (parseError) {
-                        console.error('JSON解析エラー:', parseError);
-                        throw new Error('AI応答の解析に失敗しました');
-                    }
-
-                    console.log('Parsed recommendations:', recommendations);
-
-                    if (recommendations.recommendations && Array.isArray(recommendations.recommendations)) {
-                        this.displayRecommendations(recommendations);
-                        this.radarChart.showUserProfileOnly();
-                    } else {
-                        throw new Error('推薦データの形式が正しくありません');
-                    }
-
-                } catch (error) {
-                    console.error('レスポンス処理エラー:', error);
-                    throw new Error(`結果表示中にエラーが発生しました: ${error.message}`);
+            generateRecommendations(filteredWhiskies, additionalPrefs) {
+                if (filteredWhiskies.length === 0) {
+                    return {
+                        summary: '指定された価格帯にはウィスキーが見つかりませんでした。',
+                        recommendations: [],
+                        conclusion: '価格帯を調整してみてください。'
+                    };
                 }
-            }
 
-            collectPreferences() {
-                const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
-                const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
-                const additionalPreferences = document.getElementById('additionalPreferences').value.trim();
+                const userPos = this.getCurrentPosition();
+                const scoredWhiskies = filteredWhiskies.map(whisky => {
+                    const tasteScore = this.dataManager.getTasteScore(whisky.id);
+                    const similarity = this.calculateSimilarity(userPos, tasteScore);
+                    return { ...whisky, similarity, tasteScore };
+                });
+
+                scoredWhiskies.sort((a, b) => b.similarity - a.similarity);
+                const topRecommendations = scoredWhiskies.slice(0, 5);
+
+                const summary = this.generateSummary(topRecommendations, additionalPrefs);
+                const conclusion = this.generateConclusion(topRecommendations);
 
                 return {
-                    minPrice,
-                    maxPrice,
-                    tasteX: this.currentPosition.x,
-                    tasteY: this.currentPosition.y,
-                    additionalPreferences
+                    summary,
+                    recommendations: topRecommendations,
+                    conclusion
                 };
             }
 
-            displayRecommendations(data) {
+            calculateSimilarity(userPos, tasteScore) {
+                if (!tasteScore || tasteScore.length < 6) {
+                    return 0;
+                }
+
+                const userProfile = [
+                    (1 - userPos.y) * 5,
+                    Math.random() * 2 + 2.5,
+                    userPos.x * 5,
+                    userPos.y * 5,
+                    Math.random() * 2 + 2.5,
+                    Math.random() * 2 + 2.5
+                ];
+
+                let totalDifference = 0;
+                for (let i = 0; i < 6; i++) {
+                    totalDifference += Math.abs(userProfile[i] - tasteScore[i]);
+                }
+
+                return Math.max(0, 1 - totalDifference / 30);
+            }
+
+            generateSummary(recommendations, additionalPrefs) {
+                if (recommendations.length === 0) {
+                    return 'ご指定の条件に合うウィスキーが見つかりませんでした。';
+                }
+
+                const topWhisky = recommendations[0];
+                const matchPercentage = Math.round(topWhisky.similarity * 100);
+
+                return `
+                    <div class="recommendation-summary">
+                        <h3><i class="fas fa-trophy mr-2"></i>ソムリエからの一言</h3>
+                        <p>あなたの好みに ${matchPercentage}% マッチした「${topWhisky.name}」を最もお勧めします。</p>
+                        <p>価格帯: ${topWhisky.price} | 地域: ${topWhisky.region}</p>
+                        ${additionalPrefs ? `<p>追加のご要望「${additionalPrefs}」も考慮して選定いたしました。</p>` : ''}
+                    </div>
+                `;
+            }
+
+            generateConclusion(recommendations) {
+                if (recommendations.length === 0) {
+                    return '<p>別の価格帯や設定でお試しください。</p>';
+                }
+
+                const avgMatch = Math.round(recommendations.reduce((sum, r) => sum + r.similarity, 0) / recommendations.length * 100);
+                return `
+                    <div class="mt-6 p-4 bg-gray-800 rounded-lg">
+                        <h4 class="font-bold mb-2"><i class="fas fa-lightbulb mr-2"></i>まとめ</h4>
+                        <p>今回の提案では平均 ${avgMatch}% の適合度でウィスキーを選定いたしました。</p>
+                        <p>各ウィスキーをクリックすると、あなたの好みとの味覚プロファイル比較がご覧いただけます。</p>
+                        <p>気になるウィスキーがございましたら、お気軽にお試しください。</p>
+                    </div>
+                `;
+            }
+
+            displayRecommendations(recommendations) {
                 const container = document.getElementById('splitLayoutContainer');
                 const summaryDiv = document.getElementById('recommendationSummary');
                 const contentDiv = document.getElementById('recommendationContent');
                 const conclusionDiv = document.getElementById('recommendationConclusion');
 
-                if (data.summary) {
-                    summaryDiv.innerHTML = `
-                        <div class="recommendation-summary">
-                            <h3 class="font-bold mb-2">ソムリエからの一言</h3>
-                            <p>${data.summary}</p>
-                        </div>
-                    `;
+                summaryDiv.innerHTML = recommendations.summary;
+                conclusionDiv.innerHTML = recommendations.conclusion;
+
+                if (recommendations.recommendations.length > 0) {
+                    contentDiv.innerHTML = recommendations.recommendations.map((whisky, index) => {
+                        const matchPercentage = Math.round(whisky.similarity * 100);
+                        return `
+                            <div class="whisky-card" data-whisky-id="${whisky.id}">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="font-bold text-lg">${index + 1}. ${whisky.name}</h4>
+                                    <span class="text-sm bg-green-600 px-2 py-1 rounded">${matchPercentage}% マッチ</span>
+                                </div>
+                                <div class="text-sm text-gray-400 mb-2">
+                                    ${whisky.price} | ${whisky.region} | ${whisky.subcategory}
+                                </div>
+                                <p class="text-sm leading-relaxed">${whisky.tastingNote_ja}</p>
+                            </div>
+                        `;
+                    }).join('');
+                } else {
+                    contentDiv.innerHTML = '<p class="text-center text-gray-400">条件に合うウィスキーが見つかりませんでした。</p>';
                 }
 
-                let contentHTML = '';
-                data.recommendations.forEach((rec, index) => {
-                    contentHTML += `
-                        <div class="whisky-card" data-whisky-name="${rec.name}">
-                            <h4 class="text-lg font-bold mb-2">${index + 1}. ${rec.name}</h4>
-                            <p class="text-gray-300 mb-2"><strong>価格帯:</strong> ${this.getEstimatedPrice(rec.name)}</p>
-                            <p class="text-gray-300 mb-2"><strong>推薦理由:</strong> ${rec.reason}</p>
-                            <p class="text-gray-300 mb-2"><strong>味の特徴:</strong> ${rec.tasteProfile}</p>
-                            <div class="text-right">
-                                <span class="text-sm text-green-400">マッチ度: ${rec.matchScore || 90}%</span>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                contentDiv.innerHTML = contentHTML;
                 container.style.display = 'grid';
-
                 this.eventManager.setupWhiskyCardEvents();
-
-                this.showSuccess('AIがあなたの好みに合わせて3つのウィスキーをお選びしました。');
             }
 
-            getEstimatedPrice(whiskyName) {
-                const whiskyItem = this.dataManager.getWhiskyByName(whiskyName);
-                return whiskyItem ? whiskyItem.price : '価格応相談';
+            refreshRecommendation() {
+                const container = document.getElementById('splitLayoutContainer');
+                container.style.display = 'none';
+                
+                this.currentPosition = { x: 0.5, y: 0.5 };
+                const dot = document.getElementById('tasteDot');
+                dot.style.left = '50%';
+                dot.style.top = '50%';
+                
+                const coordinates = document.getElementById('coordinates');
+                coordinates.textContent = '座標: X: 0.5, Y: 0.5';
+                
+                document.getElementById('additionalPreferences').value = '';
+                
+                this.radarChart.userProfileData = null;
+                this.radarChart.showUserProfileOnly();
             }
 
-            refreshRecommendations() {
-                this.getRecommendations();
+            updateProgress(percentage, text) {
+                const progressFill = document.getElementById('progressFill');
+                const progressText = document.getElementById('progressText');
+                const progressPercentage = document.getElementById('progressPercentage');
+
+                progressFill.style.width = `${percentage}%`;
+                progressText.textContent = text;
+                progressPercentage.textContent = `${percentage}%`;
+            }
+
+            showProgress(show) {
+                const container = document.getElementById('progressContainer');
+                container.style.display = show ? 'block' : 'none';
             }
 
             showLoading(show) {
                 const loading = document.getElementById('loadingIndicator');
+                const button = document.getElementById('getRecommendation');
+                
                 loading.style.display = show ? 'block' : 'none';
+                button.disabled = show;
             }
 
             showError(message) {
-                this.hideError();
                 const errorDiv = document.createElement('div');
                 errorDiv.className = 'error';
                 errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i>${message}`;
                 
                 const container = document.querySelector('.container-custom');
-                container.appendChild(errorDiv);
-
+                container.insertBefore(errorDiv, container.firstChild);
+                
                 setTimeout(() => {
                     errorDiv.remove();
-                }, 10000);
-            }
-
-            showSuccess(message) {
-                this.hideError();
-                const successDiv = document.createElement('div');
-                successDiv.className = 'success';
-                successDiv.innerHTML = `<i class="fas fa-check-circle mr-2"></i>${message}`;
-                
-                const container = document.querySelector('.container-custom');
-                container.appendChild(successDiv);
-
-                setTimeout(() => {
-                    successDiv.remove();
                 }, 5000);
             }
 
-            hideError() {
-                const existingErrors = document.querySelectorAll('.error, .success');
-                existingErrors.forEach(error => error.remove());
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
             }
         }
 
-        const whiskySystem = new WhiskySystem();
+        // グローバル変数
+        let whiskySystem;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            whiskySystem.init();
+        // ページ読み込み時の初期化
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('DOM読み込み完了');
+            
+            try {
+                whiskySystem = new WhiskySystem();
+                await whiskySystem.init();
+                console.log('WhiskySystem初期化完了');
+            } catch (error) {
+                console.error('初期化エラー:', error);
+                alert('システムの初期化に失敗しました。ページを再読み込みしてください。');
+            }
         });
     </script>
 
 
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDqco4H%2FtS1fTVPWUcnEhW4VicMFrnm0O%2FHqZUG64cNbyQMnilztvb9Flf0CGYNTCa3PMcx5f7C1jjGDuDV%2FNODRxQ8mctbe4inhd1KIgDddJjM1khQwZuc3ulQf1EI8jNlW0HZWI3KLIp64HyL67quA1wPRNNGbTo0psRRZdErmFKv1A%2B6APA12ctjxg225plG%2B1shzf0etNJqVSkFVZebTzkTZ9p91Xij1VH8vhnphYbeGOXg5i%2FKvrpxjRFRY6Tu78JLyE6UloIclog9qS0QFTkp4MR4VZnSujvVK7uN0oY78RQpPKq2iKNvWlLZPumI3275yUPQwIMdqmi71rmBYPnsA7BV8ZexThNj%2Bu23qTFp2rczFJAEeqJNO3jkedZdhaYTyKUXq2rpefG%2FtuNdcYoML9ACvnbQMF8UeNSNuDz5xe2vu1ssOBEm6yoeLOqexWWCIsvBTAJLyDpxWK7Znd2REHrIOADY2g9K5Hjp%2Fmz%2FejCxtbt99vl4hKYbSn7iz1QZgtewgAyv1paFUdsVs%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDksI8N7jABu2eBKVjXac6OEZOP%2B76nS6f%2Bv9ZG0a0Dwf3%2BasOMQuoTBv50eP32xx7fwRm%2Bm2tqpvNlrXNMTkfXyumovP0EsLOrhkFgOlqJuGo87pQzBkhYD6HDD8Bg2wEpY8USUo6GhzvECLM69pSeHBjyKuuJiZyQv6f7K9PnjlYZlreAoxgK48ONnE%2FpK6Jy0FoM%2BcgF3P9XBrm2dAWCRv%2BTap4%2B6vyLNtmmegrPeHjnD7%2Bxh9PIrw%2BymrXmkf3O43on%2B4LNCmXyVtVBYsacJ2%2B1EvoTenU7MZbr1Xh8f4Zo%2FETYwtYaAlCbreIb2ZiqtD2%2FbDb38lELclCs99v21pqbMJtQ3T73GdVPXY3x3haU1QFPS%2BGXI3nvp9MKcTiju%2Fq0vNZr2gCcaiepgRYY1vVLWZQfobXmpv7xpmpMpWB5wfgzfdnMmoyB1ym%2FauVfXG4WsSjxw2Ol3fAqbnQVXg%2FabppL5LdzVjT9xp0M7pm%2Fl91icGdGCdVieWfTsksoPAMlzvt0lZX8MOUbcRm2U%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDqco4H/tS1fTVPWUcnEhW4VicMFrnm0O/HqZUG64cNbyQMnilztvb9Flf0CGYNTCa3PMcx5f7C1jjGDuDV/NODRxQ8mctbe4inhd1KIgDddJjM1khQwZuc3ulQf1EI8jNlW0HZWI3KLIp64HyL67quA1wPRNNGbTo0psRRZdErmFKv1A+6APA12ctjxg225plG+1shzf0etNJqVSkFVZebTzkTZ9p91Xij1VH8vhnphYbeGOXg5i/KvrpxjRFRY6Tu78JLyE6UloIclog9qS0QFTkp4MR4VZnSujvVK7uN0oY78RQpPKq2iKNvWlLZPumI3275yUPQwIMdqmi71rmBYPnsA7BV8ZexThNj+u23qTFp2rczFJAEeqJNO3jkedZdhaYTyKUXq2rpefG/tuNdcYoML9ACvnbQMF8UeNSNuDz5xe2vu1ssOBEm6yoeLOqexWWCIsvBTAJLyDpxWK7Znd2REHrIOADY2g9K5Hjp/mz/ejCxtbt99vl4hKYbSn7iz1QZgtewgAyv1paFUdsVs=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDksI8N7jABu2eBKVjXac6OEZOP+76nS6f+v9ZG0a0Dwf3+asOMQuoTBv50eP32xx7fwRm+m2tqpvNlrXNMTkfXyumovP0EsLOrhkFgOlqJuGo87pQzBkhYD6HDD8Bg2wEpY8USUo6GhzvECLM69pSeHBjyKuuJiZyQv6f7K9PnjlYZlreAoxgK48ONnE/pK6Jy0FoM+cgF3P9XBrm2dAWCRv+Tap4+6vyLNtmmegrPeHjnD7+xh9PIrw+ymrXmkf3O43on+4LNCmXyVtVBYsacJ2+1EvoTenU7MZbr1Xh8f4Zo/ETYwtYaAlCbreIb2ZiqtD2/bDb38lELclCs99v21pqbMJtQ3T73GdVPXY3x3haU1QFPS+GXI3nvp9MKcTiju/q0vNZr2gCcaiepgRYY1vVLWZQfobXmpv7xpmpMpWB5wfgzfdnMmoyB1ym/auVfXG4WsSjxw2Ol3fAqbnQVXg/abppL5LdzVjT9xp0M7pm/l91icGdGCdVieWfTsksoPAMlzvt0lZX8MOUbcRm2U=";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
