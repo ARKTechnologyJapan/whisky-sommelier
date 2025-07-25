@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0140)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_MasaloRPS52cYJMWPvBvEQ/whisky_sommelier_with_logo_final.html -->
+<!-- saved from url=(0128)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_oNhxMmPkSGCsYERGTWMaxg/dual_quadrant_matrix.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,22 +51,39 @@
             padding: 100px 20px 20px;
         }
         .taste-matrix {
-            width: 400px;
-            height: 400px;
+            width: 300px;
+            height: 300px;
             border: 2px solid #fff;
             position: relative;
             background: linear-gradient(to right, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%), 
                         linear-gradient(to top, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%);
         }
         .taste-dot {
-            width: 20px;
-            height: 20px;
+            width: 16px;
+            height: 16px;
             background-color: #ff6b6b;
             border-radius: 50%;
             position: absolute;
             transform: translate(-50%, -50%);
             cursor: pointer;
             box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+        }
+        .dual-matrix-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-top: 20px;
+        }
+        .matrix-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .matrix-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #4ecdc4;
         }
         .btn-primary {
             background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
@@ -223,12 +240,6 @@
             background: #4ecdc4;
             cursor: pointer;
             border: none;
-        }
-        .axis-controls {
-            margin-bottom: 30px;
-        }
-        .taste-matrix-container {
-            margin-top: 20px;
         }
         .voice-input-btn {
             background: rgba(78, 205, 196, 0.2);
@@ -514,6 +525,11 @@
                 flex-direction: column;
                 gap: 15px;
             }
+            
+            .dual-matrix-container {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
         }
         
         @media (max-width: 768px) {
@@ -652,10 +668,10 @@
       box-sizing: border-box;
       width: 100%;
     }
-</style></head>
+  </style></head>
 <body>
     <div class="header-container">
-        <img class="logo" src="NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
+        <img class="logo" src="./index_files/NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
         <h1 class="header-title">昼の月。AIソムリエ</h1>
     </div>
     
@@ -673,7 +689,7 @@
                     <div class="stat-label">厳選銘柄</div>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number" id="uniqueRegions">2</span>
+                    <span class="stat-number" id="uniqueRegions">3</span>
                     <div class="stat-label">産地</div>
                 </div>
                 <div class="stat-item">
@@ -689,11 +705,11 @@
             </h2>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block mb-2">下限価格: <span id="minPriceDisplay">¥1,000</span></label>
+                    <label class="block mb-2">下限価格: <span id="minPriceDisplay">¥5,000</span></label>
                     <input type="range" id="minPrice" class="price-slider" min="1" max="80" value="5" step="1">
                 </div>
                 <div>
-                    <label class="block mb-2">上限価格: <span id="maxPriceDisplay">¥10,000</span></label>
+                    <label class="block mb-2">上限価格: <span id="maxPriceDisplay">¥50,000</span></label>
                     <input type="range" id="maxPrice" class="price-slider" min="1" max="80" value="50" step="1">
                 </div>
             </div>
@@ -703,42 +719,39 @@
             <h2 class="text-2xl font-bold mb-4">
                 👅 味覚プロファイル設定
             </h2>
-            <div class="axis-controls">
-                <div class="grid grid-cols-2 gap-4 mb-4">
-                    <div>
-                        <label class="block mb-2">X軸：</label>
-                        <select id="xAxis" class="w-full p-2 bg-gray-800 border border-gray-600 rounded">
-                            <option value="light-heavy">ライト ↔ ヘビー</option>
-                            <option value="sweet-dry">スイート ↔ ドライ</option>
-                            <option value="young-aged">若い ↔ 熟成</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block mb-2">Y軸：</label>
-                        <select id="yAxis" class="w-full p-2 bg-gray-800 border border-gray-600 rounded">
-                            <option value="fruity-smoky">フルーティー ↔ スモーキー</option>
-                            <option value="mild-strong">まろやか ↔ 強烈</option>
-                            <option value="floral-peaty">フローラル ↔ ピート</option>
-                        </select>
-                    </div>
-                </div>
-            </div>
+            <p class="mb-6">2つの四角内をクリックして、それぞれの好みの位置を選択してください</p>
             
-            <div class="taste-matrix-container">
-                <p class="mb-4">四角内をクリックして好みの位置を選択してください</p>
-                <div class="flex justify-center">
+            <div class="dual-matrix-container">
+                <div class="matrix-wrapper">
+                    <div class="matrix-title">🥃 基本的な味の傾向</div>
                     <div class="relative">
-                        <div class="taste-matrix" id="tasteMatrix">
-                            <div class="taste-dot" id="tasteDot" style="left: 50%; top: 50%;"></div>
+                        <div class="taste-matrix" id="tasteMatrix1">
+                            <div class="taste-dot" id="tasteDot1" style="left: 50%; top: 50%;"></div>
                         </div>
-                        <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-sm" id="topLabel">フルーティー</div>
-                        <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm" id="bottomLabel">スモーキー</div>
-                        <div class="absolute -left-16 top-1/2 transform -translate-y-1/2 text-sm" id="leftLabel">ライト</div>
-                        <div class="absolute -right-16 top-1/2 transform -translate-y-1/2 text-sm" id="rightLabel">ヘビー</div>
+                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm">フルーティー</div>
+                        <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm">スモーキー</div>
+                        <div class="absolute -left-12 top-1/2 transform -translate-y-1/2 text-sm">ライト</div>
+                        <div class="absolute -right-12 top-1/2 transform -translate-y-1/2 text-sm">ヘビー</div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <span id="coordinates1" class="text-xs text-gray-400">座標: X: 0.5, Y: 0.5</span>
                     </div>
                 </div>
-                <div class="text-center mt-8">
-                    <span id="coordinates" class="text-sm text-gray-400">座標: X: 0.5, Y: 0.5</span>
+                
+                <div class="matrix-wrapper">
+                    <div class="matrix-title">🎯 複雑さの好み</div>
+                    <div class="relative">
+                        <div class="taste-matrix" id="tasteMatrix2">
+                            <div class="taste-dot" id="tasteDot2" style="left: 50%; top: 50%;"></div>
+                        </div>
+                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm">まろやか</div>
+                        <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm">強烈</div>
+                        <div class="absolute -left-12 top-1/2 transform -translate-y-1/2 text-sm">若い</div>
+                        <div class="absolute -right-12 top-1/2 transform -translate-y-1/2 text-sm">熟成</div>
+                    </div>
+                    <div class="text-center mt-4">
+                        <span id="coordinates2" class="text-xs text-gray-400">座標: X: 0.5, Y: 0.5</span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -750,10 +763,10 @@
             
             <div class="chat-examples">
                 <div class="mb-3 text-sm text-gray-300">質問例（クリックで入力）：</div>
-                <div class="question-example" data-question="マッカランについて詳しく教えて">💎 マッカランについて詳しく教えて</div>
-                <div class="question-example" data-question="5000円以下のおすすめは？">🎯 5000円以下のおすすめは？</div>
-                <div class="question-example" data-question="アイラ島のウィスキーはある？">🌊 スモーキーだけど芳醇なウィスキーはある？</div>
-                <div class="question-example" data-question="フルーティーなウィスキーを探している">🍯 フルーティーなウィスキーを探している</div>
+                <div class="question-example" data-question="タリスカー44年（最高額80,400円）について詳しく教えて">💎 タリスカー44年（最高額80,400円）について詳しく教えて</div>
+                <div class="question-example" data-question="3000円以下でスモーキーなアイラ島のウィスキーはある？">🌊 3000円以下でスモーキーなアイラ島のウィスキーはある？</div>
+                <div class="question-example" data-question="日本の軽井沢や長濱などフルーティーなウィスキーを比較して">🍯 日本の軽井沢や長濱などフルーティーなウィスキーを比較して</div>
+                <div class="question-example" data-question="5000円前後でcomplexity5点の複雑なウィスキーのおすすめは？">⭐ 5000円前後でcomplexity5点の複雑なウィスキーのおすすめは？</div>
             </div>
 
             <div class="chat-input-container">
@@ -809,7 +822,7 @@
                 </h2>
                 <div class="chart-container">
                     <h3 id="chartTitle">あなたの好み</h3>
-                    <canvas id="combinedProfileChart" class="chart-canvas" style="height: 0px; display: block; box-sizing: border-box; width: 0px;" height="0" width="0"></canvas>
+                    <canvas id="combinedProfileChart" class="chart-canvas" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
                 </div>
                 <div class="text-center mt-4">
                     <p class="text-sm text-gray-400">ウィスキーの銘柄をクリックすると、あなたの好みと重ねて表示されます</p>
@@ -828,7 +841,8 @@
         let chartInstance = null;
         let userProfileData = null;
         let recognition = null;
-        let currentPosition = { x: 0.5, y: 0.5 };
+        let currentPosition1 = { x: 0.5, y: 0.5 };
+        let currentPosition2 = { x: 0.5, y: 0.5 };
         let conversationHistory = [];
         let minPrice = 5;
         let maxPrice = 50;
@@ -837,7 +851,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🍷 昼の月。AIソムリエ システム起動');
             setupEventListeners();
-            setupTasteMatrix();
+            setupDualTasteMatrix();
             setupPriceSliders();
             setupVoiceRecognition();
             setupQuestionExamples();
@@ -856,8 +870,6 @@
                     sendChatMessage();
                 }
             });
-            document.getElementById('xAxis').addEventListener('change', updateAxisLabels);
-            document.getElementById('yAxis').addEventListener('change', updateAxisLabels);
         }
 
         function setupQuestionExamples() {
@@ -919,6 +931,9 @@
                     ai: response
                 });
                 
+                // Update user profile based on chat
+                updateUserProfile();
+                
             } catch (error) {
                 console.error('Chat error:', error);
                 const typingElement = document.getElementById('typing-indicator');
@@ -940,7 +955,7 @@
             
             const prompt = `
             あなたは「昼の月バー」の専門ウィスキーソムリエです。
-            ここでは多くの高級、希少な銘柄を取り揃えています。
+            ここでは108種類の高級、希少な銘柄を取り揃えています。
             
             【顧客質問】
             ${question}
@@ -955,7 +970,7 @@
             
             try {
                 const timeoutPromise = new Promise((resolve) => {
-                    setTimeout(() => resolve(generateCompleteResponse(question)), 5000);
+                    setTimeout(() => resolve(generateCompleteResponse(question)), 3000);
                 });
                 
                 const apiPromise = fetch('/.netlify/functions/claude-api', {
@@ -964,8 +979,10 @@
                     body: JSON.stringify({
                         minPrice: minPrice * 1000,
                         maxPrice: maxPrice * 1000,
-                        tasteX: currentPosition.x,
-                        tasteY: currentPosition.y,
+                        tasteX: currentPosition1.x,
+                        tasteY: currentPosition1.y,
+                        tasteX2: currentPosition2.x,
+                        tasteY2: currentPosition2.y,
                         additionalPreferences: prompt
                     })
                 }).then(response => response.json())
@@ -1025,14 +1042,14 @@
             const q = question.toLowerCase();
             
             const responses = {
-                'マッカラン': '🍯 マッカランは果実味豊かで、初心者にも上級者にも愛される名品です！シェリー樽熟成の深い味わいが特徴的で、ウィスキー愛好家なら一度は体験していただきたい逸品です。',
-                'タリスカー': '🌊 タリスカーはスカイ島産の希少なウィスキーで、海岸の塩気と複雑なスモーキーさが魅力的です。長期熟成により深みのある味わいを楽しめる、非常に個性的な銘柄です。',
-                '5000': '💰 5000円なら、ラフロイグやグレンリベットなど素晴らしい選択肢があります！コストパフォーマンスに優れた銘柄を多数取り揃えております。',
-                'アイラ': '🌊 アイラ島のスモーキーさは独特で、一度体験すると忘れられない味わいです！当店では数種類のアイラウィスキーを取り揃えております。',
-                'フルーティー': '🍎 フルーティーなら、マッカランやグレンファークラスがおすすめです！果実味豊かな銘柄は初心者の方にも親しみやすく人気です。',
-                '初心者': '✨ 初心者の方には、まずグレンリベット12年から始めることをおすすめします！飲みやすく、ウィスキーの魅力を存分に味わえます。',
-                'スモーキー': '🔥 スモーキーな味がお好みなら、アイラ島のウィスキーが最高です！ピート香の効いた個性的な味わいをお楽しみいただけます。',
-                '高級': '🏆 高級品でしたら、タリスカー44年オフィシャルボトル（¥80,400）などの希少な銘柄がございます。特別な機会にふさわしい逸品です。'
+                'タリスカー': '🌊 タリスカー44年（¥80,400）は当店最高額の希少品です！強い海岸の塩気と複雑な海洋性の特徴、豊かなドライフルーツとダークチョコレートの層が調和した、非常に長く温かみのある余韻が特徴の逸品です。',
+                'マッカラン': '🍯 マッカランは果実味豊かで、初心者にも上級者にも愛される名品です！特に1990年SAMAROLI（¥12,200）は、豊かなシェリー樽の影響でドライフルーツとオレンジピールが特徴的な複雑な味わいです。',
+                '軽井沢': '🏔️ 軽井沢25年（¥25,000）は希少な日本ウィスキーの傑作です！繊細な日本の特徴を持つ果実味豊かな味わいで、complexity5点の非常に複雑な風味を楽しめる逸品です。',
+                '3000': '💰 3000円以下でスモーキーなアイラ島なら、キルホーマン2013-2021（¥2,000）がおすすめです！力強いピート香に海の塩気が特徴的で、柑橘類の皮と青リンゴの甘みが調和した本格的なアイラモルトです。',
+                'アイラ': '🌊 アイラ島のスモーキーさは独特です！ポートエレン25年（¥20,400）は希少なアイラの最高峰で、強い海洋性の特徴と複雑な泥炭の煙が魅力的な、一度体験すると忘れられない味わいです。',
+                'フルーティー': '🍎 フルーティーなら、ABERFELDY18年1999（¥4,000）がおすすめです！fruity4点の豊かな蜂蜜とヘザーの風味が長期熟成で深まり、熟した果実とバニラカスタードが調和した逸品です。',
+                'complexity': '⭐ complexity5点の複雑なウィスキーでしたら、SPRINGBANK21年2022（¥15,600）が最適です！海の塩気、豊かなドライフルーツ、控えめなピート煙の複雑なプロファイルが絶妙に調和した名品です。',
+                '5000': '🎯 5000円前後でしたら、ORKNEY22年ハイランドパーク（¥4,700）がおすすめです！ヘザーハニー、豊かなドライフルーツ、穏やかな煙の複雑な調和が楽しめる、complexity5点の逸品です。'
             };
             
             for (const [keyword, response] of Object.entries(responses)) {
@@ -1041,7 +1058,7 @@
                 }
             }
             
-            return '🍷 素晴らしいご質問ですね！ウィスキーの世界は奥深く、きっとお気に入りが見つかります。具体的な銘柄や価格帯について、お気軽にお尋ねください！';
+            return '🍷 素晴らしいご質問ですね！当店では108種類の厳選されたウィスキーを取り揃えております。タリスカー44年（¥80,400）から手頃な価格帯まで、きっとお気に入りが見つかります。具体的な銘柄や価格帯について、お気軽にお尋ねください！';
         }
         
         function setupPriceSliders() {
@@ -1074,48 +1091,142 @@
             updatePriceDisplay();
         }
         
-        function setupTasteMatrix() {
-            const matrix = document.getElementById('tasteMatrix');
-            const dot = document.getElementById('tasteDot');
+        function setupDualTasteMatrix() {
+            const matrix1 = document.getElementById('tasteMatrix1');
+            const dot1 = document.getElementById('tasteDot1');
+            const matrix2 = document.getElementById('tasteMatrix2');
+            const dot2 = document.getElementById('tasteDot2');
             
-            matrix.addEventListener('click', function(e) {
-                const rect = matrix.getBoundingClientRect();
+            matrix1.addEventListener('click', function(e) {
+                const rect = matrix1.getBoundingClientRect();
                 const x = (e.clientX - rect.left) / rect.width;
                 const y = (e.clientY - rect.top) / rect.height;
                 
-                currentPosition = { x: x, y: y };
+                currentPosition1 = { x: x, y: y };
                 
-                dot.style.left = `${x * 100}%`;
-                dot.style.top = `${y * 100}%`;
+                dot1.style.left = `${x * 100}%`;
+                dot1.style.top = `${y * 100}%`;
                 
-                updateCoordinates();
+                updateCoordinates1();
+                updateUserProfile();
             });
             
-            updateAxisLabels();
+            matrix2.addEventListener('click', function(e) {
+                const rect = matrix2.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+                
+                currentPosition2 = { x: x, y: y };
+                
+                dot2.style.left = `${x * 100}%`;
+                dot2.style.top = `${y * 100}%`;
+                
+                updateCoordinates2();
+                updateUserProfile();
+            });
         }
         
-        function updateAxisLabels() {
-            const xAxis = document.getElementById('xAxis').value;
-            const yAxis = document.getElementById('yAxis').value;
+        function updateCoordinates1() {
+            document.getElementById('coordinates1').textContent = 
+                `座標: X: ${currentPosition1.x.toFixed(2)}, Y: ${currentPosition1.y.toFixed(2)}`;
+        }
+        
+        function updateCoordinates2() {
+            document.getElementById('coordinates2').textContent = 
+                `座標: X: ${currentPosition2.x.toFixed(2)}, Y: ${currentPosition2.y.toFixed(2)}`;
+        }
+        
+        function generateUserProfileFromDualMatrix() {
+            const chatAnalysis = analyzeChatForTasteProfile();
             
-            const labels = {
-                'light-heavy': ['ライト', 'ヘビー'],
-                'sweet-dry': ['スイート', 'ドライ'],
-                'young-aged': ['若い', '熟成'],
-                'fruity-smoky': ['フルーティー', 'スモーキー'],
-                'mild-strong': ['まろやか', '強烈'],
-                'floral-peaty': ['フローラル', 'ピート']
+            // Matrix1: Light-Heavy (X) × Fruity-Smoky (Y)
+            const fruity = Math.max(0, Math.min(5, (1 - currentPosition1.y) * 5));
+            const smoky = Math.max(0, Math.min(5, currentPosition1.y * 5));
+            const body = Math.max(0, Math.min(5, currentPosition1.x * 5));
+            
+            // Matrix2: Young-Aged (X) × Mild-Strong (Y)
+            const complexity = Math.max(0, Math.min(5, currentPosition2.x * 5));
+            const spicy = Math.max(0, Math.min(5, currentPosition2.y * 3 + 1));
+            const sweetness = Math.max(0, Math.min(5, (1 - currentPosition2.y) * 3 + 1));
+            
+            const baseProfile = {
+                fruity: fruity,
+                spicy: spicy,
+                body: body,
+                smoky: smoky,
+                sweetness: sweetness,
+                complexity: complexity
             };
             
-            document.getElementById('leftLabel').textContent = labels[xAxis][0];
-            document.getElementById('rightLabel').textContent = labels[xAxis][1];
-            document.getElementById('topLabel').textContent = labels[yAxis][0];
-            document.getElementById('bottomLabel').textContent = labels[yAxis][1];
+            // Apply chat analysis adjustments
+            Object.keys(baseProfile).forEach(key => {
+                if (chatAnalysis[key]) {
+                    baseProfile[key] = Math.max(0, Math.min(5, baseProfile[key] + chatAnalysis[key]));
+                }
+            });
+            
+            return [
+                baseProfile.fruity,
+                baseProfile.spicy,
+                baseProfile.body,
+                baseProfile.smoky,
+                baseProfile.sweetness,
+                baseProfile.complexity
+            ];
         }
         
-        function updateCoordinates() {
-            document.getElementById('coordinates').textContent = 
-                `座標: X: ${currentPosition.x.toFixed(2)}, Y: ${currentPosition.y.toFixed(2)}`;
+        function analyzeChatForTasteProfile() {
+            const analysis = {
+                fruity: 0, spicy: 0, body: 0, smoky: 0, sweetness: 0, complexity: 0
+            };
+            
+            conversationHistory.forEach(chat => {
+                const text = chat.user.toLowerCase();
+                
+                // Fruity preferences
+                if (text.includes('フルーティー') || text.includes('果実') || text.includes('甘い')) {
+                    analysis.fruity += 1;
+                    analysis.sweetness += 0.5;
+                }
+                
+                // Smoky preferences
+                if (text.includes('スモーキー') || text.includes('ピート') || text.includes('アイラ')) {
+                    analysis.smoky += 1.5;
+                    analysis.complexity += 0.5;
+                }
+                
+                // Body preferences
+                if (text.includes('力強い') || text.includes('濃い') || text.includes('重い') || text.includes('ヘビー')) {
+                    analysis.body += 1;
+                    analysis.complexity += 0.3;
+                }
+                
+                // Spicy preferences
+                if (text.includes('スパイシー') || text.includes('辛い') || text.includes('刺激')) {
+                    analysis.spicy += 1;
+                }
+                
+                // Complexity preferences
+                if (text.includes('複雑') || text.includes('深い') || text.includes('熟成') || text.includes('complexity')) {
+                    analysis.complexity += 1;
+                }
+                
+                // Sweetness preferences
+                if (text.includes('まろやか') || text.includes('なめらか') || text.includes('やさしい')) {
+                    analysis.sweetness += 1;
+                }
+            });
+            
+            return analysis;
+        }
+        
+        function updateUserProfile() {
+            userProfileData = generateUserProfileFromDualMatrix();
+            
+            if (chartInstance) {
+                chartInstance.data.datasets[0].data = userProfileData;
+                chartInstance.update();
+            }
         }
         
         function setupVoiceRecognition() {
@@ -1206,49 +1317,57 @@
             return [
                 {
                     id: "1",
-                    name: "マッカラン 12年",
-                    price: "¥8,000",
-                    region: "スコットランド",
+                    name: "タリスカー44年オフィシャルボトル",
+                    price: "¥80,400",
+                    region: "Scotland (Isle of Skye)",
                     subcategory: "Single Malt Scotch Whisky",
-                    tastingNote_ja: "リッチでフルーティーな味わい、シェリー樽の影響による複雑な風味",
-                    taste_profile: { fruity: 4, spicy: 2, body: 3, smoky: 1, sweetness: 4, complexity: 4 }
+                    tastingNote_ja: "強い海岸の塩気を持つ複雑な海洋性の特徴。豊かなドライフルーツ、ダークチョコレート、アンティークレザーの層がタリスカー特有のピリッとしたスモークと調和",
+                    taste_profile: { fruity: 3, spicy: 4, body: 5, smoky: 4, sweetness: 2, complexity: 5 }
                 },
                 {
                     id: "2",
-                    name: "ラフロイグ 10年",
-                    price: "¥5,000",
-                    region: "スコットランド",
-                    subcategory: "Islay Single Malt Scotch Whisky",
-                    tastingNote_ja: "強烈なピート香、海の塩気、薬草的な風味",
-                    taste_profile: { fruity: 2, spicy: 3, body: 4, smoky: 5, sweetness: 2, complexity: 4 }
+                    name: "マッカラン1990年SAMAROLI",
+                    price: "¥12,200",
+                    region: "Scotland",
+                    subcategory: "Single Malt Scotch Whisky - Speyside",
+                    tastingNote_ja: "豊かなシェリーの影響があり、ドライフルーツ、オレンジピール、クリスマスケーキの風味が特徴。複雑な樽のスパイスが蜂蜜、トフィー、ダークチョコレートと調和",
+                    taste_profile: { fruity: 4, spicy: 3, body: 5, smoky: 1, sweetness: 4, complexity: 5 }
                 },
                 {
                     id: "3",
-                    name: "山崎 12年",
+                    name: "軽井沢25年",
                     price: "¥25,000",
-                    region: "日本",
+                    region: "Japan",
                     subcategory: "Japanese Whisky",
-                    tastingNote_ja: "繊細で調和のとれた味わい、日本の四季を感じる複雑さ",
-                    taste_profile: { fruity: 3, spicy: 2, body: 3, smoky: 2, sweetness: 3, complexity: 4 }
+                    tastingNote_ja: "日本の繊細さと果実の豊かさが見事に調和した希少な逸品。複雑で深い味わい",
+                    taste_profile: { fruity: 4, spicy: 2, body: 4, smoky: 2, sweetness: 3, complexity: 5 }
                 }
             ];
         }
         
         function initializeChart() {
-            const ctx = document.getElementById('combinedProfileChart').getContext('2d');
+            const canvas = document.getElementById('combinedProfileChart');
+            if (!canvas) {
+                console.error('Chart canvas not found');
+                return;
+            }
             
-            userProfileData = [
-                (1 - currentPosition.y) * 5, // fruity
-                Math.random() * 2 + 2.5,     // spicy
-                currentPosition.x * 5,        // body
-                currentPosition.y * 5,        // smoky
-                Math.random() * 2 + 2.5,     // sweetness
-                Math.random() * 2 + 2.5      // complexity
-            ];
+            const ctx = canvas.getContext('2d');
+            if (!ctx) {
+                console.error('Cannot get 2D context');
+                return;
+            }
+            
+            if (typeof Chart === 'undefined') {
+                console.error('Chart.js not loaded');
+                return;
+            }
             
             if (chartInstance) {
                 chartInstance.destroy();
             }
+            
+            userProfileData = generateUserProfileFromDualMatrix();
             
             chartInstance = new Chart(ctx, {
                 type: 'radar',
@@ -1349,29 +1468,21 @@
         }
         
         function calculateMatchingWhiskies(whiskies) {
+            const userProfile = generateUserProfileFromDualMatrix();
+            
             return whiskies.map(whisky => {
                 const profile = whisky.taste_profile;
                 if (!profile) return { ...whisky, matchScore: 0 };
                 
-                const userX = currentPosition.x * 5;
-                const userY = currentPosition.y * 5;
-                const userSmoky = currentPosition.y * 5;
-                const userFruity = (1 - currentPosition.y) * 5;
-                
-                // Calculate distance-based score
                 let score = 100;
                 
-                // Body preference
-                score -= Math.abs(profile.body - userX) * 10;
-                
-                // Smoky/Fruity preference
-                if (currentPosition.y > 0.6) { // Prefers smoky
-                    score += profile.smoky * 5;
-                    score -= profile.fruity * 2;
-                } else if (currentPosition.y < 0.4) { // Prefers fruity
-                    score += profile.fruity * 5;
-                    score -= profile.smoky * 2;
-                }
+                // Calculate distance-based matching
+                score -= Math.abs(profile.fruity - userProfile[0]) * 8;
+                score -= Math.abs(profile.spicy - userProfile[1]) * 6;
+                score -= Math.abs(profile.body - userProfile[2]) * 10;
+                score -= Math.abs(profile.smoky - userProfile[3]) * 8;
+                score -= Math.abs(profile.sweetness - userProfile[4]) * 5;
+                score -= Math.abs(profile.complexity - userProfile[5]) * 7;
                 
                 // Chat history bonus
                 const chatBonus = calculateChatBonus(whisky, conversationHistory);
@@ -1405,6 +1516,10 @@
                 }
                 
                 if (question.includes('日本') && region.includes('japan')) {
+                    bonus += 15;
+                }
+                
+                if (question.includes('タリスカー') && name.includes('タリスカー')) {
                     bonus += 15;
                 }
             });
@@ -1451,8 +1566,9 @@
         function displayPreferencesSummary(recommendations) {
             const summaryContainer = document.getElementById('preferencesSummary');
             
-            // Analyze taste quadrant
-            const tasteAnalysis = analyzeTasteQuadrant(currentPosition.x, currentPosition.y);
+            // Analyze dual matrix selections
+            const matrix1Analysis = analyzeMatrix1(currentPosition1.x, currentPosition1.y);
+            const matrix2Analysis = analyzeMatrix2(currentPosition2.x, currentPosition2.y);
             
             // Analyze chat history
             const chatInsights = analyzeChatHistory(conversationHistory);
@@ -1463,16 +1579,13 @@
             let summaryHtml = `
                 <h3 class="text-lg font-bold mb-3">🎯 あなたの好みの傾向</h3>
                 <div class="space-y-2 text-sm">
-                    <div><strong>味覚プロファイル:</strong> ${tasteAnalysis.description}</div>
+                    <div><strong>基本的な味の傾向:</strong> ${matrix1Analysis}</div>
+                    <div><strong>複雑さの好み:</strong> ${matrix2Analysis}</div>
                     <div><strong>価格帯:</strong> ${priceRange}</div>
             `;
             
             if (chatInsights.interests.length > 0) {
                 summaryHtml += `<div><strong>チャットから読み取った関心:</strong> ${chatInsights.interests.join('、')}</div>`;
-            }
-            
-            if (chatInsights.experienceLevel) {
-                summaryHtml += `<div><strong>経験レベル:</strong> ${chatInsights.experienceLevel}</div>`;
             }
             
             if (chatInsights.preferences.length > 0) {
@@ -1489,50 +1602,33 @@
             summaryContainer.innerHTML = summaryHtml;
         }
         
-        function analyzeTasteQuadrant(x, y) {
-            const bodyLevel = x < 0.3 ? 'ライト' : x > 0.7 ? 'フルボディ' : 'ミディアム';
+        function analyzeMatrix1(x, y) {
+            const bodyLevel = x < 0.3 ? 'ライト' : x > 0.7 ? 'ヘビー' : 'ミディアム';
             const flavorLevel = y < 0.3 ? 'フルーティー' : y > 0.7 ? 'スモーキー' : 'バランス';
             
-            const descriptions = {
-                'ライト_フルーティー': '軽やかで果実味豊かな、飲みやすいタイプを好む',
-                'ライト_バランス': '軽やかでバランスの取れた、万人受けするタイプを好む',
-                'ライト_スモーキー': '軽やかでありながら個性的な、上品なスモーキーさを好む',
-                'ミディアム_フルーティー': '程よいボディで果実味を重視した、王道タイプを好む',
-                'ミディアム_バランス': '全体的にバランスが取れた、クラシックなタイプを好む',
-                'ミディアム_スモーキー': '程よいボディで個性的な、味わい深いタイプを好む',
-                'フルボディ_フルーティー': '力強くも果実味豊かな、贅沢なタイプを好む',
-                'フルボディ_バランス': '力強くバランスの取れた、重厚なタイプを好む',
-                'フルボディ_スモーキー': '力強く個性的な、上級者向けタイプを好む'
-            };
+            return `${bodyLevel}で${flavorLevel}な味わいを好む`;
+        }
+        
+        function analyzeMatrix2(x, y) {
+            const ageLevel = x < 0.3 ? '若い' : x > 0.7 ? '熟成' : '中程度';
+            const intensityLevel = y < 0.3 ? 'まろやか' : y > 0.7 ? '強烈' : 'バランス';
             
-            const key = `${bodyLevel}_${flavorLevel}`;
-            return {
-                body: bodyLevel,
-                flavor: flavorLevel,
-                description: descriptions[key] || '個性的な味わいを好む'
-            };
+            return `${ageLevel}で${intensityLevel}な複雑さを好む`;
         }
         
         function analyzeChatHistory(history) {
             const interests = [];
             const preferences = [];
-            let experienceLevel = '';
             
             history.forEach(chat => {
                 const text = chat.user.toLowerCase();
                 
-                // Experience level
-                if (text.includes('初心者') || text.includes('はじめて') || text.includes('飲みやすい')) {
-                    experienceLevel = '初心者〜中級者';
-                } else if (text.includes('詳しく') || text.includes('複雑') || text.includes('上級')) {
-                    experienceLevel = '中級者〜上級者';
-                }
-                
                 // Interests
                 if (text.includes('マッカラン')) interests.push('スペイサイド系');
                 if (text.includes('アイラ')) interests.push('アイラ系');
-                if (text.includes('日本')) interests.push('ジャパニーズ');
-                if (text.includes('5000') || text.includes('安い')) interests.push('コスパ重視');
+                if (text.includes('日本') || text.includes('軽井沢')) interests.push('ジャパニーズ');
+                if (text.includes('タリスカー')) interests.push('アイランズ系');
+                if (text.includes('3000') || text.includes('安い')) interests.push('コスパ重視');
                 if (text.includes('高級') || text.includes('特別')) interests.push('プレミアム志向');
                 
                 // Preferences
@@ -1540,12 +1636,12 @@
                 if (text.includes('スモーキー') || text.includes('ピート')) preferences.push('スモーキー系');
                 if (text.includes('まろやか') || text.includes('なめらか')) preferences.push('まろやか系');
                 if (text.includes('力強い') || text.includes('濃い')) preferences.push('力強い系');
+                if (text.includes('複雑') || text.includes('complexity')) preferences.push('複雑系');
             });
             
             return {
                 interests: [...new Set(interests)],
-                preferences: [...new Set(preferences)],
-                experienceLevel
+                preferences: [...new Set(preferences)]
             };
         }
         
@@ -1610,7 +1706,7 @@
             container.style.display = 'block';
             
             const steps = [
-                { text: '味覚プロファイル分析中...', progress: 25 },
+                { text: 'デュアルマトリックス分析中...', progress: 25 },
                 { text: 'ウィスキーデータベース検索中...', progress: 50 },
                 { text: 'マッチング計算中...', progress: 75 },
                 { text: '最適化処理中...', progress: 100 }
@@ -1684,15 +1780,26 @@
                 chatHistory.style.display = 'none';
             }
             
-            // Random taste position
-            const randomX = Math.random();
-            const randomY = Math.random();
+            // Random positions for both matrices
+            const randomX1 = Math.random();
+            const randomY1 = Math.random();
+            const randomX2 = Math.random();
+            const randomY2 = Math.random();
             
-            currentPosition = { x: randomX, y: randomY };
-            const dot = document.getElementById('tasteDot');
-            dot.style.left = `${randomX * 100}%`;
-            dot.style.top = `${randomY * 100}%`;
-            updateCoordinates();
+            currentPosition1 = { x: randomX1, y: randomY1 };
+            currentPosition2 = { x: randomX2, y: randomY2 };
+            
+            const dot1 = document.getElementById('tasteDot1');
+            const dot2 = document.getElementById('tasteDot2');
+            
+            dot1.style.left = `${randomX1 * 100}%`;
+            dot1.style.top = `${randomY1 * 100}%`;
+            dot2.style.left = `${randomX2 * 100}%`;
+            dot2.style.top = `${randomY2 * 100}%`;
+            
+            updateCoordinates1();
+            updateCoordinates2();
+            updateUserProfile();
             
             // Generate new recommendations
             setTimeout(() => {
@@ -1703,12 +1810,11 @@
         }
     </script>
 
-
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDuu73ouXkrGGfClrf6c16xop0D315M1wLAnGu2U97FexVa7a6JCx61ZHRmfptHy%2Fop3zxl%2Fl0x1W4m9EGnFZLT0XrtV3dw2RhVn2nnbJjsNF9eHovwHGw3gTdOhKDoPcXvFutMIytTTm9KWoI%2BiofY0LyqUG74zZXAyU%2Fch7qSxPTh7fc%2FdDzoCmuz4zLkbDB4vXCp7QA%2Bw37IaVqWGbKqvlcutLVliDwu8VysWYAdSzE%2By8kg3wIEwnXn9fO%2BaUVHf9SUb531RKiCGwBA4CB66N7feDSFyOxtPjdFffqDxFaJCgvMm1VtBEmX5DLZ%2BdT94QoKKlC0WY9yazTJ%2BtUsVP5UmjiPOgj4DFQPHHnxD7lpX6M44nRSO97WxNPtmhLaiyxMhGtM1zZF6iigsk2cYa3nDmaEFy3c5FeZjNLTfBTqAIjFOPNyhMejbDCJggDLgWYcnLwO%2BzcPMDebMUcbGIEUy52qsXMl7UNhBsRUi7ThYiZOUTHNOfl2Pz9QViv2ryxUvjVAkJlU3PGkOtqwA%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDo%2F3eDpDCCrKVSYgCSrThAAucpoz%2B%2FyBhsrrWqKdy3GPW9DqNxCsSvPt04IhpRrT7Y8cfFNqwrout15%2BZy%2BonHfNkaF%2Bs0zzNaOCD9oXvLhNx2CIKW4mMxwvHRBnvug19dm5772VMk4UGWJPfsKBOc5oSyVrIGufrfzfDRTfOdukGlgH6FHq0hLOZNIhkw0I2kI%2FPOL%2BO44oJV4RUurevs5Z6sOPPbjOq0FSVFNz0fT9GDvTiKpIc%2FrUVlZj9AcBJzEEt43YDPf8EI2xWgmC4zvbKPuzr6SOiblTsT%2FC3Lqgs0w6yClQ8JF4i7jbHap4HuXhYyN7I1Lik7xWXhdCLqJnD7wvT8hjDMU%2FKsRXf7QKIxHHYgJOe2iTsB3vBcAFO%2B4TaT9SmFBM2pO8CfjF0pJw4BrHf2%2Bj1FqO3KYDo4WD3n6ald3FsCdrmK6eI1SgipJ3yFF3dv6GgiDZdet3%2BA3txPIDguLDU0yNTOxdMCB9BUSvBhgDDP0pingjQBjjpA%3D%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDuu73ouXkrGGfClrf6c16xop0D315M1wLAnGu2U97FexVa7a6JCx61ZHRmfptHy/op3zxl/l0x1W4m9EGnFZLT0XrtV3dw2RhVn2nnbJjsNF9eHovwHGw3gTdOhKDoPcXvFutMIytTTm9KWoI+iofY0LyqUG74zZXAyU/ch7qSxPTh7fc/dDzoCmuz4zLkbDB4vXCp7QA+w37IaVqWGbKqvlcutLVliDwu8VysWYAdSzE+y8kg3wIEwnXn9fO+aUVHf9SUb531RKiCGwBA4CB66N7feDSFyOxtPjdFffqDxFaJCgvMm1VtBEmX5DLZ+dT94QoKKlC0WY9yazTJ+tUsVP5UmjiPOgj4DFQPHHnxD7lpX6M44nRSO97WxNPtmhLaiyxMhGtM1zZF6iigsk2cYa3nDmaEFy3c5FeZjNLTfBTqAIjFOPNyhMejbDCJggDLgWYcnLwO+zcPMDebMUcbGIEUy52qsXMl7UNhBsRUi7ThYiZOUTHNOfl2Pz9QViv2ryxUvjVAkJlU3PGkOtqwA=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDo/3eDpDCCrKVSYgCSrThAAucpoz+/yBhsrrWqKdy3GPW9DqNxCsSvPt04IhpRrT7Y8cfFNqwrout15+Zy+onHfNkaF+s0zzNaOCD9oXvLhNx2CIKW4mMxwvHRBnvug19dm5772VMk4UGWJPfsKBOc5oSyVrIGufrfzfDRTfOdukGlgH6FHq0hLOZNIhkw0I2kI/POL+O44oJV4RUurevs5Z6sOPPbjOq0FSVFNz0fT9GDvTiKpIc/rUVlZj9AcBJzEEt43YDPf8EI2xWgmC4zvbKPuzr6SOiblTsT/C3Lqgs0w6yClQ8JF4i7jbHap4HuXhYyN7I1Lik7xWXhdCLqJnD7wvT8hjDMU/KsRXf7QKIxHHYgJOe2iTsB3vBcAFO+4TaT9SmFBM2pO8CfjF0pJw4BrHf2+j1FqO3KYDo4WD3n6ald3FsCdrmK6eI1SgipJ3yFF3dv6GgiDZdet3+A3txPIDguLDU0yNTOxdMCB9BUSvBhgDDP0pingjQBjjpA==";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
