@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<!-- saved from url=(0137)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_FDzQCvaPRGiEN6JazDxK4g/whisky_sommelier_professional.html -->
+<!-- saved from url=(0132)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_6GWm8OPbTlq1HrsvTldnzg/whisky_sommelier_premium.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>昼の月。AIソムリエ</title>
+    <title>昼の月。AIソムリエ - プレミアム改善版</title>
     <link href="./index_files/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="./index_files/all.min.css">
     <script src="./index_files/chart.js.ダウンロード"></script>
@@ -298,6 +298,33 @@
             color: #4ecdc4;
         }
         
+        .weather-info {
+            background: linear-gradient(135deg, rgba(135, 206, 235, 0.1), rgba(78, 205, 196, 0.1));
+            border: 1px solid rgba(135, 206, 235, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            color: #87CEEB;
+        }
+        
+        .time-based-suggestion {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.1), rgba(255, 215, 0, 0.1));
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            color: #FFA500;
+        }
+        
+        .ai-analysis-enhanced {
+            background: linear-gradient(135deg, rgba(147, 112, 219, 0.1), rgba(186, 85, 211, 0.1));
+            border: 1px solid rgba(147, 112, 219, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            color: #9370DB;
+        }
+        
         .custom-footer {
             display: none;
             text-align: center;
@@ -555,10 +582,7 @@
   </style></head>
 <body>
     <div class="header-container">
-        <svg class="logo" viewBox="0 0 50 50" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="25" cy="25" r="20" stroke="#4ecdc4" stroke-width="2" fill="none"></circle>
-            <text x="25" y="30" text-anchor="middle" fill="#4ecdc4" font-size="10">昼の月</text>
-        </svg>
+        <img src="./index_files/cf92c9b8-fc69-4c1a-a8ed-473dd859d791" alt="昼の月 Bar Logo" class="logo">
         <h1 class="header-title">昼の月。AIソムリエ</h1>
     </div>
     
@@ -566,18 +590,18 @@
         <!-- Whisky Overview Section -->
         <div class="whisky-overview">
             <h2>🍷 プレミアムウィスキーコレクション</h2>
-            <div class="subtitle">本日は厳選された<span id="whiskyCount">3</span>本のウィスキーから</div>
+            <div class="subtitle">本日は厳選された<span id="whiskyCount">5</span>本のウィスキーから</div>
             <div class="description">
                 <strong>あなたの味覚に完璧にマッチする</strong>最高の一本を<br>
                 AI技術で分析・提案いたします
             </div>
             <div class="whisky-stats">
                 <div class="stat-item">
-                    <span class="stat-number" id="totalWhiskies">3</span>
+                    <span class="stat-number" id="totalWhiskies">5</span>
                     <div class="stat-label">厳選銘柄</div>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number" id="uniqueRegions">2</span>
+                    <span class="stat-number" id="uniqueRegions">3</span>
                     <div class="stat-label">産地</div>
                 </div>
                 <div class="stat-item">
@@ -589,9 +613,7 @@
         
         <div class="card">
             <h2 class="text-2xl font-bold mb-4">
-                <svg class="taste-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                </svg>
+                <i class="fas fa-yen-sign taste-icon"></i>
                 価格帯設定
             </h2>
             <div class="grid grid-cols-2 gap-4">
@@ -608,9 +630,7 @@
         
         <div class="card">
             <h2 class="text-2xl font-bold mb-4">
-                <svg class="taste-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"></path>
-                </svg>
+                <i class="fas fa-palette taste-icon"></i>
                 味覚プロファイル設定
             </h2>
             <div class="axis-controls">
@@ -657,9 +677,7 @@
                 <div class="flex gap-2">
                     <textarea id="additionalPreferences" class="flex-1 p-3 bg-gray-800 border border-gray-600 rounded-lg" placeholder="例：バニラの香りがある、甘い感じの味がいい。"></textarea>
                     <button id="voiceInputBtn" class="voice-input-btn">
-                        <svg class="taste-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2c1.1 0 2 .9 2 2v6c0 1.1-.9 2-2 2s-2-.9-2-2V4c0-1.1.9-2 2-2zm5.3 6.7c0 3-2.54 5.1-5.3 5.1s-5.3-2.1-5.3-5.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-2.28c3.28-.48 6-3.3 6-6.72h-1.7z"></path>
-                        </svg>
+                        <i class="fas fa-microphone"></i>
                     </button>
                 </div>
             </div>
@@ -667,50 +685,234 @@
         
         <div class="text-center mb-8">
             <button id="getRecommendation" class="btn-primary text-lg mr-4">
-                <svg class="taste-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M7 14l5-5 5 5z"></path>
-                </svg>
+                <i class="fas fa-robot"></i>
                 AIウィスキー提案を受ける
             </button>
             <button id="refreshRecommendation" class="btn-secondary text-lg">
-                <svg class="taste-icon" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path>
-                </svg>
+                <i class="fas fa-sync-alt"></i>
                 リフレッシュして再提案
             </button>
         </div>
         
         <div id="loadingIndicator" class="loading" style="display: none;">
-            <svg class="taste-icon animate-spin" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 2v4l-2-2-2 2zM12 18v4l-2-2-2 2zM4.93 5.05L7.76 7.88l-1.41 1.41L3.51 6.46zM16.24 16.12l2.83 2.83-1.41 1.41-2.83-2.83zM2 10v4l2-2 2 2zM18 10v4l2-2 2 2zM5.05 19.07l1.41-1.41 2.83 2.83-1.41 1.41zM16.12 7.76l1.41-1.41 2.83 2.83-1.41 1.41z"></path>
-            </svg>
+            <i class="fas fa-spinner fa-spin taste-icon"></i>
             <p class="mt-2">AIが最適なウィスキーを分析中...</p>
         </div>
         
-        <div id="progressContainer" class="progress-container">
-            <div id="progressText" class="progress-text">初期化中...</div>
+        <div id="progressContainer" class="progress-container" style="display: none;">
+            <div id="progressText" class="progress-text">最適な提案を準備中...</div>
             <div class="progress-bar">
-                <div id="progressFill" class="progress-fill"></div>
+                <div id="progressFill" class="progress-fill" style="width: 100%;"></div>
             </div>
-            <div id="progressPercentage" class="progress-percentage">0%</div>
+            <div id="progressPercentage" class="progress-percentage">100%</div>
         </div>
         
-        <div id="splitLayoutContainer" style="display: none;" class="split-layout">
+        <div id="splitLayoutContainer" style="display: grid;" class="split-layout">
             <div class="recommendations-panel">
                 <h2 class="text-2xl font-bold mb-4">
-                    <svg class="taste-icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path>
-                    </svg>
+                    <i class="fas fa-star taste-icon"></i>
                     AI提案結果
                 </h2>
-                <div id="recommendationSummary"></div>
-                <div id="recommendationContent"></div>
+                
+                <div id="weatherInfo" class="weather-info" style="display: block;">
+                    <h3 class="text-lg font-bold mb-2">
+                        <i class="fas fa-cloud-sun"></i>
+                        現在の東京の天気
+                    </h3>
+                    <div id="weatherDetails">
+                    <div class="flex items-center mb-2">
+                        <i class="fas fa-thermometer-half mr-2"></i>
+                        <span>気温: 25°C</span>
+                        <i class="fas fa-eye ml-4 mr-2"></i>
+                        <span>天気: 雨</span>
+                    </div>
+                    <p class="text-sm">雨の日にはコクのある、温かみのあるウィスキーで心を温めませんか。</p>
+                </div>
+                </div>
+                
+                <div id="timeBasedSuggestion" class="time-based-suggestion" style="display: block;">
+                    <h3 class="text-lg font-bold mb-2">
+                        <i class="fas fa-clock"></i>
+                        時間帯別おすすめ
+                    </h3>
+                    <div id="timeBasedDetails">
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-clock mr-2"></i>
+                    <span>現在の時間帯: 夜</span>
+                </div>
+                <p class="text-sm">夜の深い味わいには、コクのある熟成された銘柄がぴったりです。</p>
+            </div>
+                </div>
+                
+                <div id="aiAnalysisEnhanced" class="ai-analysis-enhanced" style="display: block;">
+                    <h3 class="text-lg font-bold mb-2">
+                        <i class="fas fa-brain"></i>
+                        AI分析サマリー
+                    </h3>
+                    <div id="aiAnalysisDetails">
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <i class="fas fa-search mr-2"></i>
+                        <span>価格帯分析: ¥5,000 - ¥50,000</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-crosshairs mr-2"></i>
+                        <span>味覚座標: X0.50, Y0.50</span>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <i class="fas fa-database mr-2"></i>
+                        <span>検索対象: 5本のプレミアムウィスキー</span>
+                    </div>
+                </div>
+            </div>
+                </div>
+                
+                <div id="recommendationSummary">
+                <div class="recommendation-summary">
+                    <h3 class="text-lg font-bold mb-2">
+                        <i class="fas fa-chart-line mr-2"></i>
+                        分析結果サマリー
+                    </h3>
+                    <p>あなたの好みに基づいて5本のウィスキーを厳選しました。</p>
+                    <p>平均適合度: 34.5% - 適度なマッチング率です。</p>
+                </div>
+            </div>
+                <div id="recommendationContent">
+                    <div class="whisky-card featured" onclick="selectWhisky(&#39;4&#39;)">
+                        <div class="featured-label">最もおすすめ</div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-bold">1. 山崎 12年</h3>
+                            <span class="text-lg font-bold text-green-400">¥25,000</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-2 text-sm">
+                            <div><i class="fas fa-map-marker-alt mr-1"></i>産地: Japan</div>
+                            <div><i class="fas fa-tag mr-1"></i>分類: Japanese Whisky</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="flex items-center mb-1">
+                                <i class="fas fa-star mr-1"></i>
+                                <span class="font-bold">適合度: 47.9%</span>
+                            </div>
+                            <div class="text-sm text-gray-300">
+                                <i class="fas fa-glass-whiskey mr-1"></i>
+                                繊細で調和のとれた味わい、日本の四季を感じる複雑さ。フルーティーで優雅な香りが特徴です。
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-400">
+                            <i class="fas fa-mouse-pointer mr-1"></i>
+                            クリックして味覚プロファイルを比較
+                        </div>
+                    </div>
+                
+                    <div class="whisky-card" onclick="selectWhisky(&#39;5&#39;)">
+                        
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-bold">2. グレンリベット 18年</h3>
+                            <span class="text-lg font-bold text-green-400">¥15,000</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-2 text-sm">
+                            <div><i class="fas fa-map-marker-alt mr-1"></i>産地: Scotland, Speyside</div>
+                            <div><i class="fas fa-tag mr-1"></i>分類: Single Malt Scotch Whisky</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="flex items-center mb-1">
+                                <i class="fas fa-star mr-1"></i>
+                                <span class="font-bold">適合度: 39.2%</span>
+                            </div>
+                            <div class="text-sm text-gray-300">
+                                <i class="fas fa-glass-whiskey mr-1"></i>
+                                エレガントで洗練された味わい。リンゴ、洋梨、バニラの香りが調和した、バランスの取れた銘柄です。
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-400">
+                            <i class="fas fa-mouse-pointer mr-1"></i>
+                            クリックして味覚プロファイルを比較
+                        </div>
+                    </div>
+                
+                    <div class="whisky-card" onclick="selectWhisky(&#39;2&#39;)">
+                        
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-bold">3. マッカラン 18年</h3>
+                            <span class="text-lg font-bold text-green-400">¥45,000</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-2 text-sm">
+                            <div><i class="fas fa-map-marker-alt mr-1"></i>産地: Scotland, Speyside</div>
+                            <div><i class="fas fa-tag mr-1"></i>分類: Single Malt Scotch Whisky</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="flex items-center mb-1">
+                                <i class="fas fa-star mr-1"></i>
+                                <span class="font-bold">適合度: 33.8%</span>
+                            </div>
+                            <div class="text-sm text-gray-300">
+                                <i class="fas fa-glass-whiskey mr-1"></i>
+                                リッチでフルーティーな味わい、シェリー樽の影響による複雑な風味。ドライフルーツ、オレンジピール、スパイスの香りが特徴的です。
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-400">
+                            <i class="fas fa-mouse-pointer mr-1"></i>
+                            クリックして味覚プロファイルを比較
+                        </div>
+                    </div>
+                
+                    <div class="whisky-card" onclick="selectWhisky(&#39;1&#39;)">
+                        
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-bold">4. ポートエレン 25年 one of only bottles</h3>
+                            <span class="text-lg font-bold text-green-400">¥20,400</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-2 text-sm">
+                            <div><i class="fas fa-map-marker-alt mr-1"></i>産地: Scotland, Islay</div>
+                            <div><i class="fas fa-tag mr-1"></i>分類: Single Malt Scotch Whisky</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="flex items-center mb-1">
+                                <i class="fas fa-star mr-1"></i>
+                                <span class="font-bold">適合度: 25.8%</span>
+                            </div>
+                            <div class="text-sm text-gray-300">
+                                <i class="fas fa-glass-whiskey mr-1"></i>
+                                ポートエレン25年は希少で高く評価されるアイラウィスキーで、強い海洋性の特徴を持ちます。複雑な泥炭の煙、海藻、ヨードの風味が特徴的です。バニラ、蜂蜜なとロピカルフルーツのバランスよく調和しています。長い余韻には、オークタンニン、白胡椒、そして長く甘い香りが現れます。
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-400">
+                            <i class="fas fa-mouse-pointer mr-1"></i>
+                            クリックして味覚プロファイルを比較
+                        </div>
+                    </div>
+                
+                    <div class="whisky-card selected" onclick="selectWhisky(&#39;3&#39;)">
+                        
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-bold">5. ラフロイグ 10年</h3>
+                            <span class="text-lg font-bold text-green-400">¥5,000</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-2 text-sm">
+                            <div><i class="fas fa-map-marker-alt mr-1"></i>産地: Scotland, Islay</div>
+                            <div><i class="fas fa-tag mr-1"></i>分類: Islay Single Malt Scotch Whisky</div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="flex items-center mb-1">
+                                <i class="fas fa-star mr-1"></i>
+                                <span class="font-bold">適合度: 25.8%</span>
+                            </div>
+                            <div class="text-sm text-gray-300">
+                                <i class="fas fa-glass-whiskey mr-1"></i>
+                                強烈なピート香、海の塩気、薬草的な風味が特徴的です。スモーキーで力強い個性を持ちます。
+                            </div>
+                        </div>
+                        <div class="text-xs text-gray-400">
+                            <i class="fas fa-mouse-pointer mr-1"></i>
+                            クリックして味覚プロファイルを比較
+                        </div>
+                    </div>
+                </div>
                 <div id="recommendationConclusion"></div>
                 <div class="text-center mt-6">
                     <button id="getAnotherRecommendation" class="btn-secondary">
-                        <svg class="taste-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"></path>
-                        </svg>
+                        <i class="fas fa-sync-alt"></i>
                         別の提案
                     </button>
                 </div>
@@ -718,14 +920,12 @@
             
             <div class="chart-panel">
                 <h2 class="text-2xl font-bold mb-4">
-                    <svg class="taste-icon" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M9 11H7v9h2v-9zm4-4h-2v13h2V7zm4-4h-2v17h2V3z"></path>
-                    </svg>
+                    <i class="fas fa-chart-radar taste-icon"></i>
                     味覚プロファイル比較
                 </h2>
-                <div class="chart-container">
-                    <h3 id="chartTitle">あなたの好み</h3>
-                    <canvas id="combinedProfileChart" class="chart-canvas" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+                <div class="chart-container" style="height: 500px;">
+                    <h3 id="chartTitle">あなたの好み vs ラフロイグ 10年</h3>
+                    <canvas id="combinedProfileChart" class="chart-canvas" height="500" style="display: block; box-sizing: border-box; height: 500px; width: 528px;" width="528"></canvas>
                 </div>
                 <div class="text-center mt-4">
                     <p class="text-sm text-gray-400">ウィスキーの銘柄をクリックすると、あなたの好みと重ねて表示されます</p>
@@ -745,6 +945,7 @@
         let userProfileData = null;
         let recognition = null;
         let currentPosition = { x: 0.5, y: 0.5 };
+        let weatherData = null;
         
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
@@ -755,6 +956,7 @@
             setupVoiceRecognition();
             loadWhiskyData();
             initializeChart();
+            fetchWeatherData();
         });
         
         function setupEventListeners() {
@@ -776,7 +978,6 @@
                 const minValue = parseInt(minPriceSlider.value);
                 const maxValue = parseInt(maxPriceSlider.value);
                 
-                // Ensure min is not greater than max
                 if (minValue > maxValue) {
                     minPriceSlider.value = maxValue;
                 }
@@ -848,7 +1049,7 @@
                 recognition.onstart = function() {
                     const btn = document.getElementById('voiceInputBtn');
                     btn.classList.add('recording');
-                    btn.innerHTML = '<svg class="taste-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm10 0h2v12h-2z"/></svg>';
+                    btn.innerHTML = '<i class="fas fa-stop"></i>';
                 };
                 
                 recognition.onresult = function(event) {
@@ -860,14 +1061,14 @@
                 recognition.onend = function() {
                     const btn = document.getElementById('voiceInputBtn');
                     btn.classList.remove('recording');
-                    btn.innerHTML = '<svg class="taste-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1.1 0 2 .9 2 2v6c0 1.1-.9 2-2 2s-2-.9-2-2V4c0-1.1.9-2 2-2zm5.3 6.7c0 3-2.54 5.1-5.3 5.1s-5.3-2.1-5.3-2.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-2.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>';
+                    btn.innerHTML = '<i class="fas fa-microphone"></i>';
                 };
                 
                 recognition.onerror = function(event) {
                     console.error('Speech recognition error:', event.error);
                     const btn = document.getElementById('voiceInputBtn');
                     btn.classList.remove('recording');
-                    btn.innerHTML = '<svg class="taste-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1.1 0 2 .9 2 2v6c0 1.1-.9 2-2 2s-2-.9-2-2V4c0-1.1.9-2 2-2zm5.3 6.7c0 3-2.54 5.1-5.3 5.1s-5.3-2.1-5.3-2.1H5c0 3.41 2.72 6.23 6 6.72V21h2v-2.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>';
+                    btn.innerHTML = '<i class="fas fa-microphone"></i>';
                 };
             }
         }
@@ -884,32 +1085,85 @@
             }
         }
         
+        async function fetchWeatherData() {
+            try {
+                // OpenWeatherMap API (You'll need to replace with your API key)
+                const response = await fetch('https://api.openweathermap.org/data/2.5/weather?q=Tokyo&appid=YOUR_API_KEY&units=metric&lang=ja');
+                if (response.ok) {
+                    weatherData = await response.json();
+                    console.log('天気データ取得成功:', weatherData);
+                } else {
+                    // Fallback to mock data
+                    weatherData = getMockWeatherData();
+                    console.log('天気データフォールバック:', weatherData);
+                }
+            } catch (error) {
+                console.log('天気データ取得エラー:', error);
+                weatherData = getMockWeatherData();
+            }
+        }
+        
+        function getMockWeatherData() {
+            const conditions = ['晴れ', '曇り', '雨', '雪'];
+            const temps = [15, 20, 25, 10];
+            const index = Math.floor(Math.random() * conditions.length);
+            
+            return {
+                weather: [{ description: conditions[index] }],
+                main: { temp: temps[index] },
+                wind: { speed: Math.random() * 10 + 1 }
+            };
+        }
+        
+        function getTimeBasedSuggestion() {
+            const hour = new Date().getHours();
+            let timeOfDay, suggestion;
+            
+            if (hour >= 6 && hour < 12) {
+                timeOfDay = '朝';
+                suggestion = '朝の静寂に合う、繊細で香り豊かなウィスキーがおすすめです。';
+            } else if (hour >= 12 && hour < 18) {
+                timeOfDay = '昼';
+                suggestion = '昼下がりのひとときに、バランスの取れた味わいのウィスキーで贅沢な時間を。';
+            } else {
+                timeOfDay = '夜';
+                suggestion = '夜の深い味わいには、コクのある熟成された銘柄がぴったりです。';
+            }
+            
+            return { timeOfDay, suggestion };
+        }
+        
+        function generateWeatherBasedComment() {
+            if (!weatherData) return '';
+            
+            const weather = weatherData.weather[0].description;
+            const temp = weatherData.main.temp;
+            
+            let comment = '';
+            
+            if (weather.includes('晴れ')) {
+                comment = '今日は晴れていますね。爽やかな気分に合う、フルーティーなウィスキーはいかがでしょうか。';
+            } else if (weather.includes('雨')) {
+                comment = '雨の日にはコクのある、温かみのあるウィスキーで心を温めませんか。';
+            } else if (weather.includes('雪')) {
+                comment = '雪の日には、しっかりとしたボディのウィスキーで寒さを忘れましょう。';
+            } else {
+                comment = '今日の天気に合わせて、お気に入りの一杯を見つけてください。';
+            }
+            
+            if (temp < 10) {
+                comment += ' 気温が低いので、体を温めるスパイシーな銘柄もおすすめです。';
+            } else if (temp > 25) {
+                comment += ' 暖かい日なので、氷を入れてロックで楽しむのも良いでしょう。';
+            }
+            
+            return comment;
+        }
+        
         async function loadWhiskyData() {
             console.log('🔄 ウィスキーデータ読み込み中...');
             
-            const possibleFiles = [
-                'whisky_data.json',
-                'whiskey_data.json',
-                'data.json'
-            ];
-            
-            for (const fileName of possibleFiles) {
-                try {
-                    const response = await fetch(fileName);
-                    if (response.ok) {
-                        const data = await response.json();
-                        whiskyData = data.whiskies || data;
-                        console.log(`✅ ${fileName} から ${whiskyData.length} 本のウィスキーデータを読み込みました`);
-                        updateWhiskyOverview();
-                        return;
-                    }
-                } catch (error) {
-                    console.log(`❌ ${fileName} の読み込みに失敗: ${error.message}`);
-                }
-            }
-            
-            // If no external data found, use default data
-            console.log('⚠️ 外部データが見つかりません。デフォルトデータを使用します。');
+            // デフォルトデータを使用
             whiskyData = getDefaultWhiskyData();
             updateWhiskyOverview();
         }
@@ -927,30 +1181,53 @@
             return [
                 {
                     id: "1",
-                    name: "マッカラン 12年",
-                    price: "¥8,000",
-                    region: "スコットランド",
+                    name: "ポートエレン 25年 one of only bottles",
+                    price: "¥20,400",
+                    region: "Scotland, Islay",
                     subcategory: "Single Malt Scotch Whisky",
-                    tastingNote_ja: "リッチでフルーティーな味わい、シェリー樽の影響による複雑な風味",
-                    taste_profile: { fruity: 4, spicy: 2, body: 3, smoky: 1, sweetness: 4, complexity: 4 }
+                    tastingNote_ja: "ポートエレン25年は希少で高く評価されるアイラウィスキーで、強い海洋性の特徴を持ちます。複雑な泥炭の煙、海藻、ヨードの風味が特徴的です。バニラ、蜂蜜なとロピカルフルーツのバランスよく調和しています。長い余韻には、オークタンニン、白胡椒、そして長く甘い香りが現れます。",
+                    taste_profile: { fruity: 3, spicy: 4, body: 4, smoky: 5, sweetness: 3, complexity: 5 },
+                    alcohol: 78
                 },
                 {
                     id: "2",
-                    name: "ラフロイグ 10年",
-                    price: "¥5,000",
-                    region: "スコットランド",
-                    subcategory: "Islay Single Malt Scotch Whisky",
-                    tastingNote_ja: "強烈なピート香、海の塩気、薬草的な風味",
-                    taste_profile: { fruity: 2, spicy: 3, body: 4, smoky: 5, sweetness: 2, complexity: 4 }
+                    name: "マッカラン 18年",
+                    price: "¥45,000",
+                    region: "Scotland, Speyside",
+                    subcategory: "Single Malt Scotch Whisky",
+                    tastingNote_ja: "リッチでフルーティーな味わい、シェリー樽の影響による複雑な風味。ドライフルーツ、オレンジピール、スパイスの香りが特徴的です。",
+                    taste_profile: { fruity: 4, spicy: 3, body: 4, smoky: 1, sweetness: 4, complexity: 5 },
+                    alcohol: 43
                 },
                 {
                     id: "3",
+                    name: "ラフロイグ 10年",
+                    price: "¥5,000",
+                    region: "Scotland, Islay",
+                    subcategory: "Islay Single Malt Scotch Whisky",
+                    tastingNote_ja: "強烈なピート香、海の塩気、薬草的な風味が特徴的です。スモーキーで力強い個性を持ちます。",
+                    taste_profile: { fruity: 2, spicy: 3, body: 4, smoky: 5, sweetness: 2, complexity: 4 },
+                    alcohol: 40
+                },
+                {
+                    id: "4",
                     name: "山崎 12年",
                     price: "¥25,000",
-                    region: "日本",
+                    region: "Japan",
                     subcategory: "Japanese Whisky",
-                    tastingNote_ja: "繊細で調和のとれた味わい、日本の四季を感じる複雑さ",
-                    taste_profile: { fruity: 3, spicy: 2, body: 3, smoky: 2, sweetness: 3, complexity: 4 }
+                    tastingNote_ja: "繊細で調和のとれた味わい、日本の四季を感じる複雑さ。フルーティーで優雅な香りが特徴です。",
+                    taste_profile: { fruity: 4, spicy: 2, body: 3, smoky: 2, sweetness: 3, complexity: 4 },
+                    alcohol: 43
+                },
+                {
+                    id: "5",
+                    name: "グレンリベット 18年",
+                    price: "¥15,000",
+                    region: "Scotland, Speyside",
+                    subcategory: "Single Malt Scotch Whisky",
+                    tastingNote_ja: "エレガントで洗練された味わい。リンゴ、洋梨、バニラの香りが調和した、バランスの取れた銘柄です。",
+                    taste_profile: { fruity: 4, spicy: 2, body: 3, smoky: 1, sweetness: 3, complexity: 4 },
+                    alcohol: 43
                 }
             ];
         }
@@ -979,336 +1256,373 @@
                     datasets: [{
                         label: 'あなたの好み',
                         data: userProfileData,
-                        fill: true,
-                        backgroundColor: 'rgba(78, 205, 196, 0.25)',
-                        borderColor: '#4ECDC4',
-                        pointBackgroundColor: '#4ECDC4',
+                        backgroundColor: 'rgba(78, 205, 196, 0.2)',
+                        borderColor: '#4ecdc4',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#4ecdc4',
                         pointBorderColor: '#fff',
                         pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: '#4ECDC4',
-                        borderWidth: 2,
-                        pointRadius: 5
+                        pointHoverBorderColor: '#4ecdc4'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: {
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 5,
+                            ticks: {
+                                display: false
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            angleLines: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            pointLabels: {
                                 color: '#fff',
-                                font: { size: 14 }
+                                font: {
+                                    size: 14
+                                }
                             }
                         }
                     },
-                    scales: {
-                        r: {
-                            angleLines: { color: 'rgba(255, 255, 255, 0.2)' },
-                            grid: { color: 'rgba(255, 255, 255, 0.2)' },
-                            pointLabels: {
-                                color: '#fff',
-                                font: { size: 12 }
-                            },
-                            ticks: { display: false },
-                            beginAtZero: true,
-                            max: 5
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: {
+                                color: '#fff'
+                            }
                         }
-                    },
-                    elements: {
-                        line: { tension: 0.1 }
-                    },
-                    animation: {
-                        duration: 800,
-                        easing: 'easeOutQuart'
                     }
                 }
             });
         }
         
-        function getRecommendation() {
+        function updateChart(whiskyProfile, whiskyName) {
+            if (!chartInstance) return;
+            
+            const datasets = [{
+                label: 'あなたの好み',
+                data: userProfileData,
+                backgroundColor: 'rgba(78, 205, 196, 0.2)',
+                borderColor: '#4ecdc4',
+                borderWidth: 2,
+                pointBackgroundColor: '#4ecdc4',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: '#4ecdc4'
+            }];
+            
+            if (whiskyProfile) {
+                datasets.push({
+                    label: whiskyName,
+                    data: [
+                        whiskyProfile.fruity,
+                        whiskyProfile.spicy,
+                        whiskyProfile.body,
+                        whiskyProfile.smoky,
+                        whiskyProfile.sweetness,
+                        whiskyProfile.complexity
+                    ],
+                    backgroundColor: 'rgba(255, 107, 107, 0.2)',
+                    borderColor: '#ff6b6b',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#ff6b6b',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#ff6b6b'
+                });
+            }
+            
+            chartInstance.data.datasets = datasets;
+            chartInstance.update();
+            
+            document.getElementById('chartTitle').textContent = whiskyProfile ? 
+                `あなたの好み vs ${whiskyName}` : 'あなたの好み';
+        }
+        
+        async function getRecommendation() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const progressContainer = document.getElementById('progressContainer');
+            const splitLayoutContainer = document.getElementById('splitLayoutContainer');
+            const getRecommendationBtn = document.getElementById('getRecommendation');
+            
+            loadingIndicator.style.display = 'block';
+            progressContainer.style.display = 'block';
+            splitLayoutContainer.style.display = 'none';
+            getRecommendationBtn.disabled = true;
+            
+            // Progress simulation
+            await simulateProgress();
+            
+            // Generate recommendations
+            const recommendations = await generateRecommendations();
+            
+            // Display results
+            displayRecommendations(recommendations);
+            displayWeatherInfo();
+            displayTimeBasedSuggestion();
+            displayAIAnalysis();
+            
+            loadingIndicator.style.display = 'none';
+            progressContainer.style.display = 'none';
+            splitLayoutContainer.style.display = 'grid';
+            getRecommendationBtn.disabled = false;
+        }
+        
+        function displayWeatherInfo() {
+            const weatherInfo = document.getElementById('weatherInfo');
+            const weatherDetails = document.getElementById('weatherDetails');
+            
+            if (weatherData) {
+                const weather = weatherData.weather[0].description;
+                const temp = weatherData.main.temp;
+                const weatherComment = generateWeatherBasedComment();
+                
+                weatherDetails.innerHTML = `
+                    <div class="flex items-center mb-2">
+                        <i class="fas fa-thermometer-half mr-2"></i>
+                        <span>気温: ${temp}°C</span>
+                        <i class="fas fa-eye ml-4 mr-2"></i>
+                        <span>天気: ${weather}</span>
+                    </div>
+                    <p class="text-sm">${weatherComment}</p>
+                `;
+                
+                weatherInfo.style.display = 'block';
+            }
+        }
+        
+        function displayTimeBasedSuggestion() {
+            const timeBasedSuggestion = document.getElementById('timeBasedSuggestion');
+            const timeBasedDetails = document.getElementById('timeBasedDetails');
+            
+            const { timeOfDay, suggestion } = getTimeBasedSuggestion();
+            
+            timeBasedDetails.innerHTML = `
+                <div class="flex items-center mb-2">
+                    <i class="fas fa-clock mr-2"></i>
+                    <span>現在の時間帯: ${timeOfDay}</span>
+                </div>
+                <p class="text-sm">${suggestion}</p>
+            `;
+            
+            timeBasedSuggestion.style.display = 'block';
+        }
+        
+        function displayAIAnalysis() {
+            const aiAnalysisEnhanced = document.getElementById('aiAnalysisEnhanced');
+            const aiAnalysisDetails = document.getElementById('aiAnalysisDetails');
+            
             const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
             const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
-            const additionalPreferences = document.getElementById('additionalPreferences').value;
+            const additionalPrefs = document.getElementById('additionalPreferences').value;
             
-            console.log('🎯 AI分析開始', { minPrice, maxPrice, position: currentPosition, preferences: additionalPreferences });
-            
-            // Show loading
-            document.getElementById('loadingIndicator').style.display = 'block';
-            document.getElementById('splitLayoutContainer').style.display = 'none';
-            
-            // Simulate AI processing
-            setTimeout(() => {
-                const recommendations = analyzeAndRecommend(minPrice, maxPrice, additionalPreferences);
-                displayRecommendations(recommendations);
-                
-                document.getElementById('loadingIndicator').style.display = 'none';
-                document.getElementById('splitLayoutContainer').style.display = 'grid';
-            }, 2000);
-        }
-        
-        function analyzeAndRecommend(minPrice, maxPrice, preferences) {
-            // Filter by price range
-            const filteredWhiskies = whiskyData.filter(whisky => {
-                const price = extractPrice(whisky.price || whisky.amount);
-                return price >= minPrice && price <= maxPrice;
-            });
-            
-            console.log(`💰 価格帯フィルタリング: ${filteredWhiskies.length}/${whiskyData.length} 件`);
-            
-            if (filteredWhiskies.length === 0) {
-                return [{
-                    id: "no-match",
-                    name: "該当する銘柄がありません",
-                    price: "¥0",
-                    region: "N/A",
-                    subcategory: "N/A",
-                    tastingNote_ja: `価格帯 ¥${minPrice.toLocaleString()} - ¥${maxPrice.toLocaleString()} に該当するウィスキーが見つかりませんでした。価格帯を調整してお試しください。`,
-                    taste_profile: { fruity: 3, spicy: 3, body: 3, smoky: 3, sweetness: 3, complexity: 3 },
-                    score: 0
-                }];
-            }
-            
-            // Score each whisky based on user preferences
-            const scoredWhiskies = filteredWhiskies.map(whisky => {
-                const score = calculateCompatibilityScore(whisky, currentPosition, preferences);
-                return { ...whisky, score };
-            });
-            
-            // Sort by score and return top 5
-            scoredWhiskies.sort((a, b) => b.score - a.score);
-            return scoredWhiskies.slice(0, 5);
-        }
-        
-        function extractPrice(priceString) {
-            if (!priceString) return 0;
-            const numbers = priceString.match(/[\d,]+/g);
-            if (!numbers) return 0;
-            return parseInt(numbers[0].replace(/,/g, ''));
-        }
-        
-        function calculateCompatibilityScore(whisky, position, preferences) {
-            const profile = whisky.taste_profile;
-            if (!profile) return Math.random() * 100;
-            
-            // Calculate distance between user preference and whisky profile
-            const userProfile = [
-                (1 - position.y) * 5, // fruity
-                2.5,                   // spicy (neutral)
-                position.x * 5,        // body
-                position.y * 5,        // smoky
-                2.5,                   // sweetness (neutral)
-                3                      // complexity (neutral)
-            ];
-            
-            const whiskyProfile = [
-                profile.fruity || 3,
-                profile.spicy || 3,
-                profile.body || 3,
-                profile.smoky || 3,
-                profile.sweetness || 3,
-                profile.complexity || 3
-            ];
-            
-            // Calculate Euclidean distance
-            const distance = Math.sqrt(
-                userProfile.reduce((sum, val, i) => sum + Math.pow(val - whiskyProfile[i], 2), 0)
-            );
-            
-            // Convert distance to score (lower distance = higher score)
-            const maxDistance = Math.sqrt(6 * 25); // Maximum possible distance
-            const score = ((maxDistance - distance) / maxDistance) * 100;
-            
-            // Add bonus for preferences match
-            if (preferences) {
-                const prefLower = preferences.toLowerCase();
-                const tastingLower = (whisky.tastingNote_ja || '').toLowerCase();
-                
-                const keywords = ['甘', '辛', 'フルーティー', 'スモーキー', '複雑', 'シンプル', 'ライト', 'ヘビー'];
-                const matchCount = keywords.filter(keyword => 
-                    prefLower.includes(keyword) && tastingLower.includes(keyword)
-                ).length;
-                
-                return score + (matchCount * 5);
-            }
-            
-            return score;
-        }
-        
-        function displayRecommendations(recommendations) {
-            const container = document.getElementById('recommendationContent');
-            const summary = document.getElementById('recommendationSummary');
-            
-            // Display summary
-            summary.innerHTML = `
-                <div class="recommendation-summary">
-                    <h3>🎯 分析結果</h3>
-                    <p>あなたの味覚プロファイルと価格帯に基づいて、<strong>${recommendations.length}件</strong>のおすすめウィスキーを選定しました。</p>
+            const analysisText = `
+                <div class="space-y-2">
+                    <div class="flex items-center">
+                        <i class="fas fa-search mr-2"></i>
+                        <span>価格帯分析: ¥${minPrice.toLocaleString()} - ¥${maxPrice.toLocaleString()}</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-crosshairs mr-2"></i>
+                        <span>味覚座標: X${currentPosition.x.toFixed(2)}, Y${currentPosition.y.toFixed(2)}</span>
+                    </div>
+                    ${additionalPrefs ? `<div class="flex items-start"><i class="fas fa-comment mr-2 mt-1"></i><span>追加要望: ${additionalPrefs}</span></div>` : ''}
+                    <div class="flex items-center">
+                        <i class="fas fa-database mr-2"></i>
+                        <span>検索対象: ${whiskyData.length}本のプレミアムウィスキー</span>
+                    </div>
                 </div>
             `;
             
-            // Display recommendations
+            aiAnalysisDetails.innerHTML = analysisText;
+            aiAnalysisEnhanced.style.display = 'block';
+        }
+        
+        async function simulateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const progressPercentage = document.getElementById('progressPercentage');
+            
+            const steps = [
+                { percent: 20, text: '味覚プロファイルを分析中...' },
+                { percent: 40, text: '価格帯フィルタリング中...' },
+                { percent: 60, text: '天気情報を取得中...' },
+                { percent: 80, text: 'マッチング計算中...' },
+                { percent: 100, text: '最適な提案を準備中...' }
+            ];
+            
+            for (const step of steps) {
+                progressFill.style.width = `${step.percent}%`;
+                progressText.textContent = step.text;
+                progressPercentage.textContent = `${step.percent}%`;
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+        }
+        
+        async function generateRecommendations() {
+            const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+            const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
+            const additionalPrefs = document.getElementById('additionalPreferences').value.toLowerCase();
+            
+            // Filter by price
+            let filteredWhiskies = whiskyData.filter(whisky => {
+                const price = parseInt(whisky.price.replace(/[¥,]/g, ''));
+                return price >= minPrice && price <= maxPrice;
+            });
+            
+            // Calculate match scores
+            const scoredWhiskies = filteredWhiskies.map(whisky => {
+                let score = 0;
+                
+                // Taste profile matching
+                const profile = whisky.taste_profile;
+                const userX = currentPosition.x;
+                const userY = currentPosition.y;
+                
+                // Distance calculation
+                const distance = Math.sqrt(
+                    Math.pow((profile.body/5) - userX, 2) + 
+                    Math.pow((profile.smoky/5) - userY, 2)
+                );
+                
+                score += Math.max(0, 50 - distance * 50);
+                
+                // Additional preferences matching
+                if (additionalPrefs) {
+                    if (additionalPrefs.includes('バニラ') && whisky.tastingNote_ja.includes('バニラ')) score += 10;
+                    if (additionalPrefs.includes('甘い') && profile.sweetness > 3) score += 10;
+                    if (additionalPrefs.includes('フルーティー') && profile.fruity > 3) score += 10;
+                    if (additionalPrefs.includes('スモーキー') && profile.smoky > 3) score += 10;
+                }
+                
+                // Weather adjustment
+                if (weatherData) {
+                    const temp = weatherData.main.temp;
+                    if (temp < 10 && profile.spicy > 3) score += 5;
+                    if (temp > 25 && profile.fruity > 3) score += 5;
+                }
+                
+                // Time-based adjustment
+                const hour = new Date().getHours();
+                if (hour < 12 && profile.complexity < 4) score += 5;
+                if (hour >= 18 && profile.complexity > 3) score += 5;
+                
+                return { ...whisky, matchScore: Math.min(100, Math.max(0, score)) };
+            });
+            
+            // Sort by score and return top 5
+            return scoredWhiskies.sort((a, b) => b.matchScore - a.matchScore).slice(0, 5);
+        }
+        
+        function displayRecommendations(recommendations) {
+            const recommendationContent = document.getElementById('recommendationContent');
+            const recommendationSummary = document.getElementById('recommendationSummary');
+            
+            if (recommendations.length === 0) {
+                recommendationContent.innerHTML = '<div class="error">指定された条件に合うウィスキーが見つかりませんでした。価格帯を調整してみてください。</div>';
+                return;
+            }
+            
+            // Summary
+            const avgScore = recommendations.reduce((sum, r) => sum + r.matchScore, 0) / recommendations.length;
+            recommendationSummary.innerHTML = `
+                <div class="recommendation-summary">
+                    <h3 class="text-lg font-bold mb-2">
+                        <i class="fas fa-chart-line mr-2"></i>
+                        分析結果サマリー
+                    </h3>
+                    <p>あなたの好みに基づいて${recommendations.length}本のウィスキーを厳選しました。</p>
+                    <p>平均適合度: ${avgScore.toFixed(1)}% - ${avgScore > 80 ? '非常に高い' : avgScore > 60 ? '高い' : '適度な'}マッチング率です。</p>
+                </div>
+            `;
+            
+            // Recommendations
             let html = '';
             recommendations.forEach((whisky, index) => {
-                const isFeatured = index === 0; // First recommendation is featured
-                const cardClass = isFeatured ? 'whisky-card featured' : 'whisky-card';
-                
+                const isTop = index === 0;
                 html += `
-                    <div class="${cardClass}" data-whisky-id="${whisky.id}">
-                        ${isFeatured ? '<div class="featured-label">最もおすすめ</div>' : ''}
-                        <h4 class="font-bold text-lg mb-2">${index + 1}. ${whisky.name}</h4>
-                        <div class="grid grid-cols-2 gap-4 mb-3">
-                            <div>
-                                <span class="text-sm text-gray-400">価格:</span>
-                                <span class="text-yellow-400 font-bold">${whisky.price}</span>
-                            </div>
-                            <div>
-                                <span class="text-sm text-gray-400">地域:</span>
-                                <span class="text-blue-400">${whisky.region}</span>
-                            </div>
+                    <div class="whisky-card ${isTop ? 'featured' : ''}" onclick="selectWhisky('${whisky.id}')">
+                        ${isTop ? '<div class="featured-label">最もおすすめ</div>' : ''}
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-bold">${index + 1}. ${whisky.name}</h3>
+                            <span class="text-lg font-bold text-green-400">${whisky.price}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 mb-2 text-sm">
+                            <div><i class="fas fa-map-marker-alt mr-1"></i>産地: ${whisky.region}</div>
+                            <div><i class="fas fa-tag mr-1"></i>分類: ${whisky.subcategory}</div>
                         </div>
                         <div class="mb-3">
-                            <span class="text-sm text-gray-400">分類:</span>
-                            <span class="text-green-400">${whisky.subcategory}</span>
+                            <div class="flex items-center mb-1">
+                                <i class="fas fa-star mr-1"></i>
+                                <span class="font-bold">適合度: ${whisky.matchScore.toFixed(1)}%</span>
+                            </div>
+                            <div class="text-sm text-gray-300">
+                                <i class="fas fa-glass-whiskey mr-1"></i>
+                                ${whisky.tastingNote_ja}
+                            </div>
                         </div>
-                        <p class="text-sm text-gray-300 mb-3">${whisky.tastingNote_ja}</p>
-                        ${whisky.score ? `<div class="text-xs text-gray-500">適合度: ${Math.round(whisky.score)}%</div>` : ''}
+                        <div class="text-xs text-gray-400">
+                            <i class="fas fa-mouse-pointer mr-1"></i>
+                            クリックして味覚プロファイルを比較
+                        </div>
                     </div>
                 `;
             });
             
-            container.innerHTML = html;
-            
-            // Add click handlers for whisky cards
-            document.querySelectorAll('.whisky-card').forEach(card => {
-                card.addEventListener('click', function() {
-                    const whiskyId = this.getAttribute('data-whisky-id');
-                    const whisky = recommendations.find(w => w.id === whiskyId);
-                    if (whisky && whisky.taste_profile) {
-                        showWhiskyComparison(whisky.name, whisky.taste_profile);
-                    }
-                    
-                    // Remove previous selection
-                    document.querySelectorAll('.whisky-card').forEach(c => c.classList.remove('selected'));
-                    // Add selection to clicked card
-                    this.classList.add('selected');
-                });
-            });
+            recommendationContent.innerHTML = html;
         }
         
-        function showWhiskyComparison(whiskyName, tasteProfile) {
-            const whiskyData = [
-                tasteProfile.fruity || 3,
-                tasteProfile.spicy || 3,
-                tasteProfile.body || 3,
-                tasteProfile.smoky || 3,
-                tasteProfile.sweetness || 3,
-                tasteProfile.complexity || 3
-            ];
+        function selectWhisky(whiskyId) {
+            const whisky = whiskyData.find(w => w.id === whiskyId);
+            if (!whisky) return;
             
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-            
-            const ctx = document.getElementById('combinedProfileChart').getContext('2d');
-            chartInstance = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['フルーティー', 'スパイシー', 'ボディ', 'スモーキー', '甘さ', '複雑さ'],
-                    datasets: [
-                        {
-                            label: 'あなたの好み',
-                            data: userProfileData,
-                            fill: true,
-                            backgroundColor: 'rgba(78, 205, 196, 0.25)',
-                            borderColor: '#4ECDC4',
-                            pointBackgroundColor: '#4ECDC4',
-                            pointBorderColor: '#fff',
-                            pointHoverBackgroundColor: '#fff',
-                            pointHoverBorderColor: '#4ECDC4',
-                            borderWidth: 2,
-                            pointRadius: 5
-                        },
-                        {
-                            label: whiskyName,
-                            data: whiskyData,
-                            fill: true,
-                            backgroundColor: 'rgba(255, 107, 107, 0.25)',
-                            borderColor: '#FF6B6B',
-                            pointBackgroundColor: '#FF6B6B',
-                            pointBorderColor: '#fff',
-                            pointHoverBackgroundColor: '#fff',
-                            pointHoverBorderColor: '#FF6B6B',
-                            borderWidth: 2,
-                            pointRadius: 5
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'top',
-                            labels: {
-                                color: '#fff',
-                                font: { size: 14 }
-                            }
-                        }
-                    },
-                    scales: {
-                        r: {
-                            angleLines: { color: 'rgba(255, 255, 255, 0.2)' },
-                            grid: { color: 'rgba(255, 255, 255, 0.2)' },
-                            pointLabels: {
-                                color: '#fff',
-                                font: { size: 12 }
-                            },
-                            ticks: { display: false },
-                            beginAtZero: true,
-                            max: 5
-                        }
-                    },
-                    elements: {
-                        line: { tension: 0.1 }
-                    },
-                    animation: {
-                        duration: 800,
-                        easing: 'easeOutQuart'
-                    }
-                }
+            // Remove previous selection
+            document.querySelectorAll('.whisky-card').forEach(card => {
+                card.classList.remove('selected');
             });
             
-            document.getElementById('chartTitle').textContent = `あなたの好み vs ${whiskyName}`;
+            // Add selection to clicked card
+            event.currentTarget.classList.add('selected');
+            
+            // Update chart
+            updateChart(whisky.taste_profile, whisky.name);
         }
         
         function refreshRecommendation() {
-            // Update user profile based on current position
-            userProfileData = [
-                (1 - currentPosition.y) * 5,
-                Math.random() * 2 + 2.5,
-                currentPosition.x * 5,
-                currentPosition.y * 5,
-                Math.random() * 2 + 2.5,
-                Math.random() * 2 + 2.5
-            ];
+            // Reset position slightly
+            currentPosition.x += (Math.random() - 0.5) * 0.1;
+            currentPosition.y += (Math.random() - 0.5) * 0.1;
             
-            initializeChart();
+            // Ensure within bounds
+            currentPosition.x = Math.max(0, Math.min(1, currentPosition.x));
+            currentPosition.y = Math.max(0, Math.min(1, currentPosition.y));
+            
+            // Update dot position
+            const dot = document.getElementById('tasteDot');
+            dot.style.left = `${currentPosition.x * 100}%`;
+            dot.style.top = `${currentPosition.y * 100}%`;
+            
+            updateCoordinates();
+            
+            // Refresh weather data
+            fetchWeatherData();
+            
+            // Get new recommendation
             getRecommendation();
         }
-        
-        // Initialize everything when page loads
-        console.log('🚀 昼の月。AIソムリエ システム準備完了');
     </script>
 
 
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDjp12nkjDMvWIqBjbmJoP5hKw1vSaKb40uoKPm0kfhgRFZ0SSjcKqurrlBSTw7Xf%2FlTGztUdD5EeptbeclgTTGT1og2jYRKEfWdvs5PpkmjJLIh1Rjoz7xymQNhgA%2Bz%2FIfn2%2FGqBRJ1il%2BRWN7RAAR3ipKKb8zOsBB%2FvFcn8Tp9XQaNlvJZlmh7YdgsfZLvE4fMqW7dq%2BX29jGCSozbCLhXTbSeNdxVluo5TURzxgo7OlxfCoUsG8CtN9piTlSO2TJ7ImsaOXp9bp5T82EFa3pmM5TI7GmuI06rop51ITRcUT3H59NJh9XjFei%2BwYb8SRFWck6uCsRXmCqJBwgGrH0aUeU5pq4Dz1pqlQ33KAztYnFRQxPDuVqQPEt5I2xE73lGhs8z5tviWnOkauQBFyl2Us6s5zVz3DcWlHTzRHlhfojRYSgv3M705Txvhc%2BIroyN%2FjeevCg30bLegj4jaePGt7brjf1Hb5cAaPo3pDM4cDnmbw5SWanlynOfw1zsBP%2BQ3b2BH6b%2Fe1%2BO9GP6f0sA%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDpjlSawjo2XR8N9X6J6jB4fjK0mA7%2BWcNljhXRkryQDmDBT%2BDsKzT7sgPhSUp8EPFIndzBmb8%2FeWtpLSSwQrHRPKd3UqTh2lfWvsTy41WAnQV8v%2Fx8Cvm8ZmrRHFNFNYi3vPbHBMt0CkkuCHq4iMtQgshjNc9f1ILYtF9xuPw81SvLMZ%2F5BiSqood5HFHKtsdroukjcuAoaAo7PNQHGlO1CIvs2uS8y3mzcELVNHWqGCv9sphuBj5mpiDZPciL9%2BTCDv9YBo7jpm%2FHH6qj3IQEBHlxPvEF0DUtAYsWMlSHaOUXMgsSBXy4x%2BumTN%2FmI3UegE2MalQbEGSE2Sylt86b2jVXi%2BzurnTTxutQkiJeWX7f0lPb7QRQDzt50kJhlMeF%2BXteUDxF1gY6JHS5mDi%2FQ2czlWqVYQpIo9tjG%2BJl2kf9PVbkf69KBEMmdx8bv5rnVKXLz0deuskX2x2jo6hzsRLmpgS7gEdULA8oVf3AJQUFfktJvB6bRHiFn9Q8%2FdCQ%3D%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDjp12nkjDMvWIqBjbmJoP5hKw1vSaKb40uoKPm0kfhgRFZ0SSjcKqurrlBSTw7Xf/lTGztUdD5EeptbeclgTTGT1og2jYRKEfWdvs5PpkmjJLIh1Rjoz7xymQNhgA+z/Ifn2/GqBRJ1il+RWN7RAAR3ipKKb8zOsBB/vFcn8Tp9XQaNlvJZlmh7YdgsfZLvE4fMqW7dq+X29jGCSozbCLhXTbSeNdxVluo5TURzxgo7OlxfCoUsG8CtN9piTlSO2TJ7ImsaOXp9bp5T82EFa3pmM5TI7GmuI06rop51ITRcUT3H59NJh9XjFei+wYb8SRFWck6uCsRXmCqJBwgGrH0aUeU5pq4Dz1pqlQ33KAztYnFRQxPDuVqQPEt5I2xE73lGhs8z5tviWnOkauQBFyl2Us6s5zVz3DcWlHTzRHlhfojRYSgv3M705Txvhc+IroyN/jeevCg30bLegj4jaePGt7brjf1Hb5cAaPo3pDM4cDnmbw5SWanlynOfw1zsBP+Q3b2BH6b/e1+O9GP6f0sA=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDpjlSawjo2XR8N9X6J6jB4fjK0mA7+WcNljhXRkryQDmDBT+DsKzT7sgPhSUp8EPFIndzBmb8/eWtpLSSwQrHRPKd3UqTh2lfWvsTy41WAnQV8v/x8Cvm8ZmrRHFNFNYi3vPbHBMt0CkkuCHq4iMtQgshjNc9f1ILYtF9xuPw81SvLMZ/5BiSqood5HFHKtsdroukjcuAoaAo7PNQHGlO1CIvs2uS8y3mzcELVNHWqGCv9sphuBj5mpiDZPciL9+TCDv9YBo7jpm/HH6qj3IQEBHlxPvEF0DUtAYsWMlSHaOUXMgsSBXy4x+umTN/mI3UegE2MalQbEGSE2Sylt86b2jVXi+zurnTTxutQkiJeWX7f0lPb7QRQDzt50kJhlMeF+XteUDxF1gY6JHS5mDi/Q2czlWqVYQpIo9tjG+Jl2kf9PVbkf69KBEMmdx8bv5rnVKXLz0deuskX2x2jo6hzsRLmpgS7gEdULA8oVf3AJQUFfktJvB6bRHiFn9Q8/dCQ==";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
