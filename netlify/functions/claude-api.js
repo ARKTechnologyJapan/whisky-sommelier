@@ -1,10 +1,8 @@
 exports.handler = async (event, context) => {
   console.log('=== Claude API Function 開始 ===');
   console.log('HTTP Method:', event.httpMethod);
-  console.log('Headers:', event.headers);
   console.log('Body:', event.body);
 
-  // CORS対応ヘッダー
   const headers = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization',
@@ -12,18 +10,11 @@ exports.handler = async (event, context) => {
     'Content-Type': 'application/json'
   };
 
-  // OPTIONSリクエスト（プリフライト）の処理
   if (event.httpMethod === 'OPTIONS') {
-    console.log('OPTIONS request received');
-    return {
-      statusCode: 200,
-      headers,
-      body: ''
-    };
+    return { statusCode: 200, headers, body: '' };
   }
 
   if (event.httpMethod !== 'POST') {
-    console.log('Invalid method:', event.httpMethod);
     return {
       statusCode: 405,
       headers,
@@ -32,21 +23,9 @@ exports.handler = async (event, context) => {
   }
 
   try {
-    // リクエストデータの解析
-    let requestData;
-    try {
-      requestData = JSON.parse(event.body);
-      console.log('Parsed request data:', requestData);
-    } catch (parseError) {
-      console.error('JSON parse error:', parseError);
-      return {
-        statusCode: 400,
-        headers,
-        body: JSON.stringify({ error: 'Invalid JSON format' })
-      };
-    }
+    const requestData = JSON.parse(event.body);
+    console.log('Parsed request data:', requestData);
 
-    // 環境変数の確認
     const apiKey = process.env.CLAUDE_API_KEY;
     if (!apiKey) {
       console.error('CLAUDE_API_KEY not found');
@@ -56,7 +35,6 @@ exports.handler = async (event, context) => {
         body: JSON.stringify({ error: 'API key not configured' })
       };
     }
-    console.log('API Key available:', apiKey ? 'Yes' : 'No');
 
     // Claude APIリクエスト作成
     const claudeRequestBody = {
@@ -68,8 +46,8 @@ exports.handler = async (event, context) => {
         content: `あなたは昼の月バーの専門ウィスキーソムリエです。以下の顧客の好みに基づいて、正確に3つのウィスキーを推薦してください：
 
 【顧客の好み】
-- 価格帯: ${requestData.minPrice || 1000}円 〜 ${requestData.maxPrice || 10000}円
-- 味覚座標: X軸=${requestData.tasteX || 0.5} (0=ライト, 1=ヘビー), Y軸=${requestData.tasteY || 0.5} (0=フルーティー, 1=スモーキー)  
+- 価格帯: ${requestData.minPrice}円 〜 ${requestData.maxPrice}円
+- 味覚座標: X軸=${requestData.tasteX} (0=ライト, 1=ヘビー), Y軸=${requestData.tasteY} (0=フルーティー, 1=スモーキー)  
 - 追加要望: ${requestData.additionalPreferences || 'なし'}
 
 以下のJSONフォーマットで必ず回答してください：
@@ -101,24 +79,49 @@ exports.handler = async (event, context) => {
 
     console.log('Sending request to Claude API...');
 
-    // Claude APIへのリクエスト
-    const claudeResponse = await fetch('http://Bedroc-Proxy-wEBSZeIAE9sX-1369774611.us-east-1.elb.amazonaws.com/api/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`,
-        'anthropic-version': '2023-06-01'
-      },
-      body: JSON.stringify(claudeRequestBody)
-    });
+    // 修正されたエンドポイント（複数試行）
+    const endpoints = [
+      'http://Bedroc-Proxy-wEBSZeIAE9sX-1369774611.us-east-1.elb.amazonaws.com/api/v1/chat/completions',
+      'http://Bedroc-Proxy-wEBSZeIAE9sX-1369774611.us-east-1.elb.amazonaws.com/v1/messages',
+      'http://Bedroc-Proxy-wEBSZeIAE9sX-1369774611.us-east-1.elb.amazonaws.com/api/v1',
+      'http://Bedroc-Proxy-wEBSZeIAE9sX-1369774611.us-east-1.elb.amazonaws.com/'
+    ];
 
-    console.log('Claude API Response Status:', claudeResponse.status);
-    console.log('Claude API Response Headers:', claudeResponse.headers);
+    let claudeResponse;
+    let lastError;
 
-    if (!claudeResponse.ok) {
-      const errorText = await claudeResponse.text();
-      console.error('Claude API Error Response:', errorText);
-      throw new Error(`Claude API Error: ${claudeResponse.status} - ${errorText}`);
+    for (const endpoint of endpoints) {
+      try {
+        console.log(`Trying endpoint: ${endpoint}`);
+        
+        claudeResponse = await fetch(endpoint, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${apiKey}`,
+            'anthropic-version': '2023-06-01'
+          },
+          body: JSON.stringify(claudeRequestBody)
+        });
+
+        console.log(`Response status for ${endpoint}:`, claudeResponse.status);
+        
+        if (claudeResponse.ok) {
+          console.log('Success with endpoint:', endpoint);
+          break;
+        } else {
+          const errorText = await claudeResponse.text();
+          console.log(`Error response from ${endpoint}:`, errorText);
+          lastError = `${endpoint}: ${claudeResponse.status} - ${errorText}`;
+        }
+      } catch (error) {
+        console.log(`Network error with ${endpoint}:`, error.message);
+        lastError = `${endpoint}: ${error.message}`;
+      }
+    }
+
+    if (!claudeResponse || !claudeResponse.ok) {
+      throw new Error(`All endpoints failed. Last error: ${lastError}`);
     }
 
     const claudeData = await claudeResponse.json();
@@ -136,15 +139,13 @@ exports.handler = async (event, context) => {
   } catch (error) {
     console.error('=== Error Details ===');
     console.error('Error message:', error.message);
-    console.error('Error stack:', error.stack);
     
     return {
       statusCode: 500,
       headers,
       body: JSON.stringify({ 
         error: 'サーバーエラーが発生しました',
-        details: error.message,
-        timestamp: new Date().toISOString()
+        details: error.message
       })
     };
   }
