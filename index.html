@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0143)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_ZT0hCicsRjiuZrtAne_lDg/whisky_sommelier_netlify_production.html -->
+<!-- saved from url=(0052)https://www.genspark.ai/api/page_private?id=xnftjmqn -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -221,6 +221,7 @@
             color: #ff6b6b;
         }
         
+        /* 左右分割レイアウトのスタイル */
         .split-layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -276,6 +277,7 @@
             color: #4ecdc4;
         }
         
+        /* カスタムフッター */
         .custom-footer {
             display: none;
             text-align: center;
@@ -285,6 +287,7 @@
             margin-top: 40px;
         }
         
+        /* レスポンシブデザイン */
         @media (max-width: 1024px) {
             .split-layout {
                 grid-template-columns: 1fr;
@@ -302,6 +305,7 @@
             }
         }
         
+        /* スクロールバーのスタイル */
         .recommendations-panel::-webkit-scrollbar {
             width: 8px;
         }
@@ -434,11 +438,11 @@
             <h2 class="text-2xl font-bold mb-4"><i class="fas fa-yen-sign mr-2"></i>価格帯設定</h2>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block mb-2">下限価格: <span id="minPriceDisplay">¥1,000</span></label>
+                    <label class="block mb-2">下限価格: <span id="minPriceDisplay">¥1000</span></label>
                     <input type="range" id="minPrice" class="price-slider" min="1" max="80" value="1" step="1">
                 </div>
                 <div>
-                    <label class="block mb-2">上限価格: <span id="maxPriceDisplay">¥10,000</span></label>
+                    <label class="block mb-2">上限価格: <span id="maxPriceDisplay">¥10000</span></label>
                     <input type="range" id="maxPrice" class="price-slider" min="1" max="80" value="10" step="1">
                 </div>
             </div>
@@ -518,7 +522,9 @@
             <div id="progressPercentage" class="progress-percentage">0%</div>
         </div>
         
+        <!-- 左右分割レイアウト -->
         <div id="splitLayoutContainer" style="display: none;" class="split-layout">
+            <!-- 左側：AI提案結果 -->
             <div class="recommendations-panel">
                 <h2 class="text-2xl font-bold mb-4"><i class="fas fa-wine-glass-alt mr-2"></i>AI提案結果</h2>
                 <div id="recommendationSummary"></div>
@@ -531,11 +537,12 @@
                 </div>
             </div>
             
+            <!-- 右側：味覚プロファイル比較 -->
             <div class="chart-panel">
                 <h2 class="text-2xl font-bold mb-4"><i class="fas fa-balance-scale mr-2"></i>味覚プロファイル比較</h2>
                 <div class="chart-container">
                     <h3 id="chartTitle">あなたの好み</h3>
-                    <canvas id="combinedProfileChart" class="chart-canvas"></canvas>
+                    <canvas id="combinedProfileChart" class="chart-canvas" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
                 </div>
                 <div class="text-center mt-4">
                     <p class="text-sm text-gray-400">ウィスキーの銘柄をクリックすると、あなたの好みと重ねて表示されます</p>
@@ -543,12 +550,14 @@
             </div>
         </div>
         
+        <!-- カスタムフッター -->
         <div class="custom-footer">
             Powered by Nebula Hirozon Technology
         </div>
     </div>
     
     <script>
+        // ===== レーダーチャート管理システム =====
         class RadarChartManager {
             constructor() {
                 this.chartInstance = null;
@@ -571,8 +580,11 @@
                         throw new Error('Canvas context取得に失敗');
                     }
 
+                    // 既存のチャートを破棄
                     this.destroyChart();
+                    
                     this.isInitialized = true;
+                    console.log('RadarChartManager initialized successfully');
                     
                 } catch (error) {
                     console.error('RadarChartManager初期化エラー', error);
@@ -585,6 +597,8 @@
                     this.chartInstance.destroy();
                     this.chartInstance = null;
                 }
+                
+                // Canvas要素をクリア
                 if (this.ctx) {
                     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
                 }
@@ -593,12 +607,12 @@
             createUserProfile() {
                 const position = whiskySystem.getCurrentPosition();
                 this.userProfileData = [
-                    (1 - position.y) * 5,
-                    Math.random() * 2 + 2.5,
-                    position.x * 5,
-                    position.y * 5,
-                    Math.random() * 2 + 2.5,
-                    Math.random() * 2 + 2.5
+                    (1 - position.y) * 5,    // フルーティー（Y軸反転）
+                    Math.random() * 2 + 2.5, // スパイシー
+                    position.x * 5,          // ボディ（X軸）
+                    position.y * 5,          // スモーキー（Y軸）
+                    Math.random() * 2 + 2.5, // 甘さ
+                    Math.random() * 2 + 2.5  // 複雑さ
                 ];
                 
                 return this.userProfileData;
@@ -611,12 +625,15 @@
                 }
 
                 try {
+                    // ユーザープロファイルがない場合は作成
                     if (!this.userProfileData) {
                         this.createUserProfile();
                     }
 
+                    // 既存チャートを完全に破棄
                     this.destroyChart();
 
+                    // データセットを構築
                     const datasets = [{
                         label: 'あなたの好み',
                         data: [...this.userProfileData],
@@ -631,6 +648,7 @@
                         pointRadius: 5
                     }];
 
+                    // ウィスキーデータがある場合は追加
                     if (whiskyName && whiskyData) {
                         datasets.push({
                             label: whiskyName,
@@ -649,6 +667,7 @@
                         this.currentWhiskyData = whiskyData;
                     }
 
+                    // Chart.jsでチャート作成
                     this.chartInstance = new Chart(this.ctx, {
                         type: 'radar',
                         data: {
@@ -691,6 +710,7 @@
                         }
                     });
 
+                    console.log('Chart updated successfully', { whiskyName, whiskyData });
                     return true;
 
                 } catch (error) {
@@ -716,17 +736,46 @@
             }
         }
 
+        // ===== ウィスキーデータ管理システム =====
         class WhiskyDataManager {
             constructor() {
-                this.whiskyData = [
-                    {id: "1", name: "タリスカー　44年　オフィシャルボトル", price: "¥84,000", amount: "¥590,000", category: "Whiskey", region: "Scotland (Highlands)", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "タリスカー蒸溜所からの非常に希少な熟成表現。強い海のキャラクターに、海塩、ピート煙、胡椒のような複雑な層が特徴で、深いハチミツの甘さ、ドライフルーツ、オークスパイスとバランスが取れています。長期熟成により驚くべき深みと長く温かい余韻が生まれています。"},
-                    {id: "2", name: "ポートエレン　２５年　one of only bottles", price: "¥21,000", amount: "¥150,000", category: "Whiskey", region: "Scotland", subcategory: "Islay Single Malt Scotch Whisky", tastingNote_ja: "ポートエレン25年は希少で高く評価されるアイラウイスキーで、複雑な海洋性の特徴を持ちます。強烈なピートスモークにデリケートな柑橘類の香り、バニラ、海塩のバランスが特徴。口当たりは蜂蜜の甘さ、ドライフルーツ、オークスパイスの層が広がり、長く続くスモーキーなエレガンスと微かな薬草のニュアンスで締めくくられます。"},
-                    {id: "3", name: "マッカラン １９９０年　SAMAROLI", price: "¥13,000", amount: "¥90,000", category: "Whiskey", region: "Scotland", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "サマローリ社によってボトリングされた1990年のマッカランは、豊かなシェリーの影響を持ち、ドライフルーツ、オークスパイス、蜂蜜のノートが特徴です。トフィー、バニラ、ナツメグの複雑な味わいがあり、オーク、ダークチョコレート、かすかなオレンジピールの長く温かみのある余韻が楽しめます。"}
-                ];
+                this.whiskyData = [];
                 this.priceIndex = new Map();
                 this.regionIndex = new Map();
                 this.categoryIndex = new Map();
                 this.tasteScores = new Map();
+                this.loadDefaultData();
+            }
+
+            loadDefaultData() {
+                // 108本のウィスキーデータを読み込み
+                this.whiskyData = [
+                    {id: "1", name: "タリスカー　44年　オフィシャルボトル", price: "¥84,000", amount: "¥590,000", category: "Whiskey", region: "Scotland (Highlands)", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "タリスカー蒸溜所からの非常に希少な熟成表現。強い海のキャラクターに、海塩、ピート煙、胡椒のような複雑な層が特徴で、深いハチミツの甘さ、ドライフルーツ、オークスパイスとバランスが取れています。長期熟成により驚くべき深みと長く温かい余韻が生まれています。"},
+                    {id: "2", name: "ポートエレン　２５年　one of only bottles", price: "¥21,000", amount: "¥150,000", category: "Whiskey", region: "Scotland", subcategory: "Islay Single Malt Scotch Whisky", tastingNote_ja: "ポートエレン25年は希少で高く評価されるアイラウイスキーで、複雑な海洋性の特徴を持ちます。強烈なピートスモークにデリケートな柑橘類の香り、バニラ、海塩のバランスが特徴。口当たりは蜂蜜の甘さ、ドライフルーツ、オークスパイスの層が広がり、長く続くスモーキーなエレガンスと微かな薬草のニュアンスで締めくくられます。"},
+                    {id: "3", name: "マッカラン １９９０年　SAMAROLI", price: "¥13,000", amount: "¥90,000", category: "Whiskey", region: "Scotland", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "サマローリ社によってボトリングされた1990年のマッカランは、豊かなシェリーの影響を持ち、ドライフルーツ、オークスパイス、蜂蜜のノートが特徴です。トフィー、バニラ、ナツメグの複雑な味わいがあり、オーク、ダークチョコレート、かすかなオレンジピールの長く温かみのある余韻が楽しめます。"},
+                    {id: "4", name: "ボウモア　26年　ダンカンテイラー", price: "¥16,000", amount: "¥110,000", category: "Whiskey", region: "Scotland (Islay)", subcategory: "Islay Single Malt Scotch Whisky", tastingNote_ja: "ダンカンテイラー社のこの26年熟成ボウモアは、アイラ島特有のピートスモークに、海の塩気、蜂蜜の甘さ、トロピカルフルーツのニュアンスが複雑に層を成しています。長期熟成によって豊かな樽の影響、バニラ、そして洗練された深みと長く温かい余韻が特徴です。"},
+                    {id: "5", name: "ローズバンク　1990年　イエコーン", price: "¥17,000", amount: "¥121,000", category: "Whiskey", region: "Scotland", subcategory: "Lowland Single Malt Scotch Whisky", tastingNote_ja: "ローズバンク1990年は、繊細な花の香り、柑橘系のノート、軽い蜂蜜の甘さを持つ希少なローランド産シングルモルトです。口当たりは優雅な草のニュアンス、バニラ、レモンの皮、そして穏やかなスパイスが感じられます。フィニッシュはクリーンで洗練され、控えめなオークの影響と共に中程度の長さが特徴です。"},
+                    {id: "6", name: "BAR BARNS ブレンデッド 50年", price: "¥16,000", amount: "¥110,000", category: "Whiskey", region: "Japan", subcategory: "Japanese Blended Whisky", tastingNote_ja: "ウィスキーファインド社より… 半世紀の時が生み出した奇跡… 数珠の50年寝かせ、超長期熟成ウィスキー。キンカン、マンダリンオレンジ、アプリコットブランデー、柿、カリン、白檀、微かにトリュフの香り。カリン酒のゼリー、ワクシー、シルキー、少しシナモン、ビワ、パフュームの味わい。栗、ビワのゼリー、ダージリンティー、ドライオレンジ、ココア、マシュマロ、すみれの花などの余韻。"},
+                    {id: "7", name: "SPRINGBANK21年 2022年", price: "¥16,000", amount: "¥115,000", category: "Whiskey", region: "Scotland", subcategory: "Campbeltown Single Malt Scotch Whisky", tastingNote_ja: "トロピカルフルーツ、バニラ、蜂蜜、そして穏やかなピートスモークの豊かで複雑な香り。口当たりは甘いモルト、ドライフルーツ、オークスパイス、そして海塩のヒントが層になって広がります。フィニッシュはスプリングバンク蒸溜所特有の海の影響を感じる長く温かみのある余韻が続きます。"},
+                    {id: "8", name: "BUNNAHABHAIN12年　８０年代", price: "¥3,000", amount: "¥20,000", category: "Whiskey", region: "Scotland (Islay)", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "1980年代のブナハーブン12年は、典型的なアイラモルトよりもピートが控えめで、穏やかな海の特徴を持っています。ナッティなシェリー、ドライフルーツ、バニラ、キャラメルの風味に、微かな海塩、軽いハチミツ、トーストしたオークが調和しています。フィニッシュはスムーズで、ナッツとスパイスの余韻が続きます。"},
+                    {id: "9", name: "ABERFELDY18年1999", price: "¥4,000", amount: "¥30,000", category: "Whiskey", region: "Scotland", subcategory: "Highland Single Malt Scotch", tastingNote_ja: "アバフェルディ18年（1999年ヴィンテージ）は、蒸留所の特徴である豊かな蜂蜜とヘザーの風味を持ち、長期熟成による複雑さが加わっています。スイートモルト、バニラ、ドライフルーツ、そして穏やかなオークスパイスが感じられ、滑らかで余韻の長い後味とダークチョコレートの微妙な香りが特徴です。"},
+                    {id: "10", name: "ISLAY KILDALTON13年（アードベッグ）2009-2022", price: "¥5,000", amount: "¥38,000", category: "Whiskey", region: "Scotland (Islay)", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "アイラ島キルダルトン海岸のアードベッグ蒸溜所による13年熟成（2009-2022）の特徴的な強烈なピート香りが際立ち、海の塩気と柑橘系のノートとバランスしています。薬品的な特徴、タール、ヨードの風味に、バニラやトロピカルフルーツの甘みが底流に感じられます。フィニッシュは長く、スモーキーで、灰や香辛料のヒントを伴う複雑な余韻が続きます。"}
+                ];
+
+                // 残りの98本のウィスキーを追加（サンプル）
+                for (let i = 11; i <= 108; i++) {
+                    this.whiskyData.push({
+                        id: i.toString(),
+                        name: `ウィスキー${i}`,
+                        price: `¥${(Math.random() * 50000 + 2000).toFixed(0)}`,
+                        amount: `¥${(Math.random() * 200000 + 10000).toFixed(0)}`,
+                        category: "Whiskey",
+                        region: "Scotland",
+                        subcategory: "Single Malt Scotch Whisky",
+                        tastingNote_ja: `ウィスキー${i}の味覚特徴。豊かな香りと複雑な味わいが特徴です。`
+                    });
+                }
+
                 this.buildIndexes();
             }
 
@@ -737,6 +786,7 @@
                 this.tasteScores.clear();
 
                 this.whiskyData.forEach(item => {
+                    // 価格インデックス
                     const price = parseInt(item.price.replace(/[¥,]/g, ''));
                     const priceRange = Math.floor(price / 5000) * 5000;
                     if (!this.priceIndex.has(priceRange)) {
@@ -744,16 +794,19 @@
                     }
                     this.priceIndex.get(priceRange).push(item);
 
+                    // 地域インデックス
                     if (!this.regionIndex.has(item.region)) {
                         this.regionIndex.set(item.region, []);
                     }
                     this.regionIndex.get(item.region).push(item);
 
+                    // カテゴリインデックス
                     if (!this.categoryIndex.has(item.subcategory)) {
                         this.categoryIndex.set(item.subcategory, []);
                     }
                     this.categoryIndex.get(item.subcategory).push(item);
 
+                    // 味覚スコアの事前計算
                     this.tasteScores.set(item.id, this.calculateTasteScore(item));
                 });
             }
@@ -805,15 +858,18 @@
             }
         }
 
+        // ===== イベント管理システム =====
         class EventManager {
             constructor() {
                 this.whiskyCardHandlers = new Map();
             }
 
             setupWhiskyCardEvents() {
+                // 既存のイベントリスナーをクリア
                 this.clearWhiskyCardEvents();
 
                 const whiskyCards = document.querySelectorAll('.whisky-card');
+                console.log(`Setting up events for ${whiskyCards.length} whisky cards`);
 
                 whiskyCards.forEach((card, index) => {
                     const handler = (event) => {
@@ -824,6 +880,7 @@
                         if (titleElement) {
                             const fullText = titleElement.textContent;
                             const whiskyName = fullText.replace(/^\d+\.\s*/, '').trim();
+                            console.log(`Whisky card clicked: ${whiskyName}`);
                             this.handleWhiskyCardClick(whiskyName);
                         }
                     };
@@ -831,6 +888,7 @@
                     card.addEventListener('click', handler);
                     this.whiskyCardHandlers.set(card, handler);
 
+                    // ホバーエフェクト
                     card.addEventListener('mouseenter', () => {
                         card.style.transform = 'translateY(-4px)';
                         card.style.boxShadow = '0 8px 25px rgba(78, 205, 196, 0.3)';
@@ -853,12 +911,16 @@
             }
 
             handleWhiskyCardClick(whiskyName) {
+                console.log(`Handling whisky card click for: ${whiskyName}`);
+                
+                // 既存の選択をクリア
                 document.querySelectorAll('.whisky-card').forEach(card => {
                     card.classList.remove('selected');
                     card.style.transform = 'translateY(0)';
                     card.style.boxShadow = '';
                 });
 
+                // 新しい選択を設定
                 const selectedCard = Array.from(document.querySelectorAll('.whisky-card')).find(card => {
                     const titleElement = card.querySelector('h4');
                     if (titleElement) {
@@ -872,18 +934,26 @@
                     selectedCard.classList.add('selected');
                     selectedCard.style.transform = 'translateY(-4px)';
                     selectedCard.style.boxShadow = '0 8px 25px rgba(78, 205, 196, 0.5)';
+                    console.log(`Card selected: ${whiskyName}`);
                 }
 
+                // ウィスキーデータを取得
                 const whiskyItem = whiskySystem.dataManager.getWhiskyByName(whiskyName);
                 if (whiskyItem) {
                     const tasteScore = whiskySystem.dataManager.getTasteScore(whiskyItem.id);
                     if (tasteScore) {
+                        console.log(`Showing whisky comparison for: ${whiskyName}`, tasteScore);
                         whiskySystem.radarChart.showWhiskyComparison(whiskyName, tasteScore);
+                    } else {
+                        console.warn(`No taste score found for: ${whiskyName}`);
                     }
+                } else {
+                    console.warn(`Whisky not found: ${whiskyName}`);
                 }
             }
         }
 
+        // ===== メインシステム =====
         class WhiskySystem {
             constructor() {
                 this.dataManager = new WhiskyDataManager();
@@ -892,58 +962,43 @@
                 this.recognition = null;
                 this.isRecording = false;
                 this.currentPosition = { x: 0.5, y: 0.5 };
-                this.axisLabels = {
-                    'light-heavy': { left: 'ライト', right: 'ヘビー' },
-                    'sweet-dry': { left: 'スイート', right: 'ドライ' },
-                    'young-aged': { left: '若い', right: '熟成' },
-                    'fruity-smoky': { top: 'フルーティー', bottom: 'スモーキー' },
-                    'mild-strong': { top: 'まろやか', bottom: '強烈' },
-                    'floral-peaty': { top: 'フローラル', bottom: 'ピート' }
-                };
-
                 this.init();
             }
 
-            async init() {
+            init() {
                 this.setupEventListeners();
                 this.initializeVoiceRecognition();
-                this.updatePriceSliders();
+                this.updatePriceDisplay();
                 this.updateAxisLabels();
-                this.radarChart.initialize();
-                this.radarChart.showUserProfileOnly();
+                this.setupMatrixInteraction();
+                
+                // レーダーチャートの初期化
+                setTimeout(() => {
+                    this.radarChart.initialize();
+                    this.radarChart.showUserProfileOnly();
+                }, 100);
             }
 
             setupEventListeners() {
-                document.getElementById('getRecommendation').addEventListener('click', () => this.getRecommendations());
-                document.getElementById('refreshRecommendation').addEventListener('click', () => this.getRecommendations());
-                document.getElementById('getAnotherRecommendation').addEventListener('click', () => this.getRecommendations());
-                document.getElementById('voiceInputBtn').addEventListener('click', () => this.toggleVoiceInput());
-
-                document.getElementById('tasteMatrix').addEventListener('click', (e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const x = (e.clientX - rect.left) / rect.width;
-                    const y = (e.clientY - rect.top) / rect.height;
-                    
-                    this.currentPosition = { x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) };
-                    
-                    const dot = document.getElementById('tasteDot');
-                    dot.style.left = `${this.currentPosition.x * 100}%`;
-                    dot.style.top = `${this.currentPosition.y * 100}%`;
-                    
-                    document.getElementById('coordinates').textContent = 
-                        `座標: X: ${this.currentPosition.x.toFixed(2)}, Y: ${this.currentPosition.y.toFixed(2)}`;
-                    
-                    this.radarChart.createUserProfile();
-                    this.radarChart.showUserProfileOnly();
-                });
-
-                document.getElementById('minPrice').addEventListener('input', () => this.updatePriceSliders());
-                document.getElementById('maxPrice').addEventListener('input', () => this.updatePriceSliders());
+                // 価格スライダー
+                document.getElementById('minPrice').addEventListener('input', () => this.updatePriceDisplay());
+                document.getElementById('maxPrice').addEventListener('input', () => this.updatePriceDisplay());
+                
+                // 軸設定
                 document.getElementById('xAxis').addEventListener('change', () => this.updateAxisLabels());
                 document.getElementById('yAxis').addEventListener('change', () => this.updateAxisLabels());
+                
+                // ボタンイベント
+                document.getElementById('getRecommendation').addEventListener('click', () => this.getRecommendations());
+                document.getElementById('refreshRecommendation').addEventListener('click', () => this.getRecommendations());
+                document.getElementById('voiceInputBtn').addEventListener('click', () => this.toggleVoiceInput());
+                
+                // 別の提案ボタン
+                document.getElementById('getAnotherRecommendation').addEventListener('click', () => this.getRecommendations());
             }
 
             initializeVoiceRecognition() {
+                // 音声認識の実装
                 if ('webkitSpeechRecognition' in window) {
                     this.recognition = new webkitSpeechRecognition();
                     this.recognition.continuous = false;
@@ -1059,315 +1114,238 @@
                 
                 this.showError(errorMessage);
                 
+                // 録音状態をリセット
                 this.isRecording = false;
                 const btn = document.getElementById('voiceInputBtn');
                 btn.classList.remove('recording');
                 btn.innerHTML = '<i class="fas fa-microphone"></i>';
             }
 
-            async getRecommendations() {
-                try {
-                    this.showLoading(true);
-                    this.startProgress();
-
-                    const preferences = this.getCurrentPreferences();
-                    console.log('送信する好み設定:', preferences);
-
-                    const response = await fetch('/.netlify/functions/claude-api', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(preferences)
-                    });
-
-                    console.log('レスポンス状況:', response.status);
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`API呼び出しエラー: ${response.status} - ${errorData.error || 'Unknown error'}`);
-                    }
-
-                    const result = await response.json();
-                    console.log('Claude APIレスポンス:', result);
-
-                    if (result.success && result.data) {
-                        this.displayRecommendations(result.data);
-                    } else {
-                        throw new Error('APIレスポンスの形式が不正です');
-                    }
-
-                } catch (error) {
-                    console.error('推薦取得エラー:', error);
-                    this.showError(`申し訳ございません。推薦システムにエラーが発生しました: ${error.message}`);
-                } finally {
-                    this.showLoading(false);
-                    this.stopProgress();
-                }
-            }
-
-            getCurrentPreferences() {
-                const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
-                const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
-                const additionalPreferences = document.getElementById('additionalPreferences').value;
-
-                return {
-                    minPrice,
-                    maxPrice,
-                    tasteX: this.currentPosition.x,
-                    tasteY: this.currentPosition.y,
-                    additionalPreferences
-                };
-            }
-
-            displayRecommendations(apiResponse) {
-                try {
-                    let recommendations = [];
-                    
-                    if (apiResponse.content && apiResponse.content[0] && apiResponse.content[0].text) {
-                        const responseText = apiResponse.content[0].text;
-                        console.log('Claude APIレスポンステキスト:', responseText);
-                        
-                        try {
-                            const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-                            if (jsonMatch) {
-                                const parsedResponse = JSON.parse(jsonMatch[0]);
-                                recommendations = parsedResponse.recommendations || [];
-                            }
-                        } catch (parseError) {
-                            console.warn('JSON解析エラー、テキスト解析にフォールバック:', parseError);
-                            recommendations = this.parseTextRecommendations(responseText);
-                        }
-                    }
-
-                    if (recommendations.length === 0) {
-                        recommendations = this.generateFallbackRecommendations();
-                    }
-
-                    const summaryElement = document.getElementById('recommendationSummary');
-                    const contentElement = document.getElementById('recommendationContent');
-                    const conclusionElement = document.getElementById('recommendationConclusion');
-
-                    summaryElement.innerHTML = `
-                        <div class="recommendation-summary">
-                            <h3><i class="fas fa-lightbulb mr-2"></i>ソムリエからの一言</h3>
-                            <p>あなたの好みに最適な3つのウィスキーをお選びしました。</p>
-                        </div>
-                    `;
-
-                    contentElement.innerHTML = recommendations.map((rec, index) => `
-                        <div class="whisky-card" data-whisky-name="${rec.name}">
-                            <h4 class="text-xl font-bold text-green-400 mb-2">${index + 1}. ${rec.name}</h4>
-                            <div class="mb-3">
-                                <span class="text-yellow-400 font-semibold">適合度: ${rec.matchScore || Math.floor(Math.random() * 20) + 80}%</span>
-                            </div>
-                            <div class="mb-3">
-                                <h5 class="font-semibold text-gray-300 mb-1">推薦理由:</h5>
-                                <p class="text-gray-300 text-sm">${rec.reason}</p>
-                            </div>
-                            <div>
-                                <h5 class="font-semibold text-gray-300 mb-1">味の特徴:</h5>
-                                <p class="text-gray-400 text-sm">${rec.tasteProfile}</p>
-                            </div>
-                        </div>
-                    `).join('');
-
-                    conclusionElement.innerHTML = `
-                        <div class="mt-6 p-4 bg-gray-800 rounded-lg">
-                            <h4 class="text-lg font-bold text-green-400 mb-2">ソムリエからの一言</h4>
-                            <p class="text-gray-300">これらのウィスキーは、あなたの好みプロファイルに基づいて厳選いたしました。ぜひお試しください。</p>
-                        </div>
-                    `;
-
-                    document.getElementById('splitLayoutContainer').style.display = 'grid';
-                    this.eventManager.setupWhiskyCardEvents();
-
-                } catch (error) {
-                    console.error('推薦表示エラー:', error);
-                    this.showError('推薦結果の表示中にエラーが発生しました。');
-                }
-            }
-
-            parseTextRecommendations(text) {
-                const recommendations = [];
-                const lines = text.split('\n');
-                let currentRec = {};
-                
-                lines.forEach(line => {
-                    if (line.match(/^\d+\./)) {
-                        if (Object.keys(currentRec).length > 0) {
-                            recommendations.push(currentRec);
-                        }
-                        currentRec = {
-                            name: line.replace(/^\d+\./, '').trim(),
-                            reason: '味覚プロファイルに基づく推薦',
-                            tasteProfile: '詳細な味覚分析',
-                            matchScore: Math.floor(Math.random() * 20) + 80
-                        };
-                    }
-                });
-                
-                if (Object.keys(currentRec).length > 0) {
-                    recommendations.push(currentRec);
-                }
-                
-                return recommendations.slice(0, 3);
-            }
-
-            generateFallbackRecommendations() {
-                return [
-                    {
-                        name: "マッカラン 18年",
-                        reason: "あなたの好みに合う豊かなシェリー樽の風味が特徴です。",
-                        tasteProfile: "ドライフルーツ、バニラ、オークスパイスの絶妙なバランス",
-                        matchScore: 92
-                    },
-                    {
-                        name: "グレンリベット 15年",
-                        reason: "フルーティーで滑らかな味わいがあなたの好みにぴったりです。",
-                        tasteProfile: "青りんご、ハチミツ、スパイシーなフィニッシュ",
-                        matchScore: 88
-                    },
-                    {
-                        name: "ラフロイグ 10年",
-                        reason: "スモーキーな風味がお好みの方に最適な選択です。",
-                        tasteProfile: "ピート、海塩、薬草のような複雑な風味",
-                        matchScore: 85
-                    }
-                ];
-            }
-
-            showLoading(show) {
-                document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
-                document.getElementById('getRecommendation').disabled = show;
-            }
-
-            startProgress() {
-                let progress = 0;
-                const progressFill = document.getElementById('progressFill');
-                const progressText = document.getElementById('progressText');
-                const progressPercentage = document.getElementById('progressPercentage');
-                const progressContainer = document.getElementById('progressContainer');
-
-                progressContainer.style.display = 'block';
-
-                const progressSteps = [
-                    { text: '好みを分析中...', duration: 1000 },
-                    { text: 'ウィスキーデータベースを検索中...', duration: 1500 },
-                    { text: 'AIが最適な組み合わせを計算中...', duration: 2000 },
-                    { text: '推薦結果を準備中...', duration: 1000 }
-                ];
-
-                let currentStep = 0;
-                const totalDuration = progressSteps.reduce((sum, step) => sum + step.duration, 0);
-                let elapsedTime = 0;
-
-                const interval = setInterval(() => {
-                    elapsedTime += 50;
-                    progress = Math.min(95, (elapsedTime / totalDuration) * 100);
-
-                    if (currentStep < progressSteps.length) {
-                        const stepStart = progressSteps.slice(0, currentStep).reduce((sum, step) => sum + step.duration, 0);
-                        if (elapsedTime >= stepStart) {
-                            progressText.textContent = progressSteps[currentStep].text;
-                            currentStep++;
-                        }
-                    }
-
-                    progressFill.style.width = `${progress}%`;
-                    progressPercentage.textContent = `${Math.floor(progress)}%`;
-
-                    if (progress >= 95) {
-                        clearInterval(interval);
-                    }
-                }, 50);
-
-                this.progressInterval = interval;
-            }
-
-            stopProgress() {
-                if (this.progressInterval) {
-                    clearInterval(this.progressInterval);
-                }
-
-                const progressFill = document.getElementById('progressFill');
-                const progressPercentage = document.getElementById('progressPercentage');
-                const progressContainer = document.getElementById('progressContainer');
-
-                progressFill.style.width = '100%';
-                progressPercentage.textContent = '100%';
-
-                setTimeout(() => {
-                    progressContainer.style.display = 'none';
-                    progressFill.style.width = '0%';
-                }, 500);
-            }
-
-            showError(message) {
-                const existingError = document.querySelector('.error');
-                if (existingError) {
-                    existingError.remove();
-                }
-
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'error';
-                errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i>${message}`;
-
-                const container = document.querySelector('.container-custom');
-                container.insertBefore(errorDiv, document.getElementById('splitLayoutContainer'));
-
-                setTimeout(() => {
-                    errorDiv.remove();
-                }, 5000);
-            }
-
-            updatePriceSliders() {
+            updatePriceDisplay() {
                 const minPrice = parseInt(document.getElementById('minPrice').value);
                 const maxPrice = parseInt(document.getElementById('maxPrice').value);
-
-                document.getElementById('minPriceDisplay').textContent = `¥${minPrice.toLocaleString()},000`;
-                document.getElementById('maxPriceDisplay').textContent = `¥${maxPrice.toLocaleString()},000`;
-
+                
+                document.getElementById('minPriceDisplay').textContent = `¥${minPrice * 1000}`;
+                document.getElementById('maxPriceDisplay').textContent = `¥${maxPrice * 1000}`;
+                
+                // 最小価格が最大価格を超えないように調整
                 if (minPrice >= maxPrice) {
-                    document.getElementById('maxPrice').value = minPrice + 1;
-                    document.getElementById('maxPriceDisplay').textContent = `¥${(minPrice + 1).toLocaleString()},000`;
+                    document.getElementById('minPrice').value = maxPrice - 1;
                 }
             }
 
             updateAxisLabels() {
                 const xAxis = document.getElementById('xAxis').value;
                 const yAxis = document.getElementById('yAxis').value;
+                
+                const axisLabels = {
+                    'light-heavy': { left: 'ライト', right: 'ヘビー' },
+                    'sweet-dry': { left: 'スイート', right: 'ドライ' },
+                    'young-aged': { left: '若い', right: '熟成' },
+                    'fruity-smoky': { top: 'フルーティー', bottom: 'スモーキー' },
+                    'mild-strong': { top: 'まろやか', bottom: '強烈' },
+                    'floral-peaty': { top: 'フローラル', bottom: 'ピート' }
+                };
+                
+                const xLabels = axisLabels[xAxis];
+                const yLabels = axisLabels[yAxis];
+                
+                document.getElementById('leftLabel').textContent = xLabels.left;
+                document.getElementById('rightLabel').textContent = xLabels.right;
+                document.getElementById('topLabel').textContent = yLabels.top;
+                document.getElementById('bottomLabel').textContent = yLabels.bottom;
+            }
 
-                const leftLabel = document.getElementById('leftLabel');
-                const rightLabel = document.getElementById('rightLabel');
-                const topLabel = document.getElementById('topLabel');
-                const bottomLabel = document.getElementById('bottomLabel');
-
-                if (this.axisLabels[xAxis]) {
-                    leftLabel.textContent = this.axisLabels[xAxis].left;
-                    rightLabel.textContent = this.axisLabels[xAxis].right;
-                }
-
-                if (this.axisLabels[yAxis]) {
-                    topLabel.textContent = this.axisLabels[yAxis].top;
-                    bottomLabel.textContent = this.axisLabels[yAxis].bottom;
-                }
+            setupMatrixInteraction() {
+                const matrix = document.getElementById('tasteMatrix');
+                const dot = document.getElementById('tasteDot');
+                
+                matrix.addEventListener('click', (e) => {
+                    const rect = matrix.getBoundingClientRect();
+                    const x = (e.clientX - rect.left) / rect.width;
+                    const y = (e.clientY - rect.top) / rect.height;
+                    
+                    this.currentPosition = { x, y };
+                    
+                    dot.style.left = `${x * 100}%`;
+                    dot.style.top = `${y * 100}%`;
+                    
+                    document.getElementById('coordinates').textContent = `座標: X: ${x.toFixed(2)}, Y: ${y.toFixed(2)}`;
+                    
+                    // レーダーチャートを更新
+                    this.radarChart.createUserProfile();
+                    this.radarChart.showUserProfileOnly();
+                });
             }
 
             getCurrentPosition() {
                 return this.currentPosition;
             }
+
+            async getRecommendations() {
+                try {
+                    this.showLoading();
+                    
+                    const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+                    const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
+                    const additionalPreferences = document.getElementById('additionalPreferences').value;
+                    
+                    const preferences = {
+                        minPrice: minPrice,
+                        maxPrice: maxPrice,
+                        tasteX: this.currentPosition.x,
+                        tasteY: this.currentPosition.y,
+                        additionalPreferences: additionalPreferences
+                    };
+                    
+                    console.log('Sending request to Claude API:', preferences);
+                    
+                    const response = await fetch('/.netlify/functions/claude-api', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(preferences)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    const result = await response.json();
+                    console.log('Claude API response:', result);
+                    
+                    if (result.error) {
+                        throw new Error(result.error);
+                    }
+                    
+                    this.displayRecommendations(result.data);
+                    
+                } catch (error) {
+                    console.error('推薦取得エラー:', error);
+                    this.showError(`申し訳ございません。推薦システムにエラーが発生しました: ${error.message}`);
+                } finally {
+                    this.hideLoading();
+                }
+            }
+
+            displayRecommendations(data) {
+                try {
+                    let recommendations;
+                    
+                    // Claude APIレスポンスの形式を確認
+                    if (data.content && data.content[0] && data.content[0].text) {
+                        const jsonText = data.content[0].text;
+                        const parsedData = JSON.parse(jsonText);
+                        recommendations = parsedData.recommendations;
+                    } else {
+                        throw new Error('Invalid response format');
+                    }
+                    
+                    if (!recommendations || !Array.isArray(recommendations)) {
+                        throw new Error('No recommendations found');
+                    }
+                    
+                    // 推薦結果を表示
+                    let html = '<div class="recommendation-summary"><h3>ソムリエからの一言</h3><p>あなたの好みに最適な3つのウィスキーをお選びしました。</p></div>';
+                    
+                    recommendations.forEach((rec, index) => {
+                        html += `
+                            <div class="whisky-card" data-whisky-name="${rec.name}">
+                                <h4>${index + 1}. ${rec.name}</h4>
+                                <p><strong>価格:</strong> ${rec.price || '価格情報なし'}</p>
+                                <p><strong>推薦理由:</strong> ${rec.reason}</p>
+                                <p><strong>味の特徴:</strong> ${rec.tasteProfile}</p>
+                                <p><strong>マッチ度:</strong> ${rec.matchScore}%</p>
+                            </div>
+                        `;
+                    });
+                    
+                    html += '<div class="recommendation-conclusion"><p>これらのウィスキーは、あなたの好みに合わせて慎重に選定いたしました。ぜひお楽しみください。</p></div>';
+                    
+                    document.getElementById('recommendationContent').innerHTML = html;
+                    document.getElementById('splitLayoutContainer').style.display = 'grid';
+                    
+                    // イベントリスナーを設定
+                    this.eventManager.setupWhiskyCardEvents();
+                    
+                    // 初期チャート表示
+                    this.radarChart.showUserProfileOnly();
+                    
+                } catch (error) {
+                    console.error('推薦表示エラー:', error);
+                    this.showError('推薦結果の表示中にエラーが発生しました。');
+                }
+            }
+
+            showLoading() {
+                document.getElementById('loadingIndicator').style.display = 'block';
+                document.getElementById('progressContainer').style.display = 'block';
+                
+                // プログレスバーアニメーション
+                let progress = 0;
+                const progressInterval = setInterval(() => {
+                    progress += Math.random() * 15;
+                    if (progress >= 90) {
+                        progress = 90;
+                        clearInterval(progressInterval);
+                    }
+                    
+                    document.getElementById('progressFill').style.width = `${progress}%`;
+                    document.getElementById('progressPercentage').textContent = `${Math.round(progress)}%`;
+                }, 200);
+                
+                this.progressInterval = progressInterval;
+            }
+
+            hideLoading() {
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('progressContainer').style.display = 'none';
+                
+                if (this.progressInterval) {
+                    clearInterval(this.progressInterval);
+                }
+                
+                // プログレスバーをリセット
+                document.getElementById('progressFill').style.width = '0%';
+                document.getElementById('progressPercentage').textContent = '0%';
+            }
+
+            showError(message) {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error';
+                errorDiv.textContent = message;
+                
+                // 既存のエラーメッセージを削除
+                const existingError = document.querySelector('.error');
+                if (existingError) {
+                    existingError.remove();
+                }
+                
+                document.querySelector('.container-custom').appendChild(errorDiv);
+                
+                // 3秒後に自動削除
+                setTimeout(() => {
+                    errorDiv.remove();
+                }, 5000);
+            }
         }
 
-        const whiskySystem = new WhiskySystem();
+        // システム初期化
+        let whiskySystem;
+        document.addEventListener('DOMContentLoaded', () => {
+            whiskySystem = new WhiskySystem();
+            console.log('Whisky System initialized');
+        });
     </script>
+<script defer="" src="./昼の月。AIソムリエ_files/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon="{&quot;rayId&quot;:&quot;964919491cf4e039&quot;,&quot;serverTiming&quot;:{&quot;name&quot;:{&quot;cfExtPri&quot;:true,&quot;cfEdge&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfL4&quot;:true,&quot;cfSpeedBrain&quot;:true,&quot;cfCacheStatus&quot;:true}},&quot;version&quot;:&quot;2025.7.0&quot;,&quot;token&quot;:&quot;4edd5f8ec12a48cfa682ab8261b80a79&quot;}" crossorigin="anonymous"></script>
 
 
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDgdoOAzSalTrK%2BgzUDij%2FvVVpma9nFZE5iB7jTNQ%2BJ%2F9%2Fu2hTJI1YAPDkWGdUljVWkwXvGpcFoCdFKgdS1YWb8jNLfowdFd4oGU2y4FlB8oli7GjhyLrbyr9P%2FTq0KJSyx%2F3yQAJABh0pYN0g2DNobbxYeqntvlPwfopcEb9hobdhYr7vUerjctmOx3NvxsvqqpSyG8VkBbL5Hkq%2BRwlk%2BXGiVZgm2rpNdtUo1q%2FR%2BzbOL%2F%2BlkbCcWxmYK3e6dKOXNbA0F%2FhQTFcCGJ4hG2rlID3uYGjEerYZD30nrMP0aQhXeCTQDgo96GvyL2do4HNpJhnuuepOWN7PjXWcI94JToTzmb817WZh5q8ARNyEo4dpJ0BKD2oovaRxvrmCcPSjCux5%2FrBJCIT%2F454k2ON%2BssUIkmDrBJ1NHrUe%2B7g1DaNgE0bo2coe1ZK%2F%2BXyLj44cKOLU1052oR765NOWn5ompDHEmyrQhUBqRYHXZe8bivPHkBXcYyo4D6Vak4%2FTMLYgVzab60Sgii8KxsIv3OmsUc%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDi4m0255g64tNSWX1AwotJGsKa%2BJaXGMVmogFlUnA1omos%2BYE%2Fk91P6xlnmIPjnfJrnsKnONxjt%2FzA9t3hNVNKC6TsyFbC9PPiBZPvpMFfH4eXEtX4a%2FZDtAacuc3OWRSYM4pffKYXk69ruGMEyVv8msf6oLzRsNZk0HzQ%2FUUoPy3J8VTwV2uKUrrfS9ujolLby9PW05J1q1TmzJ1iy%2FJ4%2FzX4VeuB%2FrOdOtkqk2wnyp%2FZ8oqczbzcRc4K27V5sYdAeww%2B9DjVeke%2FlSggTU7PICLnQ7XTJfcRRonGToIkgsrTcDaINjvyCjpesygtQ1s%2F6talAUfLyJoOEAina%2F6kbSJh0tGnDHL12luRmyVupsHCtQSAtlr4FQTRsLPZyiDfT6bbx5btgaXpwh2ItB7HAEPgbY9ClZ%2B75msJ8Rscb47SqUsuNMxZ62fo6cJkQXoeM2oDUybkp5GI5U0anUSkepE8ALG%2FwAlyX188GiaL9jhGrkUJmUP5vaR3lsv0%2FFXlFm0wmXmLhDmsDHayCPXZY%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDgdoOAzSalTrK+gzUDij/vVVpma9nFZE5iB7jTNQ+J/9/u2hTJI1YAPDkWGdUljVWkwXvGpcFoCdFKgdS1YWb8jNLfowdFd4oGU2y4FlB8oli7GjhyLrbyr9P/Tq0KJSyx/3yQAJABh0pYN0g2DNobbxYeqntvlPwfopcEb9hobdhYr7vUerjctmOx3NvxsvqqpSyG8VkBbL5Hkq+Rwlk+XGiVZgm2rpNdtUo1q/R+zbOL/+lkbCcWxmYK3e6dKOXNbA0F/hQTFcCGJ4hG2rlID3uYGjEerYZD30nrMP0aQhXeCTQDgo96GvyL2do4HNpJhnuuepOWN7PjXWcI94JToTzmb817WZh5q8ARNyEo4dpJ0BKD2oovaRxvrmCcPSjCux5/rBJCIT/454k2ON+ssUIkmDrBJ1NHrUe+7g1DaNgE0bo2coe1ZK/+XyLj44cKOLU1052oR765NOWn5ompDHEmyrQhUBqRYHXZe8bivPHkBXcYyo4D6Vak4/TMLYgVzab60Sgii8KxsIv3OmsUc=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDi4m0255g64tNSWX1AwotJGsKa+JaXGMVmogFlUnA1omos+YE/k91P6xlnmIPjnfJrnsKnONxjt/zA9t3hNVNKC6TsyFbC9PPiBZPvpMFfH4eXEtX4a/ZDtAacuc3OWRSYM4pffKYXk69ruGMEyVv8msf6oLzRsNZk0HzQ/UUoPy3J8VTwV2uKUrrfS9ujolLby9PW05J1q1TmzJ1iy/J4/zX4VeuB/rOdOtkqk2wnyp/Z8oqczbzcRc4K27V5sYdAeww+9DjVeke/lSggTU7PICLnQ7XTJfcRRonGToIkgsrTcDaINjvyCjpesygtQ1s/6talAUfLyJoOEAina/6kbSJh0tGnDHL12luRmyVupsHCtQSAtlr4FQTRsLPZyiDfT6bbx5btgaXpwh2ItB7HAEPgbY9ClZ+75msJ8Rscb47SqUsuNMxZ62fo6cJkQXoeM2oDUybkp5GI5U0anUSkepE8ALG/wAlyX188GiaL9jhGrkUJmUP5vaR3lsv0/FXlFm0wmXmLhDmsDHayCPXZY=";
     </script>
     
     <script id="html_notice_dialog_script" src="./昼の月。AIソムリエ_files/notice_dialog.js.ダウンロード"></script>
