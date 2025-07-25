@@ -1,11 +1,10 @@
 <!DOCTYPE html>
-<!-- saved from url=(0137)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_vD1DnV9DSgiw_YMxnL1LjQ/whisky_sommelier_concise_chat.html -->
+<!-- saved from url=(0140)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_TKZW3vBHQ6WTNBZpttXm5w/whisky_sommelier_stable_complete.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>昼の月。AIソムリエ</title>
     <link href="./index_files/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="./index_files/all.min.css">
     <script src="./index_files/chart.js.ダウンロード"></script>
     <style>
         body {
@@ -219,12 +218,20 @@
             cursor: pointer;
             border: none;
         }
+        .axis-controls {
+            margin-bottom: 30px;
+        }
+        .taste-matrix-container {
+            margin-top: 20px;
+        }
+        
         .split-layout {
             display: grid;
             grid-template-columns: 1fr 400px;
             gap: 20px;
             align-items: start;
         }
+        
         .recommendations-panel {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -234,6 +241,7 @@
             max-height: 80vh;
             overflow-y: auto;
         }
+        
         .chart-panel {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -243,6 +251,7 @@
             position: sticky;
             top: 120px;
         }
+        
         .chart-container {
             height: 500px;
             width: 100%;
@@ -262,6 +271,24 @@
             height: 400px !important;
             width: 100% !important;
         }
+        .recommendation-summary {
+            background: rgba(78, 205, 196, 0.1);
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+            color: #4ecdc4;
+        }
+        
+        .custom-footer {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            margin-top: 40px;
+        }
+        
         .whisky-overview {
             background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(255, 107, 107, 0.1));
             border: 2px solid rgba(78, 205, 196, 0.3);
@@ -272,6 +299,7 @@
             position: relative;
             overflow: hidden;
         }
+        
         .whisky-overview::before {
             content: '';
             position: absolute;
@@ -282,10 +310,12 @@
             background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
             animation: shimmer 3s infinite;
         }
+        
         @keyframes shimmer {
             0% { transform: translateX(-100%); }
             100% { transform: translateX(100%); }
         }
+        
         .whisky-overview h2 {
             font-size: 2.5rem;
             font-weight: bold;
@@ -296,6 +326,7 @@
             position: relative;
             z-index: 1;
         }
+        
         .whisky-overview .subtitle {
             font-size: 1.2rem;
             color: #4ecdc4;
@@ -304,6 +335,7 @@
             position: relative;
             z-index: 1;
         }
+        
         .whisky-overview .description {
             font-size: 1.1rem;
             line-height: 1.6;
@@ -311,6 +343,7 @@
             position: relative;
             z-index: 1;
         }
+        
         .whisky-stats {
             display: flex;
             justify-content: space-around;
@@ -318,20 +351,31 @@
             position: relative;
             z-index: 1;
         }
+        
         .stat-item {
             text-align: center;
         }
+        
         .stat-number {
             font-size: 2rem;
             font-weight: bold;
             color: #ff6b6b;
             display: block;
         }
+        
         .stat-label {
             font-size: 0.9rem;
             color: rgba(255, 255, 255, 0.7);
             margin-top: 5px;
         }
+        
+        .taste-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 8px;
+            fill: #4ecdc4;
+        }
+        
         .chat-container {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -339,6 +383,7 @@
             padding: 20px;
             margin-bottom: 20px;
         }
+        
         .question-examples {
             background: rgba(78, 205, 196, 0.1);
             border: 1px solid rgba(78, 205, 196, 0.3);
@@ -346,36 +391,42 @@
             padding: 15px;
             margin-bottom: 15px;
         }
+        
         .question-example {
             display: block;
             padding: 8px 12px;
             margin: 5px 0;
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.1);
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
         }
+        
         .question-example:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateX(5px);
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-1px);
         }
+        
         .chat-input-container {
             display: flex;
             gap: 10px;
             margin-bottom: 20px;
         }
+        
         .chat-input {
             flex: 1;
+            padding: 12px;
             background: rgba(255, 255, 255, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 8px;
-            padding: 12px;
             color: white;
-            font-size: 16px;
+            font-size: 14px;
         }
+        
         .chat-input::placeholder {
             color: rgba(255, 255, 255, 0.6);
         }
+        
         .voice-btn {
             background: rgba(78, 205, 196, 0.2);
             border: 1px solid #4ecdc4;
@@ -385,79 +436,103 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+        
         .voice-btn:hover {
             background: rgba(78, 205, 196, 0.3);
         }
+        
         .voice-btn.recording {
             background: rgba(255, 107, 107, 0.3);
             border-color: #ff6b6b;
             color: #ff6b6b;
         }
+        
         .chat-history {
-            max-height: 400px;
+            max-height: 300px;
             overflow-y: auto;
+            margin-top: 20px;
         }
+        
         .chat-message {
             margin-bottom: 15px;
             padding: 12px;
             border-radius: 8px;
         }
-        .user-message {
+        
+        .chat-message.user {
             background: rgba(255, 107, 107, 0.2);
             border-left: 4px solid #ff6b6b;
         }
-        .ai-message {
+        
+        .chat-message.ai {
             background: rgba(78, 205, 196, 0.2);
             border-left: 4px solid #4ecdc4;
         }
-        .microphone-icon {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
+        
+        .chat-message .sender {
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-size: 14px;
         }
+        
+        .chat-message .content {
+            white-space: pre-wrap;
+            line-height: 1.5;
+        }
+        
         @media (max-width: 1024px) {
             .split-layout {
                 grid-template-columns: 1fr;
                 gap: 20px;
             }
+            
             .chart-panel {
                 position: static;
             }
+            
             .whisky-overview h2 {
                 font-size: 2rem;
             }
+            
             .whisky-stats {
                 flex-direction: column;
                 gap: 15px;
             }
         }
+        
         @media (max-width: 768px) {
+            .custom-footer {
+                display: block;
+            }
+            
             .whisky-overview h2 {
                 font-size: 1.8rem;
             }
+            
             .whisky-overview .subtitle {
                 font-size: 1rem;
             }
+            
             .whisky-overview .description {
                 font-size: 1rem;
             }
         }
-        .recommendations-panel::-webkit-scrollbar,
-        .chat-history::-webkit-scrollbar {
+        
+        .recommendations-panel::-webkit-scrollbar {
             width: 8px;
         }
-        .recommendations-panel::-webkit-scrollbar-track,
-        .chat-history::-webkit-scrollbar-track {
+        
+        .recommendations-panel::-webkit-scrollbar-track {
             background: rgba(255, 255, 255, 0.1);
             border-radius: 4px;
         }
-        .recommendations-panel::-webkit-scrollbar-thumb,
-        .chat-history::-webkit-scrollbar-thumb {
+        
+        .recommendations-panel::-webkit-scrollbar-thumb {
             background: rgba(78, 205, 196, 0.5);
             border-radius: 4px;
         }
-        .recommendations-panel::-webkit-scrollbar-thumb:hover,
-        .chat-history::-webkit-scrollbar-thumb:hover {
+        
+        .recommendations-panel::-webkit-scrollbar-thumb:hover {
             background: rgba(78, 205, 196, 0.7);
         }
     </style>
@@ -593,7 +668,9 @@
         </div>
         
         <div class="card">
-            <h2 class="text-2xl font-bold mb-4">💎 価格帯設定</h2>
+            <h2 class="text-2xl font-bold mb-4">
+                💎 価格帯設定
+            </h2>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block mb-2">下限価格: <span id="minPriceDisplay">¥5,000</span></label>
@@ -607,77 +684,95 @@
         </div>
         
         <div class="card">
-            <h2 class="text-2xl font-bold mb-4">👅 味覚プロファイル設定</h2>
-            <div class="grid grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label class="block mb-2">X軸：</label>
-                    <select id="xAxis" class="w-full p-2 bg-gray-800 border border-gray-600 rounded">
-                        <option value="light-heavy">ライト ↔ ヘビー</option>
-                        <option value="sweet-dry">スイート ↔ ドライ</option>
-                        <option value="young-aged">若い ↔ 熟成</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="block mb-2">Y軸：</label>
-                    <select id="yAxis" class="w-full p-2 bg-gray-800 border border-gray-600 rounded">
-                        <option value="fruity-smoky">フルーティー ↔ スモーキー</option>
-                        <option value="mild-strong">まろやか ↔ 強烈</option>
-                        <option value="floral-peaty">フローラル ↔ ピート</option>
-                    </select>
+            <h2 class="text-2xl font-bold mb-4">
+                👅 味覚プロファイル設定
+            </h2>
+            <div class="axis-controls">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <div>
+                        <label class="block mb-2">X軸：</label>
+                        <select id="xAxis" class="w-full p-2 bg-gray-800 border border-gray-600 rounded">
+                            <option value="light-heavy">ライト ↔ ヘビー</option>
+                            <option value="sweet-dry">スイート ↔ ドライ</option>
+                            <option value="young-aged">若い ↔ 熟成</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block mb-2">Y軸：</label>
+                        <select id="yAxis" class="w-full p-2 bg-gray-800 border border-gray-600 rounded">
+                            <option value="fruity-smoky">フルーティー ↔ スモーキー</option>
+                            <option value="mild-strong">まろやか ↔ 強烈</option>
+                            <option value="floral-peaty">フローラル ↔ ピート</option>
+                        </select>
+                    </div>
                 </div>
             </div>
             
-            <p class="mb-4">四角内をクリックして好みの位置を選択してください</p>
-            <div class="flex justify-center">
-                <div class="relative">
-                    <div class="taste-matrix" id="tasteMatrix">
-                        <div class="taste-dot" id="tasteDot" style="left: 50%; top: 50%;"></div>
+            <div class="taste-matrix-container">
+                <p class="mb-4">四角内をクリックして好みの位置を選択してください</p>
+                <div class="flex justify-center">
+                    <div class="relative">
+                        <div class="taste-matrix" id="tasteMatrix">
+                            <div class="taste-dot" id="tasteDot" style="left: 50%; top: 50%;"></div>
+                        </div>
+                        <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-sm" id="topLabel">フルーティー</div>
+                        <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm" id="bottomLabel">スモーキー</div>
+                        <div class="absolute -left-16 top-1/2 transform -translate-y-1/2 text-sm" id="leftLabel">ライト</div>
+                        <div class="absolute -right-16 top-1/2 transform -translate-y-1/2 text-sm" id="rightLabel">ヘビー</div>
                     </div>
-                    <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 text-sm" id="topLabel">フルーティー</div>
-                    <div class="absolute -bottom-8 left-1/2 transform -translate-x-1/2 text-sm" id="bottomLabel">スモーキー</div>
-                    <div class="absolute -left-16 top-1/2 transform -translate-y-1/2 text-sm" id="leftLabel">ライト</div>
-                    <div class="absolute -right-16 top-1/2 transform -translate-y-1/2 text-sm" id="rightLabel">ヘビー</div>
                 </div>
-            </div>
-            <div class="text-center mt-8">
-                <span id="coordinates" class="text-sm text-gray-400">座標: X: 0.5, Y: 0.5</span>
+                <div class="text-center mt-8">
+                    <span id="coordinates" class="text-sm text-gray-400">座標: X: 0.5, Y: 0.5</span>
+                </div>
             </div>
         </div>
         
         <div class="chat-container">
-            <h2 class="text-2xl font-bold mb-4">🤖 AIソムリエとチャット（何度でもお気軽に！）</h2>
+            <h2 class="text-2xl font-bold mb-4">
+                🤖 AIソムリエとチャット（何度でもお気軽に！）
+            </h2>
             
             <div class="question-examples">
-                <div class="font-bold mb-2">質問例（クリックで入力）：</div>
-                <div class="question-example" data-question="マッカランについて詳しく教えて">💎 "マッカランについて詳しく教えて"</div>
-                <div class="question-example" data-question="5000円以下のおすすめは？">🎯 "5000円以下のおすすめは？"</div>
-                <div class="question-example" data-question="アイラ島のウィスキーはある？">🌊 "アイラ島のウィスキーはある？"</div>
-                <div class="question-example" data-question="フルーティーなウィスキーを探している">🍯 "フルーティーなウィスキーを探している"</div>
+                <div class="text-sm mb-3 text-gray-300">質問例（クリックで入力）：</div>
+                <div class="question-example" data-question="マッカランについて詳しく教えて">
+                    💎 "マッカランについて詳しく教えて"
+                </div>
+                <div class="question-example" data-question="5000円以下のおすすめは？">
+                    🎯 "5000円以下のおすすめは？"
+                </div>
+                <div class="question-example" data-question="アイラ島のウィスキーはある？">
+                    🌊 "アイラ島のウィスキーはある？"
+                </div>
+                <div class="question-example" data-question="フルーティーなウィスキーを探している">
+                    🍯 "フルーティーなウィスキーを探している"
+                </div>
             </div>
             
             <div class="chat-input-container">
                 <input type="text" id="chatInput" class="chat-input" placeholder="質問を入力してください...">
                 <button id="voiceBtn" class="voice-btn">
-                    <svg class="microphone-icon" viewBox="0 0 24 24">
-                        <path d="M12 2c1.1 0 2 .9 2 2v6c0 1.1-.9 2-2 2s-2-.9-2-2V4c0-1.1.9-2 2-2z"></path>
-                        <path d="M19 10v2c0 3.87-3.13 7-7 7s-7-3.13-7-7v-2h2v2c0 2.76 2.24 5 5 5s5-2.24 5-5v-2h2z"></path>
-                        <path d="M10 21h4v2h-4z"></path>
-                    </svg>
+                    🎤
                 </button>
-                <button id="sendChatBtn" class="btn-primary">💬 質問する</button>
+                <button id="sendChatBtn" class="btn-primary">
+                    💬 質問する
+                </button>
             </div>
             
             <div id="chatHistory" class="chat-history"></div>
         </div>
         
         <div class="text-center mb-8">
-            <button id="getRecommendation" class="btn-primary text-lg mr-4">🎯 AIウィスキー提案を受ける</button>
-            <button id="refreshRecommendation" class="btn-secondary text-lg">🔄 リフレッシュして再提案</button>
+            <button id="getRecommendation" class="btn-primary text-lg mr-4">
+                🎯 AIウィスキー提案を受ける
+            </button>
+            <button id="refreshRecommendation" class="btn-secondary text-lg">
+                🔄 リフレッシュして再提案
+            </button>
         </div>
         
-        <div id="loadingIndicator" class="loading">
-            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-            <p>AIが最適なウィスキーを分析中...</p>
+        <div id="loadingIndicator" class="loading" style="display: none;">
+            <div class="animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p class="mt-2">AIが最適なウィスキーを分析中...</p>
         </div>
         
         <div id="progressContainer" class="progress-container">
@@ -690,12 +785,23 @@
         
         <div id="splitLayoutContainer" style="display: none;" class="split-layout">
             <div class="recommendations-panel">
-                <h2 class="text-2xl font-bold mb-4">🎯 AI提案結果</h2>
+                <h2 class="text-2xl font-bold mb-4">
+                    🎯 AI提案結果
+                </h2>
+                <div id="recommendationSummary"></div>
                 <div id="recommendationContent"></div>
+                <div id="recommendationConclusion"></div>
+                <div class="text-center mt-6">
+                    <button id="getAnotherRecommendation" class="btn-secondary">
+                        🔄 別の提案
+                    </button>
+                </div>
             </div>
             
             <div class="chart-panel">
-                <h2 class="text-2xl font-bold mb-4">📊 味覚プロファイル比較</h2>
+                <h2 class="text-2xl font-bold mb-4">
+                    📊 味覚プロファイル比較
+                </h2>
                 <div class="chart-container">
                     <h3 id="chartTitle">あなたの好み</h3>
                     <canvas id="combinedProfileChart" class="chart-canvas" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
@@ -704,6 +810,10 @@
                     <p class="text-sm text-gray-400">ウィスキーの銘柄をクリックすると、あなたの好みと重ねて表示されます</p>
                 </div>
             </div>
+        </div>
+        
+        <div class="custom-footer">
+            Powered by Nebula Hirozon Technology
         </div>
     </div>
     
@@ -723,7 +833,7 @@
             setupTasteMatrix();
             setupPriceSliders();
             setupVoiceRecognition();
-            setupChatFunctionality();
+            setupChatFunction();
             loadWhiskyData();
             initializeChart();
         });
@@ -731,210 +841,156 @@
         function setupEventListeners() {
             document.getElementById('getRecommendation').addEventListener('click', getRecommendation);
             document.getElementById('refreshRecommendation').addEventListener('click', refreshRecommendation);
+            document.getElementById('getAnotherRecommendation').addEventListener('click', getRecommendation);
             document.getElementById('xAxis').addEventListener('change', updateAxisLabels);
             document.getElementById('yAxis').addEventListener('change', updateAxisLabels);
         }
         
-        function setupChatFunctionality() {
+        function setupChatFunction() {
             const questionExamples = document.querySelectorAll('.question-example');
             const chatInput = document.getElementById('chatInput');
-            const sendBtn = document.getElementById('sendChatBtn');
+            const sendChatBtn = document.getElementById('sendChatBtn');
             const voiceBtn = document.getElementById('voiceBtn');
             
-            // Question examples click to input
+            // Question examples click functionality
             questionExamples.forEach(example => {
                 example.addEventListener('click', () => {
-                    const questionText = example.getAttribute('data-question');
-                    chatInput.value = questionText;
+                    const question = example.getAttribute('data-question');
+                    chatInput.value = question;
                     chatInput.focus();
                 });
             });
             
             // Send chat message
-            sendBtn.addEventListener('click', sendChatMessage);
+            sendChatBtn.addEventListener('click', sendChatMessage);
             chatInput.addEventListener('keypress', (e) => {
                 if (e.key === 'Enter') {
                     sendChatMessage();
                 }
             });
             
-            // Voice input
+            // Voice button
             voiceBtn.addEventListener('click', toggleVoiceInput);
         }
         
         async function sendChatMessage() {
-            const input = document.getElementById('chatInput');
-            const question = input.value.trim();
+            const chatInput = document.getElementById('chatInput');
+            const question = chatInput.value.trim();
+            
             if (!question) return;
             
             // Add user message to history
             addChatMessage('user', question);
-            input.value = '';
+            
+            // Clear input
+            chatInput.value = '';
+            
+            // Add loading message
+            const loadingId = addChatMessage('ai', 'AIソムリエが回答中...');
             
             try {
-                // Show typing indicator
-                const typingDiv = addChatMessage('ai', '🤖 分析中...');
+                // Send to Claude API
+                const response = await sendToClaudeAPI(question);
                 
-                let response;
-                try {
-                    // Try Claude API first
-                    response = await sendToClaudeAPI(question);
-                } catch (error) {
-                    console.log('Claude API failed, using fallback:', error);
-                    // Use fallback response system
-                    response = generateConciseResponse(question);
-                }
+                // Update the loading message with response
+                updateChatMessage(loadingId, response);
                 
-                // Remove typing indicator and add actual response
-                typingDiv.remove();
-                addChatMessage('ai', response);
-                
-                // Store in conversation history
-                conversationHistory.push({ user: question, ai: response });
+                // Add to conversation history
+                conversationHistory.push({
+                    user: question,
+                    ai: response
+                });
                 
             } catch (error) {
                 console.error('Chat error:', error);
-                addChatMessage('ai', '申し訳ございません。一時的にエラーが発生しました。しばらく経ってから再度お試しください。');
+                updateChatMessage(loadingId, '申し訳ございません。回答の生成中にエラーが発生しました。');
             }
         }
         
         async function sendToClaudeAPI(question) {
-            const optimizedPrompt = `簡潔に回答してください（200文字以内）：
-質問: ${question}
-店舗情報: マッカラン12年¥8000、ラフロイグ10年¥5000、山崎12年¥25000
+            try {
+                const response = await fetch('/.netlify/functions/claude-api', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        minPrice: parseInt(document.getElementById('minPrice').value) * 1000,
+                        maxPrice: parseInt(document.getElementById('maxPrice').value) * 1000,
+                        tasteX: currentPosition.x,
+                        tasteY: currentPosition.y,
+                        additionalPreferences: `【チャット質問】${question}
 
-回答形式:
-- 銘柄名と価格
-- 味の特徴3つまで  
-- 一言アドバイス`;
-            
-            const response = await fetch('/.netlify/functions/claude-api', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    minPrice: 5000,
-                    maxPrice: 50000,
-                    tasteX: 0.5,
-                    tasteY: 0.5,
-                    additionalPreferences: optimizedPrompt
-                })
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
-            const data = await response.json();
-            
-            if (data.success && data.data) {
-                let responseText = '';
-                if (data.data.content && data.data.content[0] && data.data.content[0].text) {
-                    responseText = data.data.content[0].text;
-                } else if (data.data.text) {
-                    responseText = data.data.text;
-                } else if (typeof data.data === 'string') {
-                    responseText = data.data;
+【回答指示】
+あなたは昼の月バーの専門ウィスキーソムリエです。以下の店舗在庫情報を参考にして、親しみやすく詳しく回答してください。
+
+【店舗在庫】
+${JSON.stringify(whiskyData, null, 2)}
+
+【回答スタイル】
+- 店舗にある銘柄を優先的に紹介
+- 価格と味の特徴を具体的に説明
+- 専門知識を交えながらも親しみやすく
+- 質問に直接的に答える
+- 簡潔で読みやすい回答（300文字以内）`
+                    })
+                });
+                
+                const data = await response.json();
+                console.log('Claude API Response:', data);
+                
+                if (data.success && data.data) {
+                    // Handle different response structures
+                    if (data.data.content && data.data.content[0] && data.data.content[0].text) {
+                        return data.data.content[0].text;
+                    } else if (data.data.text) {
+                        return data.data.text;
+                    } else if (typeof data.data === 'string') {
+                        return data.data;
+                    } else {
+                        return JSON.stringify(data.data);
+                    }
                 } else {
-                    responseText = JSON.stringify(data.data);
+                    throw new Error('Invalid API response structure');
                 }
                 
-                // Clean up any JSON-like formatting
-                responseText = responseText.replace(/\{[^}]*\}/g, '').replace(/\[[^\]]*\]/g, '');
-                return responseText.trim() || generateConciseResponse(question);
-            } else {
-                throw new Error('Invalid API response');
+            } catch (error) {
+                console.error('Claude API Error:', error);
+                throw error;
             }
         }
         
-        function generateConciseResponse(question) {
-            const q = question.toLowerCase();
-            
-            if (q.includes('マッカラン')) {
-                return `🥃 **マッカラン12年（¥8,000）**
-
-スコットランドの名門蒸留所で、シェリー樽熟成による果実味豊かな味わいが特徴です。
-
-**味の特徴**
-フルーティー・甘い・まろやか
-
-**おすすめ**
-初心者の方にも飲みやすく、ロックやストレートで楽しめます！`;
-            }
-            
-            if (q.includes('5000') || q.includes('安い') || q.includes('手頃')) {
-                return `💰 **5000円以下のおすすめ**
-
-🥃 **ラフロイグ10年（¥5,000）**
-アイラ島の個性的なスモーキー系ウィスキー
-
-**特徴**
-ピート香・海の風味・上級者向け
-
-まずはハイボールから始めるのがおすすめです！`;
-            }
-            
-            if (q.includes('アイラ') || q.includes('スモーキー')) {
-                return `🌊 **アイラ島のウィスキー**
-
-🥃 **ラフロイグ10年（¥5,000）**
-当店取り扱いのアイラ島代表格
-
-**特徴**
-強烈なピート香・海の塩気・個性的
-
-**コツ**
-少量の水を加えると香りが開き、より飲みやすくなります`;
-            }
-            
-            if (q.includes('フルーティー') || q.includes('甘い') || q.includes('飲みやすい')) {
-                return `🍯 **フルーティーなウィスキー**
-
-🥃 **マッカラン12年（¥8,000）**
-シェリー樽熟成による果実味豊かな味わい
-
-**特徴**
-ドライフルーツ・バニラ・ハチミツ
-
-**ペアリング**
-ダークチョコレートやナッツ類との相性抜群！`;
-            }
-            
-            if (q.includes('山崎') || q.includes('日本')) {
-                return `🗾 **山崎12年（¥25,000）**
-
-日本初の本格ウィスキー蒸留所の代表作
-
-**特徴**
-繊細・調和・四季の変化
-
-**おすすめ**
-水割りで日本らしい上品な香りを堪能できます`;
-            }
-            
-            return `🤖 **ご質問ありがとうございます！**
-
-【当店の主な取り扱い銘柄】
-🥃 マッカラン12年（¥8,000）- フルーティーで上品
-🥃 ラフロイグ10年（¥5,000）- スモーキーで個性的  
-🥃 山崎12年（¥25,000）- 日本の繊細な味わい
-
-より具体的なご質問がございましたら、お気軽にお尋ねください！`;
-        }
-        
-        function addChatMessage(type, message) {
+        function addChatMessage(sender, content) {
             const chatHistory = document.getElementById('chatHistory');
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `chat-message ${type === 'user' ? 'user-message' : 'ai-message'}`;
+            const messageId = 'msg_' + Date.now();
             
-            const label = type === 'user' ? '👤 あなた:' : '🤖 AIソムリエ:';
-            messageDiv.innerHTML = `<strong>${label}</strong><br>${message.replace(/\n/g, '<br>')}`;
+            const messageDiv = document.createElement('div');
+            messageDiv.id = messageId;
+            messageDiv.className = `chat-message ${sender}`;
+            
+            const senderDiv = document.createElement('div');
+            senderDiv.className = 'sender';
+            senderDiv.textContent = sender === 'user' ? '👤 あなた:' : '🤖 AIソムリエ:';
+            
+            const contentDiv = document.createElement('div');
+            contentDiv.className = 'content';
+            contentDiv.textContent = content;
+            
+            messageDiv.appendChild(senderDiv);
+            messageDiv.appendChild(contentDiv);
             
             chatHistory.appendChild(messageDiv);
             chatHistory.scrollTop = chatHistory.scrollHeight;
             
-            return messageDiv;
+            return messageId;
+        }
+        
+        function updateChatMessage(messageId, newContent) {
+            const messageDiv = document.getElementById(messageId);
+            if (messageDiv) {
+                const contentDiv = messageDiv.querySelector('.content');
+                contentDiv.textContent = newContent;
+            }
         }
         
         function setupPriceSliders() {
@@ -1018,6 +1074,7 @@
                 recognition.onstart = function() {
                     const btn = document.getElementById('voiceBtn');
                     btn.classList.add('recording');
+                    btn.textContent = '🔴';
                 };
                 
                 recognition.onresult = function(event) {
@@ -1029,12 +1086,14 @@
                 recognition.onend = function() {
                     const btn = document.getElementById('voiceBtn');
                     btn.classList.remove('recording');
+                    btn.textContent = '🎤';
                 };
                 
                 recognition.onerror = function(event) {
                     console.error('Speech recognition error:', event.error);
                     const btn = document.getElementById('voiceBtn');
                     btn.classList.remove('recording');
+                    btn.textContent = '🎤';
                 };
             }
         }
@@ -1147,21 +1206,14 @@
                         borderColor: '#4ecdc4',
                         backgroundColor: 'rgba(78, 205, 196, 0.2)',
                         pointBackgroundColor: '#4ecdc4',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
+                        pointBorderColor: '#4ecdc4',
+                        pointHoverBackgroundColor: '#4ecdc4',
                         pointHoverBorderColor: '#4ecdc4'
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#fff'
-                            }
-                        }
-                    },
                     scales: {
                         r: {
                             beginAtZero: true,
@@ -1171,9 +1223,11 @@
                                 stepSize: 1
                             },
                             grid: {
+                                display: true,
                                 color: 'rgba(255, 255, 255, 0.1)'
                             },
                             angleLines: {
+                                display: true,
                                 color: 'rgba(255, 255, 255, 0.1)'
                             },
                             pointLabels: {
@@ -1183,100 +1237,151 @@
                                 }
                             }
                         }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                color: '#fff',
+                                padding: 20
+                            }
+                        }
                     }
                 }
             });
         }
         
         async function getRecommendation() {
-            console.log('🎯 AI提案開始');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const progressContainer = document.getElementById('progressContainer');
+            const splitLayoutContainer = document.getElementById('splitLayoutContainer');
             
-            showLoading(true);
+            loadingIndicator.style.display = 'block';
+            progressContainer.style.display = 'block';
+            splitLayoutContainer.style.display = 'none';
             
-            const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
-            const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
-            
-            const filteredWhiskies = whiskyData.filter(whisky => {
-                const price = parseInt(whisky.price.replace(/[¥,]/g, ''));
-                return price >= minPrice && price <= maxPrice;
-            });
-            
-            if (filteredWhiskies.length === 0) {
-                showError('指定された価格帯に該当するウィスキーが見つかりませんでした。価格帯を調整してお試しください。');
-                return;
+            try {
+                await simulateProgress();
+                
+                const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+                const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
+                
+                const filteredWhiskies = whiskyData.filter(whisky => {
+                    const price = parseInt(whisky.price.replace(/[¥,]/g, ''));
+                    return price >= minPrice && price <= maxPrice;
+                });
+                
+                const recommendations = calculateRecommendations(filteredWhiskies);
+                
+                displayRecommendations(recommendations);
+                
+                splitLayoutContainer.style.display = 'grid';
+                
+            } catch (error) {
+                console.error('Recommendation error:', error);
+                alert('推薦の生成中にエラーが発生しました。');
+            } finally {
+                loadingIndicator.style.display = 'none';
+                progressContainer.style.display = 'none';
             }
-            
-            const recommendations = calculateRecommendations(filteredWhiskies);
-            displayRecommendations(recommendations);
-            
-            showLoading(false);
-            document.getElementById('splitLayoutContainer').style.display = 'grid';
         }
         
         function calculateRecommendations(whiskies) {
-            return whiskies.map(whisky => {
-                const matchScore = calculateMatchScore(whisky);
-                return { ...whisky, matchScore };
-            }).sort((a, b) => b.matchScore - a.matchScore).slice(0, 5);
-        }
-        
-        function calculateMatchScore(whisky) {
-            const profile = whisky.taste_profile;
-            const userPrefs = userProfileData;
+            if (whiskies.length === 0) {
+                return [];
+            }
             
-            let score = 0;
-            const weights = [1, 0.8, 1.2, 1, 0.9, 0.7];
-            
-            Object.keys(profile).forEach((key, index) => {
-                const diff = Math.abs(profile[key] - userPrefs[index]);
-                score += (5 - diff) * weights[index];
+            const recommendations = whiskies.map(whisky => {
+                const profile = whisky.taste_profile;
+                const userProfile = {
+                    fruity: (1 - currentPosition.y) * 5,
+                    spicy: Math.random() * 2 + 2.5,
+                    body: currentPosition.x * 5,
+                    smoky: currentPosition.y * 5,
+                    sweetness: Math.random() * 2 + 2.5,
+                    complexity: Math.random() * 2 + 2.5
+                };
+                
+                const distance = Math.sqrt(
+                    Math.pow(profile.fruity - userProfile.fruity, 2) +
+                    Math.pow(profile.spicy - userProfile.spicy, 2) +
+                    Math.pow(profile.body - userProfile.body, 2) +
+                    Math.pow(profile.smoky - userProfile.smoky, 2) +
+                    Math.pow(profile.sweetness - userProfile.sweetness, 2) +
+                    Math.pow(profile.complexity - userProfile.complexity, 2)
+                );
+                
+                const matchScore = Math.max(0, Math.min(100, 100 - (distance / Math.sqrt(6 * 25)) * 100));
+                
+                return {
+                    ...whisky,
+                    matchScore: Math.round(matchScore)
+                };
             });
             
-            return Math.round((score / 25) * 100);
+            return recommendations.sort((a, b) => b.matchScore - a.matchScore);
         }
         
         function displayRecommendations(recommendations) {
-            const container = document.getElementById('recommendationContent');
-            container.innerHTML = '';
+            const recommendationContent = document.getElementById('recommendationContent');
             
+            if (recommendations.length === 0) {
+                recommendationContent.innerHTML = '<p class="text-center text-gray-400">該当する価格帯のウィスキーが見つかりませんでした。価格帯を調整してください。</p>';
+                return;
+            }
+            
+            let html = '';
             recommendations.forEach((whisky, index) => {
-                const whiskyCard = document.createElement('div');
-                whiskyCard.className = `whisky-card ${index === 0 ? 'featured' : ''}`;
-                
-                whiskyCard.innerHTML = `
-                    ${index === 0 ? '<div class="featured-label">⭐ 最もおすすめ</div>' : ''}
-                    <h3 class="text-lg font-bold mb-2">${whisky.name}</h3>
-                    <div class="grid grid-cols-2 gap-2 text-sm mb-3">
-                        <div><strong>価格:</strong> ${whisky.price}</div>
-                        <div><strong>産地:</strong> ${whisky.region}</div>
-                        <div><strong>分類:</strong> ${whisky.subcategory}</div>
-                        <div><strong>適合度:</strong> ${whisky.matchScore}%</div>
-                    </div>
-                    <p class="text-sm text-gray-300 mb-3">${whisky.tastingNote_ja}</p>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: ${whisky.matchScore}%"></div>
+                const isFeatured = index === 0;
+                html += `
+                    <div class="whisky-card ${isFeatured ? 'featured' : ''}" data-whisky-id="${whisky.id}">
+                        ${isFeatured ? '<div class="featured-label">⭐ 最もおすすめ</div>' : ''}
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold">${whisky.name}</h3>
+                            <div class="text-right">
+                                <div class="text-lg font-bold text-green-400">${whisky.price}</div>
+                                <div class="text-sm text-gray-400">${whisky.region}</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-300 mb-2">${whisky.subcategory}</div>
+                        <div class="text-sm mb-3">${whisky.tastingNote_ja}</div>
+                        <div class="flex justify-between items-center">
+                            <div class="text-sm">
+                                <span class="text-gray-400">適合度:</span>
+                                <span class="font-bold text-blue-400">${whisky.matchScore}%</span>
+                            </div>
+                        </div>
                     </div>
                 `;
-                
-                whiskyCard.addEventListener('click', () => {
-                    document.querySelectorAll('.whisky-card').forEach(card => card.classList.remove('selected'));
-                    whiskyCard.classList.add('selected');
-                    updateChartWithWhisky(whisky);
+            });
+            
+            recommendationContent.innerHTML = html;
+            
+            // Add click event listeners to whisky cards
+            document.querySelectorAll('.whisky-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const whiskyId = this.getAttribute('data-whisky-id');
+                    const whisky = recommendations.find(w => w.id === whiskyId);
+                    if (whisky) {
+                        updateChartForWhisky(whisky);
+                        
+                        // Update selected state
+                        document.querySelectorAll('.whisky-card').forEach(c => c.classList.remove('selected'));
+                        this.classList.add('selected');
+                    }
                 });
-                
-                container.appendChild(whiskyCard);
             });
         }
         
-        function updateChartWithWhisky(whisky) {
+        function updateChartForWhisky(whisky) {
             const profile = whisky.taste_profile;
             const whiskyData = [
-                profile.fruity || 0,
-                profile.spicy || 0,
-                profile.body || 0,
-                profile.smoky || 0,
-                profile.sweetness || 0,
-                profile.complexity || 0
+                profile.fruity,
+                profile.spicy,
+                profile.body,
+                profile.smoky,
+                profile.sweetness,
+                profile.complexity
             ];
             
             chartInstance.data.datasets = [
@@ -1286,7 +1391,7 @@
                     borderColor: '#4ecdc4',
                     backgroundColor: 'rgba(78, 205, 196, 0.2)',
                     pointBackgroundColor: '#4ecdc4',
-                    pointBorderColor: '#fff'
+                    pointBorderColor: '#4ecdc4'
                 },
                 {
                     label: whisky.name,
@@ -1294,7 +1399,7 @@
                     borderColor: '#ff6b6b',
                     backgroundColor: 'rgba(255, 107, 107, 0.2)',
                     pointBackgroundColor: '#ff6b6b',
-                    pointBorderColor: '#fff'
+                    pointBorderColor: '#ff6b6b'
                 }
             ];
             
@@ -1306,24 +1411,34 @@
             getRecommendation();
         }
         
-        function showLoading(show) {
-            document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
-        }
-        
-        function showError(message) {
-            const container = document.getElementById('recommendationContent');
-            container.innerHTML = `<div class="error">${message}</div>`;
-            document.getElementById('splitLayoutContainer').style.display = 'grid';
-            showLoading(false);
+        async function simulateProgress() {
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            const progressPercentage = document.getElementById('progressPercentage');
+            
+            const steps = [
+                { text: '味覚プロファイルを分析中...', percentage: 20 },
+                { text: '在庫データを検索中...', percentage: 40 },
+                { text: 'AIマッチング計算中...', percentage: 60 },
+                { text: '最適化処理中...', percentage: 80 },
+                { text: '結果を準備中...', percentage: 100 }
+            ];
+            
+            for (const step of steps) {
+                progressText.textContent = step.text;
+                progressFill.style.width = `${step.percentage}%`;
+                progressPercentage.textContent = `${step.percentage}%`;
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
         }
     </script>
 
 
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDoomUMPKUqqBga%2Fin9q90MA9onRIlfFDw5WoD%2FeBxJ92fr43zTAIOHy8XWvJzS53GzC9H0iHYawn9ZAAi9z6VYxrGsz7UPUk03vKApRErHwCq7LyQXO2H1VW3%2FHsPCdxG6hz0w6wbOpxvSd0HB4OftYwT1CKq9E8N1QCk%2FtAi2AWsJxv6ddxbS0y9lqov0tZsxRDhN%2B3o2rk0Wch29LT%2FVZ%2B4CAn4wieXa%2BtRUKU2%2FstE3IBrCy2hJIE75E9DYfRjnsFZ05RNxycM61Q8kZkHkLLGl2G2%2FNqZRmpzsEwBQyvUiHamF%2B3O3ldGL5FzpCA0YSF3PGs3%2BX%2FZ4RmyxFRAO2GaUzgDxahW%2BaCgfA5KvW4Po4jV76p0%2Bxx%2Fe2VbiJbx6OG1e8SZ8Mzqn6IcKp%2B83a%2Fw3FZlPgGzngBv5JQsdmQ3S%2FH9unnMi%2BbvsBXsuPLBljQctMWVQ%2FTJBlv7%2BO7OGHf8uNA10%2F2B3mE5P6zlULZxdxb6310ohEfaxTfoDp9yCl%2Faym9w5mT0Vv8qv%2BxphU%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDhIogRkF4xeVsci32bEH%2FzE4JW44lI8K5miiQPgmu7DByogxoh0pu0%2FHfPJNZtdM3Q%2FhiCoZw0DR8knI%2FeSW9ygncaMPvICksNgWv1ek4XxHb1kIQEbd4AQthtX132w00S1QVd7iC4FVnvM29wzQIgnlCu5cAyrkdIbcsK1vZgpgKYPU4kGvtm172jMvPkojYnp6Fx%2FcKXbceVDWBAPEzUX1rSGy685Hgc%2Fjv1533WwraidTEvCBbv%2BoB5JdD1v6tZexj3uZ1AeYoI4dJ6ztIW1QAqkTztOJHL3jRVvI84syKcKzx5LtFTCwyFAL1lFAECcn1wkCFbZvd7KxG6WbY36MC%2FhKvg3cPMgskj6A4Xk5lFweF7kWU3oD07NhfH41hrjI1%2FrJgjom%2B7ZTW56GGyPAiyUqEdguiWrYCTuPL4%2BXatcas0T6Moa6OGb%2BEL%2FWa7NsEL%2BDEoDCFwvkUR615W1rDe1GVl%2FafyAI92jfi195bvIUUwsCUPgBRLcns%2B%2Ff89bRnW9aOhbc6U98wqBhJF0%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDoomUMPKUqqBga/in9q90MA9onRIlfFDw5WoD/eBxJ92fr43zTAIOHy8XWvJzS53GzC9H0iHYawn9ZAAi9z6VYxrGsz7UPUk03vKApRErHwCq7LyQXO2H1VW3/HsPCdxG6hz0w6wbOpxvSd0HB4OftYwT1CKq9E8N1QCk/tAi2AWsJxv6ddxbS0y9lqov0tZsxRDhN+3o2rk0Wch29LT/VZ+4CAn4wieXa+tRUKU2/stE3IBrCy2hJIE75E9DYfRjnsFZ05RNxycM61Q8kZkHkLLGl2G2/NqZRmpzsEwBQyvUiHamF+3O3ldGL5FzpCA0YSF3PGs3+X/Z4RmyxFRAO2GaUzgDxahW+aCgfA5KvW4Po4jV76p0+xx/e2VbiJbx6OG1e8SZ8Mzqn6IcKp+83a/w3FZlPgGzngBv5JQsdmQ3S/H9unnMi+bvsBXsuPLBljQctMWVQ/TJBlv7+O7OGHf8uNA10/2B3mE5P6zlULZxdxb6310ohEfaxTfoDp9yCl/aym9w5mT0Vv8qv+xphU=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDhIogRkF4xeVsci32bEH/zE4JW44lI8K5miiQPgmu7DByogxoh0pu0/HfPJNZtdM3Q/hiCoZw0DR8knI/eSW9ygncaMPvICksNgWv1ek4XxHb1kIQEbd4AQthtX132w00S1QVd7iC4FVnvM29wzQIgnlCu5cAyrkdIbcsK1vZgpgKYPU4kGvtm172jMvPkojYnp6Fx/cKXbceVDWBAPEzUX1rSGy685Hgc/jv1533WwraidTEvCBbv+oB5JdD1v6tZexj3uZ1AeYoI4dJ6ztIW1QAqkTztOJHL3jRVvI84syKcKzx5LtFTCwyFAL1lFAECcn1wkCFbZvd7KxG6WbY36MC/hKvg3cPMgskj6A4Xk5lFweF7kWU3oD07NhfH41hrjI1/rJgjom+7ZTW56GGyPAiyUqEdguiWrYCTuPL4+Xatcas0T6Moa6OGb+EL/Wa7NsEL+DEoDCFwvkUR615W1rDe1GVl/afyAI92jfi195bvIUUwsCUPgBRLcns+/f89bRnW9aOhbc6U98wqBhJF0=";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
