@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<!-- saved from url=(0138)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_sT_-HNuOQiuXZgyFhlbrEA/whisky_sommelier_premium_emoji.html -->
+<!-- saved from url=(0134)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_6r1tbnvRQKyvlNR4oTyHCQ/whisky_sommelier_api_fixed.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>昼の月。AIソムリエ</title>
+    <title>昼の月。AIソムリエ - Claude API修正版</title>
     <link href="./index_files/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./index_files/all.min.css">
     <script src="./index_files/chart.js.ダウンロード"></script>
     <style>
         body {
@@ -30,14 +31,13 @@
             height: 50px;
             position: absolute;
             left: 20px;
-            object-fit: contain;
-            border-radius: 8px;
-            background: linear-gradient(45deg, #2c3e50, #34495e);
+            background: linear-gradient(45deg, #1e3a8a, #3b82f6);
+            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
-            color: #4ecdc4;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
         }
         .header-title {
             color: #fff;
@@ -77,9 +77,6 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
         .btn-primary:hover {
             transform: translateY(-2px);
@@ -98,9 +95,6 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
         }
         .btn-secondary:hover {
             background: rgba(255, 255, 255, 0.2);
@@ -154,9 +148,6 @@
             border-radius: 4px;
             font-size: 12px;
             font-weight: bold;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
         }
         .loading {
             display: none;
@@ -243,14 +234,10 @@
             background: rgba(78, 205, 196, 0.2);
             border: 1px solid #4ecdc4;
             color: #4ecdc4;
-            padding: 12px 16px;
+            padding: 8px 12px;
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
         }
         .voice-input-btn:hover {
             background: rgba(78, 205, 196, 0.3);
@@ -325,6 +312,7 @@
             margin-top: 40px;
         }
         
+        /* Whisky Overview Section */
         .whisky-overview {
             background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(255, 107, 107, 0.1));
             border: 2px solid rgba(78, 205, 196, 0.3);
@@ -404,80 +392,46 @@
             color: rgba(255, 255, 255, 0.7);
             margin-top: 5px;
         }
-        
-        .chat-section {
+
+        /* Chat styles */
+        .chat-container {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 24px;
-            margin-bottom: 24px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .question-examples {
-            background: rgba(78, 205, 196, 0.1);
-            border: 1px solid rgba(78, 205, 196, 0.3);
-            border-radius: 8px;
-            padding: 16px;
+            padding: 20px;
             margin-bottom: 20px;
         }
-        
+
+        .question-examples {
+            background: rgba(78, 205, 196, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
         .question-example {
             display: block;
             padding: 8px 12px;
-            margin: 4px 0;
+            margin: 5px 0;
             background: rgba(255, 255, 255, 0.1);
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
             border: 1px solid transparent;
         }
-        
+
         .question-example:hover {
-            background: rgba(78, 205, 196, 0.2);
+            background: rgba(255, 255, 255, 0.2);
             border-color: #4ecdc4;
             transform: translateX(5px);
         }
-        
-        .chat-history {
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 20px;
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        
-        .chat-message {
-            margin-bottom: 16px;
-            padding: 12px;
-            border-radius: 8px;
-        }
-        
-        .chat-message.user {
-            background: rgba(255, 107, 107, 0.1);
-            border-left: 4px solid #ff6b6b;
-        }
-        
-        .chat-message.ai {
-            background: rgba(78, 205, 196, 0.1);
-            border-left: 4px solid #4ecdc4;
-        }
-        
-        .chat-message .sender {
-            font-weight: bold;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        
+
         .chat-input-container {
             display: flex;
-            gap: 12px;
-            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
         }
-        
+
         .chat-input {
             flex: 1;
             background: rgba(255, 255, 255, 0.1);
@@ -487,20 +441,33 @@
             color: white;
             font-size: 16px;
         }
-        
+
         .chat-input:focus {
             outline: none;
             border-color: #4ecdc4;
-            box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
+            background: rgba(255, 255, 255, 0.15);
         }
-        
-        .chat-input::placeholder {
-            color: rgba(255, 255, 255, 0.6);
+
+        .chat-history {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 20px;
         }
-        
-        .emoji-icon {
-            font-size: 1.2em;
-            margin-right: 8px;
+
+        .chat-message {
+            margin: 10px 0;
+            padding: 12px;
+            border-radius: 8px;
+        }
+
+        .chat-message.user {
+            background: rgba(255, 107, 107, 0.2);
+            border-left: 4px solid #ff6b6b;
+        }
+
+        .chat-message.ai {
+            background: rgba(78, 205, 196, 0.2);
+            border-left: 4px solid #4ecdc4;
         }
         
         @media (max-width: 1024px) {
@@ -557,20 +524,6 @@
         
         .recommendations-panel::-webkit-scrollbar-thumb:hover {
             background: rgba(78, 205, 196, 0.7);
-        }
-        
-        .chat-history::-webkit-scrollbar {
-            width: 6px;
-        }
-        
-        .chat-history::-webkit-scrollbar-track {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-        }
-        
-        .chat-history::-webkit-scrollbar-thumb {
-            background: rgba(78, 205, 196, 0.5);
-            border-radius: 3px;
         }
     </style>
 <style>
@@ -676,15 +629,14 @@
   </style></head>
 <body>
     <div class="header-container">
-        <div class="logo">
-            昼の月
-        </div>
+        <div class="logo">🏪</div>
         <h1 class="header-title">昼の月。AIソムリエ</h1>
     </div>
     
     <div class="container-custom">
+        <!-- Whisky Overview Section -->
         <div class="whisky-overview">
-            <h2><span class="emoji-icon">🍷</span>プレミアムウィスキーコレクション</h2>
+            <h2>🍷 プレミアムウィスキーコレクション</h2>
             <div class="subtitle">本日は厳選された<span id="whiskyCount">3</span>本のウィスキーから</div>
             <div class="description">
                 <strong>あなたの味覚に完璧にマッチする</strong>最高の一本を<br>
@@ -707,9 +659,7 @@
         </div>
         
         <div class="card">
-            <h2 class="text-2xl font-bold mb-4">
-                <span class="emoji-icon">💎</span>価格帯設定
-            </h2>
+            <h2 class="text-2xl font-bold mb-4">💎 価格帯設定</h2>
             <div class="grid grid-cols-2 gap-4">
                 <div>
                     <label class="block mb-2">下限価格: <span id="minPriceDisplay">¥5,000</span></label>
@@ -723,9 +673,7 @@
         </div>
         
         <div class="card">
-            <h2 class="text-2xl font-bold mb-4">
-                <span class="emoji-icon">👅</span>味覚プロファイル設定
-            </h2>
+            <h2 class="text-2xl font-bold mb-4">👅 味覚プロファイル設定</h2>
             <div class="axis-controls">
                 <div class="grid grid-cols-2 gap-4 mb-4">
                     <div>
@@ -765,55 +713,35 @@
                 </div>
             </div>
         </div>
-        
-        <div class="chat-section">
-            <h2 class="text-2xl font-bold mb-4">
-                <span class="emoji-icon">🤖</span>AIソムリエとチャット（何度でもお気軽に！）
-            </h2>
+
+        <!-- Chat Section -->
+        <div class="chat-container">
+            <h2 class="text-2xl font-bold mb-4">🤖 AIソムリエとチャット（何度でもお気軽に！）</h2>
             
             <div class="question-examples">
-                <div style="margin-bottom: 12px; font-weight: 600; color: #4ecdc4;">質問例（クリックで入力）：</div>
-                <div class="question-example" data-question="マッカランについて詳しく教えて">
-                    <span class="emoji-icon">💎</span>"マッカランについて詳しく教えて"
-                </div>
-                <div class="question-example" data-question="5000円以下のおすすめは？">
-                    <span class="emoji-icon">🎯</span>"5000円以下のおすすめは？"
-                </div>
-                <div class="question-example" data-question="アイラ島のウィスキーはある？">
-                    <span class="emoji-icon">🌊</span>"アイラ島のウィスキーはある？"
-                </div>
-                <div class="question-example" data-question="フルーティーなウィスキーを探している">
-                    <span class="emoji-icon">🍯</span>"フルーティーなウィスキーを探している"
-                </div>
+                <p class="mb-3 font-semibold">質問例（クリックで入力）：</p>
+                <div class="question-example" data-question="マッカランについて詳しく教えて">💎 "マッカランについて詳しく教えて"</div>
+                <div class="question-example" data-question="5000円以下のおすすめは？">🎯 "5000円以下のおすすめは？"</div>
+                <div class="question-example" data-question="アイラ島のウィスキーはある？">🌊 "アイラ島のウィスキーはある？"</div>
+                <div class="question-example" data-question="フルーティーなウィスキーを探している">🍯 "フルーティーなウィスキーを探している"</div>
             </div>
-            
+
             <div class="chat-input-container">
                 <input type="text" id="chatInput" class="chat-input" placeholder="質問を入力してください...">
-                <button id="voiceInputBtn" class="voice-input-btn">
-                    🎤
-                </button>
-                <button id="sendChatBtn" class="btn-primary">
-                    <span class="emoji-icon">💬</span>質問する
-                </button>
+                <button id="voiceInputBtn" class="voice-input-btn">🎤</button>
+                <button id="sendChatBtn" class="btn-primary">💬 質問する</button>
             </div>
-            
-            <div id="chatHistory" class="chat-history" style="display: none;">
-                <div style="font-weight: 600; color: #4ecdc4; margin-bottom: 12px;">会話履歴：</div>
-                <div id="chatMessages"></div>
-            </div>
+
+            <div id="chatHistory" class="chat-history"></div>
         </div>
         
         <div class="text-center mb-8">
-            <button id="getRecommendation" class="btn-primary text-lg mr-4">
-                <span class="emoji-icon">🎯</span>AIウィスキー提案を受ける
-            </button>
-            <button id="refreshRecommendation" class="btn-secondary text-lg">
-                <span class="emoji-icon">🔄</span>リフレッシュして再提案
-            </button>
+            <button id="getRecommendation" class="btn-primary text-lg mr-4">🎯 AIウィスキー提案を受ける</button>
+            <button id="refreshRecommendation" class="btn-secondary text-lg">🔄 リフレッシュして再提案</button>
         </div>
         
         <div id="loadingIndicator" class="loading" style="display: none;">
-            <div class="animate-spin inline-block" style="font-size: 24px;">🤖</div>
+            <div class="text-4xl animate-spin">🤖</div>
             <p class="mt-2">AIが最適なウィスキーを分析中...</p>
         </div>
         
@@ -827,26 +755,20 @@
         
         <div id="splitLayoutContainer" style="display: none;" class="split-layout">
             <div class="recommendations-panel">
-                <h2 class="text-2xl font-bold mb-4">
-                    <span class="emoji-icon">🎯</span>AI提案結果
-                </h2>
+                <h2 class="text-2xl font-bold mb-4">🎯 AI提案結果</h2>
                 <div id="recommendationSummary"></div>
                 <div id="recommendationContent"></div>
                 <div id="recommendationConclusion"></div>
                 <div class="text-center mt-6">
-                    <button id="getAnotherRecommendation" class="btn-secondary">
-                        <span class="emoji-icon">🔄</span>別の提案
-                    </button>
+                    <button id="getAnotherRecommendation" class="btn-secondary">🔄 別の提案</button>
                 </div>
             </div>
             
             <div class="chart-panel">
-                <h2 class="text-2xl font-bold mb-4">
-                    <span class="emoji-icon">📊</span>味覚プロファイル比較
-                </h2>
+                <h2 class="text-2xl font-bold mb-4">📊 味覚プロファイル比較</h2>
                 <div class="chart-container">
                     <h3 id="chartTitle">あなたの好み</h3>
-                    <canvas id="combinedProfileChart" class="chart-canvas" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+                    <canvas id="combinedProfileChart" class="chart-canvas" style="height: 0px; display: block; box-sizing: border-box; width: 0px;" height="0" width="0"></canvas>
                 </div>
                 <div class="text-center mt-4">
                     <p class="text-sm text-gray-400">ウィスキーの銘柄をクリックすると、あなたの好みと重ねて表示されます</p>
@@ -894,18 +816,148 @@
             document.getElementById('xAxis').addEventListener('change', updateAxisLabels);
             document.getElementById('yAxis').addEventListener('change', updateAxisLabels);
         }
-        
+
         function setupQuestionExamples() {
             const examples = document.querySelectorAll('.question-example');
-            const inputField = document.getElementById('chatInput');
+            const chatInput = document.getElementById('chatInput');
             
             examples.forEach(example => {
-                example.addEventListener('click', () => {
-                    const question = example.getAttribute('data-question');
-                    inputField.value = question;
-                    inputField.focus();
+                example.addEventListener('click', function() {
+                    const question = this.getAttribute('data-question');
+                    chatInput.value = question;
+                    chatInput.focus();
                 });
             });
+        }
+
+        async function sendChatMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const question = chatInput.value.trim();
+            
+            if (!question) return;
+
+            // Add user message to history
+            conversationHistory.push({ user: question, ai: '' });
+            displayChatMessage(question, 'user');
+            
+            // Clear input
+            chatInput.value = '';
+            
+            // Show loading
+            const loadingMsg = displayChatMessage('🤖 分析中...', 'ai');
+            
+            try {
+                const response = await sendToClaudeAPI(question);
+                
+                // Remove loading message
+                loadingMsg.remove();
+                
+                if (response && response.success) {
+                    let aiResponse = '';
+                    
+                    if (response.data && response.data.content) {
+                        // Handle Claude API response format
+                        if (Array.isArray(response.data.content)) {
+                            aiResponse = response.data.content[0]?.text || 'AI応答を取得できませんでした。';
+                        } else {
+                            aiResponse = response.data.content || 'AI応答を取得できませんでした。';
+                        }
+                    } else if (response.data && response.data.recommendations) {
+                        // Handle structured recommendations
+                        aiResponse = formatRecommendationResponse(response.data);
+                    } else {
+                        aiResponse = 'AI応答を取得できませんでした。';
+                    }
+                    
+                    // Update conversation history
+                    conversationHistory[conversationHistory.length - 1].ai = aiResponse;
+                    displayChatMessage(aiResponse, 'ai');
+                } else {
+                    displayChatMessage('申し訳ございません。AI応答の生成に失敗しました。', 'ai');
+                }
+            } catch (error) {
+                console.error('Chat error:', error);
+                loadingMsg.remove();
+                displayChatMessage('エラーが発生しました。もう一度お試しください。', 'ai');
+            }
+        }
+
+        function displayChatMessage(message, sender) {
+            const chatHistory = document.getElementById('chatHistory');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${sender}`;
+            
+            if (sender === 'user') {
+                messageDiv.innerHTML = `<strong>👤 あなた:</strong><br>${message}`;
+            } else {
+                messageDiv.innerHTML = `<strong>🤖 AIソムリエ:</strong><br>${message}`;
+            }
+            
+            chatHistory.appendChild(messageDiv);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+            
+            return messageDiv;
+        }
+
+        async function sendToClaudeAPI(question) {
+            try {
+                console.log('Claude API呼び出し開始:', question);
+                
+                const response = await fetch('/.netlify/functions/claude-api', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        minPrice: parseInt(document.getElementById('minPrice').value) * 1000,
+                        maxPrice: parseInt(document.getElementById('maxPrice').value) * 1000,
+                        tasteX: currentPosition.x,
+                        tasteY: currentPosition.y,
+                        additionalPreferences: `${question}
+
+【店舗在庫情報】
+${JSON.stringify(whiskyData, null, 2)}
+
+【会話履歴】
+${conversationHistory.map(chat => `顧客: ${chat.user}\nソムリエ: ${chat.ai}`).join('\n')}
+
+【追加指示】
+あなたは「昼の月バー」の専門ウィスキーソムリエです。店舗にある在庫を優先的に提案し、親しみやすく専門的な回答をお願いします。`
+                    })
+                });
+
+                console.log('API Response Status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`API Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                console.log('Claude API Response:', data);
+                
+                return data;
+            } catch (error) {
+                console.error('Claude API Error:', error);
+                return null;
+            }
+        }
+
+        function formatRecommendationResponse(data) {
+            if (!data.recommendations) return data.summary || 'おすすめ情報を取得できませんでした。';
+            
+            let response = `🥃 おすすめウィスキー:\n\n`;
+            
+            data.recommendations.forEach((rec, index) => {
+                response += `${index + 1}. **${rec.name}**\n`;
+                response += `   適合度: ${rec.matchScore}%\n`;
+                response += `   ${rec.reason}\n\n`;
+            });
+            
+            if (data.summary) {
+                response += `💡 ${data.summary}`;
+            }
+            
+            return response;
         }
         
         function setupPriceSliders() {
@@ -990,26 +1042,26 @@
                 recognition.onstart = function() {
                     const btn = document.getElementById('voiceInputBtn');
                     btn.classList.add('recording');
-                    btn.textContent = '🔴';
+                    btn.innerHTML = '🔴';
                 };
                 
                 recognition.onresult = function(event) {
                     const transcript = event.results[0][0].transcript;
-                    const input = document.getElementById('chatInput');
-                    input.value = transcript;
+                    const chatInput = document.getElementById('chatInput');
+                    chatInput.value = transcript;
                 };
                 
                 recognition.onend = function() {
                     const btn = document.getElementById('voiceInputBtn');
                     btn.classList.remove('recording');
-                    btn.textContent = '🎤';
+                    btn.innerHTML = '🎤';
                 };
                 
                 recognition.onerror = function(event) {
                     console.error('Speech recognition error:', event.error);
                     const btn = document.getElementById('voiceInputBtn');
                     btn.classList.remove('recording');
-                    btn.textContent = '🎤';
+                    btn.innerHTML = '🎤';
                 };
             }
         }
@@ -1024,117 +1076,6 @@
             } else {
                 alert('音声認識はこのブラウザでサポートされていません。Chrome、Edge、またはSafariをご利用ください。');
             }
-        }
-        
-        async function sendChatMessage() {
-            const input = document.getElementById('chatInput');
-            const question = input.value.trim();
-            
-            if (!question) return;
-            
-            // Add user message to history
-            conversationHistory.push({
-                user: question,
-                ai: null,
-                timestamp: new Date()
-            });
-            
-            // Clear input
-            input.value = '';
-            
-            // Show loading
-            const chatHistory = document.getElementById('chatHistory');
-            const chatMessages = document.getElementById('chatMessages');
-            
-            chatHistory.style.display = 'block';
-            
-            // Add user message to UI
-            const userMessage = document.createElement('div');
-            userMessage.className = 'chat-message user';
-            userMessage.innerHTML = `
-                <div class="sender">👤 あなた:</div>
-                <div>${question}</div>
-            `;
-            chatMessages.appendChild(userMessage);
-            
-            // Add loading AI message
-            const loadingMessage = document.createElement('div');
-            loadingMessage.className = 'chat-message ai';
-            loadingMessage.innerHTML = `
-                <div class="sender">🤖 AIソムリエ:</div>
-                <div>分析中...</div>
-            `;
-            chatMessages.appendChild(loadingMessage);
-            
-            // Scroll to bottom
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            
-            try {
-                // Send to Claude API
-                const response = await sendToClaude(question);
-                
-                // Update the last conversation history entry
-                conversationHistory[conversationHistory.length - 1].ai = response;
-                
-                // Update AI message in UI
-                loadingMessage.innerHTML = `
-                    <div class="sender">🤖 AIソムリエ:</div>
-                    <div>${response}</div>
-                `;
-                
-            } catch (error) {
-                console.error('Chat error:', error);
-                loadingMessage.innerHTML = `
-                    <div class="sender">🤖 AIソムリエ:</div>
-                    <div>申し訳ございません。現在、回答を生成することができません。しばらくしてから再度お試しください。</div>
-                `;
-            }
-            
-            // Scroll to bottom
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-        
-        async function sendToClaude(question) {
-            const prompt = `
-あなたは「昼の月バー」の専門ウィスキーソムリエです。
-
-【店舗の在庫情報】
-${JSON.stringify(whiskyData, null, 2)}
-
-【これまでの会話】
-${conversationHistory.slice(-5).map(chat => 
-    `顧客: ${chat.user}${chat.ai ? '\nソムリエ: ' + chat.ai : ''}`
-).join('\n\n')}
-
-【顧客からの新しい質問】
-"${question}"
-
-以下を考慮して、専門ソムリエとして回答してください：
-✅ 店舗にある銘柄を優先的に紹介
-✅ 価格、産地、味覚プロファイルの詳細説明
-✅ 一般的なウィスキー知識も交える
-✅ 親しみやすく、でも専門的な回答
-✅ 具体的な提案とアドバイス
-✅ 絵文字を適度に使用して親しみやすく
-`;
-            
-            const response = await fetch('/.netlify/functions/claude-api', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    question: prompt,
-                    context: 'whisky_chat'
-                })
-            });
-            
-            if (!response.ok) {
-                throw new Error('API call failed');
-            }
-            
-            const data = await response.json();
-            return data.response || data.content || '申し訳ございません。回答を生成できませんでした。';
         }
         
         async function loadWhiskyData() {
@@ -1232,18 +1173,23 @@ ${conversationHistory.slice(-5).map(chat =>
                     datasets: [{
                         label: 'あなたの好み',
                         data: userProfileData,
-                        fill: true,
                         backgroundColor: 'rgba(78, 205, 196, 0.2)',
-                        borderColor: 'rgba(78, 205, 196, 1)',
-                        pointBackgroundColor: 'rgba(78, 205, 196, 1)',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: 'rgba(78, 205, 196, 1)'
+                        borderColor: '#4ecdc4',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#4ecdc4',
+                        pointRadius: 5
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#ffffff'
+                            }
+                        }
+                    },
                     scales: {
                         r: {
                             beginAtZero: true,
@@ -1253,27 +1199,13 @@ ${conversationHistory.slice(-5).map(chat =>
                                 stepSize: 1
                             },
                             grid: {
-                                display: true,
                                 color: 'rgba(255, 255, 255, 0.1)'
                             },
                             angleLines: {
-                                display: true,
                                 color: 'rgba(255, 255, 255, 0.1)'
                             },
                             pointLabels: {
-                                color: 'rgba(255, 255, 255, 0.8)',
-                                font: {
-                                    size: 12
-                                }
-                            }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            display: true,
-                            position: 'bottom',
-                            labels: {
-                                color: 'rgba(255, 255, 255, 0.8)',
+                                color: '#ffffff',
                                 font: {
                                     size: 12
                                 }
@@ -1285,199 +1217,159 @@ ${conversationHistory.slice(-5).map(chat =>
         }
         
         async function getRecommendation() {
-            const button = document.getElementById('getRecommendation');
-            const loading = document.getElementById('loadingIndicator');
-            const splitContainer = document.getElementById('splitLayoutContainer');
-            
-            // Show loading
-            button.disabled = true;
-            loading.style.display = 'block';
-            splitContainer.style.display = 'none';
+            showLoadingIndicator();
             
             try {
-                // Generate recommendations based on user preferences and chat history
-                const recommendations = await generateRecommendations();
+                // Simulate AI recommendation process
+                await new Promise(resolve => setTimeout(resolve, 2000));
                 
-                // Display results
+                // Calculate recommendations based on user preferences and chat history
+                const recommendations = calculateRecommendations();
+                
                 displayRecommendations(recommendations);
-                
-                // Show results
-                loading.style.display = 'none';
-                splitContainer.style.display = 'grid';
-                
+                showSplitLayout();
             } catch (error) {
                 console.error('Recommendation error:', error);
-                loading.style.display = 'none';
-                alert('エラーが発生しました。しばらくしてから再度お試しください。');
-            } finally {
-                button.disabled = false;
+                hideLoadingIndicator();
+                alert('推薦の生成中にエラーが発生しました。');
             }
         }
         
-        async function generateRecommendations() {
+        function calculateRecommendations() {
             const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
             const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
             
             // Filter by price range
-            const affordableWhiskies = whiskyData.filter(whisky => {
+            const filteredWhiskies = whiskyData.filter(whisky => {
                 const price = parseInt(whisky.price.replace(/[¥,]/g, ''));
                 return price >= minPrice && price <= maxPrice;
             });
             
-            // Calculate scores based on taste preferences and chat history
-            const scoredWhiskies = affordableWhiskies.map(whisky => {
+            // Calculate match scores
+            const scoredWhiskies = filteredWhiskies.map(whisky => {
                 let score = 0;
+                const profile = whisky.taste_profile;
                 
-                // Base taste profile matching
-                if (whisky.taste_profile) {
-                    const userFruity = (1 - currentPosition.y) * 5;
-                    const userSmoky = currentPosition.y * 5;
-                    const userBody = currentPosition.x * 5;
-                    
-                    const tasteDistance = Math.sqrt(
-                        Math.pow(whisky.taste_profile.fruity - userFruity, 2) +
-                        Math.pow(whisky.taste_profile.smoky - userSmoky, 2) +
-                        Math.pow(whisky.taste_profile.body - userBody, 2)
-                    );
-                    
-                    score = 100 - (tasteDistance * 10);
-                }
+                // Base taste matching
+                const userX = currentPosition.x * 5;
+                const userY = currentPosition.y * 5;
+                const whiskyX = profile.body || 2.5;
+                const whiskyY = profile.smoky || 2.5;
+                
+                const distance = Math.sqrt(Math.pow(userX - whiskyX, 2) + Math.pow(userY - whiskyY, 2));
+                score = Math.max(0, 100 - (distance * 20));
                 
                 // Chat history bonus
                 conversationHistory.forEach(chat => {
-                    if (chat.user.toLowerCase().includes(whisky.name.toLowerCase()) ||
-                        chat.user.toLowerCase().includes(whisky.region.toLowerCase())) {
+                    if (chat.user.toLowerCase().includes(whisky.name.toLowerCase().split(' ')[0])) {
                         score += 20;
                     }
                 });
                 
                 return {
                     ...whisky,
-                    matchScore: Math.max(0, Math.min(100, score))
+                    matchScore: Math.min(100, Math.round(score))
                 };
             });
             
             // Sort by score and return top 5
-            return scoredWhiskies.sort((a, b) => b.matchScore - a.matchScore).slice(0, 5);
+            return scoredWhiskies
+                .sort((a, b) => b.matchScore - a.matchScore)
+                .slice(0, 5);
         }
         
         function displayRecommendations(recommendations) {
-            const contentDiv = document.getElementById('recommendationContent');
             const summaryDiv = document.getElementById('recommendationSummary');
+            const contentDiv = document.getElementById('recommendationContent');
             
-            // Generate summary
-            const avgScore = recommendations.reduce((sum, r) => sum + r.matchScore, 0) / recommendations.length;
-            const chatBonus = conversationHistory.length > 0 ? 'チャット履歴を考慮済み' : '';
-            
+            // Display summary
+            const avgScore = recommendations.reduce((sum, rec) => sum + rec.matchScore, 0) / recommendations.length;
             summaryDiv.innerHTML = `
                 <div class="recommendation-summary">
-                    <h3><span class="emoji-icon">🎯</span>AI分析サマリー</h3>
-                    <p>あなたの好みプロファイル: ${(currentPosition.x * 100).toFixed(0)}% ヘビー、${(currentPosition.y * 100).toFixed(0)}% スモーキー</p>
-                    <p>平均適合度: ${avgScore.toFixed(1)}% - ${avgScore > 80 ? '高い' : avgScore > 60 ? '中程度の' : '基本的な'}マッチング率</p>
-                    ${chatBonus ? `<p>✨ ${chatBonus}</p>` : ''}
+                    <h3>🤖 AI分析サマリー</h3>
+                    <p>あなたの好みプロファイル分析が完了しました。平均適合度: ${avgScore.toFixed(1)}%</p>
+                    <p>チャット履歴も分析に反映されています。</p>
                 </div>
             `;
             
-            // Generate recommendations list
-            let html = '';
+            // Display recommendations
+            let contentHTML = '';
             recommendations.forEach((whisky, index) => {
-                const isTopRecommendation = index === 0;
-                html += `
-                    <div class="whisky-card ${isTopRecommendation ? 'featured' : ''}" onclick="selectWhiskyForChart('${whisky.id}')">
-                        ${isTopRecommendation ? '<div class="featured-label"><span class="emoji-icon">⭐</span>最もおすすめ</div>' : ''}
-                        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 12px;">
-                            <div>
-                                <h3 style="font-size: 18px; font-weight: bold; margin-bottom: 8px;">${whisky.name}</h3>
-                                <div style="font-size: 14px; color: #4ecdc4; margin-bottom: 4px;">
-                                    <span class="emoji-icon">💰</span>価格: ${whisky.price} | 
-                                    <span class="emoji-icon">🌍</span>産地: ${whisky.region}
-                                </div>
-                                <div style="font-size: 12px; color: rgba(255, 255, 255, 0.7);">
-                                    分類: ${whisky.subcategory}
-                                </div>
-                            </div>
-                            <div style="text-align: right;">
-                                <div style="font-size: 20px; font-weight: bold; color: #ff6b6b;">
-                                    ${whisky.matchScore.toFixed(0)}%
-                                </div>
-                                <div style="font-size: 12px; color: rgba(255, 255, 255, 0.7);">
-                                    適合度
-                                </div>
-                            </div>
+                const featured = index === 0 ? 'featured' : '';
+                const label = index === 0 ? '<div class="featured-label">⭐ 最もおすすめ</div>' : '';
+                
+                contentHTML += `
+                    <div class="whisky-card ${featured}" onclick="showWhiskyProfile('${whisky.id}')">
+                        ${label}
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-bold">${whisky.name}</h3>
+                            <span class="text-lg font-bold text-green-400">${whisky.price}</span>
                         </div>
-                        <div style="font-size: 14px; line-height: 1.4; color: rgba(255, 255, 255, 0.9);">
-                            ${whisky.tastingNote_ja}
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-300">${whisky.region} | ${whisky.subcategory}</span>
+                            <span class="text-sm font-bold text-yellow-400">適合度: ${whisky.matchScore}%</span>
                         </div>
+                        <p class="text-sm mb-2">${whisky.tastingNote_ja}</p>
                     </div>
                 `;
             });
             
-            contentDiv.innerHTML = html;
-            
-            // Update chart with first recommendation
-            if (recommendations.length > 0) {
-                selectWhiskyForChart(recommendations[0].id);
-            }
+            contentDiv.innerHTML = contentHTML;
+            hideLoadingIndicator();
         }
         
-        function selectWhiskyForChart(whiskyId) {
-            const selectedWhisky = whiskyData.find(w => w.id === whiskyId);
-            if (!selectedWhisky || !selectedWhisky.taste_profile) return;
+        function showWhiskyProfile(whiskyId) {
+            const whisky = whiskyData.find(w => w.id === whiskyId);
+            if (!whisky || !chartInstance) return;
             
             const whiskyProfile = [
-                selectedWhisky.taste_profile.fruity,
-                selectedWhisky.taste_profile.spicy,
-                selectedWhisky.taste_profile.body,
-                selectedWhisky.taste_profile.smoky,
-                selectedWhisky.taste_profile.sweetness,
-                selectedWhisky.taste_profile.complexity
+                whisky.taste_profile.fruity || 2.5,
+                whisky.taste_profile.spicy || 2.5,
+                whisky.taste_profile.body || 2.5,
+                whisky.taste_profile.smoky || 2.5,
+                whisky.taste_profile.sweetness || 2.5,
+                whisky.taste_profile.complexity || 2.5
             ];
             
-            // Update chart title
-            document.getElementById('chartTitle').textContent = `あなたの好み vs ${selectedWhisky.name}`;
-            
-            // Update chart data
+            // Update chart
             chartInstance.data.datasets = [
                 {
                     label: 'あなたの好み',
                     data: userProfileData,
-                    fill: true,
                     backgroundColor: 'rgba(78, 205, 196, 0.2)',
-                    borderColor: 'rgba(78, 205, 196, 1)',
-                    pointBackgroundColor: 'rgba(78, 205, 196, 1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(78, 205, 196, 1)'
+                    borderColor: '#4ecdc4',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#4ecdc4',
+                    pointRadius: 5
                 },
                 {
-                    label: selectedWhisky.name,
+                    label: whisky.name,
                     data: whiskyProfile,
-                    fill: true,
                     backgroundColor: 'rgba(255, 107, 107, 0.2)',
-                    borderColor: 'rgba(255, 107, 107, 1)',
-                    pointBackgroundColor: 'rgba(255, 107, 107, 1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(255, 107, 107, 1)'
+                    borderColor: '#ff6b6b',
+                    borderWidth: 2,
+                    pointBackgroundColor: '#ff6b6b',
+                    pointRadius: 5
                 }
             ];
             
             chartInstance.update();
-            
-            // Update selected card styling
-            document.querySelectorAll('.whisky-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            event.currentTarget.classList.add('selected');
+            document.getElementById('chartTitle').textContent = `あなたの好み vs ${whisky.name}`;
+        }
+        
+        function showSplitLayout() {
+            document.getElementById('splitLayoutContainer').style.display = 'grid';
+        }
+        
+        function showLoadingIndicator() {
+            document.getElementById('loadingIndicator').style.display = 'block';
+        }
+        
+        function hideLoadingIndicator() {
+            document.getElementById('loadingIndicator').style.display = 'none';
         }
         
         function refreshRecommendation() {
-            // Clear chat history
-            conversationHistory = [];
-            document.getElementById('chatHistory').style.display = 'none';
-            document.getElementById('chatMessages').innerHTML = '';
-            
-            // Get new recommendation
             getRecommendation();
         }
     </script>
@@ -1485,9 +1377,9 @@ ${conversationHistory.slice(-5).map(chat =>
 
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDsJYW3d8n8T1ViZ9vFtI%2BGWWXA%2BrinCLEksPX086B4Gr2yEYXh83tZ9kfxLzDUmvpoAY7wYnD0uNpdjcv%2BLO4FnZ4Rh3K7Hayt%2FZfEaE6DTFHPKmXErzSxnNyjiOTGYY0zVxwnztpN4UZG5KGRpuXtrJFfS4jFxz2Yb4ytaqegz09CcJF%2BOngtI6cfwCsQPzyWzSfTmpASMFiPNklCuzml5r9cWQ1X7ucI3HYImdW8I%2FPUhiA6R72vJq5OxAx9gx%2FGwoA3naBruf8bHZ4Drv0CeVVlFwD3iUrd%2FksiS6w0fAzfeVziHuqDWhED94YYQWimqONEvHvVIbfgI1vyxUdNY7tZ4O7bCitSi80p22QujRYNLTdXkI5tqU0rJmdqr7wa2A9vSSPVfCwL2dhBWp4khJW%2BW9nBxZS1hXxRExPg%2FzZ0%2B%2BO%2B8kGr4ldJ1FpM%2BY9xgDyZ%2FtRrDOaBnKJUQY9GWs4cMUbjbHndttBHAq%2FUCc6corSDjFQfOx6gXVE8TI5IOGp6MEAswcyiXax%2FZ5PoY%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDlTfXmuK0yDgWBfOfqCty8QpuyNOyafmESa3PNWzRwtGZxznpcKBCS87v2VxvWo%2FGSkSCiM%2BZ%2F1HbQFqjP8BKfT6jiHIB6Gc%2FKV1T4x32SwavaV60F3x9qvvW0%2BAiiXJ3vL7uA4Gm4ZfBWXMLiejKy%2BbqihrPlEUjdvy5qeqniZHxKgph9mI9B4wmrZCluYULjiogHFEXLE2apew9QEtZWskg7TByIO6aW%2BkVTfPEA6yS6hzerAIWU3%2Bud%2FcfKPyFOb7CiWLPkuN7q8Uo5N0p47531PP%2B0FwZP9lOFLE%2B1cab5wSORi9Z%2BC14frJG4MpjvH6tDTDuW7Ev9Opryu5nk5Z2WETC7wnbCwC10xHeNJqIVns3W%2FxU3o1yYkmuQbCv6yNMh8iBasqNmSZwQvJMTSmkZyYRVxe9vEcSaTIIf6pz1Qv32vv0ZezoifRqnwqoBCleuUAmN%2FyO8RzoCjB7LvXFoS0jVjzhSFw4NLruaLIEiKFDg4%2BxjyFD7On0H2NJ4ldGBtLc5WIOuTCm6PhhRM%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDsJYW3d8n8T1ViZ9vFtI+GWWXA+rinCLEksPX086B4Gr2yEYXh83tZ9kfxLzDUmvpoAY7wYnD0uNpdjcv+LO4FnZ4Rh3K7Hayt/ZfEaE6DTFHPKmXErzSxnNyjiOTGYY0zVxwnztpN4UZG5KGRpuXtrJFfS4jFxz2Yb4ytaqegz09CcJF+OngtI6cfwCsQPzyWzSfTmpASMFiPNklCuzml5r9cWQ1X7ucI3HYImdW8I/PUhiA6R72vJq5OxAx9gx/GwoA3naBruf8bHZ4Drv0CeVVlFwD3iUrd/ksiS6w0fAzfeVziHuqDWhED94YYQWimqONEvHvVIbfgI1vyxUdNY7tZ4O7bCitSi80p22QujRYNLTdXkI5tqU0rJmdqr7wa2A9vSSPVfCwL2dhBWp4khJW+W9nBxZS1hXxRExPg/zZ0++O+8kGr4ldJ1FpM+Y9xgDyZ/tRrDOaBnKJUQY9GWs4cMUbjbHndttBHAq/UCc6corSDjFQfOx6gXVE8TI5IOGp6MEAswcyiXax/Z5PoY=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDlTfXmuK0yDgWBfOfqCty8QpuyNOyafmESa3PNWzRwtGZxznpcKBCS87v2VxvWo/GSkSCiM+Z/1HbQFqjP8BKfT6jiHIB6Gc/KV1T4x32SwavaV60F3x9qvvW0+AiiXJ3vL7uA4Gm4ZfBWXMLiejKy+bqihrPlEUjdvy5qeqniZHxKgph9mI9B4wmrZCluYULjiogHFEXLE2apew9QEtZWskg7TByIO6aW+kVTfPEA6yS6hzerAIWU3+ud/cfKPyFOb7CiWLPkuN7q8Uo5N0p47531PP+0FwZP9lOFLE+1cab5wSORi9Z+C14frJG4MpjvH6tDTDuW7Ev9Opryu5nk5Z2WETC7wnbCwC10xHeNJqIVns3W/xU3o1yYkmuQbCv6yNMh8iBasqNmSZwQvJMTSmkZyYRVxe9vEcSaTIIf6pz1Qv32vv0ZezoifRqnwqoBCleuUAmN/yO8RzoCjB7LvXFoS0jVjzhSFw4NLruaLIEiKFDg4+xjyFD7On0H2NJ4ldGBtLc5WIOuTCm6PhhRM=";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
