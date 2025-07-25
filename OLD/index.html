@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<!-- saved from url=(0143)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_ZT0hCicsRjiuZrtAne_lDg/whisky_sommelier_netlify_production.html -->
-<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>昼の月。AIソムリエ</title>
-    <link href="./昼の月。AIソムリエ_files/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="./昼の月。AIソムリエ_files/all.min.css">
-    <script src="./昼の月。AIソムリエ_files/chart.js.ダウンロード"></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             background-color: #000;
@@ -211,6 +211,7 @@
             border-radius: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
+            min-width: 50px;
         }
         .voice-input-btn:hover {
             background: rgba(78, 205, 196, 0.3);
@@ -219,8 +220,19 @@
             background: rgba(255, 107, 107, 0.3);
             border-color: #ff6b6b;
             color: #ff6b6b;
+            animation: pulse 1.5s infinite;
+        }
+        .voice-input-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
         
+        /* 左右分割レイアウトのスタイル */
         .split-layout {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -276,6 +288,7 @@
             color: #4ecdc4;
         }
         
+        /* カスタムフッター */
         .custom-footer {
             display: none;
             text-align: center;
@@ -285,6 +298,7 @@
             margin-top: 40px;
         }
         
+        /* レスポンシブデザイン */
         @media (max-width: 1024px) {
             .split-layout {
                 grid-template-columns: 1fr;
@@ -302,6 +316,7 @@
             }
         }
         
+        /* スクロールバーのスタイル */
         .recommendations-panel::-webkit-scrollbar {
             width: 8px;
         }
@@ -320,110 +335,13 @@
             background: rgba(78, 205, 196, 0.7);
         }
     </style>
-<style>
-    .genspark-notice-dialog {
-      display: flex;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 10001;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .genspark-notice-content {
-      background-color: white;
-      border-radius: 8px;
-      max-width: 600px;
-      width: 90%;
-      box-sizing: border-box;
-      padding: 10px 30px 30px 30px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      font-size: 16px;
-    }
-
-    .genspark-notice-title {
-      color: #000;
-      font-family: Arial;
-      font-size: 20px;
-      font-style: normal;
-      font-weight: 700;
-      line-height: 150%; 
-    }
-
-    .genspark-notice-list {
-      margin: 24px 0;
-      
-      color: #606366;
-      font-family: Arial;
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 150%;
-      padding-left: 12px;
-    }
-
-    .genspark-notice-list li {
-      margin-bottom: 12px;
-      list-style-type: disc;
-    }
-
-    .genspark-notice-list li a {
-      color: #606366;
-      text-decoration: underline;
-    }
-
-    .genspark-notice-checkbox {
-      display: flex;
-      align-items: center;
-      margin-top: 20px;
-      gap: 10px;
-
-      color: #232425;
-
-      font-family: Arial;
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-    }
-
-    .genspark-notice-actions {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
-      
-    .genspark-notice-ok {
-      color: #232425;
-
-      text-align: center;
-      font-family: Arial;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 700;
-      line-height: 150%; 
-
-      cursor: pointer;
-      display: flex;
-      height: 40px;
-      padding: 6px 14px;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      align-self: stretch;
-      border-radius: 8px;
-      border: 1px solid #000;
-      box-sizing: border-box;
-      width: 100%;
-    }
-  </style></head>
+</head>
 <body>
     <div class="header-container">
-        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjAiIHN0cm9rZT0iIzRlY2RjNCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjx0ZXh0IHg9IjI1IiB5PSIzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzRlY2RjNCIgZm9udC1zaXplPSIxMiI+5piI44Gu5pyIPC90ZXh0Pgo8L3N2Zz4K" alt="NH Bar Logo" class="logo" onerror="this.src=&#39;data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjAiIHN0cm9rZT0iIzRlY2RjNCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjx0ZXh0IHg9IjI1IiB5PSIzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzRlY2RjNCIgZm9udC1zaXplPSIxMiI+5piI44Gu5pyIPC90ZXh0Pgo8L3N2Zz4K&#39;;">
+         <img src="./NH_bar_logo_fin_white.png"
+     alt="NH Bar Logo" 
+     class="logo"
+     onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMjUiIGN5PSIyNSIgcj0iMjAiIHN0cm9rZT0iIzRlY2RjNCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+Cjx0ZXh0IHg9IjI1IiB5PSIzMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZmlsbD0iIzRlY2RjNCIgZm9udC1zaXplPSIxMiI+5piI44Gu5pyIPC90ZXh0Pgo8L3N2Zz4K';">
         <h1 class="header-title">昼の月。AIソムリエ</h1>
     </div>
     
@@ -489,10 +407,12 @@
                 <h3 class="text-lg font-bold mb-2">追加の好みや要望</h3>
                 <div class="flex gap-2">
                     <textarea id="additionalPreferences" class="flex-1 p-3 bg-gray-800 border border-gray-600 rounded-lg" placeholder="例：バニラがある、甘い感じの味がいい。"></textarea>
-                    <button id="voiceInputBtn" class="voice-input-btn">
+                    <button id="voiceInputBtn" class="voice-input-btn" title="音声入力">
                         <i class="fas fa-microphone"></i>
                     </button>
                 </div>
+                <div id="voiceError" class="error" style="display: none;"></div>
+                <div id="voiceSuccess" class="success" style="display: none;"></div>
             </div>
         </div>
         
@@ -518,7 +438,9 @@
             <div id="progressPercentage" class="progress-percentage">0%</div>
         </div>
         
+        <!-- 左右分割レイアウト -->
         <div id="splitLayoutContainer" style="display: none;" class="split-layout">
+            <!-- 左側：AI提案結果 -->
             <div class="recommendations-panel">
                 <h2 class="text-2xl font-bold mb-4"><i class="fas fa-wine-glass-alt mr-2"></i>AI提案結果</h2>
                 <div id="recommendationSummary"></div>
@@ -531,6 +453,7 @@
                 </div>
             </div>
             
+            <!-- 右側：味覚プロファイル比較 -->
             <div class="chart-panel">
                 <h2 class="text-2xl font-bold mb-4"><i class="fas fa-balance-scale mr-2"></i>味覚プロファイル比較</h2>
                 <div class="chart-container">
@@ -543,12 +466,14 @@
             </div>
         </div>
         
+        <!-- カスタムフッター -->
         <div class="custom-footer">
             Powered by Nebula Hirozon Technology
         </div>
     </div>
     
     <script>
+        // ===== レーダーチャート管理システム =====
         class RadarChartManager {
             constructor() {
                 this.chartInstance = null;
@@ -571,7 +496,9 @@
                         throw new Error('Canvas context取得に失敗');
                     }
 
+                    // 既存のチャートを破棄
                     this.destroyChart();
+                    
                     this.isInitialized = true;
                     
                 } catch (error) {
@@ -585,20 +512,17 @@
                     this.chartInstance.destroy();
                     this.chartInstance = null;
                 }
-                if (this.ctx) {
-                    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-                }
             }
 
             createUserProfile() {
                 const position = whiskySystem.getCurrentPosition();
                 this.userProfileData = [
-                    (1 - position.y) * 5,
-                    Math.random() * 2 + 2.5,
-                    position.x * 5,
-                    position.y * 5,
-                    Math.random() * 2 + 2.5,
-                    Math.random() * 2 + 2.5
+                    (1 - position.y) * 5,    // フルーティー（Y軸反転）
+                    Math.random() * 2 + 2.5, // スパイシー
+                    position.x * 5,          // ボディ（X軸）
+                    position.y * 5,          // スモーキー（Y軸）
+                    Math.random() * 2 + 2.5, // 甘さ
+                    Math.random() * 2 + 2.5  // 複雑さ
                 ];
                 
                 return this.userProfileData;
@@ -611,12 +535,15 @@
                 }
 
                 try {
+                    // ユーザープロファイルがない場合は作成
                     if (!this.userProfileData) {
                         this.createUserProfile();
                     }
 
+                    // 既存チャートを破棄
                     this.destroyChart();
 
+                    // データセットを構築
                     const datasets = [{
                         label: 'あなたの好み',
                         data: [...this.userProfileData],
@@ -631,6 +558,7 @@
                         pointRadius: 5
                     }];
 
+                    // ウィスキーデータがある場合は追加
                     if (whiskyName && whiskyData) {
                         datasets.push({
                             label: whiskyName,
@@ -649,6 +577,7 @@
                         this.currentWhiskyData = whiskyData;
                     }
 
+                    // Chart.jsでチャート作成
                     this.chartInstance = new Chart(this.ctx, {
                         type: 'radar',
                         data: {
@@ -716,17 +645,31 @@
             }
         }
 
+        // ===== ウィスキーデータ管理システム =====
         class WhiskyDataManager {
             constructor() {
-                this.whiskyData = [
-                    {id: "1", name: "タリスカー　44年　オフィシャルボトル", price: "¥84,000", amount: "¥590,000", category: "Whiskey", region: "Scotland (Highlands)", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "タリスカー蒸溜所からの非常に希少な熟成表現。強い海のキャラクターに、海塩、ピート煙、胡椒のような複雑な層が特徴で、深いハチミツの甘さ、ドライフルーツ、オークスパイスとバランスが取れています。長期熟成により驚くべき深みと長く温かい余韻が生まれています。"},
-                    {id: "2", name: "ポートエレン　２５年　one of only bottles", price: "¥21,000", amount: "¥150,000", category: "Whiskey", region: "Scotland", subcategory: "Islay Single Malt Scotch Whisky", tastingNote_ja: "ポートエレン25年は希少で高く評価されるアイラウイスキーで、複雑な海洋性の特徴を持ちます。強烈なピートスモークにデリケートな柑橘類の香り、バニラ、海塩のバランスが特徴。口当たりは蜂蜜の甘さ、ドライフルーツ、オークスパイスの層が広がり、長く続くスモーキーなエレガンスと微かな薬草のニュアンスで締めくくられます。"},
-                    {id: "3", name: "マッカラン １９９０年　SAMAROLI", price: "¥13,000", amount: "¥90,000", category: "Whiskey", region: "Scotland", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "サマローリ社によってボトリングされた1990年のマッカランは、豊かなシェリーの影響を持ち、ドライフルーツ、オークスパイス、蜂蜜のノートが特徴です。トフィー、バニラ、ナツメグの複雑な味わいがあり、オーク、ダークチョコレート、かすかなオレンジピールの長く温かみのある余韻が楽しめます。"}
-                ];
+                this.whiskyData = [];
                 this.priceIndex = new Map();
                 this.regionIndex = new Map();
                 this.categoryIndex = new Map();
                 this.tasteScores = new Map();
+            }
+
+            loadDefaultData() {
+                // 108本のウィスキーデータを読み込み
+                this.whiskyData = [
+                    {id: "1", name: "タリスカー　44年　オフィシャルボトル", price: "¥84,000", amount: "¥590,000", category: "Whiskey", region: "Scotland (Highlands)", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "タリスカー蒸溜所からの非常に希少な熟成表現。強い海のキャラクターに、海塩、ピート煙、胡椒のような複雑な層が特徴で、深いハチミツの甘さ、ドライフルーツ、オークスパイスとバランスが取れています。長期熟成により驚くべき深みと長く温かい余韻が生まれています。"},
+                    {id: "2", name: "ポートエレン　２５年　one of only bottles", price: "¥21,000", amount: "¥150,000", category: "Whiskey", region: "Scotland", subcategory: "Islay Single Malt Scotch Whisky", tastingNote_ja: "ポートエレン25年は希少で高く評価されるアイラウイスキーで、複雑な海洋性の特徴を持ちます。強烈なピートスモークにデリケートな柑橘類の香り、バニラ、海塩のバランスが特徴。口当たりは蜂蜜の甘さ、ドライフルーツ、オークスパイスの層が広がり、長く続くスモーキーなエレガンスと微かな薬草のニュアンスで締めくくられます。"},
+                    {id: "3", name: "マッカラン １９９０年　SAMAROLI", price: "¥13,000", amount: "¥90,000", category: "Whiskey", region: "Scotland", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "サマローリ社によってボトリングされた1990年のマッカランは、豊かなシェリーの影響を持ち、ドライフルーツ、オークスパイス、蜂蜜のノートが特徴です。トフィー、バニラ、ナツメグの複雑な味わいがあり、オーク、ダークチョコレート、かすかなオレンジピールの長く温かみのある余韻が楽しめます。"},
+                    {id: "4", name: "ボウモア　26年　ダンカンテイラー", price: "¥16,000", amount: "¥110,000", category: "Whiskey", region: "Scotland (Islay)", subcategory: "Islay Single Malt Scotch Whisky", tastingNote_ja: "ダンカンテイラー社のこの26年熟成ボウモアは、アイラ島特有のピートスモークに、海の塩気、蜂蜜の甘さ、トロピカルフルーツのニュアンスが複雑に層を成しています。長期熟成によって豊かな樽の影響、バニラ、そして洗練された深みと長く温かい余韻が特徴です。"},
+                    {id: "5", name: "ローズバンク　1990年　イエコーン", price: "¥17,000", amount: "¥121,000", category: "Whiskey", region: "Scotland", subcategory: "Lowland Single Malt Scotch Whisky", tastingNote_ja: "ローズバンク1990年は、繊細な花の香り、柑橘系のノート、軽い蜂蜜の甘さを持つ希少なローランド産シングルモルトです。口当たりは優雅な草のニュアンス、バニラ、レモンの皮、そして穏やかなスパイスが感じられます。フィニッシュはクリーンで洗練され、控えめなオークの影響と共に中程度の長さが特徴です。"},
+                    {id: "6", name: "BAR BARNS ブレンデッド 50年", price: "¥16,000", amount: "¥110,000", category: "Whiskey", region: "Japan", subcategory: "Japanese Blended Whisky", tastingNote_ja: "ウィスキーファインド社より… 半世紀の時が生み出した奇跡… 数珠の50年寝かせ、超長期熟成ウィスキー。キンカン、マンダリンオレンジ、アプリコットブランデー、柿、カリン、白檀、微かにトリュフの香り。カリン酒のゼリー、ワクシー、シルキー、少しシナモン、ビワ、パフュームの味わい。栗、ビワのゼリー、ダージリンティー、ドライオレンジ、ココア、マシュマロ、すみれの花などの余韻。"},
+                    {id: "7", name: "SPRINGBANK21年 2022年", price: "¥16,000", amount: "¥115,000", category: "Whiskey", region: "Scotland", subcategory: "Campbeltown Single Malt Scotch Whisky", tastingNote_ja: "トロピカルフルーツ、バニラ、蜂蜜、そして穏やかなピートスモークの豊かで複雑な香り。口当たりは甘いモルト、ドライフルーツ、オークスパイス、そして海塩のヒントが層になって広がります。フィニッシュはスプリングバンク蒸溜所特有の海の影響を感じる長く温かみのある余韻が続きます。"},
+                    {id: "8", name: "BUNNAHABHAIN12年　８０年代", price: "¥3,000", amount: "¥20,000", category: "Whiskey", region: "Scotland (Islay)", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "1980年代のブナハーブン12年は、典型的なアイラモルトよりもピートが控えめで、穏やかな海の特徴を持っています。ナッティなシェリー、ドライフルーツ、バニラ、キャラメルの風味に、微かな海塩、軽いハチミツ、トーストしたオークが調和しています。フィニッシュはスムーズで、ナッツとスパイスの余韻が続きます。"},
+                    {id: "9", name: "ABERFELDY18年1999", price: "¥4,000", amount: "¥30,000", category: "Whiskey", region: "Scotland", subcategory: "Highland Single Malt Scotch", tastingNote_ja: "アバフェルディ18年（1999年ヴィンテージ）は、蒸留所の特徴である豊かな蜂蜜とヘザーの風味を持ち、長期熟成による複雑さが加わっています。スイートモルト、バニラ、ドライフルーツ、そして穏やかなオークスパイスが感じられ、滑らかで余韻の長い後味とダークチョコレートの微妙な香りが特徴です。"},
+                    {id: "10", name: "ISLAY KILDALTON13年（アードベッグ）2009-2022", price: "¥5,000", amount: "¥38,000", category: "Whiskey", region: "Scotland (Islay)", subcategory: "Single Malt Scotch Whisky", tastingNote_ja: "アイラ島キルダルトン海岸のアードベッグ蒸溜所による13年熟成（2009-2022）の特徴的な強烈なピート香りが際立ち、海の塩気と柑橘系のノートとバランスしています。薬品的な特徴、タール、ヨードの風味に、バニラやトロピカルフルーツの甘みが底流に感じられます。フィニッシュは長く、スモーキーで、灰や香辛料のヒントを伴う複雑な余韻が続きます。"}
+                ];
+
                 this.buildIndexes();
             }
 
@@ -737,6 +680,7 @@
                 this.tasteScores.clear();
 
                 this.whiskyData.forEach(item => {
+                    // 価格インデックス
                     const price = parseInt(item.price.replace(/[¥,]/g, ''));
                     const priceRange = Math.floor(price / 5000) * 5000;
                     if (!this.priceIndex.has(priceRange)) {
@@ -744,16 +688,19 @@
                     }
                     this.priceIndex.get(priceRange).push(item);
 
+                    // 地域インデックス
                     if (!this.regionIndex.has(item.region)) {
                         this.regionIndex.set(item.region, []);
                     }
                     this.regionIndex.get(item.region).push(item);
 
+                    // カテゴリインデックス
                     if (!this.categoryIndex.has(item.subcategory)) {
                         this.categoryIndex.set(item.subcategory, []);
                     }
                     this.categoryIndex.get(item.subcategory).push(item);
 
+                    // 味覚スコアの事前計算
                     this.tasteScores.set(item.id, this.calculateTasteScore(item));
                 });
             }
@@ -805,12 +752,14 @@
             }
         }
 
+        // ===== イベント管理システム =====
         class EventManager {
             constructor() {
                 this.whiskyCardHandlers = new Map();
             }
 
             setupWhiskyCardEvents() {
+                // 既存のイベントリスナーをクリア
                 this.clearWhiskyCardEvents();
 
                 const whiskyCards = document.querySelectorAll('.whisky-card');
@@ -831,6 +780,7 @@
                     card.addEventListener('click', handler);
                     this.whiskyCardHandlers.set(card, handler);
 
+                    // ホバーエフェクト
                     card.addEventListener('mouseenter', () => {
                         card.style.transform = 'translateY(-4px)';
                         card.style.boxShadow = '0 8px 25px rgba(78, 205, 196, 0.3)';
@@ -853,12 +803,14 @@
             }
 
             handleWhiskyCardClick(whiskyName) {
+                // 既存の選択をクリア
                 document.querySelectorAll('.whisky-card').forEach(card => {
                     card.classList.remove('selected');
                     card.style.transform = 'translateY(0)';
                     card.style.boxShadow = '';
                 });
 
+                // 新しい選択を設定
                 const selectedCard = Array.from(document.querySelectorAll('.whisky-card')).find(card => {
                     const titleElement = card.querySelector('h4');
                     if (titleElement) {
@@ -874,6 +826,7 @@
                     selectedCard.style.boxShadow = '0 8px 25px rgba(78, 205, 196, 0.5)';
                 }
 
+                // ウィスキーデータを取得
                 const whiskyItem = whiskySystem.dataManager.getWhiskyByName(whiskyName);
                 if (whiskyItem) {
                     const tasteScore = whiskySystem.dataManager.getTasteScore(whiskyItem.id);
@@ -884,155 +837,197 @@
             }
         }
 
+        // ===== メインシステム =====
         class WhiskySystem {
             constructor() {
                 this.dataManager = new WhiskyDataManager();
                 this.radarChart = new RadarChartManager();
                 this.eventManager = new EventManager();
+                this.currentPosition = { x: 0.5, y: 0.5 };
+                this.isInitialized = false;
+                
+                // 音声認識関連プロパティ
                 this.recognition = null;
                 this.isRecording = false;
-                this.currentPosition = { x: 0.5, y: 0.5 };
-                this.axisLabels = {
-                    'light-heavy': { left: 'ライト', right: 'ヘビー' },
-                    'sweet-dry': { left: 'スイート', right: 'ドライ' },
-                    'young-aged': { left: '若い', right: '熟成' },
-                    'fruity-smoky': { top: 'フルーティー', bottom: 'スモーキー' },
-                    'mild-strong': { top: 'まろやか', bottom: '強烈' },
-                    'floral-peaty': { top: 'フローラル', bottom: 'ピート' }
-                };
-
-                this.init();
             }
 
-            async init() {
-                this.setupEventListeners();
-                this.initializeVoiceRecognition();
-                this.updatePriceSliders();
-                this.updateAxisLabels();
-                this.radarChart.initialize();
-                this.radarChart.showUserProfileOnly();
+            async initialize() {
+                try {
+                    // データ読み込み
+                    this.dataManager.loadDefaultData();
+                    
+                    // レーダーチャート初期化
+                    this.radarChart.initialize();
+                    
+                    // UI初期化
+                    this.updatePriceDisplay();
+                    this.updateAxisLabels();
+                    
+                    // 音声認識初期化
+                    this.initializeVoiceRecognition();
+                    
+                    // イベントリスナー設定
+                    this.setupEventListeners();
+                    
+                    this.isInitialized = true;
+                    
+                } catch (error) {
+                    console.error('WhiskySystem初期化エラー', error);
+                }
             }
 
             setupEventListeners() {
-                document.getElementById('getRecommendation').addEventListener('click', () => this.getRecommendations());
-                document.getElementById('refreshRecommendation').addEventListener('click', () => this.getRecommendations());
-                document.getElementById('getAnotherRecommendation').addEventListener('click', () => this.getRecommendations());
-                document.getElementById('voiceInputBtn').addEventListener('click', () => this.toggleVoiceInput());
-
-                document.getElementById('tasteMatrix').addEventListener('click', (e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const x = (e.clientX - rect.left) / rect.width;
-                    const y = (e.clientY - rect.top) / rect.height;
-                    
-                    this.currentPosition = { x: Math.max(0, Math.min(1, x)), y: Math.max(0, Math.min(1, y)) };
-                    
-                    const dot = document.getElementById('tasteDot');
-                    dot.style.left = `${this.currentPosition.x * 100}%`;
-                    dot.style.top = `${this.currentPosition.y * 100}%`;
-                    
-                    document.getElementById('coordinates').textContent = 
-                        `座標: X: ${this.currentPosition.x.toFixed(2)}, Y: ${this.currentPosition.y.toFixed(2)}`;
-                    
-                    this.radarChart.createUserProfile();
-                    this.radarChart.showUserProfileOnly();
-                });
-
-                document.getElementById('minPrice').addEventListener('input', () => this.updatePriceSliders());
-                document.getElementById('maxPrice').addEventListener('input', () => this.updatePriceSliders());
+                // 価格スライダー
+                document.getElementById('minPrice').addEventListener('input', () => this.updatePriceDisplay());
+                document.getElementById('maxPrice').addEventListener('input', () => this.updatePriceDisplay());
+                
+                // 軸選択
                 document.getElementById('xAxis').addEventListener('change', () => this.updateAxisLabels());
                 document.getElementById('yAxis').addEventListener('change', () => this.updateAxisLabels());
+                
+                // 味覚マトリックス
+                document.getElementById('tasteMatrix').addEventListener('click', (e) => this.handleMatrixClick(e));
+                
+                // ボタン
+                document.getElementById('getRecommendation').addEventListener('click', () => this.getRecommendation(false));
+                document.getElementById('refreshRecommendation').addEventListener('click', () => this.getRecommendation(true));
+                document.getElementById('getAnotherRecommendation').addEventListener('click', () => this.getRecommendation(false));
+                
+                // 音声入力
+                document.getElementById('voiceInputBtn').addEventListener('click', () => this.toggleVoiceInput());
+            }
+
+            updatePriceDisplay() {
+                const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+                const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
+                document.getElementById('minPriceDisplay').textContent = `¥${minPrice.toLocaleString()}`;
+                document.getElementById('maxPriceDisplay').textContent = `¥${maxPrice.toLocaleString()}`;
+            }
+
+            updateAxisLabels() {
+                const xValue = document.getElementById('xAxis').value;
+                const yValue = document.getElementById('yAxis').value;
+                
+                const xLabels = {
+                    'light-heavy': ['ライト', 'ヘビー'],
+                    'sweet-dry': ['スイート', 'ドライ'],
+                    'young-aged': ['若い', '熟成']
+                };
+                
+                const yLabels = {
+                    'fruity-smoky': ['フルーティー', 'スモーキー'],
+                    'mild-strong': ['まろやか', '強烈'],
+                    'floral-peaty': ['フローラル', 'ピート']
+                };
+                
+                document.getElementById('leftLabel').textContent = xLabels[xValue][0];
+                document.getElementById('rightLabel').textContent = xLabels[xValue][1];
+                document.getElementById('topLabel').textContent = yLabels[yValue][0];
+                document.getElementById('bottomLabel').textContent = yLabels[yValue][1];
+            }
+
+            handleMatrixClick(e) {
+                const rect = e.target.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+                
+                this.currentPosition = { 
+                    x: Math.max(0, Math.min(1, x)), 
+                    y: Math.max(0, Math.min(1, 1 - y))
+                };
+                
+                const tasteDot = document.getElementById('tasteDot');
+                tasteDot.style.left = (this.currentPosition.x * 100) + '%';
+                tasteDot.style.top = ((1 - this.currentPosition.y) * 100) + '%';
+                
+                document.getElementById('coordinates').textContent = 
+                    `座標: X: ${this.currentPosition.x.toFixed(2)}, Y: ${this.currentPosition.y.toFixed(2)}`;
+            }
+
+            getCurrentPosition() {
+                return this.currentPosition;
             }
 
             initializeVoiceRecognition() {
+                // Web Speech API対応チェック
                 if ('webkitSpeechRecognition' in window) {
                     this.recognition = new webkitSpeechRecognition();
-                    this.recognition.continuous = false;
-                    this.recognition.interimResults = false;
-                    this.recognition.lang = 'ja-JP';
-                    
-                    this.recognition.onstart = () => {
-                        console.log('音声認識開始');
-                        const btn = document.getElementById('voiceInputBtn');
-                        btn.classList.add('recording');
-                        btn.innerHTML = '<i class="fas fa-stop"></i>';
-                    };
-                    
-                    this.recognition.onresult = (event) => {
-                        const transcript = event.results[0][0].transcript;
-                        const textarea = document.getElementById('additionalPreferences');
-                        textarea.value += (textarea.value ? ' ' : '') + transcript;
-                        console.log('音声認識結果:', transcript);
-                    };
-                    
-                    this.recognition.onerror = (event) => {
-                        console.error('音声認識エラー:', event.error);
-                        this.handleVoiceError(event.error);
-                    };
-                    
-                    this.recognition.onend = () => {
-                        console.log('音声認識終了');
-                        this.isRecording = false;
-                        const btn = document.getElementById('voiceInputBtn');
-                        btn.classList.remove('recording');
-                        btn.innerHTML = '<i class="fas fa-microphone"></i>';
-                    };
                 } else if ('SpeechRecognition' in window) {
                     this.recognition = new SpeechRecognition();
-                    this.recognition.continuous = false;
-                    this.recognition.interimResults = false;
-                    this.recognition.lang = 'ja-JP';
-                    
-                    this.recognition.onstart = () => {
-                        console.log('音声認識開始');
-                        const btn = document.getElementById('voiceInputBtn');
-                        btn.classList.add('recording');
-                        btn.innerHTML = '<i class="fas fa-stop"></i>';
-                    };
-                    
-                    this.recognition.onresult = (event) => {
-                        const transcript = event.results[0][0].transcript;
-                        const textarea = document.getElementById('additionalPreferences');
-                        textarea.value += (textarea.value ? ' ' : '') + transcript;
-                        console.log('音声認識結果:', transcript);
-                    };
-                    
-                    this.recognition.onerror = (event) => {
-                        console.error('音声認識エラー:', event.error);
-                        this.handleVoiceError(event.error);
-                    };
-                    
-                    this.recognition.onend = () => {
-                        console.log('音声認識終了');
-                        this.isRecording = false;
-                        const btn = document.getElementById('voiceInputBtn');
-                        btn.classList.remove('recording');
-                        btn.innerHTML = '<i class="fas fa-microphone"></i>';
-                    };
                 } else {
                     console.warn('このブラウザは音声認識をサポートしていません');
-                    this.showError('お使いのブラウザは音声認識をサポートしていません。Chrome、Edge、またはSafariをご利用ください。');
-                }
-            }
-
-            toggleVoiceInput() {
-                if (!this.recognition) {
-                    this.showError('音声認識が利用できません。ブラウザを確認してください。');
+                    this.showVoiceError('お使いのブラウザは音声認識をサポートしていません。Chrome、Edge、またはSafariをご利用ください。');
+                    document.getElementById('voiceInputBtn').disabled = true;
                     return;
                 }
-                
-                if (this.isRecording) {
-                    this.recognition.stop();
+
+                // 音声認識設定
+                this.recognition.continuous = false;
+                this.recognition.interimResults = false;
+                this.recognition.lang = 'ja-JP';
+
+                // 開始イベント
+                this.recognition.onstart = () => {
+                    console.log('音声認識開始');
+                    this.isRecording = true;
+                    const btn = document.getElementById('voiceInputBtn');
+                    btn.classList.add('recording');
+                    btn.innerHTML = '<i class="fas fa-stop"></i>';
+                    btn.title = '音声入力停止';
+                    this.hideVoiceMessages();
+                };
+
+                // 結果取得
+                this.recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    const textarea = document.getElementById('additionalPreferences');
+                    const currentText = textarea.value;
+                    const newText = currentText ? currentText + ' ' + transcript : transcript;
+                    textarea.value = newText;
+                    
+                    console.log('音声認識結果:', transcript);
+                    this.showVoiceSuccess('音声が認識されました: "' + transcript + '"');
+                };
+
+                // エラー処理
+                this.recognition.onerror = (event) => {
+                    console.error('音声認識エラー:', event.error);
+                    this.handleVoiceError(event.error);
+                };
+
+                // 終了イベント
+                this.recognition.onend = () => {
+                    console.log('音声認識終了');
                     this.isRecording = false;
                     const btn = document.getElementById('voiceInputBtn');
                     btn.classList.remove('recording');
                     btn.innerHTML = '<i class="fas fa-microphone"></i>';
-                } else {
+                    btn.title = '音声入力';
+                };
+            }
+
+            toggleVoiceInput() {
+                if (!this.recognition) {
+                    this.showVoiceError('音声認識が利用できません。ブラウザを確認してください。');
+                    return;
+                }
+
+                if (this.isRecording) {
+                    // 録音停止
                     try {
+                        this.recognition.stop();
+                    } catch (error) {
+                        console.error('音声認識停止エラー:', error);
+                        this.handleVoiceError('stop-error');
+                    }
+                } else {
+                    // 録音開始
+                    try {
+                        this.hideVoiceMessages();
                         this.recognition.start();
-                        this.isRecording = true;
                     } catch (error) {
                         console.error('音声認識開始エラー:', error);
-                        this.handleVoiceError(error);
+                        this.handleVoiceError('start-error');
                     }
                 }
             }
@@ -1042,10 +1037,10 @@
                 
                 switch (error) {
                     case 'not-allowed':
-                        errorMessage = 'マイクへのアクセスが拒否されました。ブラウザの設定でマイクを許可してください。';
+                        errorMessage = 'マイクへのアクセスが拒否されました。ブラウザの設定でマイクを許可してください。\n\n許可方法：\n1. ブラウザのアドレスバー左側の🔒アイコンをクリック\n2. マイクの設定を「許可」に変更\n3. ページをリロードしてお試しください';
                         break;
                     case 'no-speech':
-                        errorMessage = '音声が検出されませんでした。もう一度お試しください。';
+                        errorMessage = '音声が検出されませんでした。マイクに向かって話してください。';
                         break;
                     case 'audio-capture':
                         errorMessage = 'マイクが見つかりません。マイクが接続されているか確認してください。';
@@ -1053,322 +1048,204 @@
                     case 'network':
                         errorMessage = 'ネットワークエラーが発生しました。インターネット接続を確認してください。';
                         break;
+                    case 'aborted':
+                        errorMessage = '音声認識が中断されました。';
+                        break;
+                    case 'start-error':
+                        errorMessage = '音声認識の開始に失敗しました。しばらく待ってから再度お試しください。';
+                        break;
+                    case 'stop-error':
+                        errorMessage = '音声認識の停止に失敗しました。';
+                        break;
                     default:
                         errorMessage = `音声認識エラーが発生しました: ${error}`;
                 }
                 
-                this.showError(errorMessage);
+                this.showVoiceError(errorMessage);
                 
+                // 録音状態をリセット
                 this.isRecording = false;
                 const btn = document.getElementById('voiceInputBtn');
                 btn.classList.remove('recording');
                 btn.innerHTML = '<i class="fas fa-microphone"></i>';
+                btn.title = '音声入力';
             }
 
-            async getRecommendations() {
+            showVoiceError(message) {
+                const errorElement = document.getElementById('voiceError');
+                const successElement = document.getElementById('voiceSuccess');
+                
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                successElement.style.display = 'none';
+                
+                // 10秒後に自動的に非表示
+                setTimeout(() => {
+                    errorElement.style.display = 'none';
+                }, 10000);
+            }
+
+            showVoiceSuccess(message) {
+                const errorElement = document.getElementById('voiceError');
+                const successElement = document.getElementById('voiceSuccess');
+                
+                successElement.textContent = message;
+                successElement.style.display = 'block';
+                errorElement.style.display = 'none';
+                
+                // 5秒後に自動的に非表示
+                setTimeout(() => {
+                    successElement.style.display = 'none';
+                }, 5000);
+            }
+
+            hideVoiceMessages() {
+                document.getElementById('voiceError').style.display = 'none';
+                document.getElementById('voiceSuccess').style.display = 'none';
+            }
+
+            async getRecommendation(isRefresh = false) {
+                if (!this.isInitialized) {
+                    alert('システムが初期化されていません。');
+                    return;
+                }
+
                 try {
+                    // UI状態を更新
                     this.showLoading(true);
-                    this.startProgress();
-
-                    const preferences = this.getCurrentPreferences();
-                    console.log('送信する好み設定:', preferences);
-
-                    const response = await fetch('/.netlify/functions/claude-api', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(preferences)
-                    });
-
-                    console.log('レスポンス状況:', response.status);
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`API呼び出しエラー: ${response.status} - ${errorData.error || 'Unknown error'}`);
+                    
+                    if (isRefresh) {
+                        this.clearRecommendations();
                     }
 
-                    const result = await response.json();
-                    console.log('Claude APIレスポンス:', result);
+                    // 価格帯でフィルタリング
+                    const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+                    const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
+                    const filteredData = this.dataManager.filterByPrice(minPrice, maxPrice);
 
-                    if (result.success && result.data) {
-                        this.displayRecommendations(result.data);
-                    } else {
-                        throw new Error('APIレスポンスの形式が不正です');
+                    if (filteredData.length === 0) {
+                        alert('指定された価格帯にウィスキーが見つかりません。');
+                        return;
                     }
+
+                    // 模擬的なAI推薦（実際のAPIの代わり）
+                    await this.simulateProgress();
+                    const recommendations = this.generateMockRecommendations(filteredData);
+                    
+                    // 結果を表示
+                    this.displayRecommendations(recommendations);
+                    
+                    // レーダーチャートを初期化
+                    setTimeout(() => {
+                        this.radarChart.showUserProfileOnly();
+                        this.eventManager.setupWhiskyCardEvents();
+                    }, 500);
 
                 } catch (error) {
-                    console.error('推薦取得エラー:', error);
-                    this.showError(`申し訳ございません。推薦システムにエラーが発生しました: ${error.message}`);
+                    console.error('AI推薦エラー', error);
+                    alert('推薦の取得に失敗しました: ' + error.message);
                 } finally {
                     this.showLoading(false);
-                    this.stopProgress();
                 }
             }
 
-            getCurrentPreferences() {
-                const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
-                const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
-                const additionalPreferences = document.getElementById('additionalPreferences').value;
-
-                return {
-                    minPrice,
-                    maxPrice,
-                    tasteX: this.currentPosition.x,
-                    tasteY: this.currentPosition.y,
-                    additionalPreferences
-                };
-            }
-
-            displayRecommendations(apiResponse) {
-                try {
-                    let recommendations = [];
-                    
-                    if (apiResponse.content && apiResponse.content[0] && apiResponse.content[0].text) {
-                        const responseText = apiResponse.content[0].text;
-                        console.log('Claude APIレスポンステキスト:', responseText);
-                        
-                        try {
-                            const jsonMatch = responseText.match(/\{[\s\S]*\}/);
-                            if (jsonMatch) {
-                                const parsedResponse = JSON.parse(jsonMatch[0]);
-                                recommendations = parsedResponse.recommendations || [];
-                            }
-                        } catch (parseError) {
-                            console.warn('JSON解析エラー、テキスト解析にフォールバック:', parseError);
-                            recommendations = this.parseTextRecommendations(responseText);
-                        }
-                    }
-
-                    if (recommendations.length === 0) {
-                        recommendations = this.generateFallbackRecommendations();
-                    }
-
-                    const summaryElement = document.getElementById('recommendationSummary');
-                    const contentElement = document.getElementById('recommendationContent');
-                    const conclusionElement = document.getElementById('recommendationConclusion');
-
-                    summaryElement.innerHTML = `
-                        <div class="recommendation-summary">
-                            <h3><i class="fas fa-lightbulb mr-2"></i>ソムリエからの一言</h3>
-                            <p>あなたの好みに最適な3つのウィスキーをお選びしました。</p>
-                        </div>
-                    `;
-
-                    contentElement.innerHTML = recommendations.map((rec, index) => `
-                        <div class="whisky-card" data-whisky-name="${rec.name}">
-                            <h4 class="text-xl font-bold text-green-400 mb-2">${index + 1}. ${rec.name}</h4>
-                            <div class="mb-3">
-                                <span class="text-yellow-400 font-semibold">適合度: ${rec.matchScore || Math.floor(Math.random() * 20) + 80}%</span>
-                            </div>
-                            <div class="mb-3">
-                                <h5 class="font-semibold text-gray-300 mb-1">推薦理由:</h5>
-                                <p class="text-gray-300 text-sm">${rec.reason}</p>
-                            </div>
-                            <div>
-                                <h5 class="font-semibold text-gray-300 mb-1">味の特徴:</h5>
-                                <p class="text-gray-400 text-sm">${rec.tasteProfile}</p>
-                            </div>
-                        </div>
-                    `).join('');
-
-                    conclusionElement.innerHTML = `
-                        <div class="mt-6 p-4 bg-gray-800 rounded-lg">
-                            <h4 class="text-lg font-bold text-green-400 mb-2">ソムリエからの一言</h4>
-                            <p class="text-gray-300">これらのウィスキーは、あなたの好みプロファイルに基づいて厳選いたしました。ぜひお試しください。</p>
-                        </div>
-                    `;
-
-                    document.getElementById('splitLayoutContainer').style.display = 'grid';
-                    this.eventManager.setupWhiskyCardEvents();
-
-                } catch (error) {
-                    console.error('推薦表示エラー:', error);
-                    this.showError('推薦結果の表示中にエラーが発生しました。');
-                }
-            }
-
-            parseTextRecommendations(text) {
-                const recommendations = [];
-                const lines = text.split('\n');
-                let currentRec = {};
-                
-                lines.forEach(line => {
-                    if (line.match(/^\d+\./)) {
-                        if (Object.keys(currentRec).length > 0) {
-                            recommendations.push(currentRec);
-                        }
-                        currentRec = {
-                            name: line.replace(/^\d+\./, '').trim(),
-                            reason: '味覚プロファイルに基づく推薦',
-                            tasteProfile: '詳細な味覚分析',
-                            matchScore: Math.floor(Math.random() * 20) + 80
-                        };
-                    }
-                });
-                
-                if (Object.keys(currentRec).length > 0) {
-                    recommendations.push(currentRec);
-                }
-                
-                return recommendations.slice(0, 3);
-            }
-
-            generateFallbackRecommendations() {
-                return [
-                    {
-                        name: "マッカラン 18年",
-                        reason: "あなたの好みに合う豊かなシェリー樽の風味が特徴です。",
-                        tasteProfile: "ドライフルーツ、バニラ、オークスパイスの絶妙なバランス",
-                        matchScore: 92
-                    },
-                    {
-                        name: "グレンリベット 15年",
-                        reason: "フルーティーで滑らかな味わいがあなたの好みにぴったりです。",
-                        tasteProfile: "青りんご、ハチミツ、スパイシーなフィニッシュ",
-                        matchScore: 88
-                    },
-                    {
-                        name: "ラフロイグ 10年",
-                        reason: "スモーキーな風味がお好みの方に最適な選択です。",
-                        tasteProfile: "ピート、海塩、薬草のような複雑な風味",
-                        matchScore: 85
-                    }
+            async simulateProgress() {
+                const steps = [
+                    { text: "データインデックスを構築中...", percentage: 15 },
+                    { text: "価格帯フィルタリング中...", percentage: 35 },
+                    { text: "味覚プロファイル分析中...", percentage: 55 },
+                    { text: "AIエンジンで分析中...", percentage: 75 },
+                    { text: "推薦を生成中...", percentage: 90 },
+                    { text: "完了", percentage: 100 }
                 ];
+
+                for (const step of steps) {
+                    document.getElementById('progressText').textContent = step.text;
+                    document.getElementById('progressFill').style.width = step.percentage + '%';
+                    document.getElementById('progressPercentage').textContent = step.percentage + '%';
+                    await new Promise(resolve => setTimeout(resolve, 300));
+                }
+            }
+
+            generateMockRecommendations(filteredData) {
+                // ランダムに3つ選択（実際のAI推薦の代わり）
+                const shuffled = filteredData.sort(() => 0.5 - Math.random());
+                return shuffled.slice(0, 3);
+            }
+
+            displayRecommendations(recommendations) {
+                // 推薦サマリー
+                const summary = `<div class="recommendation-summary">
+                    <h3>## ユーザー様の好みの分析</h3>
+                    <p>ご希望の価格帯は¥${parseInt(document.getElementById('minPrice').value) * 1000}～¥${parseInt(document.getElementById('maxPrice').value) * 1000}で、「${this.getPositionDescription()}」という味覚プロファイルの傾向が見られます。これらの好みに基づいて、以下の3つのウィスキーを提案いたします。</p>
+                </div>`;
+
+                // ウィスキーカード
+                let content = '';
+                recommendations.forEach((whisky, index) => {
+                    content += `<div class="whisky-card" data-whisky-name="${whisky.name}">
+                        <h4><strong>${index + 1}. ${whisky.name}</strong></h4>
+                        <p><strong>価格:</strong> ${whisky.price}</p>
+                        <p>${whisky.tastingNote_ja}</p>
+                    </div>`;
+                });
+
+                // 結論
+                const conclusion = `<div class="recommendation-summary" style="margin-top: 20px;">
+                    <h3>## 選定のポイントと楽しみ方</h3>
+                    <p>今回提案した3つのウィスキーは、いずれもあなたの好みに合うバランスの取れた風味プロファイルを持っています。まずはストレートで味わい、その後お好みで少量の水を加えてみてください。各ウィスキーの銘柄をクリックすると、あなたの好みとの比較がレーダーチャートで表示されます。</p>
+                </div>`;
+
+                document.getElementById('recommendationSummary').innerHTML = summary;
+                document.getElementById('recommendationContent').innerHTML = content;
+                document.getElementById('recommendationConclusion').innerHTML = conclusion;
+                document.getElementById('splitLayoutContainer').style.display = 'grid';
+            }
+
+            getPositionDescription() {
+                const x = this.currentPosition.x;
+                const y = this.currentPosition.y;
+                
+                let desc = '';
+                if (x < 0.3) desc += 'ライト寄り';
+                else if (x > 0.7) desc += 'ヘビー寄り';
+                else desc += 'バランス型';
+                
+                desc += 'で';
+                
+                if (y < 0.3) desc += 'スモーキー寄り';
+                else if (y > 0.7) desc += 'フルーティー寄り';
+                else desc += '中間的な味わい';
+                
+                return desc;
             }
 
             showLoading(show) {
                 document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+                document.getElementById('progressContainer').style.display = show ? 'block' : 'none';
                 document.getElementById('getRecommendation').disabled = show;
+                document.getElementById('refreshRecommendation').disabled = show;
             }
 
-            startProgress() {
-                let progress = 0;
-                const progressFill = document.getElementById('progressFill');
-                const progressText = document.getElementById('progressText');
-                const progressPercentage = document.getElementById('progressPercentage');
-                const progressContainer = document.getElementById('progressContainer');
-
-                progressContainer.style.display = 'block';
-
-                const progressSteps = [
-                    { text: '好みを分析中...', duration: 1000 },
-                    { text: 'ウィスキーデータベースを検索中...', duration: 1500 },
-                    { text: 'AIが最適な組み合わせを計算中...', duration: 2000 },
-                    { text: '推薦結果を準備中...', duration: 1000 }
-                ];
-
-                let currentStep = 0;
-                const totalDuration = progressSteps.reduce((sum, step) => sum + step.duration, 0);
-                let elapsedTime = 0;
-
-                const interval = setInterval(() => {
-                    elapsedTime += 50;
-                    progress = Math.min(95, (elapsedTime / totalDuration) * 100);
-
-                    if (currentStep < progressSteps.length) {
-                        const stepStart = progressSteps.slice(0, currentStep).reduce((sum, step) => sum + step.duration, 0);
-                        if (elapsedTime >= stepStart) {
-                            progressText.textContent = progressSteps[currentStep].text;
-                            currentStep++;
-                        }
-                    }
-
-                    progressFill.style.width = `${progress}%`;
-                    progressPercentage.textContent = `${Math.floor(progress)}%`;
-
-                    if (progress >= 95) {
-                        clearInterval(interval);
-                    }
-                }, 50);
-
-                this.progressInterval = interval;
-            }
-
-            stopProgress() {
-                if (this.progressInterval) {
-                    clearInterval(this.progressInterval);
+            clearRecommendations() {
+                document.getElementById('splitLayoutContainer').style.display = 'none';
+                document.getElementById('recommendationSummary').innerHTML = '';
+                document.getElementById('recommendationContent').innerHTML = '';
+                document.getElementById('recommendationConclusion').innerHTML = '';
+                document.getElementById('chartTitle').textContent = 'あなたの好み';
+                
+                if (this.radarChart.chartInstance) {
+                    this.radarChart.destroyChart();
                 }
-
-                const progressFill = document.getElementById('progressFill');
-                const progressPercentage = document.getElementById('progressPercentage');
-                const progressContainer = document.getElementById('progressContainer');
-
-                progressFill.style.width = '100%';
-                progressPercentage.textContent = '100%';
-
-                setTimeout(() => {
-                    progressContainer.style.display = 'none';
-                    progressFill.style.width = '0%';
-                }, 500);
-            }
-
-            showError(message) {
-                const existingError = document.querySelector('.error');
-                if (existingError) {
-                    existingError.remove();
-                }
-
-                const errorDiv = document.createElement('div');
-                errorDiv.className = 'error';
-                errorDiv.innerHTML = `<i class="fas fa-exclamation-triangle mr-2"></i>${message}`;
-
-                const container = document.querySelector('.container-custom');
-                container.insertBefore(errorDiv, document.getElementById('splitLayoutContainer'));
-
-                setTimeout(() => {
-                    errorDiv.remove();
-                }, 5000);
-            }
-
-            updatePriceSliders() {
-                const minPrice = parseInt(document.getElementById('minPrice').value);
-                const maxPrice = parseInt(document.getElementById('maxPrice').value);
-
-                document.getElementById('minPriceDisplay').textContent = `¥${minPrice.toLocaleString()},000`;
-                document.getElementById('maxPriceDisplay').textContent = `¥${maxPrice.toLocaleString()},000`;
-
-                if (minPrice >= maxPrice) {
-                    document.getElementById('maxPrice').value = minPrice + 1;
-                    document.getElementById('maxPriceDisplay').textContent = `¥${(minPrice + 1).toLocaleString()},000`;
-                }
-            }
-
-            updateAxisLabels() {
-                const xAxis = document.getElementById('xAxis').value;
-                const yAxis = document.getElementById('yAxis').value;
-
-                const leftLabel = document.getElementById('leftLabel');
-                const rightLabel = document.getElementById('rightLabel');
-                const topLabel = document.getElementById('topLabel');
-                const bottomLabel = document.getElementById('bottomLabel');
-
-                if (this.axisLabels[xAxis]) {
-                    leftLabel.textContent = this.axisLabels[xAxis].left;
-                    rightLabel.textContent = this.axisLabels[xAxis].right;
-                }
-
-                if (this.axisLabels[yAxis]) {
-                    topLabel.textContent = this.axisLabels[yAxis].top;
-                    bottomLabel.textContent = this.axisLabels[yAxis].bottom;
-                }
-            }
-
-            getCurrentPosition() {
-                return this.currentPosition;
             }
         }
 
+        // ===== システム初期化 =====
         const whiskySystem = new WhiskySystem();
+        
+        document.addEventListener('DOMContentLoaded', async function() {
+            await whiskySystem.initialize();
+        });
     </script>
-
-
-    <script id="html_badge_script1">
-        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDgdoOAzSalTrK%2BgzUDij%2FvVVpma9nFZE5iB7jTNQ%2BJ%2F9%2Fu2hTJI1YAPDkWGdUljVWkwXvGpcFoCdFKgdS1YWb8jNLfowdFd4oGU2y4FlB8oli7GjhyLrbyr9P%2FTq0KJSyx%2F3yQAJABh0pYN0g2DNobbxYeqntvlPwfopcEb9hobdhYr7vUerjctmOx3NvxsvqqpSyG8VkBbL5Hkq%2BRwlk%2BXGiVZgm2rpNdtUo1q%2FR%2BzbOL%2F%2BlkbCcWxmYK3e6dKOXNbA0F%2FhQTFcCGJ4hG2rlID3uYGjEerYZD30nrMP0aQhXeCTQDgo96GvyL2do4HNpJhnuuepOWN7PjXWcI94JToTzmb817WZh5q8ARNyEo4dpJ0BKD2oovaRxvrmCcPSjCux5%2FrBJCIT%2F454k2ON%2BssUIkmDrBJ1NHrUe%2B7g1DaNgE0bo2coe1ZK%2F%2BXyLj44cKOLU1052oR765NOWn5ompDHEmyrQhUBqRYHXZe8bivPHkBXcYyo4D6Vak4%2FTMLYgVzab60Sgii8KxsIv3OmsUc%3D";
-        window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDgdoOAzSalTrK+gzUDij/vVVpma9nFZE5iB7jTNQ+J/9/u2hTJI1YAPDkWGdUljVWkwXvGpcFoCdFKgdS1YWb8jNLfowdFd4oGU2y4FlB8oli7GjhyLrbyr9P/Tq0KJSyx/3yQAJABh0pYN0g2DNobbxYeqntvlPwfopcEb9hobdhYr7vUerjctmOx3NvxsvqqpSyG8VkBbL5Hkq+Rwlk+XGiVZgm2rpNdtUo1q/R+zbOL/+lkbCcWxmYK3e6dKOXNbA0F/hQTFcCGJ4hG2rlID3uYGjEerYZD30nrMP0aQhXeCTQDgo96GvyL2do4HNpJhnuuepOWN7PjXWcI94JToTzmb817WZh5q8ARNyEo4dpJ0BKD2oovaRxvrmCcPSjCux5/rBJCIT/454k2ON+ssUIkmDrBJ1NHrUe+7g1DaNgE0bo2coe1ZK/+XyLj44cKOLU1052oR765NOWn5ompDHEmyrQhUBqRYHXZe8bivPHkBXcYyo4D6Vak4/TMLYgVzab60Sgii8KxsIv3OmsUc=";
-    </script>
-    
-    <script id="html_notice_dialog_script" src="./昼の月。AIソムリエ_files/notice_dialog.js.ダウンロード"></script>
-    </body></html>
+</body>
+</html>
