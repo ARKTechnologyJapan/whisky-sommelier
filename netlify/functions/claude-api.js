@@ -36,50 +36,64 @@ exports.handler = async (event, context) => {
       };
     }
 
-    // Claude APIリクエスト作成
+    // 108種類のウィスキーデータを学習したプロンプト
     const claudeRequestBody = {
       model: 'us.anthropic.claude-3-7-sonnet-20250219-v1:0',
       max_tokens: 2000,
       temperature: 0.7,
       messages: [{
         role: 'user',
-        content: `あなたは昼の月バーの専門ウィスキーソムリエです。以下の顧客の好みに基づいて、正確に3つのウィスキーを推薦してください：
+        content: `あなたは「昼の月バー」の熟練ウィスキーソムリエです。
+        
+【当店の在庫情報（108銘柄）】
+■最高額銘柄: タリスカー44年 オフィシャルボトル（¥80,400）
+■価格帯: ¥1,000台〜¥80,400まで幅広く在庫
 
-【顧客の好み】
-- 価格帯: ${requestData.minPrice}円 〜 ${requestData.maxPrice}円
-- 味覚座標: X軸=${requestData.tasteX} (0=ライト, 1=ヘビー), Y軸=${requestData.tasteY} (0=フルーティー, 1=スモーキー)  
+【味覚プロファイル別 個性的銘柄】
+▼fruity最高（4点）: マッカラン1990年SAMAROLI、ABERFELDY18年1999、軽井沢25年、GLENLIVET20年など24銘柄
+▼spicy最高（4点）: タリスカー44年、SPRINGBANK21年2022、GLENGLASSAUGH1973、ARDBEG9年1990など13銘柄  
+▼body最高（5点）: タリスカー44年、マッカラン1990年SAMAROLI、BAR BARNS50年、MORTLACH各種など8銘柄
+▼smoky最高（5点）: ポートエレン25年、アードベッグ各種、CAOL ILA各種、KILCHOMAN各種など11銘柄
+▼sweetness最高（5点）: DAILUAINE RUM10年2012-2022（唯一の5点）
+▼complexity最高（5点）: タリスカー44年、ポートエレン25年、マッカラン1990年、軽井沢25年など30銘柄
+
+【地域別特徴】
+▪スコットランド: アイラ島（極スモーキー）、スペイサイド（果実・花香）、ハイランド（バランス）、キャンベルタウン（海塩）
+▪日本: 軽井沢、長濱、山桜など繊細で技巧派、蜂蜜・白檀・花香が特徴
+▪アイルランド: Teeling各種、柔らかい甘さと滑らかさ
+▪スウェーデン: High Coast（北欧バランス型）
+
+【価格帯別在庫】
+・¥1,000-2,999: 若い日本・スコットランド産、ブレンデッド約30銘柄
+・¥3,000-5,999: 10-20年級シングルモルト約40銘柄  
+・¥6,000-13,000: 20-30年超長熟高級品約15銘柄
+・¥13,200-80,400: 希少限定・超長熟約10銘柄
+
+【顧客の好み分析】
+- 価格帯: ${requestData.minPrice}円〜${requestData.maxPrice}円
+- 味覚座標: X軸=${requestData.tasteX}（0=ライト→1=ヘビー）, Y軸=${requestData.tasteY}（0=フルーティー→1=スモーキー）
 - 追加要望: ${requestData.additionalPreferences || 'なし'}
 
-以下のJSONフォーマットで必ず回答してください：
-{
-  "recommendations": [
-    {
-      "name": "マッカラン 18年",
-      "reason": "この顧客の好みに合う具体的な理由",
-      "matchScore": 95,
-      "tasteProfile": "味の特徴の詳細説明"
-    },
-    {
-      "name": "タリスカー 10年", 
-      "reason": "推薦理由2",
-      "matchScore": 88,
-      "tasteProfile": "味の特徴2"
-    },
-    {
-      "name": "ボウモア 12年",
-      "reason": "推薦理由3", 
-      "matchScore": 82,
-      "tasteProfile": "味の特徴3"
-    }
-  ],
-  "summary": "総合的な推薦理由とコメント"
-}`
+【顧客からの質問】
+"${requestData.additionalPreferences}"
+
+【応答指示】
+1. ベテランバーテンダーとして、温かく専門的に応答
+2. 具体的な銘柄名と価格を含める（在庫から選択）
+3. なぜその銘柄がおすすめかの理由を明確に
+4. 味覚プロファイルの数値的根拠も提示
+5. 200-300文字程度で完結に、必ず「。」で終える
+6. 顧客の価格帯・味覚座標に最適化した提案
+7. 季節感や飲み方の提案も含める
+
+応答例：
+「🍷 お客様の好みでしたら、マッカラン1990年SAMAROLI（¥12,200）が最適です！fruity4点・complexity5点で、シェリー樽由来の豊かなドライフルーツとオレンジピールが特徴的です。お客様の座標（フルーティー寄り・ヘビー志向）にぴったり合致し、この価格帯では最高クラスの複雑さを楽しめます。ストレートでじっくりお楽しみください。」`
       }]
     };
 
     console.log('Sending request to Claude API...');
 
-    // 修正されたエンドポイント（複数試行）
+    // エンドポイント試行
     const endpoints = [
       'http://Bedroc-Proxy-wEBSZeIAE9sX-1369774611.us-east-1.elb.amazonaws.com/api/v1/chat/completions',
       'http://Bedroc-Proxy-wEBSZeIAE9sX-1369774611.us-east-1.elb.amazonaws.com/v1/messages',
