@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0119)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_rDOd3eN7RjeaMnd-ygqJgQ/index_final.html -->
+<!-- saved from url=(0128)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_vioSDl7SSZaM-kz1vWl_gg/index_absolute_final.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1115,46 +1115,75 @@
         let distilleryJsonLoaded = false; // JSON読み込み状態
         let debugEnabled = false; // デバッグモードの状態
         
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', function() {
+        // DOMContentLoadedイベントを別の方法で処理（確実なイベント発火のため）
+        if (document.readyState === "loading") {
+            document.addEventListener("DOMContentLoaded", initializeApp);
+        } else {
+            initializeApp();
+        }
+        
+        // アプリケーション初期化のメインファンクション
+        function initializeApp() {
             console.log('🍷 昼の月。AIソムリエ システム起動');
             debugLog('🍷 昼の月。AIソムリエ システム起動', 'info');
             
             // デバッグツールの設定
             setupDebugTools();
             
-            // イベントリスナーなどUIの初期化
-            setupEventListeners();
+            // まず基本的なUIイベントを設定
+            setupQuestionExamples();
             setupDualTasteMatrix();
             setupPriceSliders();
-            setupVoiceRecognition();
-            setupQuestionExamples();
-            
-            // 現在のページに応じてナビゲーションリンクをアクティブに
             updateNavLinks();
             
-            // データ初期化を実行
+            // ボタンイベントリスナーをインライン関数で直接設定
+            document.getElementById('getRecommendation')?.addEventListener('click', function() {
+                getRecommendation();
+            });
+            
+            document.getElementById('refreshRecommendation')?.addEventListener('click', function() {
+                refreshRecommendation();
+            });
+            
+            document.getElementById('getAnotherRecommendation')?.addEventListener('click', function() {
+                getAnotherRecommendation();
+            });
+            
+            document.getElementById('voiceInputBtn')?.addEventListener('click', function() {
+                toggleVoiceInput();
+            });
+            
+            document.getElementById('sendChatBtn')?.addEventListener('click', function() {
+                sendChatMessage();
+            });
+            
+            document.getElementById('chatInput')?.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendChatMessage();
+                }
+            });
+            
+            // その他のコンポーネントを初期化
+            setupVoiceRecognition();
+            
+            // データ初期化
             initializeData();
-        });
+        }
         
-        // データ初期化を別関数に分離
         async function initializeData() {
             try {
-                // 最初に蒸留所データを読み込み
-                debugLog('蒸留所データ読み込み開始', 'info');
-                const distilleryResult = await loadDistilleryData();
-                debugLog(`蒸留所データ読み込み完了: ${distilleryResult ? '成功' : '失敗'}`, distilleryResult ? 'success' : 'error');
+                // 蒸留所データとウィスキーデータを非同期で読み込み
+                await Promise.all([
+                    loadDistilleryData(),
+                    loadWhiskyData()
+                ]);
                 
-                // 次にウィスキーデータを読み込み
-                debugLog('ウィスキーデータ読み込み開始', 'info');
-                await loadWhiskyData();
-                debugLog(`ウィスキーデータ読み込み完了: ${whiskyData.length}件`, 'success');
-                
-                // データ読み込み後にチャートとマップを初期化
+                // 続いてチャートとマップを初期化
                 initializeChart();
                 initializeMap();
+                debugLog('✅ 初期化完了', 'success');
             } catch (error) {
-                debugLog(`初期化中にエラーが発生しました: ${error.message}`, 'error');
+                debugLog(`初期化エラー: ${error.message}`, 'error');
                 console.error('初期化エラー:', error);
             }
         }
@@ -1251,54 +1280,6 @@
             });
         }
         
-        function setupEventListeners() {
-            // メインボタンのイベントリスナー
-            const recommendBtn = document.getElementById('getRecommendation');
-            if (recommendBtn) {
-                recommendBtn.addEventListener('click', getRecommendation);
-            }
-            
-            const refreshBtn = document.getElementById('refreshRecommendation');
-            if (refreshBtn) {
-                refreshBtn.addEventListener('click', refreshRecommendation);
-            }
-            
-            const anotherBtn = document.getElementById('getAnotherRecommendation');
-            if (anotherBtn) {
-                anotherBtn.addEventListener('click', getAnotherRecommendation);
-            }
-            
-            // チャット関連のイベントリスナー
-            const voiceBtn = document.getElementById('voiceInputBtn');
-            if (voiceBtn) {
-                voiceBtn.addEventListener('click', toggleVoiceInput);
-            }
-            
-            const sendBtn = document.getElementById('sendChatBtn');
-            if (sendBtn) {
-                sendBtn.addEventListener('click', sendChatMessage);
-            }
-            
-            const chatInput = document.getElementById('chatInput');
-            if (chatInput) {
-                chatInput.addEventListener('keypress', function(e) {
-                    if (e.key === 'Enter') {
-                        sendChatMessage();
-                    }
-                });
-            }
-            
-            // Window resize handler
-            window.addEventListener('resize', function() {
-                if (chartInstance) {
-                    chartInstance.resize();
-                }
-                if (mapInstance) {
-                    mapInstance.invalidateSize();
-                }
-            });
-        }
-
         function setupQuestionExamples() {
             const examples = document.querySelectorAll('.question-example');
             const chatInput = document.getElementById('chatInput');
@@ -1787,18 +1768,20 @@
                 // ローカルファイルを試みる
                 const possibleFiles = [
                     'whisky_data.json',
+                    'whisky_data.json.txt',
                     'whiskey_data.json',
+                    'whiskey_data.json.txt',
                     'data.json'
                 ];
                 
                 for (const fileName of possibleFiles) {
                     try {
-                        debugLog(`ファイル ${fileName} を試行中...`, 'info');
+                        debugLog(`🔍 ${fileName} を試行中...`, 'info');
                         const response = await fetch(fileName);
                         if (response.ok) {
                             const data = await response.json();
                             whiskyData = data.whiskies || data;
-                            debugLog(`✅ ${fileName} から ${whiskyData.length} 本のウィスキーデータを読み込みました`, 'success');
+                            debugLog(`✅ ${fileName} から ${whiskyData.length} 本のデータを読み込みました`, 'success');
                             
                             // ローカルストレージにキャッシュ
                             if (!debugEnabled) {
@@ -1941,90 +1924,97 @@
                 return;
             }
             
-            const ctx = canvas.getContext('2d');
-            if (!ctx) {
-                debugLog('Cannot get 2D context', 'error');
-                return;
-            }
-            
-            if (typeof Chart === 'undefined') {
-                debugLog('Chart.js not loaded', 'error');
-                return;
-            }
-            
-            // Ensure the canvas has correct initial dimensions
-            canvas.width = canvas.offsetWidth;
-            canvas.height = canvas.offsetHeight;
-            
-            if (chartInstance) {
-                chartInstance.destroy();
-            }
-            
-            userProfileData = generateUserProfileFromDualMatrix();
-            
-            chartInstance = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['フルーティー', 'スパイシー', 'ボディ', 'スモーキー', '甘さ', '複雑さ'],
-                    datasets: [{
-                        label: 'あなたの好み',
-                        data: userProfileData,
-                        backgroundColor: 'rgba(78, 205, 196, 0.2)',
-                        borderColor: '#4ecdc4',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#4ecdc4',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: '#4ecdc4'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        r: {
-                            beginAtZero: true,
-                            max: 5,
-                            ticks: {
-                                display: false,
-                                stepSize: 1
-                            },
-                            grid: {
-                                display: true,
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            angleLines: {
-                                display: true,
-                                color: 'rgba(255, 255, 255, 0.1)'
-                            },
-                            pointLabels: {
-                                color: '#fff',
-                                font: {
-                                    size: 14
+            try {
+                const ctx = canvas.getContext('2d');
+                if (!ctx) {
+                    debugLog('Cannot get 2D context', 'error');
+                    return;
+                }
+                
+                if (typeof Chart === 'undefined') {
+                    debugLog('Chart.js not loaded', 'error');
+                    return;
+                }
+                
+                // Ensure the canvas has correct initial dimensions
+                canvas.width = canvas.offsetWidth;
+                canvas.height = canvas.offsetHeight;
+                
+                if (chartInstance) {
+                    chartInstance.destroy();
+                }
+                
+                userProfileData = generateUserProfileFromDualMatrix();
+                
+                chartInstance = new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ['フルーティー', 'スパイシー', 'ボディ', 'スモーキー', '甘さ', '複雑さ'],
+                        datasets: [{
+                            label: 'あなたの好み',
+                            data: userProfileData,
+                            backgroundColor: 'rgba(78, 205, 196, 0.2)',
+                            borderColor: '#4ecdc4',
+                            borderWidth: 2,
+                            pointBackgroundColor: '#4ecdc4',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#4ecdc4'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            r: {
+                                beginAtZero: true,
+                                max: 5,
+                                ticks: {
+                                    display: false,
+                                    stepSize: 1
+                                },
+                                grid: {
+                                    display: true,
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                angleLines: {
+                                    display: true,
+                                    color: 'rgba(255, 255, 255, 0.1)'
+                                },
+                                pointLabels: {
+                                    color: '#fff',
+                                    font: {
+                                        size: 14
+                                    }
                                 }
                             }
-                        }
-                    },
-                    plugins: {
-                        legend: {
-                            labels: {
-                                color: '#fff',
-                                font: {
-                                    size: 14
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: '#fff',
+                                    font: {
+                                        size: 14
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            });
-            
-            // サイズの手動調整を確実にする
-            setTimeout(() => {
-                canvas.style.height = '500px';
-                canvas.height = 500;
-                chartInstance.resize();
-                debugLog('レーダーチャート初期化完了', 'success');
-            }, 100);
+                });
+                
+                // サイズの手動調整を確実にする
+                setTimeout(() => {
+                    canvas.style.height = '500px';
+                    canvas.height = 500;
+                    if (chartInstance) {
+                        chartInstance.resize();
+                    }
+                    debugLog('レーダーチャート初期化完了', 'success');
+                }, 100);
+            } catch (e) {
+                debugLog('チャート初期化エラー: ' + e.message, 'error');
+                console.error('Chart initialization error:', e);
+            }
         }
 
         function initializeMap() {
@@ -2063,9 +2053,11 @@
             
             function initMap() {
                 try {
+                    debugLog('🗺️ マップを初期化中...', 'info');
+                    
                     // デフォルト位置（世界全体が見えるズームレベル）
                     const defaultPosition = [40.0, 0.0]; // より中心の位置
-                    const defaultZoom = 2; // もっとズームアウト
+                    const defaultZoom = 3; // もっとズームアウト
                     
                     // マップインスタンス作成
                     mapInstance = L.map('distilleryMap', {
@@ -2094,13 +2086,13 @@
                     // ダブルクリックでズームを無効化（モバイル対応）
                     mapInstance.doubleClickZoom.disable();
                     
-                    debugLog('✅ マップ初期化成功', 'success');
+                    debugLog('✅ マップを初期化しました', 'success');
                     
                     // マップの表示領域を修正
                     setTimeout(() => {
                         mapInstance.invalidateSize();
-                        // 世界地図を表示
-                        mapInstance.setView([40, 0], 2);
+                        // 世界地図を表示（多めにズームアウト）
+                        mapInstance.setView([30, 0], 2);
                     }, 100);
                 } catch (e) {
                     debugLog(`マップ初期化エラー: ${e.message}`, 'error');
@@ -2120,12 +2112,21 @@
             }
             
             try {
-                // まずdistilleries.jsonを読み込む
-                debugLog('distilleries.jsonの読み込みを試行', 'info');
-                const jsonPaths = ['distilleries.json', './distilleries.json', '../distilleries.json'];
+                // まずdistilleries.jsonを読み込む (.txtも含め複数の候補を試行)
+                const jsonPaths = [
+                    'distilleries.json', 
+                    'distilleries.json.txt', 
+                    './distilleries.json', 
+                    './distilleries.json.txt',
+                    '../distilleries.json',
+                    '../distilleries.json.txt',
+                    'distillery_data.json',
+                    'distillery_data.json.txt'
+                ];
                 
                 for (const jsonPath of jsonPaths) {
                     try {
+                        debugLog(`${jsonPath} を試行中...`, 'info');
                         const response = await fetch(jsonPath);
                         if (response.ok) {
                             const data = await response.json();
@@ -2135,8 +2136,7 @@
                                 distilleryDatabase = normalizeDistilleryData(data.distilleries);
                                 const distilleryCount = Object.keys(distilleryDatabase).length;
                                 
-                                debugLog(`JSONファイル ${jsonPath} から蒸留所データを読み込みました (${distilleryCount}件)`, 'success');
-                                debugLog(`蒸留所データの一部: ${JSON.stringify(Object.keys(distilleryDatabase).slice(0, 3))}`, 'info');
+                                debugLog(`✅ ${jsonPath} から蒸留所データを読み込みました (${distilleryCount}件)`, 'success');
                                 
                                 // 正常に読み込めたらフラグをセット
                                 distilleryJsonLoaded = true;
@@ -2145,17 +2145,17 @@
                                 debugLog(`JSONファイル ${jsonPath} のフォーマットが正しくありません`, 'warn');
                             }
                         } else {
-                            debugLog(`JSONファイル ${jsonPath} は存在しないか読み込めません (ステータス: ${response.status})`, 'warn');
+                            debugLog(`❌ ${jsonPath} の読み込みに失敗: ${response.status}`, 'warn');
                         }
                     } catch (err) {
-                        debugLog(`JSONファイル ${jsonPath} の読み込み中にエラー: ${err.message}`, 'warn');
+                        debugLog(`${jsonPath} の読み込み中にエラー: ${err.message}`, 'warn');
                     }
                 }
                 
                 // すべてのJSONパスが失敗した場合
-                debugLog('外部JSONファイルの読み込みに失敗、バックアップデータを使用します', 'warn');
+                debugLog('⚠️ 蒸溜所データの読み込みに失敗、バックアップを使用します', 'warn');
                 distilleryDatabase = getBackupDistilleryData();
-                debugLog(`バックアップから ${Object.keys(distilleryDatabase).length} 件の蒸留所データをロード`, 'info');
+                debugLog(`🗺️ マップを初期化中...`, 'info');
                 return false;
                 
             } catch (error) {
@@ -2164,7 +2164,6 @@
                 
                 // バックアップデータを使用
                 distilleryDatabase = getBackupDistilleryData();
-                debugLog(`エラー発生後のバックアップから ${Object.keys(distilleryDatabase).length} 件のデータをロード`, 'info');
                 return false;
             }
         }
@@ -2451,6 +2450,147 @@
             }
         }
         
+        function getAnotherRecommendation() {
+            debugLog('別の提案を生成します', 'info');
+            getRecommendation();
+        }
+        
+        function refreshRecommendation() {
+            debugLog('設定をリフレッシュします', 'info');
+            
+            // リセット処理
+            currentPosition1 = { x: 0.5, y: 0.5 };
+            currentPosition2 = { x: 0.5, y: 0.5 };
+            
+            // ドット位置をリセット
+            const dot1 = document.getElementById('tasteDot1');
+            const dot2 = document.getElementById('tasteDot2');
+            
+            if (dot1) {
+                dot1.style.left = '50%';
+                dot1.style.top = '50%';
+            }
+            
+            if (dot2) {
+                dot2.style.left = '50%';
+                dot2.style.top = '50%';
+            }
+            
+            // 座標表示をリセット
+            updateCoordinates1();
+            updateCoordinates2();
+            
+            // 表示をクリア
+            const splitLayoutContainer = document.getElementById('splitLayoutContainer');
+            if (splitLayoutContainer) {
+                splitLayoutContainer.style.display = 'none';
+            }
+            
+            const preferencesSummary = document.getElementById('preferencesSummary');
+            if (preferencesSummary) {
+                preferencesSummary.innerHTML = '';
+            }
+            
+            const recommendationContent = document.getElementById('recommendationContent');
+            if (recommendationContent) {
+                recommendationContent.innerHTML = '';
+            }
+            
+            // チャート更新
+            updateUserProfile();
+            
+            // マップをリセット
+            resetDistilleryMap();
+            
+            debugLog('設定をリフレッシュしました', 'success');
+        }
+        
+        function resetDistilleryMap() {
+            if (mapInstance) {
+                mapInstance.setView([30, 0], 2);
+                
+                // マーカーをクリア
+                if (currentMarker) {
+                    mapInstance.removeLayer(currentMarker);
+                    currentMarker = null;
+                }
+                
+                allDistilleryMarkers.forEach(marker => {
+                    mapInstance.removeLayer(marker);
+                });
+                allDistilleryMarkers = [];
+            }
+            
+            const distillerySection = document.getElementById('distillerySection');
+            if (distillerySection) {
+                distillerySection.classList.remove('active');
+            }
+        }
+        
+        function showProgress(percent = 0, text = '') {
+            const container = document.getElementById('progressContainer');
+            const fill = document.getElementById('progressFill');
+            const textElement = document.getElementById('progressText');
+            const percentElement = document.getElementById('progressPercentage');
+            
+            if (!container || !fill || !textElement || !percentElement) return;
+            
+            container.style.display = 'block';
+            fill.style.width = `${percent}%`;
+            textElement.textContent = text || '分析中...';
+            percentElement.textContent = `${percent}%`;
+            
+            if (percent === 0) {
+                // アニメーションで進捗状況を表示
+                let progress = 0;
+                const interval = setInterval(() => {
+                    progress += 5;
+                    if (progress > 90) {
+                        clearInterval(interval);
+                    }
+                    fill.style.width = `${progress}%`;
+                    percentElement.textContent = `${progress}%`;
+                    
+                    switch(true) {
+                        case progress < 20:
+                            textElement.textContent = '味覚プロファイル分析中...';
+                            break;
+                        case progress < 40:
+                            textElement.textContent = 'ウィスキーデータベース検索中...';
+                            break;
+                        case progress < 60:
+                            textElement.textContent = '最適な銘柄をマッチング中...';
+                            break;
+                        case progress < 80:
+                            textElement.textContent = '推薦リスト生成中...';
+                            break;
+                        default:
+                            textElement.textContent = '最終調整中...';
+                    }
+                }, 100);
+            }
+        }
+        
+        function hideProgress() {
+            const container = document.getElementById('progressContainer');
+            const fill = document.getElementById('progressFill');
+            
+            if (!container || !fill) return;
+            
+            // 100%にして完了表示
+            fill.style.width = '100%';
+            
+            // 少し待ってから非表示
+            setTimeout(() => {
+                container.style.display = 'none';
+            }, 500);
+        }
+        
+        function showError(message) {
+            // 簡易なエラー表示
+            alert(message);
+        }
+        
         function extractPriceNumber(priceString) {
             if (!priceString) return 0;
             // 数字以外の文字（¥や,など）を除去して数値に変換
@@ -2695,101 +2835,12 @@
                         backgroundColor: 'rgba(78, 205, 196, 0.2)',
                         borderColor: '#4ecdc4',
                         borderWidth: 2,
-                        pointBackgroundColor: '#4ecdc4',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: '#4ecdc4'
-                    },
-                    {
-                        label: whisky.name,
-                        data: whiskyProfileData,
-                        backgroundColor: 'rgba(255, 107, 107, 0.2)',
-                        borderColor: '#ff6b6b',
-                        borderWidth: 2,
-                        pointBackgroundColor: '#ff6b6b',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: '#ff6b6b'
-                    }
-                ];
-                
-                chartInstance.update();
-                debugLog('チャート更新完了', 'info');
-            }
-            
-            // Update selected card styling
-            const cards = document.querySelectorAll('.whisky-card');
-            if (cards) {
-                cards.forEach(card => {
-                    card.classList.remove('selected');
-                });
-                
-                // イベントから呼び出された場合は現在のターゲットを選択
-                if (event && event.currentTarget) {
-                    event.currentTarget.classList.add('selected');
-                } else {
-                    // IDでも選択を反映
-                    const selectedCard = document.querySelector(`.whisky-card[onclick*="${whiskyId}"]`);
-                    if (selectedCard) {
-                        selectedCard.classList.add('selected');
-                    }
-                }
-            }
-            
-            // 蒸留所情報を表示
-            showDistilleryInfo(whisky);
-        }
-        
-        // グローバルスコープにselectWhiskyを公開
-        window.selectWhisky = selectWhisky;
-        
-        async function showDistilleryInfo(whisky) {
-            const distillerySection = document.getElementById('distillerySection');
-            if (!distillerySection) return;
-            
-            distillerySection.classList.add('active');
-            
-            // 蒸留所名を抽出
-            let distilleryName = '';
-            if (whisky.distillery && whisky.distillery.name) {
-                distilleryName = whisky.distillery.name;
-                debugLog(`ウィスキーデータから蒸留所名を抽出: ${distilleryName}`, 'info');
-            } else {
-                // 名前から蒸留所名を推測
-                distilleryName = extractDistilleryName(whisky.name);
-                debugLog(`ウィスキー名から蒸留所名を推測: ${distilleryName || '不明'}`, 'info');
-            }
-            
-            // 蒸留所データ取得
-            let distillery;
-            try {
-                distillery = await fetchDistilleryData(distilleryName || whisky.name);
-            } catch (e) {
-                debugLog(`蒸留所データ取得エラー: ${e.message}`, 'error');
-                distillery = null;
-            }
-            
-            if (distillery) {
-                debugLog(`蒸留所データ取得成功: ${distillery.name || distilleryName}`, 'success');
-                
-                const distilleryNameElem = document.getElementById('distilleryName');
-                const distilleryDetails = document.getElementById('distilleryDetails');
-                
-                if (distilleryNameElem) {
-                    distilleryNameElem.textContent = distillery.name || distilleryName || whisky.name;
-                }
-                
-                if (distilleryDetails) {
-                    // 蒸留所の詳細情報を表示
-                    let statusClass = 'status-unknown';
-                    let statusText = '状態不明';
-                    
-                    if (distillery.status === 'active' ||
+                        pointBackgroundColor: '#4
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDvNHQ7iOAnu1WU%2FMbd6XqSMoEIR7BlOs2qoSP4O0d%2BaMnIUS7xFAiYHfQ3Z6ipPfvoesuY0%2B5h6uUYAK080olad2wx4Ztfl49yLwTX%2BpluYPyoJOSHTSwLraAfk57bWti6piI%2BS%2Fl6gBdpWoVk4mahgLGSsQxJ6Vpj9mQv%2FWq%2F63BsQS78urhBPuJxSr2as4c38AzUUsCqXVs4bq0nYUkm63xDT5ByU1sWb%2BHltTAIzjF%2B8w6dwwZ2Je21ndwYJK8yRkEuiifUTnUcbDF%2BUScsO5Hdc3RJv1GSTCZYaGsylc3%2FKaC3jqjEvAyr0FOtB%2FR8QtpIqIW8yFXUwWHu2p0%2FM%2B8W0YSddYISCVJFj9MV1UaKACoDyviG0f7Mv1T6l6LAFafSs9o76StVA%2FeWFP0b3B7Fpb2voPEiLQzex3rV1onbbBvlIk2zWPU%2Bu4hFA0WV7yG0f3i1X2T28nSZ66CteX3UQAY7nQvEM9dHHnhst8VcDGoSLOQsPrWZf3f1VgUQ%3D%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDjneUmxjJXSUBwvftIdVDzC%2F52zHSdql8TjMjRrWuqzo82%2BmNNitbRWBLmOZop%2BDGZwW2UWNWcZ%2BAp0y1r6ISjqg9DpTH22eZBcYBd%2BgPRCGOhwT%2BSV0PC3CBFm8u%2F8jinz7E22cH7B3RtIKBPfBq6ukgGACAyeLxCEQcBqmbJBeNHNFN1QowZT2XpXLkvZETHYpVmaLbB4sb356PGOR5IF4MmCoIoaZ32%2BF4S%2BOKzVK03el6lIKPdPy0xeqih35O7XNJvhSV6WFcAN54fwQWE%2BTAO4VY89jtWcYzwbz3IkuEPVHWIDjCt%2B4ybB2OxvdtxUumzLYpZkUbzVqkPnYmM3ZTOUPTYtMCpXQXh%2B70SOL%2BPWULBfyK6p4rCn7I9jZguORLsBNffgF9MmAI5RCv1xqW0VMJVvIoR6glvQQ2UgvBujEyjz3DSHCqA6YTTaLYT6CB1afCwpiXFaLxkovqISKMgwvpy%2BhRv3LQ8E57WkOWC89ZmHtwUSAFTVUH%2FVK%2BQ%3D%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDvNHQ7iOAnu1WU/Mbd6XqSMoEIR7BlOs2qoSP4O0d+aMnIUS7xFAiYHfQ3Z6ipPfvoesuY0+5h6uUYAK080olad2wx4Ztfl49yLwTX+pluYPyoJOSHTSwLraAfk57bWti6piI+S/l6gBdpWoVk4mahgLGSsQxJ6Vpj9mQv/Wq/63BsQS78urhBPuJxSr2as4c38AzUUsCqXVs4bq0nYUkm63xDT5ByU1sWb+HltTAIzjF+8w6dwwZ2Je21ndwYJK8yRkEuiifUTnUcbDF+UScsO5Hdc3RJv1GSTCZYaGsylc3/KaC3jqjEvAyr0FOtB/R8QtpIqIW8yFXUwWHu2p0/M+8W0YSddYISCVJFj9MV1UaKACoDyviG0f7Mv1T6l6LAFafSs9o76StVA/eWFP0b3B7Fpb2voPEiLQzex3rV1onbbBvlIk2zWPU+u4hFA0WV7yG0f3i1X2T28nSZ66CteX3UQAY7nQvEM9dHHnhst8VcDGoSLOQsPrWZf3f1VgUQ==";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDjneUmxjJXSUBwvftIdVDzC/52zHSdql8TjMjRrWuqzo82+mNNitbRWBLmOZop+DGZwW2UWNWcZ+Ap0y1r6ISjqg9DpTH22eZBcYBd+gPRCGOhwT+SV0PC3CBFm8u/8jinz7E22cH7B3RtIKBPfBq6ukgGACAyeLxCEQcBqmbJBeNHNFN1QowZT2XpXLkvZETHYpVmaLbB4sb356PGOR5IF4MmCoIoaZ32+F4S+OKzVK03el6lIKPdPy0xeqih35O7XNJvhSV6WFcAN54fwQWE+TAO4VY89jtWcYzwbz3IkuEPVHWIDjCt+4ybB2OxvdtxUumzLYpZkUbzVqkPnYmM3ZTOUPTYtMCpXQXh+70SOL+PWULBfyK6p4rCn7I9jZguORLsBNffgF9MmAI5RCv1xqW0VMJVvIoR6glvQQ2UgvBujEyjz3DSHCqA6YTTaLYT6CB1afCwpiXFaLxkovqISKMgwvpy+hRv3LQ8E57WkOWC89ZmHtwUSAFTVUH/VK+Q==";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
