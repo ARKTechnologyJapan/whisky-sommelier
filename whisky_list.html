@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<!-- saved from url=(0124)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_8LbjzZqXSXCQh-xsjX2yZQ/whisky_list_page.html -->
+<!-- saved from url=(0128)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_RcfTCVkeQUWrRWkZArZ1eA/whisky_list_improved.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>昼の月。ウィスキーリスト</title>
-    <link href="./list_files/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="./list_files/all.min.css">
-    <script src="./list_files/chart.js.ダウンロード"></script>
+    <link href="./whisky_list_files/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="./whisky_list_files/all.min.css">
+    <script src="./whisky_list_files/chart.js.ダウンロード"></script>
     <!-- Leaflet.js地図ライブラリ -->
-    <link rel="stylesheet" href="./list_files/leaflet.css" crossorigin="">
-    <script src="./list_files/leaflet.js.ダウンロード" crossorigin=""></script>
+    <link rel="stylesheet" href="./whisky_list_files/leaflet.css" crossorigin="">
+    <script src="./whisky_list_files/leaflet.js.ダウンロード" crossorigin=""></script>
     <style>
         body {
             background-color: #000;
@@ -235,7 +235,7 @@
         }
         
         .filter-select {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(40, 40, 40, 0.9);  /* プルダウン背景色の修正 */
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 6px;
             color: white;
@@ -246,6 +246,11 @@
         .filter-select:focus {
             outline: none;
             border-color: #4ecdc4;
+        }
+        
+        .filter-select option {
+            background-color: #333;  /* オプションの背景色 */
+            color: white;           /* オプションのテキスト色 */
         }
         
         .whisky-list-table {
@@ -366,30 +371,35 @@
             line-height: 1.6;
         }
         
-        .details-tabs {
+        /* 味覚プロファイルと蒸留所情報を横並びに */
+        .details-content-row {
             display: flex;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 20px;
+            flex-direction: row;
+            gap: 20px;
+            margin-top: 20px;
         }
         
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.2s ease;
+        .profile-section {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 15px;
         }
         
-        .tab.active {
+        .distillery-section {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: bold;
             color: #4ecdc4;
-            border-bottom-color: #4ecdc4;
-        }
-        
-        .tab-content {
-            display: none;
-        }
-        
-        .tab-content.active {
-            display: block;
+            margin-bottom: 15px;
+            border-bottom: 1px solid rgba(78, 205, 196, 0.3);
+            padding-bottom: 5px;
         }
         
         /* 味覚プロファイルチャート */
@@ -405,14 +415,13 @@
             border-radius: 12px;
             overflow: hidden;
             border: 2px solid rgba(78, 205, 196, 0.3);
-            margin: 20px 0;
+            margin-bottom: 15px;
         }
         
         .distillery-info {
             background: rgba(255, 255, 255, 0.05);
             border-radius: 8px;
             padding: 15px;
-            margin-top: 20px;
         }
         
         .distillery-info h3 {
@@ -450,11 +459,16 @@
         
         /* ページネーション */
         .per-page-select {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(40, 40, 40, 0.9);  /* 背景色修正 */
             border: 1px solid rgba(255, 255, 255, 0.3);
             border-radius: 6px;
             color: white;
             padding: 4px 8px;
+        }
+        
+        .per-page-select option {
+            background-color: #333;
+            color: white;
         }
         
         .per-page-select:focus {
@@ -488,7 +502,7 @@
             to { transform: rotate(360deg); }
         }
         
-        /* ヘッダーナビゲーション */
+        /* ヘッダーナビゲーション - 改善版 */
         .header-nav {
             position: absolute;
             right: 20px;
@@ -499,16 +513,22 @@
         .header-link {
             color: rgba(255, 255, 255, 0.8);
             text-decoration: none;
-            font-size: 14px;
+            font-size: 15px;
+            font-weight: 600;
             transition: all 0.2s ease;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
         }
         
         .header-link:hover {
-            color: #4ecdc4;
+            color: #fff;
+            background: rgba(78, 205, 196, 0.2);
         }
         
         .header-link.active {
-            color: #4ecdc4;
+            color: #fff;
+            background: rgba(78, 205, 196, 0.3);
             border-bottom: 2px solid #4ecdc4;
         }
         
@@ -540,6 +560,11 @@
                 width: 100%;
                 justify-content: center;
                 margin-top: 10px;
+            }
+            
+            /* モバイルでは詳細コンテンツを縦並びに */
+            .details-content-row {
+                flex-direction: column;
             }
         }
     </style>
@@ -646,11 +671,11 @@
   </style></head>
 <body>
     <div class="header-container">
-        <img class="logo" src="./list_files/NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
+        <img class="logo" src="./whisky_list_files/NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
         <h1 class="header-title">昼の月。ウィスキーリスト</h1>
         <div class="header-nav">
-            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_8LbjzZqXSXCQh-xsjX2yZQ/index.html" class="header-link">AIソムリエ</a>
-            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_8LbjzZqXSXCQh-xsjX2yZQ/whisky_list_page.html#" class="header-link active">ウィスキー一覧</a>
+            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_RcfTCVkeQUWrRWkZArZ1eA/index.html" class="header-link">AIソムリエ</a>
+            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_RcfTCVkeQUWrRWkZArZ1eA/whisky_list.html" class="header-link active">ウィスキー一覧</a>
         </div>
     </div>
     
@@ -744,7 +769,7 @@
                             <td class="hide-mobile"><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span></td>
                         </tr>
                     
-                        <tr data-id="4" onclick="selectWhisky(&#39;4&#39;)">
+                        <tr data-id="4" onclick="selectWhisky(&#39;4&#39;)" class="selected">
                             <td>ボウモア26年ダンカンテイラー</td>
                             <td>¥15,000</td>
                             <td>Scotland, Islay</td>
@@ -809,7 +834,7 @@
             </div>
         </div>
         
-        <div class="details-section" id="whiskyDetails" style="display:none;">
+        <div class="details-section" id="whiskyDetails" style="display: block;">
             <h2 class="text-2xl font-bold mb-4">
                 🍸 ウィスキー詳細情報
             </h2>
@@ -817,38 +842,44 @@
             <div id="selectedWhiskyDetails">
                 <div class="whisky-details-header">
                     <div>
-                        <h3 class="whisky-name" id="detailWhiskyName">ウィスキー名</h3>
-                        <div class="whisky-tags" id="detailWhiskyTags">
-                            <!-- タグが動的に挿入される -->
+                        <h3 class="whisky-name" id="detailWhiskyName">ボウモア26年ダンカンテイラー</h3>
+                        <div class="whisky-tags" id="detailWhiskyTags"><div class="tag">Scotland, Islay</div><div class="tag">Islay Single Malt Scotch Whisky</div></div>
+                    </div>
+                    <div class="whisky-price" id="detailWhiskyPrice">¥15,000</div>
+                </div>
+                
+                <div class="whisky-description" id="detailWhiskyDescription">ダンカンテイラー社がボトリングした26年熟成のボウモアは、エレガントなピート煙、蜂蜜、トロピカルフルーツ、柑橘類の風味が複雑な海の特徴と調和しています。長期熟成による洗練された樽の影響、レザー、ダークチョコレートのニュアンスが感じられ、海塩と穏やかなスパイスを伴う長く温かい余韻が特徴です。</div>
+                
+                <!-- タブの代わりに2カラムレイアウトに変更 -->
+                <div class="details-content-row">
+                    <div class="profile-section">
+                        <h3 class="section-title"><i class="fas fa-chart-radar"></i> 味覚プロファイル</h3>
+                        <div class="profile-chart-container">
+                            <canvas id="whiskyProfileChart" class="chart-canvas" width="375" height="437" style="display: block; box-sizing: border-box; height: 350px; width: 300px;"></canvas>
                         </div>
                     </div>
-                    <div class="whisky-price" id="detailWhiskyPrice">¥0,000</div>
-                </div>
-                
-                <div class="whisky-description" id="detailWhiskyDescription">
-                    テイスティングノートが表示されます。
-                </div>
-                
-                <div class="details-tabs">
-                    <div class="tab active" data-tab="profile">味覚プロファイル</div>
-                    <div class="tab" data-tab="distillery">蒸溜所情報</div>
-                </div>
-                
-                <div class="tab-content active" id="profile-tab">
-                    <div class="profile-chart-container">
-                        <canvas id="whiskyProfileChart" class="chart-canvas"></canvas>
-                    </div>
-                </div>
-                
-                <div class="tab-content" id="distillery-tab">
-                    <div class="distillery-map-container">
-                        <div id="distilleryMap" style="height:100%;"></div>
-                    </div>
                     
-                    <div class="distillery-info" id="distilleryInfo">
-                        <h3 id="distilleryName">蒸溜所名</h3>
-                        <div class="info-grid" id="distilleryDetails">
-                            <!-- 蒸溜所情報が動的に挿入される -->
+                    <div class="distillery-section">
+                        <h3 class="section-title"><i class="fas fa-industry"></i> 蒸溜所情報</h3>
+                        <div class="distillery-map-container">
+                            <div id="distilleryMap" style="height: 100%; position: relative;" class="leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" tabindex="0"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(0px, 0px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 15; transform: translate3d(-3461px, -1986px, 0px) scale(16);"></div><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 19; transform: translate3d(0px, 0px, 0px) scale(1);"><img alt="" src="./whisky_list_files/79@2x.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(123px, -114px, 0px); opacity: 1;"><img alt="" src="./whisky_list_files/80@2x.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(123px, 142px, 0px); opacity: 1;"><img alt="" src="./whisky_list_files/79@2x(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-133px, -114px, 0px); opacity: 1;"><img alt="" src="./whisky_list_files/79@2x(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(379px, -114px, 0px); opacity: 1;"><img alt="" src="./whisky_list_files/80@2x(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-133px, 142px, 0px); opacity: 1;"><img alt="" src="./whisky_list_files/80@2x(2).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(379px, 142px, 0px); opacity: 1;"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"><div class="leaflet-marker-icon custom-distillery-marker leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -8px; margin-top: -8px; width: 16px; height: 16px; transform: translate3d(258px, 149px, 0px); z-index: 149;"><div style="background-color: #ff6b6b; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px #ff6b6b;"></div></div><div class="leaflet-marker-icon other-distillery-marker leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -5px; margin-top: -5px; width: 10px; height: 10px; transform: translate3d(246px, -362px, 0px); z-index: -362;"><div style="background-color: #4ecdc4; width: 8px; height: 8px; border-radius: 50%; border: 1px solid white;"></div></div><div class="leaflet-marker-icon other-distillery-marker leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -5px; margin-top: -5px; width: 10px; height: 10px; transform: translate3d(276px, 189px, 0px); z-index: 189;"><div style="background-color: #4ecdc4; width: 8px; height: 8px; border-radius: 50%; border: 1px solid white;"></div></div><div class="leaflet-marker-icon other-distillery-marker leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -5px; margin-top: -5px; width: 10px; height: 10px; transform: translate3d(819px, -423px, 0px); z-index: -423;"><div style="background-color: #4ecdc4; width: 8px; height: 8px; border-radius: 50%; border: 1px solid white;"></div></div><div class="leaflet-marker-icon other-distillery-marker leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -5px; margin-top: -5px; width: 10px; height: 10px; transform: translate3d(258px, 149px, 0px); z-index: 149;"><div style="background-color: #4ecdc4; width: 8px; height: 8px; border-radius: 50%; border: 1px solid white;"></div></div><div class="leaflet-marker-icon other-distillery-marker leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -5px; margin-top: -5px; width: 10px; height: 10px; transform: translate3d(26634px, 5319px, 0px); z-index: 5319;"><div style="background-color: #4ecdc4; width: 8px; height: 8px; border-radius: 50%; border: 1px solid white;"></div></div></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"><div class="leaflet-popup custom-popup leaflet-zoom-animated" style="opacity: 1; transform: translate3d(258px, 149px, 0px); bottom: -7px; left: -134px;"><div class="leaflet-popup-content-wrapper"><div class="leaflet-popup-content" style="width: 222px;"><b>ボウモア蒸溜所 (Bowmore Distillery)</b><br>Scotland, Islay</div></div><div class="leaflet-popup-tip-container"><div class="leaflet-popup-tip"></div></div><a class="leaflet-popup-close-button" role="button" aria-label="Close popup" href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_RcfTCVkeQUWrRWkZArZ1eA/whisky_list_improved.html#close"><span aria-hidden="true">×</span></a></div></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(31623.1px, 20486.7px, 0px) scale(128);"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_RcfTCVkeQUWrRWkZArZ1eA/whisky_list_improved.html#" title="Zoom in" role="button" aria-label="Zoom in" aria-disabled="false"><span aria-hidden="true">+</span></a><a class="leaflet-control-zoom-out" href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_RcfTCVkeQUWrRWkZArZ1eA/whisky_list_improved.html#" title="Zoom out" role="button" aria-label="Zoom out" aria-disabled="false"><span aria-hidden="true">−</span></a></div><div class="leaflet-control-attribution leaflet-control"><a href="https://leafletjs.com/" title="A JavaScript library for interactive maps"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" class="leaflet-attribution-flag"><path fill="#4C7BE1" d="M0 0h12v4H0z"></path><path fill="#FFD500" d="M0 4h12v3H0z"></path><path fill="#E0BC00" d="M0 7h12v1H0z"></path></svg> Leaflet</a> <span aria-hidden="true">|</span> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></div></div></div></div>
+                        </div>
+                        
+                        <div class="distillery-info" id="distilleryInfo">
+                            <h3 id="distilleryName">ボウモア蒸溜所 (Bowmore Distillery)</h3>
+                            <div class="info-grid" id="distilleryDetails">
+                        <div class="info-label">所在地:</div>
+                        <div>Scotland, Islay</div>
+                    
+                        <div class="info-label">創業年:</div>
+                        <div>1779</div>
+                    
+                    <div class="info-label">現在の状況:</div>
+                    <div class="status-active">稼働中</div>
+                
+                        <div class="info-label" style="grid-column: span 2; margin-top: 15px;">概要:</div>
+                        <div style="grid-column: span 2;">アイラ島最古の蒸留所で、1779年に設立。スコットランド全土でも最古級の蒸溜所のひとつ。アイラ島の中心地ボウモアに位置し、伝統的なフロアモルティングを一部保持するなど伝統的製法を守っている。「アイラの女王」とも呼ばれ、バランスの取れた絶妙なピート香が特徴のウイスキーを生産。</div>
+                    </div>
                         </div>
                     </div>
                 </div>
@@ -856,7 +887,7 @@
         </div>
         
         <div class="text-center mt-6">
-            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_8LbjzZqXSXCQh-xsjX2yZQ/index.html" class="btn-primary">
+            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_RcfTCVkeQUWrRWkZArZ1eA/index.html" class="btn-primary">
                 <i class="fas fa-magic"></i> AIソムリエでウィスキーを提案してもらう
             </a>
         </div>
@@ -910,26 +941,6 @@
                     applyFilters();
                 });
             });
-            
-            // タブ切り替えイベント
-            const tabs = document.querySelectorAll('.tab');
-            tabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-                    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-                    
-                    tab.classList.add('active');
-                    const tabId = `${tab.dataset.tab}-tab`;
-                    document.getElementById(tabId).classList.add('active');
-                    
-                    // マップタブが選択された場合、マップサイズを更新
-                    if (tab.dataset.tab === 'distillery' && mapInstance) {
-                        setTimeout(() => {
-                            mapInstance.invalidateSize();
-                        }, 100);
-                    }
-                });
-            });
         }
         
         async function loadWhiskyData() {
@@ -938,24 +949,15 @@
             document.getElementById('whiskyTable').style.display = 'none';
             
             try {
-                // ローカルキャッシュを確認
-                const cachedData = localStorage.getItem('whiskyData');
-                if (cachedData) {
-                    const parsedData = JSON.parse(cachedData);
-                    if (parsedData && parsedData.timestamp && (Date.now() - parsedData.timestamp < 86400000)) { // 24時間以内
-                        console.log('ローカルキャッシュからウィスキーデータを読み込みました');
-                        whiskyData = parsedData.data;
-                        processWhiskyData();
-                        return;
-                    }
-                }
-                
-                // ローカルファイルを試みる
+                // 複数のファイル名を試行
                 const possibleFiles = [
                     'whisky_data.json',
                     'whiskey_data.json',
+                    'whiskies.json',
                     'data.json'
                 ];
+                
+                let dataLoaded = false;
                 
                 for (const fileName of possibleFiles) {
                     try {
@@ -964,24 +966,20 @@
                             const data = await response.json();
                             whiskyData = data.whiskies || data;
                             console.log(`✅ ${fileName} から ${whiskyData.length} 本のウィスキーデータを読み込みました`);
-                            
-                            // ローカルストレージにキャッシュ
-                            localStorage.setItem('whiskyData', JSON.stringify({
-                                timestamp: Date.now(),
-                                data: whiskyData
-                            }));
-                            
-                            processWhiskyData();
-                            return;
+                            dataLoaded = true;
+                            break;
                         }
                     } catch (error) {
                         console.log(`❌ ${fileName} の読み込みに失敗: ${error.message}`);
                     }
                 }
                 
-                // すべて失敗した場合はデフォルトデータを使用
-                console.log('⚠️ 外部データが見つかりません。デフォルトデータを使用します。');
-                whiskyData = getDefaultWhiskyData();
+                if (!dataLoaded) {
+                    console.log('⚠️ 外部データが見つかりません。デフォルトデータを使用します。');
+                    whiskyData = getDefaultWhiskyData();
+                }
+                
+                // データ処理
                 processWhiskyData();
                 
             } catch (error) {
@@ -995,27 +993,64 @@
             console.log('🏢 蒸溜所データ読み込み中...');
             
             try {
-                const response = await fetch('distilleries.json');
-                if (response.ok) {
-                    const data = await response.json();
-                    
-                    if (data.distilleries) {
-                        // 蒸溜所名の重複を修正
-                        Object.keys(data.distilleries).forEach(key => {
-                            const distillery = data.distilleries[key];
-                            if (distillery.name && distillery.name.includes('蒸溜所蒸溜所')) {
-                                distillery.name = distillery.name.replace('蒸溜所蒸溜所', '蒸溜所');
+                // 複数のファイル名を試行
+                const possibleFiles = [
+                    'distilleries.json',
+                    'distillery_data.json'
+                ];
+                
+                let dataLoaded = false;
+                
+                for (const fileName of possibleFiles) {
+                    try {
+                        const response = await fetch(fileName);
+                        if (response.ok) {
+                            const data = await response.json();
+                            
+                            if (data.distilleries) {
+                                // 蒸溜所データの正規化
+                                Object.keys(data.distilleries).forEach(key => {
+                                    const distillery = data.distilleries[key];
+                                    // 名前の重複修正
+                                    if (distillery.name) {
+                                        distillery.name = distillery.name
+                                            .replace(/蒸溜所蒸溜所/g, '蒸溜所')
+                                            .replace(/蒸留所蒸溜所/g, '蒸留所')
+                                            .replace(/ Distillery Distillery/g, ' Distillery');
+                                    }
+                                    
+                                    // 無効な座標の修正
+                                    if (distillery.location && 
+                                        (distillery.location.lat === 0 || distillery.location.lng === 0)) {
+                                        console.warn(`⚠️ 蒸留所 "${key}" の座標が無効: ${JSON.stringify(distillery.location)}`);
+                                        // デフォルト値で置換
+                                        if (distillery.region && distillery.region.includes('Scotland')) {
+                                            distillery.location = { lat: 57.0, lng: -4.0 };
+                                        } else if (distillery.region && distillery.region.includes('Japan')) {
+                                            distillery.location = { lat: 35.7, lng: 139.7 };
+                                        }
+                                    }
+                                });
+                                
+                                distilleryDatabase = data.distilleries;
+                                console.log(`✅ ${fileName} から ${Object.keys(distilleryDatabase).length} 件の蒸留所データを読み込みました`);
+                                dataLoaded = true;
+                                break;
                             }
-                        });
-                        
-                        distilleryDatabase = data.distilleries;
-                        console.log(`✅ 蒸溜所データ ${Object.keys(distilleryDatabase).length} 件を読み込みました`);
+                        }
+                    } catch (error) {
+                        console.log(`❌ ${fileName} の読み込みに失敗: ${error.message}`);
                     }
-                } else {
-                    console.log('⚠️ distilleries.json が見つかりません。');
                 }
+                
+                if (!dataLoaded) {
+                    console.log('⚠️ 蒸留所データが見つかりません。デフォルトデータを使用します。');
+                    distilleryDatabase = getDefaultDistilleryData();
+                }
+                
             } catch (error) {
-                console.error('蒸溜所データ読み込みエラー:', error);
+                console.error('蒸留所データ読み込みエラー:', error);
+                distilleryDatabase = getDefaultDistilleryData();
             }
         }
         
@@ -1443,7 +1478,7 @@
         
         async function updateDistilleryInfo(whisky) {
             // 蒸留所名を抽出
-            let distilleryName = extractDistilleryName(whisky.name) || '';
+            let distilleryName = extractDistilleryName(whisky.name);
             
             if (!distilleryName && whisky.region) {
                 // 地域からデフォルトの蒸留所を推定
@@ -1534,7 +1569,7 @@
             // Leafletマップを初期化
             mapInstance = L.map('distilleryMap', {
                 center: [55.0, -4.0], // スコットランド中央あたり
-                zoom: 5,
+                zoom: 4, // より広い視野
                 zoomControl: false
             });
             
@@ -1557,8 +1592,10 @@
         }
         
         async function getDistilleryInfo(distilleryName, whisky) {
+            if (!distilleryName) return null;
+            
             // 蒸留所データベースから検索
-            if (distilleryName && distilleryDatabase[distilleryName]) {
+            if (distilleryDatabase[distilleryName]) {
                 return distilleryDatabase[distilleryName];
             }
             
@@ -1577,7 +1614,7 @@
             
             // デフォルトの蒸留所情報を返す
             return {
-                name: distilleryName || getBaseRegion(whisky.region),
+                name: distilleryName,
                 region: whisky.region,
                 founded: '不明',
                 status: '不明',
@@ -1611,7 +1648,7 @@
                 return;
             }
             
-            // マーカーアイコン
+            // マーカーアイコン（選択中のマーカーは赤色）
             const icon = L.divIcon({
                 html: `<div style="background-color: #ff6b6b; width: 12px; height: 12px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px #ff6b6b;"></div>`,
                 className: 'custom-distillery-marker',
@@ -1634,6 +1671,26 @@
             setTimeout(() => {
                 currentMarker.openPopup();
             }, 500);
+            
+            // 他の蒸留所も表示（緑色マーカー）
+            Object.keys(distilleryDatabase).forEach(key => {
+                if (key !== distillery.name && distilleryDatabase[key].location) {
+                    const otherLat = distilleryDatabase[key].location.lat;
+                    const otherLng = distilleryDatabase[key].location.lng;
+                    
+                    if (otherLat && otherLng && otherLat !== 0 && otherLng !== 0) {
+                        const otherIcon = L.divIcon({
+                            html: `<div style="background-color: #4ecdc4; width: 8px; height: 8px; border-radius: 50%; border: 1px solid white;"></div>`,
+                            className: 'other-distillery-marker',
+                            iconSize: [10, 10],
+                            iconAnchor: [5, 5]
+                        });
+                        
+                        const otherMarker = L.marker([otherLat, otherLng], { icon: otherIcon }).addTo(mapInstance);
+                        otherMarker.bindPopup(distilleryDatabase[key].name);
+                    }
+                }
+            });
         }
         
         function showRegionOnMap(region) {
@@ -1742,6 +1799,8 @@
         }
         
         function extractDistilleryName(whiskyName) {
+            if (!whiskyName) return null;
+            
             // 主要な蒸溜所名を検出
             const distilleryPatterns = [
                 'タリスカー', 'マッカラン', '軽井沢', 'ポートエレン', 'ボウモア', 'キルホーマン', 
@@ -1871,14 +1930,64 @@
                 }
             ];
         }
+        
+        function getDefaultDistilleryData() {
+            return {
+                "タリスカー": {
+                    name: "タリスカー蒸溜所 (Talisker Distillery)",
+                    location: { lat: 57.302, lng: -6.356 },
+                    region: "Scotland (Isle of Skye)",
+                    foundedYear: 1830,
+                    status: "アクティブ",
+                    description: "スカイ島で最も古い蒸留所で、嵐が吹き荒れる海岸線に位置し、海の塩気と力強いピートスモークが特徴。1960年に火災で被害を受けましたが、伝統的な製法を守りながら再建されました。「島の味」と称される独特の海洋性風味で知られています。",
+                    zoomLevel: 8
+                },
+                "ポートエレン": {
+                    name: "ポートエレン蒸溜所 (Port Ellen Distillery)",
+                    location: { lat: 55.632, lng: -6.192 },
+                    region: "Scotland, Islay",
+                    foundedYear: 1825,
+                    status: "閉鎖（1983年）- 2020年再建開始",
+                    description: "アイラ島南岸のポートエレン集落に位置し、1983年に閉鎖。現在はコレクター向けの希少ボトルのみが存在。2020年にディアジオ社が再建計画を発表。複雑なスモーキーフレーバーと海洋性の特徴で高く評価されています。閉鎖後もカルトステータスを保持する伝説的な蒸留所です。",
+                    zoomLevel: 8
+                },
+                "マッカラン": {
+                    name: "マッカラン蒸溜所 (The Macallan Distillery)",
+                    location: { lat: 57.484, lng: -3.208 },
+                    region: "Scotland, Speyside",
+                    foundedYear: 1824,
+                    status: "アクティブ",
+                    description: "スペイサイド地方のクレイゲラキー村近くに位置し、シェリー樽熟成の最高峰として世界的な評価を得ています。2018年に新しい最先端の蒸留所施設を開設。独自の小型スチルと厳格な樽選定ポリシーにより、豊かな果実味と複雑さを持つウイスキーを生産しています。",
+                    zoomLevel: 8
+                },
+                "ボウモア": {
+                    name: "ボウモア蒸溜所 (Bowmore Distillery)",
+                    location: { lat: 55.756, lng: -6.289 },
+                    region: "Scotland, Islay",
+                    foundedYear: 1779,
+                    status: "アクティブ",
+                    description: "アイラ島最古の蒸留所で、1779年に設立。スコットランド全土でも最古級の蒸溜所のひとつ。アイラ島の中心地ボウモアに位置し、伝統的なフロアモルティングを一部保持するなど伝統的製法を守っている。「アイラの女王」とも呼ばれ、バランスの取れた絶妙なピート香が特徴のウイスキーを生産。",
+                    zoomLevel: 8
+                },
+                "軽井沢": {
+                    name: "軽井沢蒸溜所 (Karuizawa Distillery)",
+                    location: { lat: 36.348, lng: 138.596 },
+                    region: "Japan, Nagano Prefecture",
+                    foundedYear: 1955,
+                    status: "閉鎖（2000年）",
+                    description: "長野県軽井沢にあった伝説的な蒸溜所で、2000年に閉鎖。浅間山の麓、標高850mという高地に位置し、スコットランド式の小型ポットスチルを使用。輸入したシェリー樽での長期熟成により、濃厚で複雑な風味を持つウイスキーを製造。現在は希少性が極めて高く、世界中のコレクターから熱望されています。",
+                    zoomLevel: 8
+                }
+            };
+        }
     </script>
 
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDiPON6SFvhX2WblVBkyz4wauAJNFeVs%2B7x3C4uLLClwEUvz5s9Dt9rqj6YBh%2Bn29F5f34VISX7FEahjlMvO3D3at3WSuVhN%2BOsJIzXpxETlXDzmx%2FPCOMd60H%2F6dS5WgcHnUEfkYJPv1EBMpofH%2F835SjT3DiJ5oeaMuMPywZMaRcwW0SCcs7QPl4Edd70aTwK%2BJV1jAc%2FrtX6Yp7ExhXZOGBc7BiYFOSazhUaDNGdC5Y2OJlB4HUm4S9zr30%2FctvTy54fmVfqApETdGOxKRVsHW9udBQirwGj0TpccxIqJv0iZFu2B%2BuXJ4wA4RwW8RBqtgMcdg8mKuAuL4YauV9d2oOXWYJzCTb1IuJ5PnIwNGynMfbSkAulh%2BN0Ph%2BeFdrCE2o5OfqopDIv6LF3GHOm5JKGSPTfDuwi0Y7AUbaRWPUqFWiOHS%2Bi7f2VnKmzBZbZ5EBMKjMpxEKaXJoFEqgc9FwVEnZSmmgjim3JM5WBV9CQW0dTdUEfPluMjrPoD%2BzA%3D%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDhPCR%2B3s5DazCFkDMptRK0GxDzJTwRG7II3iY%2BdcNrkm0fEGeoWyYdL2b7X8XaS%2FXrRs5lrDCk8KX4zaefNWT0ig0XZhU2DxhZifJjdIxRfVoZWpd7nxj6U7HAKd%2F7KjWgZwOaxBD8D9ztJcLJczpMJRQRxFPQzPObCOuumH6y0Q%2FxFiQj4pWoLQdKmaAuZlwXwgQXmcbU7VexG5CLxs2zgxCvi8HkM%2FATAIbio0y4gy3xpxU%2BglDLoOwKcqEy9X5C027DPWTILjFgiSnTJioZy48JshKVkUQWA7BMgAcjEA4yOG7PU%2F97ZIvWwMx346cbMHuVdzmlNnlpvkzt4PRAgGTUzuBblZ5iM6smgXA0Mmkk7FmnFVUK3DE%2B0hsk7dduzSb16h6eZuriaqnEhrfOVaXa3YuLZLbC6m1kVTPGB%2FLnGvsBDwYZYGqyxLb0KwwfK2i5WNkSTLNhYznmO9FKPAv9G97LhqOpM4Y7U6%2BiXk11MxmyrZRGX4hmyAmhnlVQ%3D%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDiPON6SFvhX2WblVBkyz4wauAJNFeVs+7x3C4uLLClwEUvz5s9Dt9rqj6YBh+n29F5f34VISX7FEahjlMvO3D3at3WSuVhN+OsJIzXpxETlXDzmx/PCOMd60H/6dS5WgcHnUEfkYJPv1EBMpofH/835SjT3DiJ5oeaMuMPywZMaRcwW0SCcs7QPl4Edd70aTwK+JV1jAc/rtX6Yp7ExhXZOGBc7BiYFOSazhUaDNGdC5Y2OJlB4HUm4S9zr30/ctvTy54fmVfqApETdGOxKRVsHW9udBQirwGj0TpccxIqJv0iZFu2B+uXJ4wA4RwW8RBqtgMcdg8mKuAuL4YauV9d2oOXWYJzCTb1IuJ5PnIwNGynMfbSkAulh+N0Ph+eFdrCE2o5OfqopDIv6LF3GHOm5JKGSPTfDuwi0Y7AUbaRWPUqFWiOHS+i7f2VnKmzBZbZ5EBMKjMpxEKaXJoFEqgc9FwVEnZSmmgjim3JM5WBV9CQW0dTdUEfPluMjrPoD+zA==";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDhPCR+3s5DazCFkDMptRK0GxDzJTwRG7II3iY+dcNrkm0fEGeoWyYdL2b7X8XaS/XrRs5lrDCk8KX4zaefNWT0ig0XZhU2DxhZifJjdIxRfVoZWpd7nxj6U7HAKd/7KjWgZwOaxBD8D9ztJcLJczpMJRQRxFPQzPObCOuumH6y0Q/xFiQj4pWoLQdKmaAuZlwXwgQXmcbU7VexG5CLxs2zgxCvi8HkM/ATAIbio0y4gy3xpxU+glDLoOwKcqEy9X5C027DPWTILjFgiSnTJioZy48JshKVkUQWA7BMgAcjEA4yOG7PU/97ZIvWwMx346cbMHuVdzmlNnlpvkzt4PRAgGTUzuBblZ5iM6smgXA0Mmkk7FmnFVUK3DE+0hsk7dduzSb16h6eZuriaqnEhrfOVaXa3YuLZLbC6m1kVTPGB/LnGvsBDwYZYGqyxLb0KwwfK2i5WNkSTLNhYznmO9FKPAv9G97LhqOpM4Y7U6+iXk11MxmyrZRGX4hmyAmhnlVQ==";
     </script>
     
-    <script id="html_notice_dialog_script" src="./list_files/notice_dialog.js.ダウンロード"></script>
+    <script id="html_notice_dialog_script" src="./whisky_list_files/notice_dialog.js.ダウンロード"></script>
     </body></html>

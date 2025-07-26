@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0129)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_nwybQSMoRUOYItGQdmLONA/refreshed_ui_json_fix.html -->
+<!-- saved from url=(0129)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_pmTaJRnNQ2yWpmIhnxzQfw/index_improved_header.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -699,6 +699,98 @@
         .leaflet-control-zoom a:hover {
             background-color: rgba(78, 205, 196, 0.3) !important;
         }
+        
+        /* ナビゲーションリンク用スタイル */
+        .nav-links {
+            position: absolute;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-link {
+            color: #fff;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            background: rgba(78, 205, 196, 0.2);
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .nav-link:hover {
+            background: rgba(78, 205, 196, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(78, 205, 196, 0.2);
+        }
+        
+        .nav-link.active {
+            background: rgba(78, 205, 196, 0.4);
+            border-color: rgba(78, 205, 196, 0.6);
+        }
+        
+        /* プルダウンメニューの背景色修正 */
+        select {
+            background-color: rgba(50, 50, 50, 0.9) !important;
+            color: #fff !important;
+            border: 1px solid rgba(255, 255, 255, 0.3) !important;
+            padding: 8px !important;
+        }
+        
+        select option {
+            background-color: #333 !important;
+            color: #fff !important;
+        }
+        
+        select:focus {
+            outline: none !important;
+            border-color: #4ecdc4 !important;
+            box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2) !important;
+        }
+        
+        /* フッターリンク */
+        .footer-links {
+            margin-top: 30px;
+            text-align: center;
+            padding: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .footer-link {
+            display: inline-block;
+            padding: 8px 16px;
+            margin: 0 10px;
+            color: #4ecdc4;
+            text-decoration: none;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-link:hover {
+            background: rgba(78, 205, 196, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* ページローディングインジケータ */
+        .page-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(to right, #4ecdc4, #ff6b6b);
+            z-index: 9999;
+            transform: scaleX(0);
+            transform-origin: left;
+            animation: pageLoad 1.5s ease-out forwards;
+        }
+        
+        @keyframes pageLoad {
+            0% { transform: scaleX(0); }
+            50% { transform: scaleX(0.5); }
+            100% { transform: scaleX(1); }
+        }
     </style>
 <style>
     .genspark-notice-dialog {
@@ -802,31 +894,34 @@
     }
   </style></head>
 <body>
+    <!-- ページローディングインジケータ -->
+    <div class="page-loader"></div>
+    
     <div class="header-container">
-        <img class="logo" src="NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
+        <img class="logo" src="./index_files/NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
         <h1 class="header-title">昼の月。AIソムリエ</h1>
-        <!-- ページ切り替えリンクを追加 -->
+        <!-- ナビゲーションリンクを追加 -->
         <div class="nav-links">
-            <a href="index.html" class="nav-link">ホーム</a>
-            <a href="whisky_list.html" class="nav-link">ウィスキー一覧</a>
+            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_pmTaJRnNQ2yWpmIhnxzQfw/index.html" class="nav-link active">ホーム</a>
+            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_pmTaJRnNQ2yWpmIhnxzQfw/whisky_list.html" class="nav-link">ウィスキー一覧</a>
         </div>
     </div>
     
     <div class="container-custom">
         <div class="whisky-overview">
             <h2>🍷 プレミアムウィスキーコレクション</h2>
-            <div class="subtitle">本日は厳選された<span id="whiskyCount">6</span>本のウィスキーから</div>
+            <div class="subtitle">本日は厳選された<span id="whiskyCount">108</span>本のウィスキーから</div>
             <div class="description">
                 <strong>あなたの味覚に完璧にマッチする</strong>最高の一本を<br>
                 AI技術で分析・提案いたします
             </div>
             <div class="whisky-stats">
                 <div class="stat-item">
-                    <span class="stat-number" id="totalWhiskies">6</span>
+                    <span class="stat-number" id="totalWhiskies">108</span>
                     <div class="stat-label">厳選銘柄</div>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number" id="uniqueRegions">5</span>
+                    <span class="stat-number" id="uniqueRegions">8</span>
                     <div class="stat-label">産地</div>
                 </div>
                 <div class="stat-item">
@@ -842,11 +937,11 @@
             </h2>
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <label class="block mb-2">下限価格: <span id="minPriceDisplay">¥5,000</span></label>
+                    <label class="block mb-2">下限価格: <span id="minPriceDisplay">¥1,000</span></label>
                     <input type="range" id="minPrice" class="price-slider" min="1" max="80" value="5" step="1">
                 </div>
                 <div>
-                    <label class="block mb-2">上限価格: <span id="maxPriceDisplay">¥50,000</span></label>
+                    <label class="block mb-2">上限価格: <span id="maxPriceDisplay">¥10,000</span></label>
                     <input type="range" id="maxPrice" class="price-slider" min="1" max="80" value="50" step="1">
                 </div>
             </div>
@@ -959,7 +1054,7 @@
                 </h2>
                 <div class="chart-container">
                     <h3 id="chartTitle">あなたの好み</h3>
-                    <canvas id="combinedProfileChart" class="chart-canvas" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas>
+                    <canvas id="combinedProfileChart" class="chart-canvas"></canvas>
                 </div>
                 <div class="text-center mt-4">
                     <p class="text-sm text-gray-400">ウィスキーの銘柄をクリックすると、あなたの好みと重ねて表示されます</p>
@@ -972,7 +1067,7 @@
                     </h2>
                     <div class="distillery-container">
                         <div class="map-container">
-                            <div id="distilleryMap" class="leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" tabindex="0" style="position: relative;"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(0px, 0px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 18; transform: translate3d(0px, 0px, 0px) scale(1);"><img alt="" src="./index_files/1@2x.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-256px, -132px, 0px); opacity: 1;"><img alt="" src="./index_files/1@2x(1).png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(0px, -132px, 0px); opacity: 1;"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(512px, 388px, 0px) scale(2);"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"><div class="leaflet-control-attribution leaflet-control">© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> <span aria-hidden="true">|</span> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></div></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_nwybQSMoRUOYItGQdmLONA/refreshed_ui_json_fix.html#" title="Zoom in" role="button" aria-label="Zoom in" aria-disabled="false"><span aria-hidden="true">+</span></a><a class="leaflet-control-zoom-out" href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_nwybQSMoRUOYItGQdmLONA/refreshed_ui_json_fix.html#" title="Zoom out" role="button" aria-label="Zoom out" aria-disabled="false"><span aria-hidden="true">−</span></a></div></div></div></div>
+                            <div id="distilleryMap"></div>
                         </div>
                         <div id="distilleryInfo" class="distillery-info">
                             <h3 id="distilleryName">蒸留所を選択してください</h3>
@@ -983,6 +1078,13 @@
                     </div>
                 </div>
             </div>
+        </div>
+        
+        <!-- フッターリンク -->
+        <div class="footer-links">
+            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_pmTaJRnNQ2yWpmIhnxzQfw/whisky_list.html" class="footer-link">
+                <i class="fas fa-list"></i> 全ウィスキーリストを見る
+            </a>
         </div>
         
         <div class="custom-footer">
@@ -1020,7 +1122,25 @@
             loadDistilleryData(); // 蒸留所データを読み込む
             initializeChart();
             initializeMap();
+            setActiveNavLink(); // ナビゲーションリンクのアクティブ状態設定
         });
+        
+        // ナビゲーションリンクのアクティブ状態を設定
+        function setActiveNavLink() {
+            const currentPath = window.location.pathname;
+            const filename = currentPath.substring(currentPath.lastIndexOf('/') + 1) || 'index.html';
+            
+            document.querySelectorAll('.nav-link').forEach(link => {
+                const href = link.getAttribute('href');
+                if (href === filename || 
+                    (filename === 'index.html' && href === 'index.html') || 
+                    (filename === '' && href === 'index.html')) {
+                    link.classList.add('active');
+                } else {
+                    link.classList.remove('active');
+                }
+            });
+        }
         
         function setupEventListeners() {
             document.getElementById('getRecommendation').addEventListener('click', getRecommendation);
@@ -1554,6 +1674,9 @@
                             const distillery = data.distilleries[key];
                             if (distillery.name && distillery.name.includes('蒸溜所蒸溜所')) {
                                 distillery.name = distillery.name.replace('蒸溜所蒸溜所', '蒸溜所');
+                            }
+                            if (distillery.name && distillery.name.includes('Distillery Distillery')) {
+                                distillery.name = distillery.name.replace('Distillery Distillery', 'Distillery');
                             }
                         });
                         
@@ -2238,6 +2361,9 @@
                 if (displayName.includes('蒸溜所蒸溜所')) {
                     displayName = displayName.replace('蒸溜所蒸溜所', '蒸溜所');
                 }
+                if (displayName.includes('Distillery Distillery')) {
+                    displayName = displayName.replace('Distillery Distillery', 'Distillery');
+                }
                 
                 distilleryNameElem.textContent = displayName;
                 
@@ -2683,23 +2809,12 @@
             // Hide distillery section
             const distillerySection = document.getElementById('distillerySection');
             if (distillerySection) {
-                distillerySection.classList.remove('active');
-            }
-            
-            // Generate new recommendations
-            setTimeout(() => {
-                getRecommendation();
-                button.disabled = false;
-                button.innerHTML = '🔄 別の提案';
-            }, 1000);
-        }
-    </script>
-
+                
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDg4LSbMAS736yGQ3mlu4%2BTPkT90lfgbLwrhD7fV%2F47hBye%2F9AxzBOeWwA9nG%2BVxA2t7bnZohako%2F1Gj%2BcaxsHZweaNRkq0LIAJwBWsOh5yucya9%2B5%2FN%2BQwlkIkufQ0DQCoCSeO6PU9z4AlygsLh0%2FG%2FKSbrLx%2BmIanuee4TyAQYeE%2Bqs0cW5SOe8IZ8dbhhc3mlYQB7yxEBqA%2BiPUs2h7%2FDi5IvGCklSEW%2FcpOUdqHumFVC2imytVZiBCwoMYtKFhOshm2LRLFv8dj0ilqtDJWT%2Fjpo%2FiKs3S3Z2dN%2FvQK8CT7k5G2C3YMKF5YlpfWOcCo%2FXYoNFuvQXTbI6bNpkcB3o9gBMW7jIE0SLL7aVa%2B5vGtqbwkSuyKUqS3nM86p8j1OqdL%2BpY5MFwwx0j1XLEc4r9zamnWMK%2F6PsutSHAEKBzJ5FDDM0psZLQuEeHFx2Btaciml8TPAIOq0b2ZmHnI5pifHGohjS%2FixvhRK4Mln06IGfd0YyBg%2B6e186PquIrQ%3D%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDsppQRleSbfzk80r4KhxQNDaeU3xZbba2GbuSG0mFhEEC%2FEIQPA7pmuKVAVxO%2BrtnR1fs5WX7fv04n3XZodAvtUVr8RBqM7vuMXoootv%2FHsZzG4ZeV%2Br6e1AuJH6zpCt2Le%2Bt2xqkMM%2Bc2PBCJntwgf5GI5Ca3lU6EsVH%2FvD3uukKUg0m4sa33q%2BDWe5nNsaXsAePtnEoiUdhbxBcMELfWE6VBGU%2FFZHQ81fBDlfD3m65K0Faio46tBvJydaH4%2F4BTRFr5Ktm4SDx%2BsLz51ghHB3KpZ02toLZiUfszmnqwo7rvPBArfczAlTauB7FO3akzbNkaoU8p0GCskbFyBZxxgISnoMtgJy6lHHrLo4vTm661YOOLFk1yphcdVHbOlaVnVx8aoeWdxjI3VX70iRXcChVlfR3Ko06R9xcOpYb4NdkYqBmgmZGHc2BCmHxo%2F0yPMPFGkPyuxzaCi6wGZS1RmRq%2BerWp%2FrL4%2Bnkz%2FM0hOe0HXxmWteVzKL9017vBGtrw%3D%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDg4LSbMAS736yGQ3mlu4+TPkT90lfgbLwrhD7fV/47hBye/9AxzBOeWwA9nG+VxA2t7bnZohako/1Gj+caxsHZweaNRkq0LIAJwBWsOh5yucya9+5/N+QwlkIkufQ0DQCoCSeO6PU9z4AlygsLh0/G/KSbrLx+mIanuee4TyAQYeE+qs0cW5SOe8IZ8dbhhc3mlYQB7yxEBqA+iPUs2h7/Di5IvGCklSEW/cpOUdqHumFVC2imytVZiBCwoMYtKFhOshm2LRLFv8dj0ilqtDJWT/jpo/iKs3S3Z2dN/vQK8CT7k5G2C3YMKF5YlpfWOcCo/XYoNFuvQXTbI6bNpkcB3o9gBMW7jIE0SLL7aVa+5vGtqbwkSuyKUqS3nM86p8j1OqdL+pY5MFwwx0j1XLEc4r9zamnWMK/6PsutSHAEKBzJ5FDDM0psZLQuEeHFx2Btaciml8TPAIOq0b2ZmHnI5pifHGohjS/ixvhRK4Mln06IGfd0YyBg+6e186PquIrQ==";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDsppQRleSbfzk80r4KhxQNDaeU3xZbba2GbuSG0mFhEEC/EIQPA7pmuKVAVxO+rtnR1fs5WX7fv04n3XZodAvtUVr8RBqM7vuMXoootv/HsZzG4ZeV+r6e1AuJH6zpCt2Le+t2xqkMM+c2PBCJntwgf5GI5Ca3lU6EsVH/vD3uukKUg0m4sa33q+DWe5nNsaXsAePtnEoiUdhbxBcMELfWE6VBGU/FZHQ81fBDlfD3m65K0Faio46tBvJydaH4/4BTRFr5Ktm4SDx+sLz51ghHB3KpZ02toLZiUfszmnqwo7rvPBArfczAlTauB7FO3akzbNkaoU8p0GCskbFyBZxxgISnoMtgJy6lHHrLo4vTm661YOOLFk1yphcdVHbOlaVnVx8aoeWdxjI3VX70iRXcChVlfR3Ko06R9xcOpYb4NdkYqBmgmZGHc2BCmHxo/0yPMPFGkPyuxzaCi6wGZS1RmRq+erWp/rL4+nkz/M0hOe0HXxmWteVzKL9017vBGtrw==";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
