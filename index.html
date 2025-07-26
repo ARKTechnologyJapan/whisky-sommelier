@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0136)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_p-BYEsvcSiqAoXODsqI4gA/index_external_json_priority.html -->
+<!-- saved from url=(0119)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_rDOd3eN7RjeaMnd-ygqJgQ/index_final.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -898,8 +898,8 @@
         <img class="logo" src="./index_files/NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
         <h1 class="header-title">昼の月。AIソムリエ</h1>
         <div class="nav-links">
-            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_p-BYEsvcSiqAoXODsqI4gA/index.html" class="nav-link active">🏠 ホーム</a>
-            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_p-BYEsvcSiqAoXODsqI4gA/whisky_list.html" class="nav-link">🥃 ウィスキー一覧</a>
+            <a href="index.html" class="nav-link active">🏠 ホーム</a>
+            <a href="whisky_list.html" class="nav-link">🥃 ウィスキー一覧</a>
         </div>
     </div>
     
@@ -1116,7 +1116,8 @@
         let debugEnabled = false; // デバッグモードの状態
         
         // Initialize the application
-        document.addEventListener('DOMContentLoaded', async function() {
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🍷 昼の月。AIソムリエ システム起動');
             debugLog('🍷 昼の月。AIソムリエ システム起動', 'info');
             
             // デバッグツールの設定
@@ -1132,6 +1133,12 @@
             // 現在のページに応じてナビゲーションリンクをアクティブに
             updateNavLinks();
             
+            // データ初期化を実行
+            initializeData();
+        });
+        
+        // データ初期化を別関数に分離
+        async function initializeData() {
             try {
                 // 最初に蒸留所データを読み込み
                 debugLog('蒸留所データ読み込み開始', 'info');
@@ -1150,7 +1157,7 @@
                 debugLog(`初期化中にエラーが発生しました: ${error.message}`, 'error');
                 console.error('初期化エラー:', error);
             }
-        });
+        }
         
         function setupDebugTools() {
             // デバッグボタンを追加（Ctrl+Shift+Dで表示/非表示）
@@ -1161,27 +1168,39 @@
             });
             
             // デバッグコンソールのクリアボタン
-            document.getElementById('clearDebugBtn').addEventListener('click', function() {
-                document.getElementById('debugContent').innerHTML = '';
-            });
+            const clearBtn = document.getElementById('clearDebugBtn');
+            if (clearBtn) {
+                clearBtn.addEventListener('click', function() {
+                    document.getElementById('debugContent').innerHTML = '';
+                });
+            }
             
             // デバッグコンソールの表示/非表示切り替えボタン
-            document.getElementById('toggleDebugBtn').addEventListener('click', function() {
-                toggleDebug();
-            });
+            const toggleBtn = document.getElementById('toggleDebugBtn');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', function() {
+                    toggleDebug();
+                });
+            }
             
             // URLパラメータでデバッグモードを有効化（?debug=true）
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('debug') === 'true') {
                 debugEnabled = true;
-                document.getElementById('debugConsole').style.display = 'block';
+                const debugConsole = document.getElementById('debugConsole');
+                if (debugConsole) {
+                    debugConsole.style.display = 'block';
+                }
                 debugLog('デバッグモード有効化（URLパラメータ）', 'info');
             }
         }
         
         function toggleDebug() {
             debugEnabled = !debugEnabled;
-            document.getElementById('debugConsole').style.display = debugEnabled ? 'block' : 'none';
+            const debugConsole = document.getElementById('debugConsole');
+            if (debugConsole) {
+                debugConsole.style.display = debugEnabled ? 'block' : 'none';
+            }
             debugLog(`デバッグモード ${debugEnabled ? '有効' : '無効'}`, 'info');
         }
         
@@ -1233,16 +1252,41 @@
         }
         
         function setupEventListeners() {
-            document.getElementById('getRecommendation').addEventListener('click', getRecommendation);
-            document.getElementById('refreshRecommendation').addEventListener('click', refreshRecommendation);
-            document.getElementById('getAnotherRecommendation').addEventListener('click', getAnotherRecommendation);
-            document.getElementById('voiceInputBtn').addEventListener('click', toggleVoiceInput);
-            document.getElementById('sendChatBtn').addEventListener('click', sendChatMessage);
-            document.getElementById('chatInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    sendChatMessage();
-                }
-            });
+            // メインボタンのイベントリスナー
+            const recommendBtn = document.getElementById('getRecommendation');
+            if (recommendBtn) {
+                recommendBtn.addEventListener('click', getRecommendation);
+            }
+            
+            const refreshBtn = document.getElementById('refreshRecommendation');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', refreshRecommendation);
+            }
+            
+            const anotherBtn = document.getElementById('getAnotherRecommendation');
+            if (anotherBtn) {
+                anotherBtn.addEventListener('click', getAnotherRecommendation);
+            }
+            
+            // チャット関連のイベントリスナー
+            const voiceBtn = document.getElementById('voiceInputBtn');
+            if (voiceBtn) {
+                voiceBtn.addEventListener('click', toggleVoiceInput);
+            }
+            
+            const sendBtn = document.getElementById('sendChatBtn');
+            if (sendBtn) {
+                sendBtn.addEventListener('click', sendChatMessage);
+            }
+            
+            const chatInput = document.getElementById('chatInput');
+            if (chatInput) {
+                chatInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        sendChatMessage();
+                    }
+                });
+            }
             
             // Window resize handler
             window.addEventListener('resize', function() {
@@ -1259,6 +1303,8 @@
             const examples = document.querySelectorAll('.question-example');
             const chatInput = document.getElementById('chatInput');
             
+            if (!chatInput) return;
+            
             examples.forEach(example => {
                 example.addEventListener('click', function() {
                     const question = this.getAttribute('data-question');
@@ -1270,11 +1316,15 @@
 
         async function sendChatMessage() {
             const chatInput = document.getElementById('chatInput');
+            if (!chatInput) return;
+            
             const question = chatInput.value.trim();
             
             if (!question) return;
             
             const chatHistory = document.getElementById('chatHistory');
+            if (!chatHistory) return;
+            
             chatHistory.style.display = 'block';
             
             // Add user message
@@ -1453,6 +1503,8 @@
             const maxPriceSlider = document.getElementById('maxPrice');
             const minPriceDisplay = document.getElementById('minPriceDisplay');
             const maxPriceDisplay = document.getElementById('maxPriceDisplay');
+            
+            if (!minPriceSlider || !maxPriceSlider || !minPriceDisplay || !maxPriceDisplay) return;
             
             function updatePriceDisplay() {
                 const minValue = parseInt(minPriceSlider.value);
@@ -1646,22 +1698,28 @@
                 
                 recognition.onstart = function() {
                     const btn = document.getElementById('voiceInputBtn');
-                    btn.classList.add('recording');
-                    btn.innerHTML = '🔴';
+                    if (btn) {
+                        btn.classList.add('recording');
+                        btn.innerHTML = '🔴';
+                    }
                     debugLog('音声認識開始', 'info');
                 };
                 
                 recognition.onresult = function(event) {
                     const transcript = event.results[0][0].transcript;
                     const input = document.getElementById('chatInput');
-                    input.value = transcript;
+                    if (input) {
+                        input.value = transcript;
+                    }
                     debugLog(`音声認識結果: ${transcript}`, 'success');
                 };
                 
                 recognition.onend = function() {
                     const btn = document.getElementById('voiceInputBtn');
-                    btn.classList.remove('recording');
-                    btn.innerHTML = '🎤';
+                    if (btn) {
+                        btn.classList.remove('recording');
+                        btn.innerHTML = '🎤';
+                    }
                     debugLog('音声認識終了', 'info');
                 };
                 
@@ -1669,8 +1727,10 @@
                     debugLog(`音声認識エラー: ${event.error}`, 'error');
                     console.error('Speech recognition error:', event.error);
                     const btn = document.getElementById('voiceInputBtn');
-                    btn.classList.remove('recording');
-                    btn.innerHTML = '🎤';
+                    if (btn) {
+                        btn.classList.remove('recording');
+                        btn.innerHTML = '🎤';
+                    }
                 };
             } else {
                 debugLog('このブラウザは音声認識をサポートしていません', 'warn');
@@ -1678,15 +1738,26 @@
         }
         
         function toggleVoiceInput() {
-            if (recognition) {
-                if (recognition.recording) {
-                    recognition.stop();
-                } else {
-                    recognition.start();
+            if (!recognition) {
+                setupVoiceRecognition();
+                if (!recognition) {
+                    alert('音声認識はこのブラウザでサポートされていません。Chrome、Edge、またはSafariをご利用ください。');
+                    debugLog('音声認識未対応ブラウザ', 'error');
+                    return;
                 }
+            }
+            
+            if (recognition.recognizing) {
+                recognition.stop();
+                recognition.recognizing = false;
             } else {
-                alert('音声認識はこのブラウザでサポートされていません。Chrome、Edge、またはSafariをご利用ください。');
-                debugLog('音声認識未対応ブラウザ', 'error');
+                try {
+                    recognition.start();
+                    recognition.recognizing = true;
+                } catch (e) {
+                    console.error('Voice recognition error:', e);
+                    debugLog('音声認識エラー: ' + e.message, 'error');
+                }
             }
         }
         
@@ -1698,12 +1769,17 @@
                 if (!debugEnabled) {
                     const cachedData = localStorage.getItem('whiskyData');
                     if (cachedData) {
-                        const parsedData = JSON.parse(cachedData);
-                        if (parsedData && parsedData.timestamp && (Date.now() - parsedData.timestamp < 86400000)) { // 24時間以内
-                            debugLog('ローカルキャッシュからウィスキーデータを読み込みました', 'success');
-                            whiskyData = parsedData.data;
-                            updateWhiskyOverview();
-                            return;
+                        try {
+                            const parsedData = JSON.parse(cachedData);
+                            if (parsedData && parsedData.timestamp && (Date.now() - parsedData.timestamp < 86400000)) { // 24時間以内
+                                debugLog('ローカルキャッシュからウィスキーデータを読み込みました', 'success');
+                                whiskyData = parsedData.data;
+                                updateWhiskyOverview();
+                                return whiskyData;
+                            }
+                        } catch (e) {
+                            console.error('Cache parsing error:', e);
+                            localStorage.removeItem('whiskyData'); // 破損したキャッシュを削除
                         }
                     }
                 }
@@ -1726,14 +1802,18 @@
                             
                             // ローカルストレージにキャッシュ
                             if (!debugEnabled) {
-                                localStorage.setItem('whiskyData', JSON.stringify({
-                                    timestamp: Date.now(),
-                                    data: whiskyData
-                                }));
+                                try {
+                                    localStorage.setItem('whiskyData', JSON.stringify({
+                                        timestamp: Date.now(),
+                                        data: whiskyData
+                                    }));
+                                } catch (e) {
+                                    console.warn('localStorage error:', e);
+                                }
                             }
                             
                             updateWhiskyOverview();
-                            return;
+                            return whiskyData;
                         }
                     } catch (error) {
                         debugLog(`❌ ${fileName} の読み込みに失敗: ${error.message}`, 'error');
@@ -1751,14 +1831,18 @@
                         
                         // ローカルストレージにキャッシュ
                         if (!debugEnabled) {
-                            localStorage.setItem('whiskyData', JSON.stringify({
-                                timestamp: Date.now(),
-                                data: whiskyData
-                            }));
+                            try {
+                                localStorage.setItem('whiskyData', JSON.stringify({
+                                    timestamp: Date.now(),
+                                    data: whiskyData
+                                }));
+                            } catch (e) {
+                                console.warn('localStorage error:', e);
+                            }
                         }
                         
                         updateWhiskyOverview();
-                        return;
+                        return whiskyData;
                     }
                 } catch (error) {
                     debugLog(`❌ API からの読み込みに失敗: ${error.message}`, 'error');
@@ -1773,15 +1857,22 @@
             debugLog('⚠️ 外部データが見つかりません。デフォルトデータを使用します。', 'warn');
             whiskyData = getDefaultWhiskyData();
             updateWhiskyOverview();
+            return whiskyData;
         }
         
         function updateWhiskyOverview() {
             const totalCount = whiskyData.length;
-            const uniqueRegions = [...new Set(whiskyData.map(w => w.region))].length;
+            const uniqueRegions = [...new Set(whiskyData.filter(w => w.region).map(w => w.region))].length;
             
-            document.getElementById('whiskyCount').textContent = totalCount;
-            document.getElementById('totalWhiskies').textContent = totalCount;
-            document.getElementById('uniqueRegions').textContent = uniqueRegions;
+            const countElem = document.getElementById('whiskyCount');
+            const totalElem = document.getElementById('totalWhiskies');
+            const regionElem = document.getElementById('uniqueRegions');
+            
+            if (countElem) countElem.textContent = totalCount;
+            if (totalElem) totalElem.textContent = totalCount;
+            if (regionElem) regionElem.textContent = uniqueRegions;
+            
+            debugLog(`ウィスキー概要を更新: ${totalCount}本, ${uniqueRegions}地域`, 'info');
         }
         
         function getDefaultWhiskyData() {
@@ -1793,14 +1884,7 @@
                     region: "Scotland (Isle of Skye)",
                     subcategory: "Single Malt Scotch Whisky",
                     tastingNote_ja: "強い海岸の塩気を持つ複雑な海洋性の特徴。豊かなドライフルーツ、ダークチョコレート、アンティークレザーの層がタリスカー特有のピリッとしたスモークと調和",
-                    taste_profile: { fruity: 3, spicy: 4, body: 5, smoky: 4, sweetness: 2, complexity: 5 },
-                    distillery: {
-                        name: "タリスカー蒸留所",
-                        location: [57.302484, -6.356808],
-                        founded: "1830年",
-                        status: "active",
-                        description: "スカイ島で最も古い蒸溜所の一つで、荒れ狂う海に面した崖の上に位置し、海の風味が特徴的。スカイ島の厳しい環境で育まれた個性的なウィスキーを生み出している。"
-                    }
+                    taste_profile: { fruity: 3, spicy: 4, body: 5, smoky: 4, sweetness: 2, complexity: 5 }
                 },
                 {
                     id: "2",
@@ -1809,14 +1893,7 @@
                     region: "Scotland",
                     subcategory: "Single Malt Scotch Whisky - Speyside",
                     tastingNote_ja: "豊かなシェリーの影響があり、ドライフルーツ、オレンジピール、クリスマスケーキの風味が特徴。複雑な樽のスパイスが蜂蜜、トフィー、ダークチョコレートと調和",
-                    taste_profile: { fruity: 4, spicy: 3, body: 5, smoky: 1, sweetness: 4, complexity: 5 },
-                    distillery: {
-                        name: "マッカラン蒸留所",
-                        location: [57.484691, -3.208736],
-                        founded: "1824年",
-                        status: "active",
-                        description: "スペイサイドを代表する蒸溜所。シェリー樽熟成の高品質なウィスキーで世界的に有名。2018年に新しい現代的な蒸溜所を開設し、伝統と革新を両立させている。"
-                    }
+                    taste_profile: { fruity: 4, spicy: 3, body: 5, smoky: 1, sweetness: 4, complexity: 5 }
                 },
                 {
                     id: "3",
@@ -1825,15 +1902,7 @@
                     region: "Japan",
                     subcategory: "Japanese Whisky",
                     tastingNote_ja: "日本の繊細さと果実の豊かさが見事に調和した希少な逸品。複雑で深い味わい",
-                    taste_profile: { fruity: 4, spicy: 2, body: 4, smoky: 2, sweetness: 3, complexity: 5 },
-                    distillery: {
-                        name: "軽井沢蒸留所",
-                        location: [36.348625, 138.596629],
-                        founded: "1955年",
-                        status: "closed",
-                        closedDate: "2000年",
-                        description: "標高約850mの高地に位置し、日本で最も標高の高い場所にあった蒸溜所。小規模ながら高品質な製品で世界中のコレクターから愛される。2000年に閉鎖されたため、現存する製品は非常に希少。"
-                    }
+                    taste_profile: { fruity: 4, spicy: 2, body: 4, smoky: 2, sweetness: 3, complexity: 5 }
                 },
                 {
                     id: "4",
@@ -1842,16 +1911,7 @@
                     region: "Scotland, Islay",
                     subcategory: "Single Malt Scotch Whisky",
                     tastingNote_ja: "希少で高く評価されるアイラウイスキーで、強い海洋性の特徴と複雑な泥炭の煙が魅力的",
-                    taste_profile: { fruity: 2, spicy: 3, body: 4, smoky: 5, sweetness: 2, complexity: 5 },
-                    distillery: {
-                        name: "ポートエレン蒸留所",
-                        location: [55.630688, -6.195616],
-                        founded: "1825年",
-                        status: "closed",
-                        closedDate: "1983年",
-                        reopening: "2023年再建工事開始",
-                        description: "アイラ島の伝説的な蒸留所。1983年に閉鎖されたため、ボトルは希少価値が高い。ディアジオ社が2023年に再建工事を開始し、2025年頃に再稼働予定。"
-                    }
+                    taste_profile: { fruity: 2, spicy: 3, body: 4, smoky: 5, sweetness: 2, complexity: 5 }
                 },
                 {
                     id: "5",
@@ -1860,14 +1920,7 @@
                     region: "Scotland, Orkney Islands",
                     subcategory: "Single Malt Scotch Whisky",
                     tastingNote_ja: "ヘザーハニー、豊かなドライフルーツ、穏やかな煙の複雑な調和が特徴",
-                    taste_profile: { fruity: 3, spicy: 3, body: 4, smoky: 2, sweetness: 4, complexity: 5 },
-                    distillery: {
-                        name: "ハイランドパーク蒸留所",
-                        location: [58.967429, -2.956449],
-                        founded: "1798年",
-                        status: "active",
-                        description: "スコットランド本土から最も北に位置する蒸溜所の一つ。バイキングの歴史を持つオークニー諸島で、軽いピート香とヘザーハニーの甘みのバランスが特徴的。"
-                    }
+                    taste_profile: { fruity: 3, spicy: 3, body: 4, smoky: 2, sweetness: 4, complexity: 5 }
                 },
                 {
                     id: "6",
@@ -1876,14 +1929,7 @@
                     region: "Scotland, Islay",
                     subcategory: "Single Malt Scotch Whisky",
                     tastingNote_ja: "力強いピート香に海の塩気、柑橘類の皮と青リンゴの甘み",
-                    taste_profile: { fruity: 2, spicy: 3, body: 3, smoky: 5, sweetness: 2, complexity: 4 },
-                    distillery: {
-                        name: "キルホーマン蒸留所",
-                        location: [55.734926, -6.432492],
-                        founded: "2005年",
-                        status: "active",
-                        description: "アイラ島で2005年に設立された比較的新しい農場直営の蒸溜所。自社農場で大麦を栽培し、伝統的な床麦芽製法を採用した独立系蒸溜所。"
-                    }
+                    taste_profile: { fruity: 2, spicy: 3, body: 3, smoky: 5, sweetness: 2, complexity: 4 }
                 }
             ];
         }
@@ -1905,6 +1951,10 @@
                 debugLog('Chart.js not loaded', 'error');
                 return;
             }
+            
+            // Ensure the canvas has correct initial dimensions
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
             
             if (chartInstance) {
                 chartInstance.destroy();
@@ -1985,55 +2035,77 @@
                 return;
             }
             
-            if (typeof L === 'undefined') {
-                debugLog('Leaflet not loaded', 'error');
-                return;
-            }
-            
             try {
-                // デフォルト位置（世界全体が見えるズームレベル）
-                const defaultPosition = [40.0, 0.0]; // より中心の位置
-                const defaultZoom = 2; // もっとズームアウト
-                
-                // マップインスタンス作成
-                mapInstance = L.map('distilleryMap', {
-                    zoomControl: false,
-                    attributionControl: false
-                }).setView(defaultPosition, defaultZoom);
-                
-                // より明るいタイルレイヤー
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                    maxZoom: 18,
-                    id: 'light'
-                }).addTo(mapInstance);
-                
-                // ズームコントロール追加（右下）
-                L.control.zoom({
-                    position: 'bottomright'
-                }).addTo(mapInstance);
-                
-                // アトリビューション追加（左下）
-                L.control.attribution({
-                    position: 'bottomleft',
-                    prefix: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                }).addTo(mapInstance);
-                
-                // ダブルクリックでズームを無効化（モバイル対応）
-                mapInstance.doubleClickZoom.disable();
-                
-                debugLog('✅ マップ初期化成功', 'success');
-                
-                // マップの表示領域を修正
-                setTimeout(() => {
-                    mapInstance.invalidateSize();
-                    // 世界地図を表示
-                    mapInstance.setView(defaultPosition, defaultZoom);
-                }, 100);
-                
+                // Leafletが利用可能かチェック
+                if (typeof L === 'undefined') {
+                    // Leaflet.jsが読み込まれていない場合、動的に読み込む
+                    debugLog('Leafletが未読み込み、動的に読み込みます', 'warn');
+                    
+                    const cssLink = document.createElement('link');
+                    cssLink.rel = 'stylesheet';
+                    cssLink.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+                    document.head.appendChild(cssLink);
+                    
+                    const script = document.createElement('script');
+                    script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+                    script.onload = () => {
+                        debugLog('Leaflet.js 読み込み完了', 'success');
+                        initMap();
+                    };
+                    document.head.appendChild(script);
+                } else {
+                    initMap();
+                }
             } catch (error) {
                 debugLog(`マップ初期化エラー: ${error.message}`, 'error');
                 console.error('マップ初期化エラー:', error);
+            }
+            
+            function initMap() {
+                try {
+                    // デフォルト位置（世界全体が見えるズームレベル）
+                    const defaultPosition = [40.0, 0.0]; // より中心の位置
+                    const defaultZoom = 2; // もっとズームアウト
+                    
+                    // マップインスタンス作成
+                    mapInstance = L.map('distilleryMap', {
+                        zoomControl: false,
+                        attributionControl: true
+                    }).setView(defaultPosition, defaultZoom);
+                    
+                    // より明るいタイルレイヤー
+                    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                        maxZoom: 18,
+                        id: 'light'
+                    }).addTo(mapInstance);
+                    
+                    // ズームコントロール追加（右下）
+                    L.control.zoom({
+                        position: 'bottomright'
+                    }).addTo(mapInstance);
+                    
+                    // アトリビューション追加（左下）
+                    L.control.attribution({
+                        position: 'bottomleft',
+                        prefix: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    }).addTo(mapInstance);
+                    
+                    // ダブルクリックでズームを無効化（モバイル対応）
+                    mapInstance.doubleClickZoom.disable();
+                    
+                    debugLog('✅ マップ初期化成功', 'success');
+                    
+                    // マップの表示領域を修正
+                    setTimeout(() => {
+                        mapInstance.invalidateSize();
+                        // 世界地図を表示
+                        mapInstance.setView([40, 0], 2);
+                    }, 100);
+                } catch (e) {
+                    debugLog(`マップ初期化エラー: ${e.message}`, 'error');
+                    console.error('Map initialization error:', e);
+                }
             }
         }
         
@@ -2308,10 +2380,15 @@
 
         async function getRecommendation() {
             const button = document.getElementById('getRecommendation');
+            if (!button) return;
+            
             button.disabled = true;
             button.innerHTML = '🔄 分析中...';
             
-            document.getElementById('loadingIndicator').style.display = 'block';
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            if (loadingIndicator) {
+                loadingIndicator.style.display = 'block';
+            }
             
             // Show progress
             showProgress();
@@ -2322,9 +2399,14 @@
                 // Simulate analysis process
                 await new Promise(resolve => setTimeout(resolve, 1000));
                 
+                // Ensure whiskyData is loaded
+                if (!whiskyData || whiskyData.length === 0) {
+                    await loadWhiskyData();
+                }
+                
                 // Filter whiskies by price range
                 const priceFilteredWhiskies = whiskyData.filter(whisky => {
-                    const price = parseInt(whisky.price.replace(/[¥,]/g, ''));
+                    const price = extractPriceNumber(whisky.price);
                     return price >= (minPrice * 1000) && price <= (maxPrice * 1000);
                 });
                 
@@ -2337,6 +2419,12 @@
                     debugLog(`推薦銘柄: ${recommendations.length}本`, 'success');
                     displayRecommendations(recommendations);
                     displayPreferencesSummary(recommendations);
+                    
+                    // Show distillery section
+                    const distillerySection = document.getElementById('distillerySection');
+                    if (distillerySection) {
+                        distillerySection.classList.add('active');
+                    }
                     
                     // 最初のウィスキーを選択状態にする
                     if (recommendations[0] && recommendations[0].id) {
@@ -2354,11 +2442,23 @@
                 console.error('Recommendation error:', error);
                 showError('推薦の生成に失敗しました。もう一度お試しください。');
             } finally {
-                document.getElementById('loadingIndicator').style.display = 'none';
+                if (loadingIndicator) {
+                    loadingIndicator.style.display = 'none';
+                }
                 hideProgress();
                 button.disabled = false;
                 button.innerHTML = '🎯 AIウィスキー提案を受ける';
             }
+        }
+        
+        function extractPriceNumber(priceString) {
+            if (!priceString) return 0;
+            // 数字以外の文字（¥や,など）を除去して数値に変換
+            const match = priceString.match(/[\d,]+/);
+            if (match) {
+                return parseInt(match[0].replace(/,/g, ''), 10);
+            }
+            return 0;
         }
         
         function calculateMatchingWhiskies(whiskies) {
@@ -2395,10 +2495,10 @@
             
             chatHistory.forEach(chat => {
                 const question = chat.user.toLowerCase();
-                const name = whisky.name.toLowerCase();
+                const name = whisky.name ? whisky.name.toLowerCase() : '';
                 const region = whisky.region ? whisky.region.toLowerCase() : '';
                 
-                if (question.includes(name) || name.includes(question)) {
+                if (name && (question.includes(name) || name.includes(question))) {
                     bonus += 20;
                 }
                 
@@ -2424,6 +2524,8 @@
         
         function displayRecommendations(recommendations) {
             const container = document.getElementById('recommendationContent');
+            if (!container) return;
+            
             const splitContainer = document.getElementById('splitLayoutContainer');
             
             let html = '';
@@ -2432,17 +2534,18 @@
                 const isFeatured = index === 0;
                 const cardClass = isFeatured ? 'whisky-card featured' : 'whisky-card';
                 const featuredLabel = isFeatured ? '<div class="featured-label">⭐ 最もおすすめ</div>' : '';
+                const whiskyId = whisky.id || index + 1;
                 
                 html += `
-                    <div class="${cardClass}" onclick="selectWhisky('${whisky.id}')">
+                    <div class="${cardClass}" onclick="selectWhisky('${whiskyId}')">
                         ${featuredLabel}
                         <h3 class="text-xl font-bold mb-2">${whisky.name}</h3>
                         <div class="flex justify-between items-center mb-2">
                             <span class="text-lg font-semibold text-green-400">${whisky.price}</span>
-                            <span class="text-sm bg-blue-600 px-2 py-1 rounded">${whisky.region}</span>
+                            <span class="text-sm bg-blue-600 px-2 py-1 rounded">${whisky.region || '不明'}</span>
                         </div>
-                        <p class="text-sm text-gray-300 mb-2">${whisky.subcategory}</p>
-                        <p class="text-sm mb-3">${whisky.tastingNote_ja}</p>
+                        <p class="text-sm text-gray-300 mb-2">${whisky.subcategory || 'Whisky'}</p>
+                        <p class="text-sm mb-3">${whisky.tastingNote_ja || '詳細情報がありません'}</p>
                         <div class="flex justify-between items-center">
                             <span class="text-sm text-gray-400">適合度: ${whisky.matchScore}%</span>
                             <div class="w-24 h-2 bg-gray-700 rounded-full">
@@ -2455,7 +2558,9 @@
             });
             
             container.innerHTML = html;
-            splitContainer.style.display = 'grid';
+            if (splitContainer) {
+                splitContainer.style.display = 'grid';
+            }
             
             // 蒸留所セクションをアクティブ化
             const distillerySection = document.getElementById('distillerySection');
@@ -2466,6 +2571,7 @@
         
         function displayPreferencesSummary(recommendations) {
             const summaryContainer = document.getElementById('preferencesSummary');
+            if (!summaryContainer) return;
             
             // Analyze dual matrix selections
             const matrix1Analysis = analyzeMatrix1(currentPosition1.x, currentPosition1.y);
@@ -2547,19 +2653,22 @@
         }
         
         // グローバルスコープで定義されたselectWhisky関数
-        window.selectWhisky = async function(whiskyId) {
+        function selectWhisky(whiskyId) {
             debugLog(`ウィスキー選択: ID=${whiskyId}`, 'info');
             
             // 前回の選択を保持
             selectedDistilleryId = whiskyId;
             
-            const whisky = whiskyData.find(w => w.id === whiskyId);
-            if (!whisky || !whisky.taste_profile) {
-                debugLog(`ウィスキーまたは味覚プロファイルが見つかりません: ID=${whiskyId}`, 'error');
+            const whisky = whiskyData.find(w => w.id === whiskyId || w.id === String(whiskyId));
+            if (!whisky) {
+                debugLog(`ウィスキーが見つかりません: ID=${whiskyId}`, 'error');
                 return;
             }
             
-            const profile = whisky.taste_profile;
+            const profile = whisky.taste_profile || {
+                fruity: 0, spicy: 0, body: 0, smoky: 0, sweetness: 0, complexity: 0
+            };
+            
             const whiskyProfileData = [
                 profile.fruity || 0,
                 profile.spicy || 0,
@@ -2609,24 +2718,30 @@
             }
             
             // Update selected card styling
-            document.querySelectorAll('.whisky-card').forEach(card => {
-                card.classList.remove('selected');
-            });
-            
-            // イベントから呼び出された場合のみ
-            if (event && event.currentTarget) {
-                event.currentTarget.classList.add('selected');
-            } else {
-                // IDでも選択を反映
-                const selectedCard = document.querySelector(`.whisky-card[onclick*="${whiskyId}"]`);
-                if (selectedCard) {
-                    selectedCard.classList.add('selected');
+            const cards = document.querySelectorAll('.whisky-card');
+            if (cards) {
+                cards.forEach(card => {
+                    card.classList.remove('selected');
+                });
+                
+                // イベントから呼び出された場合は現在のターゲットを選択
+                if (event && event.currentTarget) {
+                    event.currentTarget.classList.add('selected');
+                } else {
+                    // IDでも選択を反映
+                    const selectedCard = document.querySelector(`.whisky-card[onclick*="${whiskyId}"]`);
+                    if (selectedCard) {
+                        selectedCard.classList.add('selected');
+                    }
                 }
             }
             
             // 蒸留所情報を表示
-            await showDistilleryInfo(whisky);
-        };
+            showDistilleryInfo(whisky);
+        }
+        
+        // グローバルスコープにselectWhiskyを公開
+        window.selectWhisky = selectWhisky;
         
         async function showDistilleryInfo(whisky) {
             const distillerySection = document.getElementById('distillerySection');
@@ -2645,8 +2760,14 @@
                 debugLog(`ウィスキー名から蒸留所名を推測: ${distilleryName || '不明'}`, 'info');
             }
             
-            // 蒸留所データ取得（キャッシュ対応）
-            const distillery = await fetchDistilleryData(distilleryName || whisky.name);
+            // 蒸留所データ取得
+            let distillery;
+            try {
+                distillery = await fetchDistilleryData(distilleryName || whisky.name);
+            } catch (e) {
+                debugLog(`蒸留所データ取得エラー: ${e.message}`, 'error');
+                distillery = null;
+            }
             
             if (distillery) {
                 debugLog(`蒸留所データ取得成功: ${distillery.name || distilleryName}`, 'success');
@@ -2663,86 +2784,12 @@
                     let statusClass = 'status-unknown';
                     let statusText = '状態不明';
                     
-                    if (distillery.status === 'active') {
-                        statusClass = 'status-active';
-                        statusText = '稼働中';
-                    } else if (distillery.status === 'closed') {
-                        statusClass = 'status-closed';
-                        statusText = `閉鎖（${distillery.closedDate || '閉鎖日不明'}）`;
-                    }
-                    
-                    let detailsHtml = `
-                        <div class="distillery-info-grid">
-                            <div class="info-label">所在地:</div>
-                            <div class="info-value">${getRegionName(whisky.region)}</div>
-                            
-                            <div class="info-label">創業年:</div>
-                            <div class="info-value">${distillery.founded || '不明'}</div>
-                            
-                            <div class="info-label">現在の状況:</div>
-                            <div class="info-value"><span class="${statusClass}">${statusText}</span></div>
-                    `;
-                    
-                    if (distillery.reopening) {
-                        detailsHtml += `
-                            <div class="info-label">再開計画:</div>
-                            <div class="info-value">${distillery.reopening}</div>
-                        `;
-                    }
-                    
-                    detailsHtml += `</div>`;
-                    
-                    if (distillery.description) {
-                        detailsHtml += `
-                            <div class="distillery-description">
-                                <p>${distillery.description}</p>
-                            </div>
-                        `;
-                    }
-                    
-                    distilleryDetails.innerHTML = detailsHtml;
-                }
-                
-                // 地図を更新
-                updateMap(distillery, whisky.id);
-            } else {
-                // 蒸留所情報がない場合
-                debugLog('蒸留所情報が見つかりませんでした', 'warn');
-                
-                const distilleryNameElem = document.getElementById('distilleryName');
-                const distilleryDetails = document.getElementById('distilleryDetails');
-                
-                if (distilleryNameElem) {
-                    distilleryNameElem.textContent = '蒸留所情報なし';
-                }
-                
-                if (distilleryDetails) {
-                    distilleryDetails.innerHTML = `
-                        <p class="text-center text-gray-400">
-                            申し訳ありません、この${whisky.name}の蒸留所情報は利用できません。
-                        </p>
-                    `;
-                }
-                
-                // 国や地域だけでも表示
-                const regionName = getRegionName(whisky.region);
-                showGenericMapLocation(regionName);
-            }
-        }
-        
-        function updateMap(distillery, currentWhiskyId) {
-            if (!mapInstance) {
-                initializeMap();
-                if (!mapInstance) return;
-            }
-            
-            // マップサイズの更新
-            map
+                    if (distillery.status === 'active' ||
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDgBUN0kK2rxU1lLN2D6t%2B5aQ%2FT%2F8AJ5BhtpWg9k8D12L0P%2B7LLmGLUT7dMkhPK96%2BKu1NjxUUsbwd4vROvNysAbCNootjYFCeq5oSo6AyPCV4Z%2B%2FP%2FVqaFiZuT35hEggtD8kiFTlbib731XUt%2Bk64rYFXZMspIzRMIU4X1hqsWJzOLKI542823ezzOFXnoVx0BlPZKGMjR7O1FxNSYKL9cGd3oVWuBxfG9yD%2B3kQFWCD1aXUNqRq5A%2FNjE6e%2BIphuPXLr3FHCflMu5C7COmoJcNrJOoXRaJD62DQF40efxKO2hi%2FqHiDOHFH6nNTUV8i%2F5o1FsYy9m3epppSPvT9NC0sGQlnlc%2BXxbOg0k9sB3nRJb0b5qtr9%2BB%2B1Rfek22%2FUDGhw2NV5zOqFYaArPUfo7k41cYcoLRWzFKxQO0x35Dg0GcQsqHRC5mYwYusqZeQDq8LzgzAOhfUi8M%2BUGqiTjov7cXOOS4FXWMfU3Gr2457LiTWz15yU0WTIWwhyrX1xUsb4wz2pAuJFWOyb%2Fl9uiw%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDvNHQ7iOAnu1WU%2FMbd6XqSMoEIR7BlOs2qoSP4O0d%2BaMnIUS7xFAiYHfQ3Z6ipPfvoesuY0%2B5h6uUYAK080olad2wx4Ztfl49yLwTX%2BpluYPyoJOSHTSwLraAfk57bWti6piI%2BS%2Fl6gBdpWoVk4mahgLGSsQxJ6Vpj9mQv%2FWq%2F63BsQS78urhBPuJxSr2as4c38AzUUsCqXVs4bq0nYUkm63xDT5ByU1sWb%2BHltTAIzjF%2B8w6dwwZ2Je21ndwYJK8yRkEuiifUTnUcbDF%2BUScsO5Hdc3RJv1GSTCZYaGsylc3%2FKaC3jqjEvAyr0FOtB%2FR8QtpIqIW8yFXUwWHu2p0%2FM%2B8W0YSddYISCVJFj9MV1UaKACoDyviG0f7Mv1T6l6LAFafSs9o76StVA%2FeWFP0b3B7Fpb2voPEiLQzex3rV1onbbBvlIk2zWPU%2Bu4hFA0WV7yG0f3i1X2T28nSZ66CteX3UQAY7nQvEM9dHHnhst8VcDGoSLOQsPrWZf3f1VgUQ%3D%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDgBUN0kK2rxU1lLN2D6t+5aQ/T/8AJ5BhtpWg9k8D12L0P+7LLmGLUT7dMkhPK96+Ku1NjxUUsbwd4vROvNysAbCNootjYFCeq5oSo6AyPCV4Z+/P/VqaFiZuT35hEggtD8kiFTlbib731XUt+k64rYFXZMspIzRMIU4X1hqsWJzOLKI542823ezzOFXnoVx0BlPZKGMjR7O1FxNSYKL9cGd3oVWuBxfG9yD+3kQFWCD1aXUNqRq5A/NjE6e+IphuPXLr3FHCflMu5C7COmoJcNrJOoXRaJD62DQF40efxKO2hi/qHiDOHFH6nNTUV8i/5o1FsYy9m3epppSPvT9NC0sGQlnlc+XxbOg0k9sB3nRJb0b5qtr9+B+1Rfek22/UDGhw2NV5zOqFYaArPUfo7k41cYcoLRWzFKxQO0x35Dg0GcQsqHRC5mYwYusqZeQDq8LzgzAOhfUi8M+UGqiTjov7cXOOS4FXWMfU3Gr2457LiTWz15yU0WTIWwhyrX1xUsb4wz2pAuJFWOyb/l9uiw=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDvNHQ7iOAnu1WU/Mbd6XqSMoEIR7BlOs2qoSP4O0d+aMnIUS7xFAiYHfQ3Z6ipPfvoesuY0+5h6uUYAK080olad2wx4Ztfl49yLwTX+pluYPyoJOSHTSwLraAfk57bWti6piI+S/l6gBdpWoVk4mahgLGSsQxJ6Vpj9mQv/Wq/63BsQS78urhBPuJxSr2as4c38AzUUsCqXVs4bq0nYUkm63xDT5ByU1sWb+HltTAIzjF+8w6dwwZ2Je21ndwYJK8yRkEuiifUTnUcbDF+UScsO5Hdc3RJv1GSTCZYaGsylc3/KaC3jqjEvAyr0FOtB/R8QtpIqIW8yFXUwWHu2p0/M+8W0YSddYISCVJFj9MV1UaKACoDyviG0f7Mv1T6l6LAFafSs9o76StVA/eWFP0b3B7Fpb2voPEiLQzex3rV1onbbBvlIk2zWPU+u4hFA0WV7yG0f3i1X2T28nSZ66CteX3UQAY7nQvEM9dHHnhst8VcDGoSLOQsPrWZf3f1VgUQ==";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
