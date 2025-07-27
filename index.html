@@ -1185,7 +1185,94 @@
             }
         }
 
-        undefined
+        // ウィスキーデータを読み込む
+        async function loadWhiskyData() {
+            console.log('Loading whisky data...');            
+            const possibleFiles = [
+                'whisky_data.json',
+                './whisky_data.json',
+                './data/whisky_data.json',
+                '/whisky_data.json'
+            ];            
+            let dataLoaded = false;            
+            for (const filePath of possibleFiles) {
+                try {
+                    console.log(`Trying to load from ${filePath}...`);
+                    const response = await fetch(filePath);                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log(`Successfully loaded from: ${filePath}`);                        
+                        // データ構造の検証
+                        if (data && data.whiskies && Array.isArray(data.whiskies)) {
+                            whiskyData = data.whiskies;
+                            console.log(`Loaded ${whiskyData.length} whisky entries`);
+                            dataLoaded = true;
+                            break;
+                        } else {
+                            console.warn(`Invalid data structure in: ${filePath}`);
+                        }
+                    } else {
+                        console.warn(`Fetch failed for: ${filePath} (${response.status})`);
+                    }
+                } catch (err) {
+                    console.warn(`Error loading from ${filePath}:`, err);
+                }
+            }            
+            // データが読み込めなかった場合はデフォルトデータを使用
+            if (!dataLoaded) {
+                console.warn('Failed to load whisky data, using default data');
+                whiskyData = getDefaultWhiskyData();
+            }            
+            // フィルタリング用のコピーを作成
+            filteredWhiskies = [...whiskyData];            
+            return whiskyData;
+        }
+
+        // 蒸留所データの読み込み
+        async function loadDistilleryData() {
+            console.log('Loading distillery data...');            
+            const possibleFiles = [
+                'distillery_data.json',
+                './distillery_data.json',
+                './data/distillery_data.json',
+                '/distillery_data.json'
+            ];            
+            let dataLoaded = false;            
+            for (const filePath of possibleFiles) {
+                try {
+                    console.log(`Trying to load distillery data from ${filePath}...`);
+                    const response = await fetch(filePath);                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        console.log(`Successfully loaded distillery data from: ${filePath}`);                        
+                        // データ構造の検証
+                        if (data && data.distilleries) {
+                            distilleryDatabase = data.distilleries;
+                            console.log('Distillery database loaded');                            
+                            // ブランドと蒸留所のマッピングがあれば読み込む
+                            if (data.brandToDistillery) {
+                                brandToDistilleryMapping = data.brandToDistillery;
+                                console.log('Brand to distillery mapping loaded');
+                            }                            
+                            dataLoaded = true;
+                            break;
+                        } else {
+                            console.warn(`Invalid distillery data structure in: ${filePath}`);
+                        }
+                    } else {
+                        console.warn(`Fetch failed for distillery data: ${filePath} (${response.status})`);
+                    }
+                } catch (err) {
+                    console.warn(`Error loading distillery data from ${filePath}:`, err);
+                }
+            }            
+            // データが読み込めなかった場合はデフォルトデータを使用
+            if (!dataLoaded) {
+                console.warn('Failed to load distillery data, using default data');
+                distilleryDatabase = getDefaultDistilleryData();
+            }            
+            return distilleryDatabase;
+        }
 
         // 四象限マトリックスの初期化
         function initializeTasteMatrix() {
