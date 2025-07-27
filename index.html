@@ -1220,6 +1220,7 @@ function animateCounter(elementId, targetValue) {
                 return loadDistilleryData();
             }).then(data => {
                 console.log('Distillery data loaded successfully');
+                updateDistilleryCount();
             }).catch(err => {
                 console.error('Error during initialization:', err);
             });
@@ -1775,6 +1776,15 @@ function animateCounter(elementId, targetValue) {
             chatHistory.innerHTML = '';
             chatHistory.style.display = 'none';
             document.getElementById('chatInput').value = '';
+        }
+
+        // 蒸溜所数の更新関数
+        function updateDistilleryCount() {
+            if (distilleryDatabase && typeof distilleryDatabase === 'object') {
+                const distilleryCount = Object.keys(distilleryDatabase).length;
+                // アニメーションありの場合
+                animateCounter('distilleryCount', distilleryCount);
+            }
         }
 
         // 統計情報を更新
