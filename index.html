@@ -5,6 +5,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+<!-- ヘッダーの下や適切な場所に配置 -->
+<div id="google_translate_element" style="position: absolute; top: 20px; right: 20px;"></div>
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>昼の月。AIソムリエ</title>
@@ -60,25 +62,90 @@
             position: relative;
         }
 
-.header-title:after {
-    content: "";
-    position: absolute;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 70%;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.7), transparent);
-}
+        .header-title:after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.7), transparent);
+        }
 
-@keyframes glow {
-    from {
-        text-shadow: 0 0 5px rgba(78, 205, 196, 0.5);
-    }
-    to {
-        text-shadow: 0 0 15px rgba(78, 205, 196, 0.8), 0 0 20px rgba(255, 107, 107, 0.5);
-    }
-}
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px rgba(78, 205, 196, 0.5);
+            }
+            to {
+                text-shadow: 0 0 15px rgba(78, 205, 196, 0.8), 0 0 20px rgba(255, 107, 107, 0.5);
+            }
+        }
+
+        /* Google翻訳ウィジェットのスタイル調整 */
+        #google_translate_element {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        z-index: 1000;
+        }
+
+        .goog-te-gadget {
+        font-family: 'Noto Sans JP', sans-serif !important;
+        font-size: 14px !important;
+        }
+
+        .goog-te-gadget-simple {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border: 1px solid rgba(255, 255, 255, 0.2) !important;
+        padding: 5px 8px !important;
+        border-radius: 5px !important;
+        color: #fff !important;
+        }
+
+        .goog-te-menu-value {
+        color: #fff !important;
+        }
+
+        .goog-te-menu-value span {
+        color: #4ecdc4 !important;
+        }
+
+        @media (max-width: 768px) {
+        #google_translate_element {
+            position: relative;
+            top: auto;
+            right: auto;
+            margin: 10px auto;
+            text-align: center;
+        }
+        }
+
+        /* 言語リンクのスタイル */
+        .language-links {
+            display: flex;
+            margin-left: 15px;
+        }
+
+        .language-links .nav-link {
+            margin-left: 10px;
+            font-size: 14px;
+            padding: 5px 8px;
+        }
+
+        /* レスポンシブ対応 - 画面が狭い場合 */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .language-links {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: center;
+            }
+        }
 
         .container-custom {
             max-width: 1200px;
@@ -993,15 +1060,21 @@
       width: 100%;
     }
   </style></head>
-<body>
-    <div class="header-container">
-        <img class="logo" src="./NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
-        <h1 class="header-title">昼の月。AIソムリエ</h1>
-        <div class="nav-links">
-            <a href="index.html" class="nav-link" id="homeLink">AIソムリエ</a>
-            <a href="whisky_list.html" class="nav-link" id="listLink">ウィスキーリスト</a>
+        <body>
+        <div class="header-container">
+            <img class="logo" src="./NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
+            <h1 class="header-title">昼の月。AIソムリエ</h1>
+            <div class="nav-links">
+                <a href="index.html" class="nav-link" id="homeLink">🏠 AIソムリエ</a>
+                <a href="whisky_list.html" class="nav-link" id="listLink">🥃 ウィスキー一覧</a>
+                
+                <!-- ここに言語選択リンクを追加 -->
+                <div class="language-links">
+                    <a href="#" onclick="window.location.href='https://translate.google.com/translate?sl=auto&tl=en&u='+encodeURIComponent(window.location.href)" class="nav-link">🇬🇧 English</a>
+                    <a href="#" onclick="window.location.href='https://translate.google.com/translate?sl=auto&tl=zh-CN&u='+encodeURIComponent(window.location.href)" class="nav-link">🇨🇳 中文</a>
+                </div>
+            </div>
         </div>
-    </div>
     
     <div class="container-custom">
         <div class="whisky-overview">
@@ -2638,4 +2711,15 @@ function animateCounter(elementId, targetValue) {
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
+    <!-- ページ末尾、body閉じタグの直前に配置 -->
+        <script type="text/javascript">
+        function googleTranslateElementInit() {
+            new google.translate.TranslateElement({
+                pageLanguage: 'ja',
+                includedLanguages: 'en,zh-CN,ko',
+                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+            }, 'google_translate_element');
+        }
+        </script>
+        <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     </body></html>
