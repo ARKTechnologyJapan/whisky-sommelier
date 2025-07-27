@@ -912,12 +912,12 @@
   </style></head>
 <body>
     <div class="header-container">
-        <img class="logo" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiByeD0iOCIgZmlsbD0iIzRlY2RjNCIvPgo8dGV4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj7mmIc8L3RleHQ+Cjwvc3ZnPg==" alt="昼の月バーロゴ">
-        <h1 class="header-title">昼の月。AIソムリエ</h1>
-        <div class="nav-links">
-            <a href="index.html" class="nav-link" id="homeLink">🏠 AIソムリエ</a>
-            <a href="whisky_list.html" class="nav-link" id="listLink">🥃 ウィスキー一覧</a>
-        </div>
+    <img class="logo" src="./NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
+    <h1 class="header-title">昼の月。ウィスキーリスト</h1>
+    <div class="header-nav" style="position: absolute; right: 20px; display: flex; gap: 20px;">
+        <a href="index.html" class="header-link">AIソムリエ</a>
+        <a href="whisky_list.html" class="header-link active">ウィスキーリスト</a>
+    </div>
     </div>
     
     <div class="container-custom">
@@ -1420,7 +1420,7 @@
             getAIResponse(message);
         }
 
-        // AI応答の取得
+       // AI応答の取得
 async function getAIResponse(message) {
     // AIの応答を生成中であることを表示
     const chatHistory = document.getElementById('chatHistory');
@@ -1443,6 +1443,14 @@ async function getAIResponse(message) {
         const minPrice = document.getElementById('minPrice').value * 1000;
         const maxPrice = document.getElementById('maxPrice').value * 1000;
         
+        console.log('Sending chat request:', {
+            minPrice,
+            maxPrice,
+            tasteX: tasteX.toFixed(2),
+            tasteY: tasteY.toFixed(2),
+            additionalPreferences: message
+        });
+        
         // API呼び出し
         const response = await fetch('/.netlify/functions/claude-api', {
             method: 'POST',
@@ -1463,12 +1471,21 @@ async function getAIResponse(message) {
         }
         
         const data = await response.json();
+        console.log('API response:', data);
         
-        // API応答を表示
-        if (data.success && data.data && data.data.content && data.data.content.length > 0) {
-            aiMessage.textContent = data.data.content[0].text;
+        // 新しいAPIレスポンス構造の処理
+        if (data.success && data.data) {
+            if (data.data.choices && data.data.choices[0] && data.data.choices[0].message) {
+                // 新しい構造: data.data.choices[0].message.content
+                aiMessage.textContent = data.data.choices[0].message.content;
+            } else if (data.data.content && data.data.content.length > 0) {
+                // 古い構造: data.data.content[0].text
+                aiMessage.textContent = data.data.content[0].text;
+            } else {
+                throw new Error('Unexpected API response structure');
+            }
         } else {
-            throw new Error('Invalid API response structure');
+            throw new Error('API response missing success or data field');
         }
     } catch (error) {
         console.error('Chat error:', error);
