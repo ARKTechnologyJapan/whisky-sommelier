@@ -82,6 +82,27 @@
             }
         }
 
+        /* 翻訳ボタンのスタイル */
+        .translate-link {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 5px 10px;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .translate-link:hover {
+            background: rgba(78, 205, 196, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .translate-icon {
+            margin-right: 6px;
+        }
+
         /* 言語リンクのスタイル */
         .language-links {
             display: flex;
@@ -1029,11 +1050,10 @@
                 <a href="index.html" class="nav-link" id="homeLink">🏠 AIソムリエ</a>
                 <a href="whisky_list.html" class="nav-link" id="listLink">🥃 ウィスキー一覧</a>
                 
-                <!-- ここに言語選択リンクを追加 -->
-                <div class="language-links">
-                    <a href="#" onclick="window.location.href='https://translate.google.com/translate?sl=auto&tl=en&u='+encodeURIComponent(window.location.href)" class="nav-link">🇬🇧 English</a>
-                    <a href="#" onclick="window.location.href='https://translate.google.com/translate?sl=auto&tl=zh-CN&u='+encodeURIComponent(window.location.href)" class="nav-link">🇨🇳 中文</a>
-                </div>
+                <!-- 1つの翻訳ボタンに統合 -->
+                <a href="#" onclick="openGoogleTranslate(); return false;" class="nav-link translate-link">
+                    <span class="translate-icon">🌐</span> 翻訳
+                </a>
             </div>
         </div>
     
@@ -2672,14 +2692,12 @@ function animateCounter(elementId, targetValue) {
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
-    <!-- ページ末尾、body閉じタグの直前に配置 -->
+        <!-- ページ末尾に追加 -->
         <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'ja',
-                includedLanguages: 'en,zh-CN,ko',
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-            }, 'google_translate_element');
+        function openGoogleTranslate() {
+            const currentUrl = window.location.href;
+            const translateUrl = `https://translate.google.com/translate?sl=auto&u=${encodeURIComponent(currentUrl)}`;
+            window.open(translateUrl, '_blank');
         }
         </script>
         <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
