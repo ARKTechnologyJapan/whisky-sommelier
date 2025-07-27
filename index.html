@@ -1794,6 +1794,12 @@ function animateCounter(elementId, targetValue) {
             });
             document.getElementById('uniqueRegions').textContent = uniqueRegions.size;
             
+            // ここに蒸溜所数のカウントコードを追加
+            if (distilleryDatabase && typeof distilleryDatabase === 'object') {
+                const distilleryCount = Object.keys(distilleryDatabase).length;
+                animateCounter('distilleryCount', distilleryCount);
+            }
+            
             // 価格帯
             let minPrice = Infinity;
             let maxPrice = 0;
