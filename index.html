@@ -1791,18 +1791,18 @@ function animateCounter(elementId, targetValue) {
         function updateStatistics() {
             if (!whiskyData || !whiskyData.length) return;
             
-            // ウィスキーの総数
-            document.getElementById('whiskyCount').textContent = whiskyData.length;
-            document.getElementById('totalWhiskies').textContent = whiskyData.length;
+            // ウィスキーの総数（アニメーションに変更）
+            document.getElementById('whiskyCount').textContent = whiskyData.length; // 元のまま
+            animateCounter('totalWhiskies', whiskyData.length); // アニメーションに変更
             
-            // ユニークな産地数
+            // ユニークな産地数（アニメーションに変更）
             const uniqueRegions = new Set();
             whiskyData.forEach(whisky => {
                 if (whisky.region) {
                     uniqueRegions.add(whisky.region.split(',')[0].trim());
                 }
             });
-            document.getElementById('uniqueRegions').textContent = uniqueRegions.size;
+            animateCounter('uniqueRegions', uniqueRegions.size); // アニメーションに変更
             
             // ここに蒸溜所数のカウントコードを追加
             if (distilleryDatabase && typeof distilleryDatabase === 'object') {
