@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0128)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_XWonA2WkS2aJ2fd0ERncZA/index_absolute_final.html -->
+<!-- saved from url=(0133)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_zVy-Yhb7ThSvTt5AhBgLoA/whisky_sommelier_improved.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -925,8 +925,8 @@
         <img class="logo" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiByeD0iOCIgZmlsbD0iIzRlY2RjNCIvPgo8dGV4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj7mmIc8L3RleHQ+Cjwvc3ZnPg==" alt="昼の月バーロゴ">
         <h1 class="header-title">昼の月。AIソムリエ</h1>
         <div class="nav-links">
-            <a href="index.html" class="nav-link" id="homeLink">🏠 AIソムリエ</a>
-            <a href="whisky_list.html" class="nav-link" id="listLink">🥃 ウィスキー一覧</a>
+            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_zVy-Yhb7ThSvTt5AhBgLoA/index.html" class="nav-link" id="homeLink">🏠 AIソムリエ</a>
+            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_zVy-Yhb7ThSvTt5AhBgLoA/whisky_list.html" class="nav-link" id="listLink">🥃 ウィスキー一覧</a>
         </div>
     </div>
     
@@ -1032,7 +1032,7 @@
                 <button id="sendChatBtn" class="btn-primary">💬 質問する</button>
             </div>
 
-            <div id="chatHistory" class="chat-history" style="display: none;"></div>
+            <div id="chatHistory" class="chat-history" style="display: block;"><div class="chat-message user-message">3000円以下でスモーキーなアイラ島のウィスキーはある？</div><div class="chat-message ai-message">🌊 キルホーマン2013-2021信濃屋（¥2,000）がお求めやすいアイラ島のスモーキーウイスキーです。smoky5点を誇る力強いピート香に海の塩気が特徴で、柑橘類や青リンゴの爽やかさもあります。また、ブナハーブン12年80年代（¥2,700）も選択肢の一つです。スモーキーさは控えめですが、海洋性の風味と豊かなドライフルーツのバランスが絶妙です。</div></div>
         </div>
         
         <div class="text-center mb-8">
@@ -1048,14 +1048,14 @@
         </div>
         
         <div id="progressContainer" class="progress-container" style="display: none;">
-            <div id="progressText" class="progress-text">結果を生成中...</div>
+            <div id="progressText" class="progress-text">結果をまとめています...</div>
             <div class="progress-bar">
-                <div id="progressFill" class="progress-fill" style="width: 0%;"></div>
+                <div id="progressFill" class="progress-fill" style="width: 100%;"></div>
             </div>
-            <div id="progressPercentage" class="progress-percentage">0%</div>
+            <div id="progressPercentage" class="progress-percentage">100%</div>
         </div>
         
-        <div id="splitLayoutContainer" class="split-layout" style="display: none;">
+        <div id="splitLayoutContainer" class="split-layout" style="display: grid;">
             <div class="recommendations-panel">
                 <h2 class="text-2xl font-bold mb-4">
                     🎯 AI提案結果
@@ -1072,7 +1072,12 @@
                         </div>
                     </div>
                 </div>
-                <div id="recommendationContent"></div>
+                <div id="recommendationContent">
+                <div class="text-center p-4">
+                    <p class="mb-4">申し訳ありませんが、現在提案を生成できません。</p>
+                    <p>別の味覚プロファイルをお試しいただくか、チャットでお好みをお知らせください。</p>
+                </div>
+            </div>
                 <div class="text-center mt-6">
                     <button id="getAnotherRecommendation" class="btn-secondary">
                         🔄 別の提案
@@ -1080,13 +1085,13 @@
                 </div>
             </div>
             
-            <div class="chart-panel">
+            <div class="chart-panel" id="chartPanelSection">
                 <h2 class="text-2xl font-bold mb-4">
                     📊 味覚プロファイル比較
                 </h2>
                 <div class="chart-container">
                     <h3 id="chartTitle">あなたの好み</h3>
-                    <canvas id="combinedProfileChart" class="chart-canvas"></canvas>
+                    <canvas id="combinedProfileChart" class="chart-canvas" width="581" height="385" style="width: 528px; height: 350px; display: block; box-sizing: border-box;"></canvas>
                 </div>
                 <div class="text-center mt-4">
                     <p class="text-sm text-gray-400">ウィスキーの銘柄をクリックすると、あなたの好みと重ねて表示されます</p>
@@ -1137,7 +1142,8 @@
         let distilleryMap = null;
         let profileChartInstance = null;
         let brandToDistilleryMapping = {};
-        
+        let userTasteProfile = null; // ユーザーの好みのプロファイルを保存
+
         // DOMContentLoaded イベント
         document.addEventListener('DOMContentLoaded', function() {
             console.log('DOM fully loaded');
@@ -1462,12 +1468,23 @@
 
         // イベントリスナーの設定
         function setupEventListeners() {
-            // 価格スライダーイベント
+            // 価格スライダーイベント - 下限価格
             document.getElementById('minPrice').addEventListener('input', function() {
+                // 下限値が上限値を超えないようにする
+                const maxPrice = parseInt(document.getElementById('maxPrice').value);
+                if (parseInt(this.value) > maxPrice) {
+                    this.value = maxPrice;
+                }
                 document.getElementById('minPriceDisplay').textContent = `¥${formatPrice(parseInt(this.value) * 1000)}`;
             });
             
+            // 価格スライダーイベント - 上限価格
             document.getElementById('maxPrice').addEventListener('input', function() {
+                // 上限値が下限値を下回らないようにする
+                const minPrice = parseInt(document.getElementById('minPrice').value);
+                if (parseInt(this.value) < minPrice) {
+                    this.value = minPrice;
+                }
                 document.getElementById('maxPriceDisplay').textContent = `¥${formatPrice(parseInt(this.value) * 1000)}`;
             });
             
@@ -1808,12 +1825,35 @@
                 document.getElementById('priceRange').textContent = 
                     `¥${formatPrice(minPrice)} - ¥${formatPrice(maxPrice)}`;
                     
+                // ユーザーの味覚プロファイルを設定
+                userTasteProfile = generateUserTasteProfile(tasteX, tasteY, complexityX, complexityY);
+                
             } catch (error) {
                 console.error('Error getting recommendations:', error);
                 document.getElementById('loadingIndicator').style.display = 'none';
                 document.getElementById('progressContainer').style.display = 'none';
                 alert('提案の取得中にエラーが発生しました。もう一度お試しください。');
             }
+        }
+
+        // ユーザーの味覚プロファイルを生成
+        function generateUserTasteProfile(tasteX, tasteY, complexityX, complexityY) {
+            // 座標に基づいて各要素のスコアを計算（0-5の範囲）
+            const fruity = Math.round((1 - tasteY) * 5); // Y座標が小さいほどフルーティー
+            const smoky = Math.round(tasteY * 5); // Y座標が大きいほどスモーキー
+            const body = Math.round(tasteX * 5); // X座標が大きいほどボディ感がある
+            const spicy = Math.round((complexityY + complexityX) / 2 * 5); // 複雑さの平均
+            const sweetness = Math.round((1 - complexityY) * 5); // Y座標が小さいほど甘さが強い
+            const complexity = Math.round(complexityX * 5); // X座標が大きいほど複雑
+            
+            return {
+                fruity,
+                spicy,
+                body,
+                smoky, 
+                sweetness,
+                complexity
+            };
         }
 
         // 味の傾向の説明を更新
@@ -1896,6 +1936,9 @@
                 if (recommendedWhiskies.length > 0) {
                     selectWhisky(recommendedWhiskies[0]);
                 }
+                
+                // レーダーチャートを表示して、ユーザーの好みを描画
+                updateProfileChartWithUserProfile();
             } catch (error) {
                 console.error('Error showing recommendation result:', error);
                 // エラー時のフォールバック表示
@@ -2004,6 +2047,12 @@
                     
                     // ウィスキーを選択
                     selectWhisky(whisky);
+                    
+                    // チャートパネルまでスクロール
+                    document.getElementById('chartPanelSection').scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
                 });
                 
                 recommendationContent.appendChild(whiskeyCard);
@@ -2023,8 +2072,8 @@
 
         // ウィスキー選択時の処理
         function selectWhisky(whisky) {
-            // レーダーチャートを更新
-            updateProfileChart(whisky.taste_profile, whisky.name);
+            // レーダーチャートを更新（ユーザーの好みと選択されたウィスキーを重ねて表示）
+            updateProfileChartWithBoth(whisky);
             
             // 蒸留所情報を表示
             const distilleryName = getDistilleryNameFromWhisky(whisky);
@@ -2271,15 +2320,15 @@
             document.getElementById('distilleryDescription').textContent = distillery.description || '詳細情報がありません。';
         }
 
-        // レーダーチャート更新
-        function updateProfileChart(profile, name) {
-            if (!profile) return;
+        // ユーザーの好みだけを表示するレーダーチャート更新
+        function updateProfileChartWithUserProfile() {
+            if (!userTasteProfile) return;
             
             const ctx = document.getElementById('combinedProfileChart');
             if (!ctx) return;
             
             const chartTitle = document.getElementById('chartTitle');
-            chartTitle.textContent = name || 'あなたの好み';
+            chartTitle.textContent = 'あなたの好み';
             
             // Canvasサイズを明示的に設定
             ctx.style.width = '100%';
@@ -2333,17 +2382,16 @@
             
             // プロファイルデータの準備
             const profileData = [
-                profile.fruity || 0,
-                profile.spicy || 0,
-                profile.body || 0,
-                profile.smoky || 0,
-                profile.sweetness || 0,
-                profile.complexity || 0
+                userTasteProfile.fruity || 0,
+                userTasteProfile.spicy || 0,
+                userTasteProfile.body || 0,
+                userTasteProfile.smoky || 0,
+                userTasteProfile.sweetness || 0,
+                userTasteProfile.complexity || 0
             ];
             
             // Chart.jsの更新または作成
             if (profileChartInstance) {
-                // 既存のチャートを破棄してから再作成
                 profileChartInstance.destroy();
             }
             
@@ -2353,7 +2401,7 @@
                 data: {
                     labels: ['フルーティー', 'スパイシー', 'ボディ', 'スモーキー', '甘さ', '複雑さ'],
                     datasets: [{
-                        label: name || 'ウィスキープロファイル',
+                        label: 'あなたの好み',
                         data: profileData,
                         backgroundColor: 'rgba(78, 205, 196, 0.2)',
                         borderColor: '#4ecdc4',
@@ -2366,7 +2414,126 @@
                 options: chartOptions
             });
             
-            console.log('Radar chart updated with new data');
+            console.log('Radar chart updated with user profile');
+        }
+
+        // ユーザーの好みとウィスキーの特性を重ねて表示
+        function updateProfileChartWithBoth(whisky) {
+            if (!userTasteProfile || !whisky || !whisky.taste_profile) return;
+            
+            const ctx = document.getElementById('combinedProfileChart');
+            if (!ctx) return;
+            
+            const chartTitle = document.getElementById('chartTitle');
+            chartTitle.textContent = `${whisky.name} と あなたの好み`;
+            
+            // Canvasサイズを明示的に設定
+            ctx.style.width = '100%';
+            ctx.style.height = '320px';
+            ctx.width = ctx.offsetWidth;
+            ctx.height = 320;
+            
+            // Chart.jsの設定
+            const chartOptions = {
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            color: 'rgba(255, 255, 255, 0.8)',
+                            font: {
+                                size: 14
+                            }
+                        }
+                    },
+                    tooltip: {
+                        enabled: true
+                    }
+                },
+                scales: {
+                    r: {
+                        angleLines: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.1)'
+                        },
+                        pointLabels: {
+                            font: {
+                                size: 16
+                            },
+                            color: 'rgba(255, 255, 255, 0.9)'
+                        },
+                        ticks: {
+                            display: false,
+                            backdropColor: 'transparent'
+                        },
+                        beginAtZero: true,
+                        min: 0,
+                        max: 5
+                    }
+                },
+                maintainAspectRatio: false,
+                responsive: true
+            };
+            
+            // ユーザーのプロファイルデータ
+            const userProfileData = [
+                userTasteProfile.fruity || 0,
+                userTasteProfile.spicy || 0,
+                userTasteProfile.body || 0,
+                userTasteProfile.smoky || 0,
+                userTasteProfile.sweetness || 0,
+                userTasteProfile.complexity || 0
+            ];
+            
+            // ウィスキーのプロファイルデータ
+            const whiskyProfileData = [
+                whisky.taste_profile.fruity || 0,
+                whisky.taste_profile.spicy || 0,
+                whisky.taste_profile.body || 0,
+                whisky.taste_profile.smoky || 0,
+                whisky.taste_profile.sweetness || 0,
+                whisky.taste_profile.complexity || 0
+            ];
+            
+            // Chart.jsの更新または作成
+            if (profileChartInstance) {
+                profileChartInstance.destroy();
+            }
+            
+            // 新しいチャートを作成（2つのデータセット）
+            profileChartInstance = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['フルーティー', 'スパイシー', 'ボディ', 'スモーキー', '甘さ', '複雑さ'],
+                    datasets: [
+                        {
+                            label: 'あなたの好み',
+                            data: userProfileData,
+                            backgroundColor: 'rgba(78, 205, 196, 0.2)',
+                            borderColor: '#4ecdc4',
+                            pointBackgroundColor: '#4ecdc4',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#4ecdc4'
+                        },
+                        {
+                            label: whisky.name,
+                            data: whiskyProfileData,
+                            backgroundColor: 'rgba(255, 107, 107, 0.2)',
+                            borderColor: '#ff6b6b',
+                            pointBackgroundColor: '#ff6b6b',
+                            pointBorderColor: '#fff',
+                            pointHoverBackgroundColor: '#fff',
+                            pointHoverBorderColor: '#ff6b6b'
+                        }
+                    ]
+                },
+                options: chartOptions
+            });
+            
+            console.log('Radar chart updated with both profiles');
         }
 
         // 通知を表示
@@ -2402,12 +2569,11 @@
         }
     </script>
 
-
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDpvlcqsdHUt4eXJobxS1HaYEiiemAmHaornK0OBDFTMAzC78SRKFG1h0nesHLDmZiMZF21%2BSn%2Fvlu1cmuJBpnD8Zvdja3oj9ZvgT1gko5tja4Utux4NxdFqZiti03icWtEL0%2Bx9w4PjbskMaeqI2BoDxZ4VLLbANuyG5RqauZT7G%2B3H83iQ73ZzzDiXxlzciREa33NjS6qYtKySTTKIQ2bQxhiz46plHgjjN0S82HJwViYAFqdu%2Bd6CmjolkUchmDFoNm9J%2Fn5rMa0ef9lXpvq%2BIifaDHtNXHI%2Fi0FGnAtJC4qTROQ%2FqDan6sJBW3b9RSXnxu9%2FmTEwTX2VAOdNM0sze%2Fqfo5sYZ%2B7omGn0wNnifMZZkpKMjOVp86VojQ9RlSKl3eTUixggFzQP8YFbF0fsLcKdZXDEFXnOou4whCJEwopbtg4lAGIgdfvXKkEP95awDR3bncwW7jaSxgeRxo%2BtNQUbiacSIqt0m1sXpz3d6%2FyqKULz4BTXzuElcle2Fag%3D%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDkxkv%2B82qNbi7NJFHhR1w0AV%2F0dvVyFf2fpqb0ZTwcWuPYDQzXorT7Kf%2B2wfVUfdHvQiYeDSEBuwp191YVetxJvd9agq7Q1s3PQG9lkp94m0H%2BwdEHsPoauyv9vF5VY3GGkbO7Nc%2B2anmwlf%2BtXfW8GI5LX90A8qWZslH4bSl%2B6HRW7uDfuThMFkY6M1DWcLSr7fVL354ynDmPQpiaOks0fCrqPof8rt7kleXbf43CO76Mv6%2BOzEkPSoxyIZuNMBmsG5N9yNnHXCNl3rHIqEYJSoGrEaBiFsD%2FDewVP3WYwtjwEFYHKEzbipzIwHWY%2B9wYaJOVt4KHAjoaqx9pc1eHBb%2BuoiVIy7khYM1mkZqmmrlprU%2BbcbX%2FkgwQRvEMPdsHdbwTBHA1Q45MVBpv6EVYu0Dn1a9V3j4XFGmb3dCkoNOnxFIZFaqS6g9Y5MaOgjvM5ISFxUjdhDkyp4bFo6d9aAfzhE2Tf3SmDUYKJo1Swrkou057eMLz0xiwsPvzstLAFCxh2g5WVzriquxBT91l8%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDpvlcqsdHUt4eXJobxS1HaYEiiemAmHaornK0OBDFTMAzC78SRKFG1h0nesHLDmZiMZF21+Sn/vlu1cmuJBpnD8Zvdja3oj9ZvgT1gko5tja4Utux4NxdFqZiti03icWtEL0+x9w4PjbskMaeqI2BoDxZ4VLLbANuyG5RqauZT7G+3H83iQ73ZzzDiXxlzciREa33NjS6qYtKySTTKIQ2bQxhiz46plHgjjN0S82HJwViYAFqdu+d6CmjolkUchmDFoNm9J/n5rMa0ef9lXpvq+IifaDHtNXHI/i0FGnAtJC4qTROQ/qDan6sJBW3b9RSXnxu9/mTEwTX2VAOdNM0sze/qfo5sYZ+7omGn0wNnifMZZkpKMjOVp86VojQ9RlSKl3eTUixggFzQP8YFbF0fsLcKdZXDEFXnOou4whCJEwopbtg4lAGIgdfvXKkEP95awDR3bncwW7jaSxgeRxo+tNQUbiacSIqt0m1sXpz3d6/yqKULz4BTXzuElcle2Fag==";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDkxkv+82qNbi7NJFHhR1w0AV/0dvVyFf2fpqb0ZTwcWuPYDQzXorT7Kf+2wfVUfdHvQiYeDSEBuwp191YVetxJvd9agq7Q1s3PQG9lkp94m0H+wdEHsPoauyv9vF5VY3GGkbO7Nc+2anmwlf+tXfW8GI5LX90A8qWZslH4bSl+6HRW7uDfuThMFkY6M1DWcLSr7fVL354ynDmPQpiaOks0fCrqPof8rt7kleXbf43CO76Mv6+OzEkPSoxyIZuNMBmsG5N9yNnHXCNl3rHIqEYJSoGrEaBiFsD/DewVP3WYwtjwEFYHKEzbipzIwHWY+9wYaJOVt4KHAjoaqx9pc1eHBb+uoiVIy7khYM1mkZqmmrlprU+bcbX/kgwQRvEMPdsHdbwTBHA1Q45MVBpv6EVYu0Dn1a9V3j4XFGmb3dCkoNOnxFIZFaqS6g9Y5MaOgjvM5ISFxUjdhDkyp4bFo6d9aAfzhE2Tf3SmDUYKJo1Swrkou057eMLz0xiwsPvzstLAFCxh2g5WVzriquxBT91l8=";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
