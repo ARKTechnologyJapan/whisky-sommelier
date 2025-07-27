@@ -1,6 +1,10 @@
 <!DOCTYPE html>
 <!-- saved from url=(0130)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_LBd2w0vdTtOf_OswSt8juA/whisky_sommelier_final.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<!-- HTMLのheadタグ内にGoogle Fontsのリンクを追加 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>昼の月。AIソムリエ</title>
@@ -41,13 +45,41 @@
             padding: 5px;
         }
         
+        /* タイトルのスタイルを変更 */
         .header-title {
             color: #fff;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
             text-align: center;
             margin: 0;
+            text-shadow: 0 0 10px rgba(78, 205, 196, 0.7);
+            letter-spacing: 2px;
+            background: linear-gradient(45deg, #ffffff, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
         }
+
+.header-title:after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.7), transparent);
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px rgba(78, 205, 196, 0.5);
+    }
+    to {
+        text-shadow: 0 0 15px rgba(78, 205, 196, 0.8), 0 0 20px rgba(255, 107, 107, 0.5);
+    }
+}
+
         .container-custom {
             max-width: 1200px;
             margin: 0 auto;
@@ -123,10 +155,19 @@
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 24px;
+            padding: 30px;
             margin-bottom: 24px;
             backdrop-filter: blur(10px);
         }
+
+        /* 見出しの余白を調整するカスタムスタイル */
+        .card h2 {
+            padding-top: 0px;      /* 上部の余白を追加 */
+            padding-bottom: 15px;   /* 下部の余白を追加 */
+            line-height: 0.8;       /* 行の高さを調整 */
+            margin-bottom: 10px;    /* 下のマージンを設定（mb-4を上書き） */
+        }
+
         .whisky-card {
             background: rgba(255, 255, 255, 0.08);
             border: 1px solid rgba(255, 255, 255, 0.15);
@@ -403,6 +444,7 @@
             display: flex;
             justify-content: space-around;
             margin-top: 25px;
+            margin-bottom: 24px;  /* 下マージンを増やす（数値は調整可能） */
             position: relative;
             z-index: 1;
         }
@@ -436,6 +478,10 @@
         }
 
         .chat-examples {
+            display: grid;
+            grid-template-columns: 1fr 1fr;  /* 2列に設定 */
+            grid-template-rows: auto auto;   /* 2行に設定 */
+            gap: 10px;
             background: rgba(78, 205, 196, 0.05);
             border: 1px solid rgba(78, 205, 196, 0.2);
             border-radius: 8px;
@@ -443,16 +489,35 @@
             margin-bottom: 15px;
         }
 
+        /* 質問例タイトルを全幅に */
+        .chat-examples .mb-3 {
+            grid-column: 1 / -1;  /* 1列目から最後の列まで広げる */
+        }
+
         .question-example {
-            display: block;
+            /* レイアウト */
+            display: flex;
+            align-items: center;
+            justify-content: center;  /* 横方向も中央揃え */
+            height: 100%;
+            margin-bottom: 0;
             padding: 8px 12px;
-            margin-bottom: 8px;
+            
+            /* スタイル */
             background: rgba(78, 205, 196, 0.1);
             border: 1px solid rgba(78, 205, 196, 0.3);
             border-radius: 6px;
             color: #4ecdc4;
+            
+            /* インタラクション */
             cursor: pointer;
             transition: all 0.3s ease;
+        }
+
+        /* ホバー効果は維持 */
+        .question-example:hover {
+            background: rgba(78, 205, 196, 0.2);
+            transform: translateY(-1px);
         }
 
         .question-example:hover {
@@ -502,10 +567,18 @@
             font-size: 14px;
         }
 
+        /* AIメッセージのスタイル修正 */
         .ai-message {
+            text-align: left;  /* 左寄せに設定 */
             background: rgba(78, 205, 196, 0.15);
             border-left: 3px solid #4ecdc4;
             color: #fff;
+        }
+
+        /* 必要に応じて通常のチャットメッセージも左寄せに */
+        .chat-message {
+            text-align: left;  /* 左寄せに設定 */
+            /* その他の既存スタイル */
         }
 
         .user-message {
@@ -925,8 +998,8 @@
         <img class="logo" src="./NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
         <h1 class="header-title">昼の月。AIソムリエ</h1>
         <div class="nav-links">
-            <a href="index.html" class="nav-link" id="homeLink">🏠 AIソムリエ</a>
-            <a href="whisky_list.html" class="nav-link" id="listLink">🥃 ウィスキー一覧</a>
+            <a href="index.html" class="nav-link" id="homeLink">AIソムリエ</a>
+            <a href="whisky_list.html" class="nav-link" id="listLink">ウィスキーリスト</a>
         </div>
     </div>
     
@@ -975,13 +1048,13 @@
         
         <div class="card">
             <h2 class="text-2xl font-bold mb-4">
-                👅 味覚プロファイル設定
+                🌟 味覚プロファイル設定
             </h2>
             <p class="mb-6">2つの四角内をクリックして、それぞれの好みの位置を選択してください</p>
             
             <div class="dual-matrix-container">
                 <div class="matrix-wrapper">
-                    <div class="matrix-title">🥃 基本的な味の傾向</div>
+                    <div class="matrix-title">基本的な味の傾向</div>
                     <div class="relative">
                         <div class="taste-matrix" id="tasteMatrix1">
                             <div class="taste-dot" id="tasteDot1" style="left: 50%; top: 50%;"></div>
@@ -997,7 +1070,7 @@
                 </div>
                 
                 <div class="matrix-wrapper">
-                    <div class="matrix-title">🎯 複雑さの好み</div>
+                    <div class="matrix-title">複雑さの好み</div>
                     <div class="relative">
                         <div class="taste-matrix" id="tasteMatrix2">
                             <div class="taste-dot" id="tasteDot2" style="left: 50%; top: 50%;"></div>
@@ -1016,7 +1089,7 @@
 
         <div class="card chat-section">
             <h2 class="text-2xl font-bold mb-4">
-                🤖 AIソムリエとチャット（何度でもお気軽に！）
+                🗨️ AIソムリエとチャット
             </h2>
             
             <div class="chat-examples">
@@ -1024,7 +1097,7 @@
                 <div class="question-example" data-question="タリスカー44年（最高額80,400円）について詳しく教えて">💎 タリスカー44年（最高額80,400円）について詳しく教えて</div>
                 <div class="question-example" data-question="3000円以下でスモーキーなアイラ島のウィスキーはある？">🌊 3000円以下でスモーキーなアイラ島のウィスキーはある？</div>
                 <div class="question-example" data-question="日本の軽井沢や長濱などフルーティーなウィスキーを比較して">🍯 日本の軽井沢や長濱などフルーティーなウィスキーを比較して</div>
-                <div class="question-example" data-question="5000円前後でcomplexity5点の複雑なウィスキーのおすすめは？">⭐ 5000円前後でcomplexity5点の複雑なウィスキーのおすすめは？</div>
+                <div class="question-example" data-question="5000円前後で複雑な味わいのウィスキーのおすすめは？">⭐ 5000円前後で複雑な味わいのウィスキーのおすすめは？</div>
             </div>
 
             <div class="chat-input-container">
@@ -1046,7 +1119,7 @@
         </div>
         
         <div id="loadingIndicator" class="loading" style="display: none;">
-            <div class="animate-spin text-4xl mb-4">🥃</div>
+            <div class="animate-spin text-4xl mb-4">🍷</div>
             <p class="mt-2">AIが最適なウィスキーを分析中...</p>
         </div>
         
@@ -1071,14 +1144,14 @@
                         <div><strong>価格帯:</strong> <span id="priceRange">¥5,000 - ¥50,000</span></div>
                 
                         <div class="mt-3 pt-2 border-t border-gray-600">
-                            この総合プロファイルに基づいて、最適な3銘柄を厳選しました。
+                            AIが総合的にプロファイルに基づいて、最適な3銘柄を厳選しました。
                         </div>
                     </div>
                 </div>
                 <div id="recommendationContent"></div>
                 <div class="text-center mt-6">
                     <button id="getAnotherRecommendation" class="btn-secondary">
-                        🔄 別の提案
+                        🔄 別の提案を受ける
                     </button>
                 </div>
             </div>
@@ -1119,7 +1192,7 @@
                             </div>
                             
                             <div class="distillery-description" id="distilleryDescription">
-                                情報がありません。
+                                現在情報登録されていません。
                             </div>
                         </div>
                     </div>
@@ -1760,7 +1833,7 @@ function animateCounter(elementId, targetValue) {
                 } else if (message.includes('5000円前後') && message.includes('complexity5点')) {
                     aiResponseText = '⭐ 5000円前後でcomplexity5点を持つおすすめは、ORKNEY22年（¥4,700）です！ヘザーハニー、豊かなドライフルーツ、穏やかな煙の複雑な調和が特徴で、スイートオレンジピールや温かいスパイスの層が海塩のヒントと共に広がります。もう一つはISLAY KILDALTON13年（¥5,100）で、強烈なピート煙と海の塩気、薬品的な香りが特徴的。どちらも驚くべき複雑さを提供します。';
                 } else {
-                    aiResponseText = '申し訳ありませんが、現在AIチャット機能は開発中です。代わりに味覚プロファイルを設定してウィスキー提案を受けてみてください。';
+                    aiResponseText = '申し訳ありません、現在AIチャット機能が使えません。味覚プロファイルからあなたに最適なウィスキーを提案します。';
                 }
                 
                 aiMessage.textContent = aiResponseText;
