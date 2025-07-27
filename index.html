@@ -1421,63 +1421,80 @@
         }
 
         // AI応答の取得
-        function getAIResponse(message) {
-            // AIの応答を生成中であることを表示
-            const chatHistory = document.getElementById('chatHistory');
-            const aiMessage = document.createElement('div');
-            aiMessage.className = 'chat-message ai-message';
-            aiMessage.textContent = '考えています...';
-            chatHistory.appendChild(aiMessage);
-            
-            // スクロールを最下部に
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-            
-            // 味覚座標の取得
-            const dot1 = document.getElementById('tasteDot1');
-            const dot2 = document.getElementById('tasteDot2');
-            const tasteX = parseFloat(dot1.style.left) / 100;
-            const tasteY = parseFloat(dot1.style.top) / 100;
-            const complexityX = parseFloat(dot2.style.left) / 100;
-            const complexityY = parseFloat(dot2.style.top) / 100;
-            
-            // 価格帯の取得
-            const minPrice = document.getElementById('minPrice').value * 1000;
-            const maxPrice = document.getElementById('maxPrice').value * 1000;
-            
-            // リクエストデータの作成
-            const requestData = {
+async function getAIResponse(message) {
+    // AIの応答を生成中であることを表示
+    const chatHistory = document.getElementById('chatHistory');
+    const aiMessage = document.createElement('div');
+    aiMessage.className = 'chat-message ai-message';
+    aiMessage.textContent = '考えています...';
+    chatHistory.appendChild(aiMessage);
+    
+    // スクロールを最下部に
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+    
+    try {
+        // 味覚座標の取得
+        const dot1 = document.getElementById('tasteDot1');
+        const dot2 = document.getElementById('tasteDot2');
+        const tasteX = parseFloat(dot1.style.left) / 100;
+        const tasteY = parseFloat(dot1.style.top) / 100;
+        
+        // 価格帯の取得
+        const minPrice = document.getElementById('minPrice').value * 1000;
+        const maxPrice = document.getElementById('maxPrice').value * 1000;
+        
+        // API呼び出し
+        const response = await fetch('/.netlify/functions/claude-api', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
                 minPrice: minPrice,
                 maxPrice: maxPrice,
                 tasteX: tasteX.toFixed(2),
                 tasteY: tasteY.toFixed(2),
-                complexityX: complexityX.toFixed(2),
-                complexityY: complexityY.toFixed(2),
                 additionalPreferences: message
-            };
-            
-            // モックレスポンス（実際には使用しない）
-            setTimeout(() => {
-                // AI応答のモックデータを作成
-                let aiResponseText;
-                
-                // 質問に基づいてモック応答を生成
-                if (message.includes('タリスカー44年')) {
-                    aiResponseText = '🍷 タリスカー44年オフィシャルボトルは、¥80,400の希少銘柄です！スカイ島産で、強い海岸の塩気と複雑な海洋性の特徴を持ち、豊かなドライフルーツやダークチョコレートの層がピリッとしたスモークと調和しています。smoky4点・complexity5点の贅沢な一本で、長い熟成により驚くべき深みが生まれました。ストレートでゆっくりとお楽しみください。';
-                } else if (message.includes('3000円以下') && message.includes('スモーキー') && message.includes('アイラ')) {
-                    aiResponseText = '🌊 キルホーマン2013-2021信濃屋（¥2,000）がお求めやすいアイラ島のスモーキーウイスキーです。smoky5点を誇る力強いピート香に海の塩気が特徴で、柑橘類や青リンゴの爽やかさもあります。また、ブナハーブン12年80年代（¥2,700）も選択肢の一つです。スモーキーさは控えめですが、海洋性の風味と豊かなドライフルーツのバランスが絶妙です。';
-                } else if (message.includes('日本') && (message.includes('軽井沢') || message.includes('長濱'))) {
-                    aiResponseText = '🍯 軽井沢25年（¥25,000）は日本を代表する銘柄で、fruity4点の華やかさが特徴です。白檀のような繊細な香りと蜂蜜の甘さが絶妙で、長い熟成による複雑さを持ちます。一方、長濱INAZUMA2021（¥1,100）はコスパ抜群のfruity4点ウイスキーで、トロピカルフルーツや蜂蜜の鮮やかな香りが特徴。軽井沢はエレガントで深みがあり、長濱は若々しい爽やかさが魅力です。';
-                } else if (message.includes('5000円前後') && message.includes('complexity5点')) {
-                    aiResponseText = '⭐ 5000円前後でcomplexity5点を持つおすすめは、ORKNEY22年（¥4,700）です！ヘザーハニー、豊かなドライフルーツ、穏やかな煙の複雑な調和が特徴で、スイートオレンジピールや温かいスパイスの層が海塩のヒントと共に広がります。もう一つはISLAY KILDALTON13年（¥5,100）で、強烈なピート煙と海の塩気、薬品的な香りが特徴的。どちらも驚くべき複雑さを提供します。';
-                } else {
-                    aiResponseText = '申し訳ありませんが、現在AIチャット機能は開発中です。代わりに味覚プロファイルを設定してウィスキー提案を受けてみてください。';
-                }
-                
-                // 応答を表示
-                aiMessage.textContent = aiResponseText;
-                chatHistory.scrollTop = chatHistory.scrollHeight;
-            }, 1500);
+            })
+        });
+        
+        if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
         }
+        
+        const data = await response.json();
+        
+        // API応答を表示
+        if (data.success && data.data && data.data.content && data.data.content.length > 0) {
+            aiMessage.textContent = data.data.content[0].text;
+        } else {
+            throw new Error('Invalid API response structure');
+        }
+    } catch (error) {
+        console.error('Chat error:', error);
+        
+        // エラーの場合、既存のモックレスポンスを使用
+        let aiResponseText;
+        
+        // 質問に基づいてモック応答を生成
+        if (message.includes('タリスカー44年')) {
+            aiResponseText = '🍷 タリスカー44年オフィシャルボトルは、¥80,400の希少銘柄です！スカイ島産で、強い海岸の塩気と複雑な海洋性の特徴を持ち、豊かなドライフルーツやダークチョコレートの層がピリッとしたスモークと調和しています。smoky4点・complexity5点の贅沢な一本で、長い熟成により驚くべき深みが生まれました。ストレートでゆっくりとお楽しみください。';
+        } else if (message.includes('3000円以下') && message.includes('スモーキー') && message.includes('アイラ')) {
+            aiResponseText = '🌊 キルホーマン2013-2021信濃屋（¥2,000）がお求めやすいアイラ島のスモーキーウイスキーです。smoky5点を誇る力強いピート香に海の塩気が特徴で、柑橘類や青リンゴの爽やかさもあります。また、ブナハーブン12年80年代（¥2,700）も選択肢の一つです。スモーキーさは控えめですが、海洋性の風味と豊かなドライフルーツのバランスが絶妙です。';
+        } else if (message.includes('日本') && (message.includes('軽井沢') || message.includes('長濱'))) {
+            aiResponseText = '🍯 軽井沢25年（¥25,000）は日本を代表する銘柄で、fruity4点の華やかさが特徴です。白檀のような繊細な香りと蜂蜜の甘さが絶妙で、長い熟成による複雑さを持ちます。一方、長濱INAZUMA2021（¥1,100）はコスパ抜群のfruity4点ウイスキーで、トロピカルフルーツや蜂蜜の鮮やかな香りが特徴。軽井沢はエレガントで深みがあり、長濱は若々しい爽やかさが魅力です。';
+        } else if (message.includes('5000円前後') && message.includes('complexity5点')) {
+            aiResponseText = '⭐ 5000円前後でcomplexity5点を持つおすすめは、ORKNEY22年（¥4,700）です！ヘザーハニー、豊かなドライフルーツ、穏やかな煙の複雑な調和が特徴で、スイートオレンジピールや温かいスパイスの層が海塩のヒントと共に広がります。もう一つはISLAY KILDALTON13年（¥5,100）で、強烈なピート煙と海の塩気、薬品的な香りが特徴的。どちらも驚くべき複雑さを提供します。';
+        } else {
+            aiResponseText = '申し訳ありませんが、現在AIチャット機能は開発中です。代わりに味覚プロファイルを設定してウィスキー提案を受けてみてください。';
+        }
+        
+        aiMessage.textContent = aiResponseText;
+    } finally {
+        // スクロールを最下部に
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+}
 
         // ウィスキーデータを読み込む
         async function loadWhiskyData() {
