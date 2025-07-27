@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0135)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_EB76Z_WrSAi0cBzgErhc4Q/whisky_sommelier_responsive.html -->
+<!-- saved from url=(0129)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_6SyEBwGwQViHhJVI0y21_w/whisky_sommelier_json.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -847,6 +847,16 @@
                 opacity: 1;
             }
         }
+        
+        /* 数値カウントアップアニメーション */
+        .counter-animation {
+            transition: color 0.3s;
+        }
+        
+        @keyframes countup {
+            from { opacity: 0.5; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 <style>
     .genspark-notice-dialog {
@@ -951,32 +961,34 @@
   </style></head>
 <body>
     <div class="header-container">
-        <div class="header-top">
-            <img class="logo" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTAiIGhlaWdodD0iNTAiIHZpZXdCb3g9IjAgMCA1MCA1MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjUwIiBoZWlnaHQ9IjUwIiByeD0iOCIgZmlsbD0iIzRlY2RjNCIvPgo8dGV4dCB4PSIyNSIgeT0iMzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIyMCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIj7mmIc8L3RleHQ+Cjwvc3ZnPg==" alt="昼の月バーロゴ">
-            <h1 class="header-title">昼の月。AIソムリエ</h1>
-        </div>
-        <div class="nav-links">
-            <a href="index.html" class="nav-link active" id="homeLink">🏠 AIソムリエ</a>
-            <a href="whisky_list.html" class="nav-link" id="listLink">🥃 ウィスキー一覧</a>
-        </div>
+    <img class="logo" src="./NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
+    <h1 class="header-title">昼の月。ウィスキーリスト</h1>
+    <div class="header-nav" style="position: absolute; right: 20px; display: flex; gap: 20px;">
+        <a href="index.html" class="header-link">AIソムリエ</a>
+        <a href="whisky_list.html" class="header-link active">ウィスキーリスト</a>
+    </div>
     </div>
     
     <div class="container-custom">
         <div class="whisky-overview">
             <h2>🍷 プレミアムウィスキーコレクション</h2>
-            <div class="subtitle">本日は厳選された<span id="whiskyCount">3</span>本のウィスキーから</div>
+            <div class="subtitle">本日は厳選された<span id="whiskyCount">0</span>本のウィスキーから</div>
             <div class="description">
                 <strong>あなたの味覚に完璧にマッチする</strong>最高の一本を<br>
                 AI技術で分析・提案いたします
             </div>
             <div class="whisky-stats">
                 <div class="stat-item">
-                    <span class="stat-number" id="totalWhiskies">3</span>
+                    <span class="stat-number counter-animation" id="totalWhiskies">0</span>
                     <div class="stat-label">厳選銘柄</div>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number" id="uniqueRegions">3</span>
-                    <div class="stat-label">産地</div>
+                    <span class="stat-number counter-animation" id="uniqueRegions">0</span>
+                    <div class="stat-label">地域数</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number counter-animation" id="totalDistilleries">0</span>
+                    <div class="stat-label">蒸溜所数</div>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number">AI</span>
@@ -1165,90 +1177,106 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // ウィスキーデータの一覧（サンプル）
-            const whiskies = [
-                {
-                    id: 1,
-                    name: "グレンリベット 12年",
-                    region: "スペイサイド",
-                    price: 5000,
-                    description: "フルーティでバランスの取れた味わい、バニラと蜂蜜の風味が特徴的。初心者にもおすすめのスペイサイドモルト。",
-                    taste_profile: {
-                        fruity: 4,
-                        spicy: 2,
-                        body: 3,
-                        smoky: 1,
-                        sweetness: 4,
-                        complexity: 3
-                    },
-                    distillery: {
-                        name: "The Glenlivet",
-                        region: "スペイサイド, スコットランド",
-                        founded: "1824年",
-                        status: "稼働中",
-                        owner: "ペルノ・リカール",
-                        description: "スコットランド最古の合法蒸留所の一つで、王室御用達の称号を持つ由緒正しい蒸留所です。スペイサイドの代表的な蒸留所として、そのウィスキーはフルーティでエレガントな味わいで世界中に愛されています。",
-                        lat: 57.3429,
-                        lng: -3.3384
-                    }
-                },
-                {
-                    id: 2,
-                    name: "ラフロイグ 10年",
-                    region: "アイラ",
-                    price: 6500,
-                    description: "強烈なピート香と海の香りが特徴的。アイオディン、海藻、薬品のようなニュアンスを持つ個性的なウィスキー。",
-                    taste_profile: {
-                        fruity: 2,
-                        spicy: 3,
-                        body: 4,
-                        smoky: 5,
-                        sweetness: 2,
-                        complexity: 4
-                    },
-                    distillery: {
-                        name: "Laphroaig",
-                        region: "アイラ島, スコットランド",
-                        founded: "1815年",
-                        status: "稼働中",
-                        owner: "ビーム・サントリー",
-                        description: "アイラ島南岸に位置し、そのウィスキーは強烈なピート香と薬品的な個性で知られています。チャールズ皇太子御用達の称号を持ち、愛好家の間で熱狂的な支持を集めています。",
-                        lat: 55.6295,
-                        lng: -6.1527
-                    }
-                },
-                {
-                    id: 3,
-                    name: "山崎 12年",
-                    region: "日本",
-                    price: 15000,
-                    description: "日本を代表するシングルモルト。複雑で深みのあるフルーティーな味わいに、かすかな樽の風味と日本独特の繊細さが特徴。",
-                    taste_profile: {
-                        fruity: 5,
-                        spicy: 3,
-                        body: 4,
-                        smoky: 2,
-                        sweetness: 4,
-                        complexity: 5
-                    },
-                    distillery: {
-                        name: "サントリー山崎蒸留所",
-                        region: "大阪府, 日本",
-                        founded: "1923年",
-                        status: "稼働中",
-                        owner: "サントリーホールディングス",
-                        description: "日本初の本格的ウイスキー蒸留所として鳥井信治郎によって設立。京都と大阪の境にある山崎の地は、古くから名水の地として知られ、日本茶の生産でも有名でした。日本を代表する蒸留所として、世界的に高い評価を受けるウイスキーを生産しています。",
-                        lat: 34.8924,
-                        lng: 135.6762
-                    }
-                },
-                // 他のウィスキーもここに追加
-            ];
-            
             let profileChartInstance = null;
             let selectedWhisky = null;
             let map = null;
             let marker = null;
+            
+            // JSON データのロード
+            let whiskies = [];
+            let distilleries = {};
+            
+            Promise.all([
+                fetch('https://page.gensparksite.com/get_upload_url/ed37237272cab7bf3d2036a6cf69a750a40a49cc0ee56c9c7ebf0088d6221061/default/136956f7-3720-4a42-bb7b-cb9faafb5088')
+                    .then(response => response.json())
+                    .then(data => {
+                        whiskies = data.whiskies || [];
+                        return whiskies;
+                    }),
+                fetch('https://page.gensparksite.com/get_upload_url/ed37237272cab7bf3d2036a6cf69a750a40a49cc0ee56c9c7ebf0088d6221061/default/2c1b750b-e5bc-4541-b47b-061e0e7731dd')
+                    .then(response => response.json())
+                    .then(data => {
+                        distilleries = data.distilleries || {};
+                        return distilleries;
+                    })
+            ])
+            .then(() => {
+                // データロード完了後の初期化処理
+                initializeApp();
+                updateStatistics();
+            })
+            .catch(error => {
+                console.error('Error loading data:', error);
+                // エラー時もアプリを部分的に初期化
+                initializeApp();
+            });
+            
+            // 統計情報の更新
+            function updateStatistics() {
+                // 銘柄数
+                const whiskyCount = whiskies.length;
+                animateCounter('whiskyCount', 0, whiskyCount);
+                animateCounter('totalWhiskies', 0, whiskyCount);
+                
+                // 地域数 (distillery_data.jsonからのユニーク地域数)
+                const regions = new Set();
+                for (const key in distilleries) {
+                    if (distilleries[key].region) {
+                        regions.add(distilleries[key].region);
+                    }
+                }
+                const regionCount = regions.size;
+                animateCounter('uniqueRegions', 0, regionCount);
+                
+                // 蒸溜所数 (distillery_data.jsonからのユニーク蒸溜所名)
+                const distilleryCount = Object.keys(distilleries).length;
+                animateCounter('totalDistilleries', 0, distilleryCount);
+            }
+            
+            // カウンターアニメーション
+            function animateCounter(elementId, start, end) {
+                const element = document.getElementById(elementId);
+                if (!element) return;
+                
+                element.style.animation = 'countup 1s forwards';
+                
+                const duration = 1500; // アニメーション時間 (ミリ秒)
+                const frameDuration = 1000 / 60; // 60fpsでのフレーム時間
+                const totalFrames = Math.round(duration / frameDuration);
+                let frame = 0;
+                
+                const counter = setInterval(() => {
+                    frame++;
+                    const progress = frame / totalFrames;
+                    const currentCount = Math.floor(start + progress * (end - start));
+                    
+                    element.textContent = currentCount;
+                    
+                    if (frame === totalFrames) {
+                        clearInterval(counter);
+                        element.textContent = end;
+                    }
+                }, frameDuration);
+            }
+            
+            // アプリの初期化
+            function initializeApp() {
+                setupTasteMatrices();
+                setupEventListeners();
+                updateProfileChart(getUserProfile());
+                
+                // 初期値として、価格帯とユーザープロファイルを表示
+                document.getElementById('minPriceDisplay').textContent = `¥${formatPrice(parseInt(document.getElementById('minPrice').value) * 1000)}`;
+                document.getElementById('maxPriceDisplay').textContent = `¥${formatPrice(parseInt(document.getElementById('maxPrice').value) * 1000)}`;
+                
+                // アクティブページのナビゲーションリンクにクラス追加
+                const currentPath = window.location.pathname;
+                if (currentPath.includes('whisky_list.html')) {
+                    document.getElementById('listLink').classList.add('active');
+                } else {
+                    document.getElementById('homeLink').classList.add('active');
+                }
+            }
 
             // テイスト行列の設定
             function setupTasteMatrices() {
@@ -1464,19 +1492,19 @@
                 
                 // 情報を更新
                 document.getElementById('distilleryName').textContent = distillery.name;
-                document.getElementById('distilleryRegion').textContent = distillery.region;
-                document.getElementById('distilleryFounded').textContent = distillery.founded;
-                document.getElementById('distilleryOwner').textContent = distillery.owner;
-                document.getElementById('distilleryDescription').textContent = distillery.description;
+                document.getElementById('distilleryRegion').textContent = distillery.region || '-';
+                document.getElementById('distilleryFounded').textContent = distillery.founded || '-';
+                document.getElementById('distilleryStatus').textContent = distillery.status || '-';
+                document.getElementById('distilleryOwner').textContent = distillery.owner || '-';
+                document.getElementById('distilleryDescription').textContent = distillery.description || '情報がありません';
                 
                 // ステータスに応じたスタイル
                 const statusElement = document.getElementById('distilleryStatus');
-                statusElement.textContent = distillery.status;
                 statusElement.className = '';
                 
-                if (distillery.status === '稼働中') {
+                if (distillery.status && distillery.status.includes('稼働')) {
                     statusElement.classList.add('status-active');
-                } else if (distillery.status === '閉鎖') {
+                } else if (distillery.status && distillery.status.includes('閉鎖')) {
                     statusElement.classList.add('status-closed');
                 } else {
                     statusElement.classList.add('status-unknown');
@@ -1524,7 +1552,7 @@
                 // ポップアップを追加
                 marker.bindPopup(`
                     <div style="font-weight: bold; color: #4ecdc4; margin-bottom: 5px;">${distillery.name}</div>
-                    <div style="font-size: 0.9em;">${distillery.region}</div>
+                    <div style="font-size: 0.9em;">${distillery.region || '-'}</div>
                 `);
             }
 
@@ -1539,8 +1567,8 @@
                 const userProfile = getUserProfile();
                 
                 // 価格帯の取得
-                const minPrice = document.getElementById('minPrice').value * 1000;
-                const maxPrice = document.getElementById('maxPrice').value * 1000;
+                const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+                const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
                 
                 // 価格表示の更新
                 document.getElementById('priceRange').textContent = `¥${formatPrice(minPrice)} - ¥${formatPrice(maxPrice)}`;
@@ -1550,7 +1578,8 @@
                 
                 // 簡易スコアリングロジック：ユーザープロファイルとの類似度を計算
                 const scoredWhiskies = whiskies.filter(whisky => {
-                    return whisky.price >= minPrice && whisky.price <= maxPrice;
+                    const price = parseInt(whisky.price.replace(/[¥,]/g, ''));
+                    return price >= minPrice && price <= maxPrice;
                 }).map(whisky => {
                     // 各要素の差の二乗和の平方根を類似度スコアとする（低いほど類似）
                     const profile = whisky.taste_profile;
@@ -1593,13 +1622,13 @@
                         whiskeyCard.appendChild(featuredLabel);
                     }
                     
-                    whiskeyCard.innerHTML = `
+                    whiskeyCard.innerHTML += `
                         <h3 class="text-xl font-bold mb-2">${whisky.name}</h3>
                         <div class="text-sm text-gray-300 mb-2">
                             <span class="mr-4">地域: ${whisky.region}</span>
-                            <span>価格: ¥${formatPrice(whisky.price)}</span>
+                            <span>価格: ${whisky.price}</span>
                         </div>
-                        <p class="text-sm">${whisky.description}</p>
+                        <p class="text-sm">${whisky.tastingNote_ja || '詳細情報がありません。'}</p>
                     `;
                     
                     whiskeyCard.addEventListener('click', function() {
@@ -1614,14 +1643,6 @@
                     
                     container.appendChild(whiskeyCard);
                 });
-                
-                // ウィスキー数の表示を更新
-                document.getElementById('whiskyCount').textContent = whiskies.length;
-                document.getElementById('totalWhiskies').textContent = whiskies.length;
-                
-                // ユニーク地域数の表示を更新
-                const uniqueRegions = new Set(whiskies.map(w => w.region)).size;
-                document.getElementById('uniqueRegions').textContent = uniqueRegions;
                 
                 // 結果表示コンテナを表示
                 document.getElementById('splitLayoutContainer').style.display = 'grid';
@@ -1860,40 +1881,15 @@
                     return "申し訳ありませんが、もう少し具体的にお聞きしたいです。例えば特定の銘柄、産地、価格帯、あるいは味の好みについてお教えいただけますか？";
                 }
             }
-
-            // ページロード時の初期化
-            setupTasteMatrices();
-            setupEventListeners();
-            updateProfileChart(getUserProfile());
-            
-            // 初期値として、価格帯とユーザープロファイルを表示
-            document.getElementById('minPriceDisplay').textContent = `¥${formatPrice(parseInt(document.getElementById('minPrice').value) * 1000)}`;
-            document.getElementById('maxPriceDisplay').textContent = `¥${formatPrice(parseInt(document.getElementById('maxPrice').value) * 1000)}`;
-            
-            // ウィスキー数の初期表示
-            document.getElementById('whiskyCount').textContent = whiskies.length;
-            document.getElementById('totalWhiskies').textContent = whiskies.length;
-            
-            // ユニーク地域数の初期表示
-            const uniqueRegions = new Set(whiskies.map(w => w.region)).size;
-            document.getElementById('uniqueRegions').textContent = uniqueRegions;
-            
-            // アクティブページのナビゲーションリンクにクラス追加
-            const currentPath = window.location.pathname;
-            if (currentPath.includes('whisky_list.html')) {
-                document.getElementById('listLink').classList.add('active');
-            } else {
-                document.getElementById('homeLink').classList.add('active');
-            }
         });
     </script>
 
 
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDnlibAxUVbmw6mSFK8xmbFUemGmN%2BkTk82682efYHf%2FDa8aVayhAJ%2BHlR1ks3i6YgnjaG12ONFvFXi5g8nPoEmTgvfCV0jnPwQQMcaKvtemsBmZfSfL6pr9tsmQ9RRT5DMVYHqxodeuDNFCO2A6oJVn7DVMGFjM19L%2F3jdQ09IQMJHS3ihFo3K5iQHlzsRQS8xyUulZAdcgVjn513RF%2Ft65VXwo2you1XUFhux%2FssUpC1PeucIXsQFVrDCa1Xls9Wcky5doHpadtAHzfmR017ZcSVqnumaQ7922DTp9v4KBeLsOwAABGgBkWxIWw0jD4LRiGPJjx9iY17ycAuu2uXOTKea2XSVSwRvMUI%2FvDviVvzKSXpT4brkaAL3x2n5rk1%2BGyH3IUa6%2FGBxx%2FoVQpnxX2zpSnXGYXdddmiFz8HNBoGXQ8pptR%2FFmQmlSxnGZ5M0YXug9emBXUgbq2Ff7%2F6IybhXcsN7wTOL43KzbqC30lDDontMywy81fPNUOQEXa7uPy0iGtJp2KOw7sn0BJ%2F7E%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDqLvJEKBQNA1ZmvLz9i3URWxKIzPnGpw3z23OZeU8yy6wcQd6UiafStuFufKy9Md5EVepgMVoAMHjAMk25gLG8%2BrxeWivv6Ddc57aC6l%2FjfVRJLtxjVQ3TWyQsmJZlMcReQp%2BrXkZEz2ddexCfQxUwf9yJr2r4heTk3dbdPS%2F7SlMyjxB0NqpjqBP0hJ8PBtACR85xS2%2B1kTCbIu2ACfs8kWa7pQxl5Wi%2FsWxsUBte7G660LSDe33ZMCc4fPUMT5SM8RwVMZ0d5%2BI4lsKAeEw7ACgPUfzpabfRtT1gKj9rAj46NK7OlaBgUZP71nYY9xv1e96lUMGV5pfF2panhYzo8KLXlsqw5OccKp4FgwuwpjmOnYOpnE5xIreyqa8SbxHlWMYUBWaTqTYDM%2BKqkoi%2BXzJlCTn9zVr%2Be191JfpftTT8Twjh%2ByGde2tuP%2FMbr8qthp%2FNot%2B4nBK3LGvjJeGd6HWVtTt3xZpHn8zmGd2jyu909g%2BtVMY5YLg%2B67TGarzw%3D%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDnlibAxUVbmw6mSFK8xmbFUemGmN+kTk82682efYHf/Da8aVayhAJ+HlR1ks3i6YgnjaG12ONFvFXi5g8nPoEmTgvfCV0jnPwQQMcaKvtemsBmZfSfL6pr9tsmQ9RRT5DMVYHqxodeuDNFCO2A6oJVn7DVMGFjM19L/3jdQ09IQMJHS3ihFo3K5iQHlzsRQS8xyUulZAdcgVjn513RF/t65VXwo2you1XUFhux/ssUpC1PeucIXsQFVrDCa1Xls9Wcky5doHpadtAHzfmR017ZcSVqnumaQ7922DTp9v4KBeLsOwAABGgBkWxIWw0jD4LRiGPJjx9iY17ycAuu2uXOTKea2XSVSwRvMUI/vDviVvzKSXpT4brkaAL3x2n5rk1+GyH3IUa6/GBxx/oVQpnxX2zpSnXGYXdddmiFz8HNBoGXQ8pptR/FmQmlSxnGZ5M0YXug9emBXUgbq2Ff7/6IybhXcsN7wTOL43KzbqC30lDDontMywy81fPNUOQEXa7uPy0iGtJp2KOw7sn0BJ/7E=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDqLvJEKBQNA1ZmvLz9i3URWxKIzPnGpw3z23OZeU8yy6wcQd6UiafStuFufKy9Md5EVepgMVoAMHjAMk25gLG8+rxeWivv6Ddc57aC6l/jfVRJLtxjVQ3TWyQsmJZlMcReQp+rXkZEz2ddexCfQxUwf9yJr2r4heTk3dbdPS/7SlMyjxB0NqpjqBP0hJ8PBtACR85xS2+1kTCbIu2ACfs8kWa7pQxl5Wi/sWxsUBte7G660LSDe33ZMCc4fPUMT5SM8RwVMZ0d5+I4lsKAeEw7ACgPUfzpabfRtT1gKj9rAj46NK7OlaBgUZP71nYY9xv1e96lUMGV5pfF2panhYzo8KLXlsqw5OccKp4FgwuwpjmOnYOpnE5xIreyqa8SbxHlWMYUBWaTqTYDM+Kqkoi+XzJlCTn9zVr+e191JfpftTT8Twjh+yGde2tuP/Mbr8qthp/Not+4nBK3LGvjJeGd6HWVtTt3xZpHn8zmGd2jyu909g+tVMY5YLg+67TGarzw==";
     </script>
     
     <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
