@@ -1278,83 +1278,153 @@
     };
 
 // チャットメッセージから条件を抽出する関数
+// チャットメッセージから条件を抽出する関数 - 強化版
 function extractPreferencesFromMessage(message) {
-  const preferences = {};
-
-  // 価格条件の抽出（例: 「3000円以下」「2000円から5000円」など）
-  const maxPriceRegex = new RegExp('(\\d+)円以下|\\d+円未満|(\\d+)円より安い', 'g');
-  const minPriceRegex = new RegExp('(\\d+)円以上|(\\d+)円より高い', 'g');
-  const priceRangeRegex = new RegExp('(\\d+)円から(\\d+)円|\\d+円.*(\\d+)円', 'g');
-
-  // 価格上限の抽出
-  const maxPriceMatch = maxPriceRegex.exec(message);
-  if (maxPriceMatch) {
-    const maxPrice = parseInt(maxPriceMatch[1] || maxPriceMatch[2]);
-    preferences.maxPrice = maxPrice;
-  }
-
-  // 他の条件も同様に抽出（地域、味の傾向など）
-  if (message.includes('アイラ')) {
-    preferences.region = 'アイラ';
-  }
-
-  // 味の傾向の抽出
-  if (message.includes('スモーキー')) {
-    preferences.tasteY = 0.8; // スモーキー方向にマトリクスを設定
-  }
-  if (message.includes('フルーティー')) {
-    preferences.tasteY = 0.2; // フルーティー方向にマトリクスを設定
-  }
-
-  // 複雑さの抽出
-  if (message.includes('複雑') || message.includes('熟成')) {
-    preferences.complexityX = 0.8; // 熟成/複雑方向にマトリクスを設定
-  }
-
-  return preferences;
+    if (!message) return {};
+    
+    message = message.toLowerCase();
+    const preferences = {};
+    
+    // 価格条件の抽出
+    const maxPriceRegex = /([\d,]+)円?(以下|まで|未満|より安い)/;
+    const minPriceRegex = /([\d,]+)円?(以上|から|より高い)/;
+    const priceRangeRegex = /([\d,]+)円?[〜～-]+([\d,]+)円?/;
+    
+    // 価格範囲の抽出
+    const priceRangeMatch = message.match(priceRangeRegex);
+    if (priceRangeMatch) {
+        const minPrice = parseInt(priceRangeMatch[1].replace(/,/g, ''));
+        const maxPrice = parseInt(priceRangeMatch[2].replace(/,/g, ''));
+        preferences.minPrice = minPrice;
+        preferences.maxPrice = maxPrice;
+    } else {
+        // 最低価格の抽出
+        const minPriceMatch = message.match(minPriceRegex);
+        if (minPriceMatch) {
+            preferences.minPrice = parseInt(minPriceMatch[1].replace(/,/g, ''));
+        }
+        
+        // 最高価格の抽出
+        const maxPriceMatch = message.match(maxPriceRegex);
+        if (maxPriceMatch) {
+            preferences.maxPrice = parseInt(maxPriceMatch[1].replace(/,/g, ''));
+        }
+    }
+    
+    // 地域の抽出
+    const regions = {
+        'アイラ': 'Islay',
+        'スペイサイド': 'Speyside',
+        'ハイランド': 'Highland',
+        '日本': 'Japan',
+        'ジャパン': 'Japan',
+        'アメリカ': 'America'
+    };
+    
+    for (const [keyword, regionName] of Object.entries(regions)) {
+        if (message.includes(keyword)) {
+            preferences.region = regionName;
+            break;
+        }
+    }
+    
+    // 味の傾向の抽出
+    const flavors = {
+        'スモーキー': { tasteY: 0.8 },
+        'スモーク': { tasteY: 0.8 },
+        'ピート': { tasteY: 0.8 },
+        'フルーティー': { tasteY: 0.2 },
+        'フルーティ': { tasteY: 0.2 },
+        '果実': { tasteY: 0.2 },
+        'ライト': { tasteX: 0.2 },
+        '軽い': { tasteX: 0.2 },
+        'ヘビー': { tasteX: 0.8 },
+        '重い': { tasteX: 0.8 },
+        'まろやか': { complexityY: 0.2 },
+        '穏やか': { complexityY: 0.2 },
+        '強烈': { complexityY: 0.8 },
+        '強い': { complexityY: 0.8 },
+        '若い': { complexityX: 0.2 },
+        '熟成': { complexityX: 0.8 }
+    };
+    
+    for (const [keyword, coords] of Object.entries(flavors)) {
+        if (message.includes(keyword)) {
+            Object.assign(preferences, coords);
+        }
+    }
+    
+    return preferences;
 }
 
 // 抽出した好みに基づいてUI要素を更新する関数
+// 抽出した好みに基づいてUI要素を更新する関数 - デバッグログ追加
 function updateUIWithPreferences(preferences) {
-    // 価格スライダーの更新
-    if (preferences.minPrice) {
-        const minSlider = document.getElementById('minPrice');
-        const value = Math.max(1, Math.min(80, Math.floor(preferences.minPrice / 1000)));
-        minSlider.value = value;
-        document.getElementById('minPriceDisplay').textContent = `¥${value},000`;
+    console.log('UI更新開始:', preferences);
+    
+    try {
+        // 価格スライダーの更新
+        if (preferences.minPrice) {
+            const minSlider = document.getElementById('minPrice');
+            if (minSlider) {
+                const value = Math.max(1, Math.min(80, Math.floor(preferences.minPrice / 1000)));
+                minSlider.value = value;
+                const minPriceDisplay = document.getElementById('minPriceDisplay');
+                if (minPriceDisplay) {
+                    minPriceDisplay.textContent = `¥${value},000`;
+                }
+                console.log('最低価格スライダー更新:', value);
+            }
+        }
+        
+        if (preferences.maxPrice) {
+            const maxSlider = document.getElementById('maxPrice');
+            if (maxSlider) {
+                const value = Math.max(1, Math.min(80, Math.floor(preferences.maxPrice / 1000)));
+                maxSlider.value = value;
+                const maxPriceDisplay = document.getElementById('maxPriceDisplay');
+                if (maxPriceDisplay) {
+                    maxPriceDisplay.textContent = `¥${value},000`;
+                }
+                console.log('最高価格スライダー更新:', value);
+            }
+        }
+        
+        // 味覚マトリクスの更新
+        const dot1 = document.getElementById('tasteDot1');
+        const dot2 = document.getElementById('tasteDot2');
+        
+        if (preferences.tasteX && dot1) {
+            dot1.style.left = `${preferences.tasteX * 100}%`;
+            console.log('味覚X座標更新:', preferences.tasteX);
+        }
+        
+        if (preferences.tasteY && dot1) {
+            dot1.style.top = `${preferences.tasteY * 100}%`;
+            console.log('味覚Y座標更新:', preferences.tasteY);
+        }
+        
+        if (preferences.complexityX && dot2) {
+            dot2.style.left = `${preferences.complexityX * 100}%`;
+            console.log('複雑さX座標更新:', preferences.complexityX);
+        }
+        
+        if (preferences.complexityY && dot2) {
+            dot2.style.top = `${preferences.complexityY * 100}%`;
+            console.log('複雑さY座標更新:', preferences.complexityY);
+        }
+        
+        // 座標表示の更新 - この関数が存在することを確認
+        if (typeof updateCoordinatesDisplay === 'function') {
+            updateCoordinatesDisplay();
+            console.log('座標表示更新完了');
+        }
+    } catch (error) {
+        console.error('UI更新エラー:', error);
     }
     
-    if (preferences.maxPrice) {
-        const maxSlider = document.getElementById('maxPrice');
-        const value = Math.max(1, Math.min(80, Math.floor(preferences.maxPrice / 1000)));
-        maxSlider.value = value;
-        document.getElementById('maxPriceDisplay').textContent = `¥${value},000`;
-    }
-    
-    // 味覚マトリクスの更新
-    const dot1 = document.getElementById('tasteDot1');
-    const dot2 = document.getElementById('tasteDot2');
-    
-    if (preferences.tasteX) {
-        dot1.style.left = `${preferences.tasteX * 100}%`;
-    }
-    
-    if (preferences.tasteY) {
-        dot1.style.top = `${preferences.tasteY * 100}%`;
-    }
-    
-    if (preferences.complexityX) {
-        dot2.style.left = `${preferences.complexityX * 100}%`;
-    }
-    
-    if (preferences.complexityY) {
-        dot2.style.top = `${preferences.complexityY * 100}%`;
-    }
-    
-    // 座標表示の更新
-    updateCoordinatesDisplay();
+    console.log('UI更新完了');
 }
-
         
         // カウントアップアニメーション関数
 function animateCounter(elementId, targetValue) {
@@ -1923,7 +1993,7 @@ function sendChatMessage() {
     getAIResponse(message);
 }
 
-// getAIResponse関数も元の実装に近い形に戻す
+// getAIResponse関数の修正
 async function getAIResponse(message) {
     const chatHistory = document.getElementById('chatHistory');
     
@@ -1936,6 +2006,33 @@ async function getAIResponse(message) {
     // スクロールを最下部に
     chatHistory.scrollTop = chatHistory.scrollHeight;
     
+    try {
+        // メッセージから好みを抽出
+        const prefs = extractPreferencesFromMessage(message);
+        
+        // 抽出した好みを保存
+        if (prefs && Object.keys(prefs).length > 0) {
+            Object.assign(savedUserPreferences, prefs);
+            
+            // UI要素を更新
+            updateUIWithPreferences(prefs);
+        }
+        
+        // ローカル応答を生成
+        const aiResponseText = generateLocalResponse(message);
+        
+        // AIの応答を設定
+        aiMessage.textContent = aiResponseText;
+        
+    } catch (error) {
+        console.error('AI応答エラー:', error);
+        aiMessage.textContent = 'すみません、エラーが発生しました。もう一度お試しください。';
+    }
+    
+    // スクロールを最下部に
+    chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+
     // 元の実装を使用
     try {
         // API呼び出しやモック応答の取得（元のコードを使用）
@@ -1988,6 +2085,43 @@ async function getAIResponse(message) {
     
     // スクロールを最下部に
     chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+
+// より良いローカル応答を生成する関数
+function generateLocalResponse(message) {
+    message = message.toLowerCase();
+    let response = '';
+    
+    // 好みを抽出
+    const prefs = extractPreferencesFromMessage(message);
+    
+    // 好みの抽出結果を応答に含める
+    if (prefs && Object.keys(prefs).length > 0) {
+        response += 'あなたの好みを理解しました：\n';
+        
+        if (prefs.minPrice) response += `・最低価格: ${prefs.minPrice}円\n`;
+        if (prefs.maxPrice) response += `・最高価格: ${prefs.maxPrice}円\n`;
+        if (prefs.tasteY !== undefined) response += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
+        if (prefs.region) response += `・産地: ${prefs.region}\n`;
+        response += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
+    }
+    
+    // キーワードに基づく応答の生成
+    if (message.includes('タリスカー') || message.includes('talisker')) {
+        response += 'タリスカー44年は、スコットランドのスカイ島で造られた非常に希少なシングルモルトウイスキーです。熟成感と複雑さが特徴で、潮の香りとともに、スパイスやフルーツの風味が感じられます。洗練された長い余韻が特徴的です。希少性から価格も高く、コレクターズアイテムとしても人気があります。';
+    } else if (message.includes('3000円以下') || message.includes('安い')) {
+        response += '3000円以下のスモーキーなウイスキーをお探しですね。この価格帯ではラフロイグ・セレクトやアードベッグ10年などのアイラモルトのミニボトル、またはホワイトホース、ティーチャーズなどのブレンデッドウイスキーがおすすめです。「AIウィスキー提案を受ける」ボタンでさらに詳細な提案が可能です。';
+    } else if (message.includes('アイラ') || message.includes('islay')) {
+        response += 'アイラ島はスコットランドの中でも特にピート（泥炭）の薫香の強いウイスキーで知られています。代表的な蒸留所にはラフロイグ、アードベッグ、ラガヴーリンなどがあります。海の潮の香りとスモーキーな風味が特徴的です。「AIウィスキー提案を受ける」ボタンから、アイラ島のウイスキーを絞り込んでご提案できます。';
+    } else if (message.includes('日本') || message.includes('ジャパン')) {
+        response += '日本のウイスキーは国際的に高い評価を受けています。山崎、白州、ニッカ、軽井沢、響など様々なブランドがあり、それぞれ特徴的な味わいを持っています。特に軽井沢は閉鎖された蒸留所のため希少価値が高く、長濱は若い蒸留所ながらユニークな製法で注目を集めています。「AIウィスキー提案を受ける」ボタンから日本のウイスキーに絞り込んでご提案できます。';
+    } else if (message.includes('こんにちは') || message.includes('こんばんは') || message.includes('よろしく')) {
+        response += 'こんにちは！AIウィスキーソムリエです。ウイスキーに関するご質問やおすすめのリクエストなど、お気軽にお尋ねください。お好みの味わいや予算などをお伝えいただければ、最適なウイスキーをご提案いたします。';
+    } else {
+        response += 'ご質問ありがとうございます。具体的なウィスキーに関する情報をお求めの場合は、銘柄名や特徴などを詳しくお知らせください。また、「AIウィスキー提案を受ける」ボタンを押していただければ、あなたの好みに合ったウイスキーをご提案いたします。';
+    }
+    
+    return response;
 }
 
         // チャット履歴をクリア
