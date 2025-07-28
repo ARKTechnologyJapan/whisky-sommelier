@@ -2185,81 +2185,68 @@
         // ウィスキーの蒸留所情報を更新
         function updateDistilleryInfo(whisky) {
             try {
-                console.log('蒸留所情報の更新:', whisky.name);
                 const distilleryName = getDistilleryNameFromWhisky(whisky);
 
                 // 蒸留所セクションを表示
                 const distillerySection = document.getElementById('distillerySection');
-                if (distillerySection) {
-                    distillerySection.classList.add('active');
-                }
+                distillerySection.classList.add('active');
 
-                // 蒸留所情報が見つかった場合
                 if (distilleryName && distilleryDatabase[distilleryName]) {
                     console.log(`蒸留所情報が見つかりました: ${distilleryName}`);
+                    
+                    // マップの初期化を試みる（Leaflet.jsが利用可能な場合のみ）
+                    let mapInitialized = false;
+                    if (typeof L !== 'undefined') {
+                        if (!distilleryMap) {
+                            mapInitialized = initializeCommonMap();
+                        } else {
+                            mapInitialized = true;
+                        }
+                        
+                        // マップが初期化できた場合はマーカーを更新
+                        if (mapInitialized) {
+                            try {
+                                updateDistilleryMarkers(distilleryName);
+                            } catch (e) {
+                                console.warn('マーカー更新エラー:', e);
+                            }
+                        }
+                    }
                     
                     // 蒸留所情報を表示
                     showDistilleryInfo(distilleryDatabase[distilleryName]);
                 } else {
-                    // 蒸留所情報が見つからない場合は簡易情報を表示
-                    console.log('蒸留所情報が見つからないため、簡易情報を表示します');
-                    showSimpleDistilleryInfo(whisky);
-                }
-            } catch (err) {
-                console.error('蒸留所情報更新エラー:', err);
-                // エラー時は簡易情報を表示
-                showSimpleDistilleryInfo(whisky);
-            }
-        }
-
-        // 簡易的な蒸留所情報表示（マップなし）
-        function showSimpleDistilleryInfo(whisky) {
-            try {
-                // 蒸留所名の推測
-                let distilleryName = "情報なし";
-                if (whisky.name && whisky.name.includes('軽井沢')) {
-                    distilleryName = "軽井沢蒸溜所";
-                } else if (whisky.name && whisky.name.includes('山崎')) {
-                    distilleryName = "山崎蒸溜所";
-                } else if (whisky.name && whisky.name.includes('白州')) {
-                    distilleryName = "白州蒸溜所";
-                } else if (whisky.region && whisky.region.includes('Japan')) {
-                    distilleryName = "日本の蒸溜所";
-                } else if (whisky.region && whisky.region.includes('Islay')) {
-                    distilleryName = "アイラ島の蒸溜所";
-                } else if (whisky.region && whisky.region.includes('Speyside')) {
-                    distilleryName = "スペイサイドの蒸溜所";
-                } else if (whisky.region) {
-                    distilleryName = `${whisky.region}の蒸溜所`;
-                }
-                
-                // 蒸留所情報の表示
-                const nameElement = document.getElementById('distilleryName');
-                if (nameElement) nameElement.textContent = distilleryName;
-                
-                const regionElement = document.getElementById('distilleryRegion');
-                if (regionElement) regionElement.textContent = whisky.region || '情報なし';
-                
-                const foundedElement = document.getElementById('distilleryFounded');
-                if (foundedElement) foundedElement.textContent = '情報なし';
-                
-                const statusElement = document.getElementById('distilleryStatus');
-                if (statusElement) {
+                    // 蒸留所情報が見つからない場合
+                    console.log('蒸留所情報が見つかりません');
+                    
+                    // マップを非表示に
+                    const mapContainer = document.querySelector('.map-container');
+                    if (mapContainer) {
+                        mapContainer.style.display = 'none';
+                    }
+                    
+                    // 簡易情報を表示
+                    document.getElementById('distilleryName').textContent = whisky.name || '情報なし';
+                    document.getElementById('distilleryRegion').textContent = whisky.region || '情報なし';
+                    document.getElementById('distilleryFounded').textContent = '情報なし';
+                    
+                    const statusElement = document.getElementById('distilleryStatus');
                     statusElement.textContent = '情報なし';
                     statusElement.className = 'status-unknown';
+                    
+                    document.getElementById('distilleryDescription').textContent = 
+                        `${whisky.name}の蒸留所情報は利用できません。このウィスキーは${whisky.region || '不明な地域'}で製造されています。`;
                 }
+            } catch (error) {
+                console.error('蒸留所情報更新エラー:', error);
                 
-                // 蒸留所の説明
-                const descElement = document.getElementById('distilleryDescription');
-                if (descElement) {
-                    descElement.textContent = 
-                        `${whisky.name}の蒸留所情報は現在利用できません。このウィスキーは${whisky.region || '不明な地域'}で製造されています。`;
+                // エラー時はマップを非表示にする
+                const mapContainer = document.querySelector('.map-container');
+                if (mapContainer) {
+                    mapContainer.style.display = 'none';
                 }
-            } catch (err) {
-                console.error('簡易蒸留所情報表示エラー:', err);
             }
         }
-        
 
         // ウィスキーから蒸留所名を取得
         function getDistilleryNameFromWhisky(whisky) {
@@ -3074,36 +3061,63 @@
             });
         }
 
-        // 蒸留所情報を表示
+        // 蒸留所情報を表示（安全版）
         function showDistilleryInfo(distillery) {
             if (!distillery) return;
 
-            // 地図をズームして該当蒸留所の位置を中心に
-            const zoomLevel = distillery.zoomLevel || 8;
-            distilleryMap.setView([distillery.location.lat, distillery.location.lng], zoomLevel);
-
-            // 蒸留所情報の表示を更新
-            document.getElementById('distilleryName').textContent = distillery.name || '情報なし';
-            document.getElementById('distilleryRegion').textContent = distillery.region || '情報なし';
-            document.getElementById('distilleryFounded').textContent = distillery.foundedYear || '情報なし';
-
-            // ステータス表示の設定
-            const statusElement = document.getElementById('distilleryStatus');
-            statusElement.textContent = distillery.status || '情報なし';
-            statusElement.className = '';  // クラスをリセット
-
-            if (distillery.status) {
-                if (distillery.status.includes('アクティブ') || distillery.status.includes('稼働中')) {
-                    statusElement.classList.add('status-active');
-                } else if (distillery.status.includes('閉鎖')) {
-                    statusElement.classList.add('status-closed');
+            try {
+                // 地図が利用可能か確認
+                if (distilleryMap && typeof distilleryMap.setView === 'function' && 
+                    distillery.location && distillery.location.lat && distillery.location.lng) {
+                    // 地図をズームして該当蒸留所の位置を中心に
+                    const zoomLevel = distillery.zoomLevel || 8;
+                    distilleryMap.setView([distillery.location.lat, distillery.location.lng], zoomLevel);
+                    
+                    // マップを表示
+                    const mapContainer = document.querySelector('.map-container');
+                    if (mapContainer) {
+                        mapContainer.style.display = 'block';
+                    }
                 } else {
-                    statusElement.classList.add('status-unknown');
+                    // マップが使用不可の場合は非表示に
+                    console.warn('マップが初期化されていないか、蒸留所の位置情報がありません');
+                    const mapContainer = document.querySelector('.map-container');
+                    if (mapContainer) {
+                        mapContainer.style.display = 'none';
+                    }
+                }
+
+                // 蒸留所情報の表示を更新
+                document.getElementById('distilleryName').textContent = distillery.name || '情報なし';
+                document.getElementById('distilleryRegion').textContent = distillery.region || '情報なし';
+                document.getElementById('distilleryFounded').textContent = distillery.foundedYear || '情報なし';
+
+                // ステータス表示の設定
+                const statusElement = document.getElementById('distilleryStatus');
+                statusElement.textContent = distillery.status || '情報なし';
+                statusElement.className = '';  // クラスをリセット
+
+                if (distillery.status) {
+                    if (distillery.status.includes('アクティブ') || distillery.status.includes('稼働中')) {
+                        statusElement.classList.add('status-active');
+                    } else if (distillery.status.includes('閉鎖')) {
+                        statusElement.classList.add('status-closed');
+                    } else {
+                        statusElement.classList.add('status-unknown');
+                    }
+                }
+
+                // 蒸留所の説明を更新
+                document.getElementById('distilleryDescription').textContent = distillery.description || '詳細情報がありません。';
+            } catch (error) {
+                console.error('蒸留所情報表示エラー:', error);
+                
+                // エラー時はマップを非表示にする
+                const mapContainer = document.querySelector('.map-container');
+                if (mapContainer) {
+                    mapContainer.style.display = 'none';
                 }
             }
-
-            // 蒸留所の説明を更新
-            document.getElementById('distilleryDescription').textContent = distillery.description || '詳細情報がありません。';
         }
 
         // レーダーチャート更新（ユーザーの好みと選択ウィスキーを重ねて表示）
