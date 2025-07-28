@@ -928,15 +928,16 @@
                 
                 <table class="whisky-list-table" id="whiskyTable" style="display: table;">
                     <thead>
-                        <tr>
-                            <th data-sort="name">銘柄名 <i class="fas fa-sort"></i></th>
-                            <th data-sort="price">価格 <i class="fas fa-sort"></i></th>
-                            <th data-sort="region">産地 <i class="fas fa-sort"></i></th>
-                            <th data-sort="smoky" class="hide-mobile">スモーキー <i class="fas fa-sort"></i></th>
-                            <th data-sort="fruity" class="hide-mobile">フルーティー <i class="fas fa-sort"></i></th>
-                            <th data-sort="complexity" class="hide-mobile">複雑さ <i class="fas fa-sort"></i></th>
-                        </tr>
-                    </thead>
+                    <tr>
+                        <th data-sort="name">銘柄名 <i class="fas fa-sort"></i></th>
+                        <th data-sort="price">価格 <i class="fas fa-sort"></i></th>
+                        <th data-sort="region">産地 <i class="fas fa-sort"></i></th>
+                        <th data-sort="abv" class="hide-mobile">アルコール度数 <i class="fas fa-sort"></i></th> <!-- 新規追加 -->
+                        <th data-sort="smoky" class="hide-mobile">スモーキー <i class="fas fa-sort"></i></th>
+                        <th data-sort="fruity" class="hide-mobile">フルーティー <i class="fas fa-sort"></i></th>
+                        <th data-sort="complexity" class="hide-mobile">複雑さ <i class="fas fa-sort"></i></th>
+                    </tr>
+                </thead>
                     <tbody id="whiskyTableBody"><tr data-id="1"><td>サンプルウィスキー</td><td>¥3,000</td><td>Scotland</td><td class="hide-mobile"><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-gray-500">☆</span><span class="text-gray-500">☆</span><span class="text-gray-500">☆</span></td><td class="hide-mobile"><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-gray-500">☆</span><span class="text-gray-500">☆</span></td><td class="hide-mobile"><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-gray-500">☆</span><span class="text-gray-500">☆</span></td></tr></tbody>
                 </table>
             </div>
@@ -1052,24 +1053,40 @@
 
         // ウィスキーデータの読み込み
         async function loadWhiskyData() {
-            console.log('Loading whisky data...');            
+            console.log('Loading whisky data...');
+            
             const possibleFiles = [
                 'whisky_data.json',
                 './whisky_data.json',
                 './data/whisky_data.json',
                 '/whisky_data.json'
-            ];            
-            let dataLoaded = false;            
+            ];
+            
+            let dataLoaded = false;
+            
             for (const filePath of possibleFiles) {
                 try {
                     console.log(`Trying to load from ${filePath}...`);
-                    const response = await fetch(filePath);                    
+                    const response = await fetch(filePath);
+                    
                     if (response.ok) {
                         const data = await response.json();
-                        console.log(`Successfully loaded from: ${filePath}`);                        
+                        console.log(`Successfully loaded from: ${filePath}`);
+                        
                         // データ構造の検証
                         if (data && data.whiskies && Array.isArray(data.whiskies)) {
                             whiskyData = data.whiskies;
+                            
+                            // ABV情報の検証・補完
+                            whiskyData = whiskyData.map(whisky => {
+                                if (whisky.abv === undefined || whisky.abv === null) {
+                                    console.log(`ABV情報が不足: ${whisky.name}`);
+                                    // ABV情報が無い場合はnullにしておく
+                                    whisky.abv = null;
+                                }
+                                return whisky;
+                            });
+                            
                             console.log(`Loaded ${whiskyData.length} whisky entries`);
                             dataLoaded = true;
                             break;
@@ -1082,14 +1099,17 @@
                 } catch (err) {
                     console.warn(`Error loading from ${filePath}:`, err);
                 }
-            }            
+            }
+            
             // データが読み込めなかった場合はデフォルトデータを使用
             if (!dataLoaded) {
                 console.warn('Failed to load whisky data, using default data');
                 whiskyData = getDefaultWhiskyData();
-            }            
+            }
+            
             // フィルタリング用のコピーを作成
-            filteredWhiskies = [...whiskyData];            
+            filteredWhiskies = [...whiskyData];
+            
             return whiskyData;
         }
 
@@ -1141,25 +1161,26 @@
 
         // デフォルトウィスキーデータ
         function getDefaultWhiskyData() {
-            return [
-                {
-                    id: "1",
-                    name: "サンプルウィスキー",
-                    price: "¥3,000",
-                    region: "Scotland",
-                    subcategory: "Single Malt Scotch Whisky",
-                    tastingNote_ja: "サンプルのテイスティングノートです。",
-                    taste_profile: {
-                        fruity: 3,
-                        spicy: 2,
-                        body: 3,
-                        smoky: 2,
-                        sweetness: 3,
-                        complexity: 3
-                    }
+        return [
+            {
+                id: "1",
+                name: "サンプルウィスキー",
+                price: "¥3,000",
+                region: "Scotland",
+                subcategory: "Single Malt Scotch Whisky",
+                abv: 40.0, // ABV情報を追加
+                tastingNote_ja: "サンプルのテイスティングノートです。",
+                taste_profile: {
+                    fruity: 3,
+                    spicy: 2,
+                    body: 3,
+                    smoky: 2,
+                    sweetness: 3,
+                    complexity: 3
                 }
-            ];
-        }
+            }
+        ];
+    }
 
         // デフォルト蒸留所データ
         function getDefaultDistilleryData() {
@@ -1407,41 +1428,47 @@
                 tbody.appendChild(row);
             } else {
                 displayItems.forEach(whisky => {
-                    const row = document.createElement('tr');
-                    row.dataset.id = whisky.id;
-                    
-                    // 銘柄名
-                    const nameCell = document.createElement('td');
-                    nameCell.textContent = whisky.name;
-                    row.appendChild(nameCell);
-                    
-                    // 価格
-                    const priceCell = document.createElement('td');
-                    priceCell.textContent = whisky.price || '-';
-                    row.appendChild(priceCell);
-                    
-                    // 産地
-                    const regionCell = document.createElement('td');
-                    regionCell.textContent = whisky.region || '-';
-                    row.appendChild(regionCell);
-                    
-                    // スモーキー
-                    const smokyCell = document.createElement('td');
-                    smokyCell.className = 'hide-mobile';
-                    smokyCell.innerHTML = getRatingStars(whisky.taste_profile?.smoky || 0);
-                    row.appendChild(smokyCell);
-                    
-                    // フルーティー
-                    const fruityCell = document.createElement('td');
-                    fruityCell.className = 'hide-mobile';
-                    fruityCell.innerHTML = getRatingStars(whisky.taste_profile?.fruity || 0);
-                    row.appendChild(fruityCell);
-                    
-                    // 複雑さ
-                    const complexityCell = document.createElement('td');
-                    complexityCell.className = 'hide-mobile';
-                    complexityCell.innerHTML = getRatingStars(whisky.taste_profile?.complexity || 0);
-                    row.appendChild(complexityCell);
+                const row = document.createElement('tr');
+                row.dataset.id = whisky.id;
+                
+                // 銘柄名
+                const nameCell = document.createElement('td');
+                nameCell.textContent = whisky.name;
+                row.appendChild(nameCell);
+                
+                // 価格
+                const priceCell = document.createElement('td');
+                priceCell.textContent = whisky.price || '-';
+                row.appendChild(priceCell);
+                
+                // 産地
+                const regionCell = document.createElement('td');
+                regionCell.textContent = whisky.region || '-';
+                row.appendChild(regionCell);
+                
+                // アルコール度数（新規追加）
+                const abvCell = document.createElement('td');
+                abvCell.className = 'hide-mobile';
+                abvCell.textContent = whisky.abv ? `${whisky.abv}%` : '-';
+                row.appendChild(abvCell);
+                
+                // スモーキー
+                const smokyCell = document.createElement('td');
+                smokyCell.className = 'hide-mobile';
+                smokyCell.innerHTML = getRatingStars(whisky.taste_profile?.smoky || 0);
+                row.appendChild(smokyCell);
+                
+                // フルーティー
+                const fruityCell = document.createElement('td');
+                fruityCell.className = 'hide-mobile';
+                fruityCell.innerHTML = getRatingStars(whisky.taste_profile?.fruity || 0);
+                row.appendChild(fruityCell);
+                
+                // 複雑さ
+                const complexityCell = document.createElement('td');
+                complexityCell.className = 'hide-mobile';
+                complexityCell.innerHTML = getRatingStars(whisky.taste_profile?.complexity || 0);
+                row.appendChild(complexityCell);
                     
                     // クリック時の詳細表示
                     row.addEventListener('click', function() {
@@ -1474,42 +1501,46 @@
 
         // ウィスキーのソート
         function sortWhiskies() {
-            filteredWhiskies.sort((a, b) => {
-                let valueA, valueB;
-                
-                // フィールドに応じた値の取得
-                switch (sortField) {
-                    case 'name':
-                        valueA = a.name || '';
-                        valueB = b.name || '';
-                        break;
-                    case 'price':
-                        valueA = getPriceValue(a.price);
-                        valueB = getPriceValue(b.price);
-                        break;
-                    case 'region':
-                        valueA = a.region || '';
-                        valueB = b.region || '';
-                        break;
-                    case 'smoky':
-                    case 'fruity':
-                    case 'complexity':
-                        valueA = a.taste_profile ? (a.taste_profile[sortField] || 0) : 0;
-                        valueB = b.taste_profile ? (b.taste_profile[sortField] || 0) : 0;
-                        break;
-                    default:
-                        valueA = a.name || '';
-                        valueB = b.name || '';
-                }
-                
-                // ソート方向に応じた比較
-                if (typeof valueA === 'string' && typeof valueB === 'string') {
-                    return sortOrder === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
-                } else {
-                    return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
-                }
-            });
-        }
+        filteredWhiskies.sort((a, b) => {
+            let valueA, valueB;
+            
+            // フィールドに応じた値の取得
+            switch (sortField) {
+                case 'name':
+                    valueA = a.name || '';
+                    valueB = b.name || '';
+                    break;
+                case 'price':
+                    valueA = getPriceValue(a.price);
+                    valueB = getPriceValue(b.price);
+                    break;
+                case 'region':
+                    valueA = a.region || '';
+                    valueB = b.region || '';
+                    break;
+                case 'abv': // 新規追加
+                    valueA = a.abv || 0;
+                    valueB = b.abv || 0;
+                    break;
+                case 'smoky':
+                case 'fruity':
+                case 'complexity':
+                    valueA = a.taste_profile ? (a.taste_profile[sortField] || 0) : 0;
+                    valueB = b.taste_profile ? (b.taste_profile[sortField] || 0) : 0;
+                    break;
+                default:
+                    valueA = a.name || '';
+                    valueB = b.name || '';
+            }
+            
+            // ソート方向に応じた比較
+            if (typeof valueA === 'string' && typeof valueB === 'string') {
+                return sortOrder === 'asc' ? valueA.localeCompare(valueB) : valueB.localeCompare(valueA);
+            } else {
+                return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
+            }
+        });
+    }
 
         // ページ情報の更新
         function updatePageInfo() {
@@ -1605,6 +1636,17 @@
                 subcategoryTag.className = 'tag';
                 subcategoryTag.textContent = whisky.subcategory;
                 tagsContainer.appendChild(subcategoryTag);
+            }
+            
+            // ABV情報タグを追加（新規追加）
+            if (whisky.abv) {
+                const abvTag = document.createElement('div');
+                abvTag.className = 'tag';
+                abvTag.textContent = `${whisky.abv}% ABV`;
+                abvTag.style.backgroundColor = 'rgba(255, 107, 107, 0.1)'; // 目立つ色
+                abvTag.style.borderColor = 'rgba(255, 107, 107, 0.3)';
+                abvTag.style.color = '#ff6b6b';
+                tagsContainer.appendChild(abvTag);
             }
             
             // テイスティングノート
