@@ -1177,7 +1177,7 @@
             }
         }
 
-        // ウィスキーデータの読み込み
+        // JSONデータ読み込み改善
         async function loadWhiskyData() {
             console.log('Loading whisky data...');
             
@@ -1192,49 +1192,34 @@
             
             for (const filePath of possibleFiles) {
                 try {
-                    console.log(`Trying to load from ${filePath}...`);
                     const response = await fetch(filePath);
-                    
                     if (response.ok) {
-                        const data = await response.json();
-                        console.log(`Successfully loaded from: ${filePath}`);
-                        
-                        // データ構造の検証
-                        if (data && data.whiskies && Array.isArray(data.whiskies)) {
-                            whiskyData = data.whiskies;
-                            
-                            // ABV情報の検証・補完
-                            whiskyData = whiskyData.map(whisky => {
-                                if (whisky.abv === undefined || whisky.abv === null) {
-                                    console.log(`ABV情報が不足: ${whisky.name}`);
-                                    // ABV情報が無い場合はnullにしておく
-                                    whisky.abv = null;
-                                }
-                                return whisky;
-                            });
-                            
-                            console.log(`Loaded ${whiskyData.length} whisky entries`);
-                            dataLoaded = true;
-                            break;
-                        } else {
-                            console.warn(`Invalid data structure in: ${filePath}`);
-                        }
-                    } else {
-                        console.warn(`Fetch failed for: ${filePath} (${response.status})`);
+                        whiskyData = await response.json();
+                        console.log(`Whisky data loaded from ${filePath}:`, whiskyData.length, 'entries');
+                        dataLoaded = true;
+                        break;
                     }
-                } catch (err) {
-                    console.warn(`Error loading from ${filePath}:`, err);
+                } catch (error) {
+                    console.warn(`Failed to load whisky data from ${filePath}:`, error);
                 }
             }
             
-            // データが読み込めなかった場合はデフォルトデータを使用
             if (!dataLoaded) {
-                console.warn('Failed to load whisky data, using default data');
+                console.warn('Could not load whisky data from files, using default data');
                 whiskyData = getDefaultWhiskyData();
             }
             
-            // フィルタリング用のコピーを作成
-            filteredWhiskies = [...whiskyData];
+            // データ整合性チェック
+            whiskyData = whiskyData.map(w => {
+                // 必須フィールドがなければデフォルト値を設定
+                if (!w.taste_profile) {
+                    w.taste_profile = {
+                        fruity: 0, spicy: 0, body: 0, 
+                        smoky: 0, sweetness: 0, complexity: 0
+                    };
+                }
+                return w;
+            });
             
             return whiskyData;
         }
@@ -1326,28 +1311,27 @@
             };
         }
 
-        // 写真表示用の新しい関数
+        // 修正後の写真表示関数
         function updateWhiskyPhoto(whisky) {
             const photoSection = document.getElementById('whiskyPhotoSection');
             const photoImg = document.getElementById('whiskyPhoto');
-            const photoBlurBg = document.getElementById('whiskyPhotoBlurBg');
+            const photoBg = document.getElementById('whiskyPhotoBlurBg');
             const photoCaption = document.getElementById('whiskyPhotoCaption');
-            const photoContainer = photoImg.closest('.whisky-photo-container');
+            const photoContainer = document.querySelector('.whisky-photo-container');
+            
+            if (!photoSection || !photoImg || !photoBg || !photoCaption || !photoContainer) {
+                console.warn('写真表示要素が見つかりません');
+                return;
+            }
             
             if (whisky.photoUrl) {
-                // 写真がある場合
-                photoSection.style.display = 'block';
+                // 写真がある場合の表示
+                photoContainer.classList.remove('no-photo');
                 photoImg.src = whisky.photoUrl;
-                photoImg.alt = `${whisky.name}の画像`;
-                photoBlurBg.style.backgroundImage = `url(${whisky.photoUrl})`;
-                photoCaption.textContent = whisky.name;
+                photoBg.style.backgroundImage = `url(${whisky.photoUrl})`;
+                photoCaption.textContent = `${whisky.name}のボトル画像`;
                 
-                // no-photoクラスを削除
-                if (photoContainer) {
-                    photoContainer.classList.remove('no-photo');
-                }
-                
-                // 画像読み込みエラー時の処理
+                // 画像読み込みエラー時の処理を改善
                 photoImg.onerror = function() {
                     showNoPhotoState(photoContainer, photoCaption, whisky.name);
                 };
@@ -1357,19 +1341,37 @@
             }
         }
 
-        // 写真がない場合の表示
+        // 写真なし状態の表示関数を改良
         function showNoPhotoState(container, caption, whiskyName) {
-            if (container) {
-                container.classList.add('no-photo');
-                container.innerHTML = `
-                    <div class="no-photo-icon">
-                        <i class="fas fa-camera"></i>
-                    </div>
-                    <div class="no-photo-text">画像は現在利用できません</div>
+            // DOMを壊さないよう、要素の置き換えではなく属性変更で対応
+            container.classList.add('no-photo');
+            
+            // 写真要素を非表示に
+            const photoImg = document.getElementById('whiskyPhoto');
+            if (photoImg) {
+                photoImg.style.display = 'none';
+            }
+            
+            // 背景ぼかしをクリア
+            const photoBg = document.getElementById('whiskyPhotoBlurBg');
+            if (photoBg) {
+                photoBg.style.backgroundImage = 'none';
+            }
+            
+            // キャプションを更新
+            if (caption) {
+                caption.textContent = `${whiskyName}の画像は現在ありません`;
+            }
+            
+            // No Photo表示用の要素を追加
+            if (!document.querySelector('.no-photo-content')) {
+                const noPhotoContent = document.createElement('div');
+                noPhotoContent.className = 'no-photo-content';
+                noPhotoContent.innerHTML = `
+                    <i class="fas fa-image no-photo-icon"></i>
+                    <div class="no-photo-text">画像準備中</div>
                 `;
-                if (caption) {
-                    caption.textContent = `${whiskyName}の画像`;
-                }
+                container.appendChild(noPhotoContent);
             }
         }
 
@@ -1869,95 +1871,108 @@
             }
         }
 
-        // レーダーチャートを更新
+        // レーダーチャート表示関数の改善
         function updateProfileChart(profile) {
-            if (!profile) return;
+            const chartCanvas = document.getElementById('whiskyProfileChart');
+            if (!chartCanvas) {
+                console.warn('Chart canvas element not found');
+                return;
+            }
             
-            const ctx = document.getElementById('whiskyProfileChart');
-            if (!ctx) return;
+            // 既存のチャートがあれば破棄
+            if (profileChartInstance) {
+                profileChartInstance.destroy();
+            }
             
-            // Canvasサイズを明示的に設定
-            ctx.style.width = '100%';
-            ctx.style.height = '100%';
+            // データ整合性チェック
+            if (!profile) {
+                profile = {
+                    fruity: 0, spicy: 0, body: 0, 
+                    smoky: 0, sweetness: 0, complexity: 0
+                };
+            }
             
-            // Chart.jsの設定
+            const ctx = chartCanvas.getContext('2d');
+            
+            // チャートデータ設定
+            const chartData = {
+                labels: ['フルーティー', 'スパイシー', 'ボディ', 'スモーキー', '甘さ', '複雑さ'],
+                datasets: [{
+                    label: '味わいプロファイル',
+                    data: [
+                        profile.fruity || 0,
+                        profile.spicy || 0,
+                        profile.body || 0,
+                        profile.smoky || 0,
+                        profile.sweetness || 0,
+                        profile.complexity || 0
+                    ],
+                    backgroundColor: 'rgba(78, 205, 196, 0.2)',
+                    borderColor: 'rgba(78, 205, 196, 1)',
+                    pointBackgroundColor: 'rgba(255, 107, 107, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(255, 107, 107, 1)',
+                    borderWidth: 2,
+                    pointRadius: 4
+                }]
+            };
+            
+            // チャートオプション
             const chartOptions = {
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'bottom',
-                        labels: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: {
+                            color: 'rgba(255, 255, 255, 0.2)'
+                        },
+                        grid: {
+                            color: 'rgba(255, 255, 255, 0.2)'
+                        },
+                        pointLabels: {
                             color: 'rgba(255, 255, 255, 0.8)',
                             font: {
                                 size: 14
                             }
-                        }
-                    },
-                    tooltip: {
-                        enabled: true
-                    }
-                },
-                scales: {
-                    r: {
-                        angleLines: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        pointLabels: {
-                            font: {
-                                size: 16
-                            },
-                            color: 'rgba(255, 255, 255, 0.9)'
                         },
                         ticks: {
-                            display: false,
-                            backdropColor: 'transparent'
-                        },
-                        beginAtZero: true,
-                        min: 0,
-                        max: 5
+                            backdropColor: 'transparent',
+                            color: 'rgba(255, 255, 255, 0.6)',
+                            z: 1,
+                            stepSize: 1,
+                            max: 5,
+                            min: 0
+                        }
                     }
                 },
-                maintainAspectRatio: false,
-                responsive: true
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        callbacks: {
+                            label: function(context) {
+                                return `${context.label}: ${context.raw}/5`;
+                            }
+                        }
+                    }
+                }
             };
             
-            // プロファイルデータの準備
-            const profileData = [
-                profile.fruity || 0,
-                profile.spicy || 0,
-                profile.body || 0,
-                profile.smoky || 0,
-                profile.sweetness || 0,
-                profile.complexity || 0
-            ];
-            
-            // Chart.jsの更新または作成
-            if (profileChartInstance) {
-                // 既存のチャートを破棄
-                profileChartInstance.destroy();
+            try {
+                // 新しいチャートを作成
+                profileChartInstance = new Chart(ctx, {
+                    type: 'radar',
+                    data: chartData,
+                    options: chartOptions
+                });
+            } catch (error) {
+                console.error('Error creating chart:', error);
             }
-            
-            // 新しいチャートを作成
-            profileChartInstance = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['フルーティー', 'スパイシー', 'ボディ', 'スモーキー', '甘さ', '複雑さ'],
-                    datasets: [{
-                        label: 'ウィスキープロファイル',
-                        data: profileData,
-                        backgroundColor: 'rgba(78, 205, 196, 0.2)',
-                        borderColor: '#4ecdc4',
-                        pointBackgroundColor: '#4ecdc4',
-                        pointBorderColor: '#fff',
-                        pointHoverBackgroundColor: '#fff',
-                        pointHoverBorderColor: '#4ecdc4'
-                    }]
-                },
-                options: chartOptions
-            });
         }
 
         // ウィスキーから蒸留所名を取得
