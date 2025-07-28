@@ -1529,6 +1529,7 @@
                     price: "¥80,400",
                     region: "Scotland, Isle of Skye",
                     subcategory: "Single Malt Scotch Whisky",
+                    abv: 45.8,
                     tastingNote_ja: "この非常に希少なタリスカー44年は、強い海岸の塩気を持つ複雑な海洋性の特徴を提供します。豊かなドライフルーツ、ダークチョコレート、アンティークレザーの層がタリスカー特有のピリッとしたスモークと調和しています。長期熟成により、トロピカルフルーツ、ミツロウ、繊細な樽のスパイスのノートを持つ驚くべき深みが生まれ、非常に長く温かみのある余韻へと続きます。",
                     taste_profile: {
                         fruity: 3,
@@ -1545,6 +1546,7 @@
                     price: "¥20,400",
                     region: "Scotland, Islay",
                     subcategory: "Single Malt Scotch Whisky",
+                    abv: 40,
                     tastingNote_ja: "ポートエレン25年は希少で高く評価されるアイラウイスキーで、強い海洋性の特徴を持ちます。複雑な泥炭の煙、海塩、ヨードの層が柑橘類の皮、バニラ、微妙なトロピカルフルーツとバランスよく調和しています。長い余韻には、オークタンニン、白胡椒、そして長く続く甘い煙が現れます。",
                     taste_profile: {
                         fruity: 2,
@@ -1561,6 +1563,7 @@
                     price: "¥12,200",
                     region: "Scotland",
                     subcategory: "Single Malt Scotch Whisky - Speyside",
+                    abv: 40,
                     tastingNote_ja: "有名な独立系ボトラー、サマローリによってボトリングされた希少なマッカラン1990年。豊かなシェリーの影響があり、ドライフルーツ、オレンジピール、クリスマスケーキの風味が特徴。複雑な樽のスパイスが蜂蜜、トフィー、ダークチョコレートと調和しています。フィニッシュは長く、革、タバコ、そして余韻の残るドライフルーツの甘さが感じられます。",
                     taste_profile: {
                         fruity: 4,
@@ -1917,7 +1920,6 @@
                     prefsMessage += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
                 }
 
-                // 以下は既存のコード
                 // 味覚座標の取得
                 const dot1 = document.getElementById('tasteDot1');
                 const dot2 = document.getElementById('tasteDot2');
@@ -2774,30 +2776,33 @@
 
                         // 安全なHTMLの作成
                         whiskeyCard.innerHTML = `
-                            ${index === 0 ? '<div class="featured-label">おすすめ</div>' : ''}
-                            <div class="flex justify-between mb-2">
-                                <h3 class="text-lg font-bold text-cyan-400">${escapeHtml(whisky.name)}</h3>
-                                <span class="text-pink-500 font-bold">${escapeHtml(whisky.price)}</span>
+                        ${index === 0 ? '<div class="featured-label">おすすめ</div>' : ''}
+                        <div class="flex justify-between mb-2">
+                            <h3 class="text-lg font-bold text-cyan-400">${escapeHtml(whisky.name)}</h3>
+                            <span class="text-pink-500 font-bold">${escapeHtml(whisky.price)}</span>
+                        </div>
+                        <div class="mb-2">
+                            <span class="text-gray-400 text-sm">
+                                ${escapeHtml(whisky.region || 'N/A')} | ${escapeHtml(whisky.subcategory || 'Whisky')}
+                                ${whisky.abv ? ` | ${whisky.abv}% ABV` : ''}
+                            </span>
+                        </div>
+                        <p class="text-sm mb-3 text-left">${escapeHtml(whisky.tastingNote_ja || '情報がありません。')}</p>
+                        <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                            <div>
+                                <span class="block text-yellow-400">フルーティー</span>
+                                <span class="block">${'★'.repeat((whisky.taste_profile?.fruity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.fruity || 0))}</span>
                             </div>
-                            <div class="mb-2">
-                                <span class="text-gray-400 text-sm">${escapeHtml(whisky.region || 'N/A')} | ${escapeHtml(whisky.subcategory || 'Whisky')}</span>
+                            <div>
+                                <span class="block text-yellow-400">スモーキー</span>
+                                <span class="block">${'★'.repeat((whisky.taste_profile?.smoky || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.smoky || 0))}</span>
                             </div>
-                            <p class="text-sm mb-3">${escapeHtml(whisky.tastingNote_ja || '情報がありません。')}</p>
-                            <div class="grid grid-cols-3 gap-2 text-center text-xs">
-                                <div>
-                                    <span class="block text-yellow-400">フルーティー</span>
-                                    <span class="block">${'★'.repeat((whisky.taste_profile?.fruity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.fruity || 0))}</span>
-                                </div>
-                                <div>
-                                    <span class="block text-yellow-400">スモーキー</span>
-                                    <span class="block">${'★'.repeat((whisky.taste_profile?.smoky || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.smoky || 0))}</span>
-                                </div>
-                                <div>
-                                    <span class="block text-yellow-400">複雑さ</span>
-                                    <span class="block">${'★'.repeat((whisky.taste_profile?.complexity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.complexity || 0))}</span>
-                                </div>
+                            <div>
+                                <span class="block text-yellow-400">複雑さ</span>
+                                <span class="block">${'★'.repeat((whisky.taste_profile?.complexity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.complexity || 0))}</span>
                             </div>
-                        `;
+                        </div>
+                    `;
 
                         // クリックで選択
                         whiskeyCard.addEventListener('click', function() {
