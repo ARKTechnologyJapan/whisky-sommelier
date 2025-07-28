@@ -1042,63 +1042,96 @@
         </div>
         
         <div class="details-section" id="whiskyDetails" style="display: none;">
-        <h2 class="text-2xl font-bold mb-4">
-            🍸 ウィスキー詳細情報
-        </h2>
-        
-        <div id="selectedWhiskyDetails">
-            <div class="whisky-details-header">
-                <div>
-                    <h3 class="whisky-name" id="detailWhiskyName">銘柄を選択してください</h3>
-                    <div class="whisky-tags" id="detailWhiskyTags"></div>
+            <h2 class="text-2xl font-bold mb-4">
+                🍸 ウィスキー詳細情報
+            </h2>
+            
+            <div id="selectedWhiskyDetails">
+                <div class="whisky-details-header">
+                    <div>
+                        <h3 class="whisky-name" id="detailWhiskyName">銘柄を選択してください</h3>
+                        <div class="whisky-tags" id="detailWhiskyTags"></div>
+                    </div>
+                    <div class="whisky-price" id="detailWhiskyPrice">-</div>
                 </div>
-                <div class="whisky-price" id="detailWhiskyPrice">-</div>
-            </div>
-            
-            <div class="whisky-description" id="detailWhiskyDescription">銘柄を選択すると詳細情報が表示されます。</div>
-            
-            <div class="details-content-row">
-                <!-- 左側：味覚プロファイルと写真 -->
-                <div class="profile-section">
-                    <h3 class="section-title"><i class="fas fa-chart-radar"></i> 味覚プロファイル</h3>
-                    <div class="profile-chart-container">
-                        <canvas id="whiskyProfileChart" class="chart-canvas"></canvas>
+                
+                <div class="whisky-description" id="detailWhiskyDescription">銘柄を選択すると詳細情報が表示されます。</div>
+                
+                <div class="details-content-row">
+                    <!-- 左側：味覚プロファイルと写真 -->
+                    <div class="profile-section">
+                        <h3 class="section-title"><i class="fas fa-chart-radar"></i> 味覚プロファイル</h3>
+                        <div class="profile-chart-container">
+                            <canvas id="whiskyProfileChart" class="chart-canvas"></canvas>
+                        </div>
+                        
+                        <!-- 写真表示エリア -->
+                        <div class="whisky-photo-section" id="whiskyPhotoSection">
+                            <h3 class="section-title"><i class="fas fa-camera"></i> ボトル画像</h3>
+                            <div class="whisky-photo-container">
+                                <div class="whisky-photo-blur-bg" id="whiskyPhotoBlurBg"></div>
+                                <div class="whisky-photo-wrapper">
+                                    <img id="whiskyPhoto" src="" alt="ウィスキーボトル" class="whisky-photo-img">
+                                </div>
+                                <p id="whiskyPhotoCaption" class="whisky-photo-caption"></p>
+                            </div>
+                        </div>
                     </div>
                     
-                    <!-- 写真表示エリアをここに追加 -->
-                    <div class="whisky-photo-section" id="whiskyPhotoSection">
-                        <h3 class="section-title"><i class="fas fa-camera"></i> ボトル画像</h3>
-                        <div class="whisky-photo-container">
-                            <div class="whisky-photo-blur-bg" id="whiskyPhotoBlurBg"></div>
-                            <div class="whisky-photo-wrapper">
-                                <img id="whiskyPhoto" src="" alt="ウィスキーボトル" class="whisky-photo-img">
+                    <!-- 右側：蒸溜所情報 -->
+                    <div class="distillery-section">
+                        <h3 class="section-title"><i class="fas fa-industry"></i> 蒸溜所情報</h3>
+                        <div class="distillery-map-container">
+                            <div id="distilleryMap"></div>
+                        </div>
+                        
+                        <div class="distillery-info" id="distilleryInfo">
+                            <h3 id="distilleryName">蒸溜所名</h3>
+                            <div class="info-grid" id="distilleryDetails">
+                                <div class="info-label">所在地:</div>
+                                <div class="info-value" id="distilleryRegion">-</div>
+                                
+                                <div class="info-label">創業年:</div>
+                                <div class="info-value" id="distilleryFounded">-</div>
+                                
+                                <div class="info-label">現在の状況:</div>
+                                <div class="info-value" id="distilleryStatus">-</div>
                             </div>
-                            <p id="whiskyPhotoCaption" class="whisky-photo-caption"></p>
+                            
+                            <div class="distillery-description" id="distilleryDescription">
+                                情報がありません。
+                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
                 
                 <!-- 右側：蒸溜所情報（既存のまま） -->
                 <div class="distillery-section">
-                    <h3 class="section-title"><i class="fas fa-industry"></i> 蒸溜所情報</h3>
-                    <div class="distillery-map-container">
-                        <div id="distilleryMap"></div>
+                <h3 class="section-title"><i class="fas fa-industry"></i> 蒸溜所情報</h3>
+                <div class="distillery-map-container">
+                    <div id="distilleryMap"></div>
+                </div>
+                
+                <div class="distillery-info" id="distilleryInfo">
+                    <h3 id="distilleryName">蒸溜所名</h3>
+                    <div class="info-grid" id="distilleryDetails">
+                        <div class="info-label">所在地:</div>
+                        <div class="info-value" id="distilleryRegion">-</div>
+                        
+                        <div class="info-label">創業年:</div>
+                        <div class="info-value" id="distilleryFounded">-</div>
+                        
+                        <div class="info-label">現在の状況:</div>
+                        <div class="info-value" id="distilleryStatus">-</div>
                     </div>
                     
-                    <div class="distillery-info" id="distilleryInfo">
-                        <h3 id="distilleryName">蒸溜所名</h3>
-                        <div class="info-grid" id="distilleryDetails">
-                            <!-- 既存の蒸溜所情報 -->
-                        </div>
-                        
-                        <div class="distillery-description" id="distilleryDescription">
-                            情報がありません。
-                        </div>
+                    <div class="distillery-description" id="distilleryDescription">
+                        情報がありません。
                     </div>
                 </div>
             </div>
-        </div> <!-- selectedWhiskyDetailsの閉じタグを追加 -->
-    </div>
     
     <script>
         // グローバル変数
@@ -1254,27 +1287,27 @@
 
         // デフォルトデータ更新例
         function getDefaultWhiskyData() {
-            return [
-                {
-                    id: "1",
-                    name: "サンプルウィスキー",
-                    price: "¥3,000",
-                    region: "Scotland",
-                    subcategory: "Single Malt Scotch Whisky",
-                    abv: 40.0,
-                    photoUrl: "images/whisky/sample_whisky.jpg", // 写真URLを追加
-                    tastingNote_ja: "サンプルのテイスティングノートです。",
-                    taste_profile: {
-                        fruity: 3,
-                        spicy: 2,
-                        body: 3,
-                        smoky: 2,
-                        sweetness: 3,
-                        complexity: 3
-                    }
+        return [
+            {
+                id: "1",
+                name: "サンプルウィスキー",
+                price: "¥3,000",
+                region: "Scotland",
+                subcategory: "Single Malt Scotch Whisky",
+                abv: 40.0,
+                photoUrl: "photos/1.jpg", // 実際に存在するパスに修正
+                tastingNote_ja: "サンプルのテイスティングノートです。",
+                taste_profile: {
+                    fruity: 3,
+                    spicy: 2,
+                    body: 3,
+                    smoky: 2,
+                    sweetness: 3,
+                    complexity: 3
                 }
-            ];
-        }
+            }
+        ];
+    }
         // デフォルト蒸留所データ
         function getDefaultDistilleryData() {
             return {
@@ -2005,67 +2038,78 @@
             console.log('Map initialized with dark theme.');
         }
 
-        // 蒸留所情報を表示
+        // 蒸留所情報表示関数の修正
         function showDistilleryInfo(distillery) {
             if (!distillery) return;
             
-            document.getElementById('distilleryName').textContent = distillery.name || '情報なし';
-            document.getElementById('distilleryRegion').textContent = distillery.region || '情報なし';
-            document.getElementById('distilleryFounded').textContent = distillery.foundedYear ? distillery.foundedYear.toString() : '情報なし';
-            
+            // 各要素の取得と存在確認
+            const distilleryNameEl = document.getElementById('distilleryName');
+            const distilleryRegionEl = document.getElementById('distilleryRegion');
+            const distilleryFoundedEl = document.getElementById('distilleryFounded');
             const statusElement = document.getElementById('distilleryStatus');
-            statusElement.textContent = distillery.status || '情報なし';
-            statusElement.className = '';
+            const distilleryDescEl = document.getElementById('distilleryDescription');
             
-            if (distillery.status) {
-                if (distillery.status.includes('アクティブ') || distillery.status.includes('稼働中')) {
-                    statusElement.classList.add('status-active');
-                } else if (distillery.status.includes('閉鎖')) {
-                    statusElement.classList.add('status-closed');
-                } else {
-                    statusElement.classList.add('status-unknown');
-                }
-            }
+            // 要素が存在する場合のみ処理を行う
+            if (distilleryNameEl) distilleryNameEl.textContent = distillery.name || '情報なし';
+            if (distilleryRegionEl) distilleryRegionEl.textContent = distillery.region || '情報なし';
+            if (distilleryFoundedEl) distilleryFoundedEl.textContent = distillery.foundedYear ? distillery.foundedYear.toString() : '情報なし';
             
-            document.getElementById('distilleryDescription').textContent = distillery.description || '詳細情報がありません。';
-        }
-
-        // 蒸留所情報をリセット
-        function resetDistilleryInfo() {
-            document.getElementById('distilleryName').textContent = '蒸留所情報なし';
-            document.getElementById('distilleryRegion').textContent = '-';
-            document.getElementById('distilleryFounded').textContent = '-';
-            document.getElementById('distilleryStatus').textContent = '-';
-            document.getElementById('distilleryStatus').className = '';
-            document.getElementById('distilleryDescription').textContent = '選択したウィスキーに関連する蒸留所情報が見つかりません。';
-            
-            // マーカーをクリア
-            clearAllMarkers();
-        }
-
-        // 蒸留所マーカーを更新
-        function updateDistilleryMarkers(activeName) {
-            // 既存のマーカーをクリア
-            clearAllMarkers();
-            
-            // アクティブな蒸留所のマーカーを作成（赤色）
-            if (activeName && distilleryDatabase[activeName]) {
-                const distillery = distilleryDatabase[activeName];
-                createMarker(distillery, true);  // true = アクティブ（赤色）
+            if (statusElement) {
+                statusElement.textContent = distillery.status || '情報なし';
+                statusElement.className = '';
                 
-                // マップを蒸留所の位置にズーム
-                if (distillery.location) {
-                    const zoomLevel = distillery.zoomLevel || 8;
-                    distilleryMap.setView([distillery.location.lat, distillery.location.lng], zoomLevel);
+                if (distillery.status) {
+                    if (distillery.status.includes('アクティブ') || distillery.status.includes('稼働中')) {
+                        statusElement.classList.add('status-active');
+                    } else if (distillery.status.includes('閉鎖')) {
+                        statusElement.classList.add('status-closed');
+                    } else {
+                        statusElement.classList.add('status-unknown');
+                    }
                 }
             }
             
-            // その他の蒸留所マーカーを作成（緑色）
-            Object.keys(distilleryDatabase).forEach(name => {
-                if (name !== activeName && name !== 'NaN' && distilleryDatabase[name]) {
-                    createMarker(distilleryDatabase[name], false);  // false = 非アクティブ（緑色）
-                }
-            });
+            if (distilleryDescEl) distilleryDescEl.textContent = distillery.description || '詳細情報がありません。';
+        }
+
+        // 写真表示関数の修正
+        function updateWhiskyPhoto(whisky) {
+            const photoSection = document.getElementById('whiskyPhotoSection');
+            const photoImg = document.getElementById('whiskyPhoto');
+            const photoBlurBg = document.getElementById('whiskyPhotoBlurBg');
+            const photoCaption = document.getElementById('whiskyPhotoCaption');
+            
+            // 要素が見つからない場合は処理を中止
+            if (!photoSection || !photoImg || !photoBlurBg || !photoCaption) {
+                console.warn('写真表示用の要素が見つかりません');
+                return;
+            }
+            
+            const photoContainer = photoImg.closest('.whisky-photo-container');
+            if (!photoContainer) {
+                console.warn('写真コンテナ要素が見つかりません');
+                return;
+            }
+            
+            if (whisky.photoUrl) {
+                // 写真がある場合
+                photoSection.style.display = 'block';
+                photoImg.src = whisky.photoUrl;
+                photoImg.alt = `${whisky.name}の画像`;
+                photoBlurBg.style.backgroundImage = `url(${whisky.photoUrl})`;
+                photoCaption.textContent = whisky.name;
+                
+                // no-photoクラスを削除
+                photoContainer.classList.remove('no-photo');
+                
+                // 画像読み込みエラー時の処理
+                photoImg.onerror = function() {
+                    showNoPhotoState(photoContainer, photoCaption, whisky.name);
+                };
+            } else {
+                // 写真がない場合
+                showNoPhotoState(photoContainer, photoCaption, whisky.name);
+            }
         }
 
         // マーカー作成
