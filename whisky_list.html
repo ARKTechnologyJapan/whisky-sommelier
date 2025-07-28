@@ -1041,6 +1041,7 @@
             </div>
         </div>
         
+        <!-- 重複していた詳細セクションの一方を削除 -->
         <div class="details-section" id="whiskyDetails" style="display: none;">
             <h2 class="text-2xl font-bold mb-4">
                 🍸 ウィスキー詳細情報
@@ -1177,7 +1178,7 @@
             }
         }
 
-        // JSONデータ読み込み改善
+        // データ読み込み関数の修正
         async function loadWhiskyData() {
             console.log('Loading whisky data...');
             
@@ -1185,7 +1186,8 @@
                 'whisky_data.json',
                 './whisky_data.json',
                 './data/whisky_data.json',
-                '/whisky_data.json'
+                '/whisky_data.json',
+                'whisky_data.json.txt'
             ];
             
             let dataLoaded = false;
@@ -1194,8 +1196,15 @@
                 try {
                     const response = await fetch(filePath);
                     if (response.ok) {
-                        whiskyData = await response.json();
-                        console.log(`Whisky data loaded from ${filePath}:`, whiskyData.length, 'entries');
+                        const data = await response.json();
+                        // 新しいJSON構造に対応
+                        if (data.whiskies && Array.isArray(data.whiskies)) {
+                            whiskyData = data.whiskies;
+                            console.log(`Whisky data loaded from ${filePath}:`, whiskyData.length, 'entries');
+                        } else {
+                            whiskyData = data;
+                            console.log(`Legacy whisky data loaded from ${filePath}`);
+                        }
                         dataLoaded = true;
                         break;
                     }
@@ -1209,64 +1218,52 @@
                 whiskyData = getDefaultWhiskyData();
             }
             
-            // データ整合性チェック
-            whiskyData = whiskyData.map(w => {
-                // 必須フィールドがなければデフォルト値を設定
-                if (!w.taste_profile) {
-                    w.taste_profile = {
-                        fruity: 0, spicy: 0, body: 0, 
-                        smoky: 0, sweetness: 0, complexity: 0
-                    };
-                }
-                return w;
-            });
-            
             return whiskyData;
         }
 
-        // 蒸留所データの読み込み
+        // 蒸留所データ読み込み関数の修正
         async function loadDistilleryData() {
-            console.log('Loading distillery data...');            
+            console.log('Loading distillery data...');
+            
             const possibleFiles = [
                 'distillery_data.json',
                 './distillery_data.json',
                 './data/distillery_data.json',
-                '/distillery_data.json'
-            ];            
-            let dataLoaded = false;            
+                '/distillery_data.json',
+                'distillery_data.json.txt'
+            ];
+            
+            let dataLoaded = false;
+            
             for (const filePath of possibleFiles) {
                 try {
-                    console.log(`Trying to load distillery data from ${filePath}...`);
-                    const response = await fetch(filePath);                    
+                    const response = await fetch(filePath);
                     if (response.ok) {
                         const data = await response.json();
-                        console.log(`Successfully loaded distillery data from: ${filePath}`);                        
-                        // データ構造の検証
-                        if (data && data.distilleries) {
+                        // 新しいJSON構造に対応
+                        if (data.distilleries && typeof data.distilleries === 'object') {
                             distilleryDatabase = data.distilleries;
-                            console.log('Distillery database loaded');                            
-                            // ブランドと蒸留所のマッピングがあれば読み込む
                             if (data.brandToDistillery) {
                                 brandToDistilleryMapping = data.brandToDistillery;
-                                console.log('Brand to distillery mapping loaded');
-                            }                            
-                            dataLoaded = true;
-                            break;
+                            }
+                            console.log(`Distillery data loaded from ${filePath}`);
                         } else {
-                            console.warn(`Invalid distillery data structure in: ${filePath}`);
+                            distilleryDatabase = data;
+                            console.log(`Legacy distillery data loaded from ${filePath}`);
                         }
-                    } else {
-                        console.warn(`Fetch failed for distillery data: ${filePath} (${response.status})`);
+                        dataLoaded = true;
+                        break;
                     }
-                } catch (err) {
-                    console.warn(`Error loading distillery data from ${filePath}:`, err);
+                } catch (error) {
+                    console.warn(`Failed to load distillery data from ${filePath}:`, error);
                 }
-            }            
-            // データが読み込めなかった場合はデフォルトデータを使用
+            }
+            
             if (!dataLoaded) {
-                console.warn('Failed to load distillery data, using default data');
+                console.warn('Could not load distillery data from files, using default data');
                 distilleryDatabase = getDefaultDistilleryData();
-            }            
+            }
+            
             return distilleryDatabase;
         }
 
@@ -1311,8 +1308,10 @@
             };
         }
 
-        // 修正後の写真表示関数
+        // 写真表示関数の修正と統合
         function updateWhiskyPhoto(whisky) {
+            console.log('Updating whisky photo for:', whisky.name);
+            
             const photoSection = document.getElementById('whiskyPhotoSection');
             const photoImg = document.getElementById('whiskyPhoto');
             const photoBg = document.getElementById('whiskyPhotoBlurBg');
@@ -1327,23 +1326,30 @@
             if (whisky.photoUrl) {
                 // 写真がある場合の表示
                 photoContainer.classList.remove('no-photo');
+                photoImg.style.display = 'block';
                 photoImg.src = whisky.photoUrl;
                 photoBg.style.backgroundImage = `url(${whisky.photoUrl})`;
                 photoCaption.textContent = `${whisky.name}のボトル画像`;
                 
-                // 画像読み込みエラー時の処理を改善
+                // 画像読み込みエラー時の処理
                 photoImg.onerror = function() {
                     showNoPhotoState(photoContainer, photoCaption, whisky.name);
                 };
+                
+                // no-photo-contentがあれば削除
+                const noPhotoContent = photoContainer.querySelector('.no-photo-content');
+                if (noPhotoContent) {
+                    photoContainer.removeChild(noPhotoContent);
+                }
             } else {
                 // 写真がない場合
                 showNoPhotoState(photoContainer, photoCaption, whisky.name);
             }
         }
 
-        // 写真なし状態の表示関数を改良
+        // 写真なし状態表示の改善
         function showNoPhotoState(container, caption, whiskyName) {
-            // DOMを壊さないよう、要素の置き換えではなく属性変更で対応
+            // DOMを壊さないよう、適切な方法で状態を変更
             container.classList.add('no-photo');
             
             // 写真要素を非表示に
@@ -1363,9 +1369,10 @@
                 caption.textContent = `${whiskyName}の画像は現在ありません`;
             }
             
-            // No Photo表示用の要素を追加
-            if (!document.querySelector('.no-photo-content')) {
-                const noPhotoContent = document.createElement('div');
+            // No Photo表示用の要素を追加（既存なら再利用）
+            let noPhotoContent = container.querySelector('.no-photo-content');
+            if (!noPhotoContent) {
+                noPhotoContent = document.createElement('div');
                 noPhotoContent.className = 'no-photo-content';
                 noPhotoContent.innerHTML = `
                     <i class="fas fa-image no-photo-icon"></i>
@@ -1892,78 +1899,78 @@
                 };
             }
             
-            const ctx = chartCanvas.getContext('2d');
-            
-            // チャートデータ設定
-            const chartData = {
-                labels: ['フルーティー', 'スパイシー', 'ボディ', 'スモーキー', '甘さ', '複雑さ'],
-                datasets: [{
-                    label: '味わいプロファイル',
-                    data: [
-                        profile.fruity || 0,
-                        profile.spicy || 0,
-                        profile.body || 0,
-                        profile.smoky || 0,
-                        profile.sweetness || 0,
-                        profile.complexity || 0
-                    ],
-                    backgroundColor: 'rgba(78, 205, 196, 0.2)',
-                    borderColor: 'rgba(78, 205, 196, 1)',
-                    pointBackgroundColor: 'rgba(255, 107, 107, 1)',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: 'rgba(255, 107, 107, 1)',
-                    borderWidth: 2,
-                    pointRadius: 4
-                }]
-            };
-            
-            // チャートオプション
-            const chartOptions = {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    r: {
-                        angleLines: {
-                            color: 'rgba(255, 255, 255, 0.2)'
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.2)'
-                        },
-                        pointLabels: {
-                            color: 'rgba(255, 255, 255, 0.8)',
-                            font: {
-                                size: 14
-                            }
-                        },
-                        ticks: {
-                            backdropColor: 'transparent',
-                            color: 'rgba(255, 255, 255, 0.6)',
-                            z: 1,
-                            stepSize: 1,
-                            max: 5,
-                            min: 0
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                        titleColor: '#fff',
-                        bodyColor: '#fff',
-                        callbacks: {
-                            label: function(context) {
-                                return `${context.label}: ${context.raw}/5`;
-                            }
-                        }
-                    }
-                }
-            };
-            
             try {
+                const ctx = chartCanvas.getContext('2d');
+                
+                // チャートデータ設定
+                const chartData = {
+                    labels: ['フルーティー', 'スパイシー', 'ボディ', 'スモーキー', '甘さ', '複雑さ'],
+                    datasets: [{
+                        label: '味わいプロファイル',
+                        data: [
+                            profile.fruity || 0,
+                            profile.spicy || 0,
+                            profile.body || 0,
+                            profile.smoky || 0,
+                            profile.sweetness || 0,
+                            profile.complexity || 0
+                        ],
+                        backgroundColor: 'rgba(78, 205, 196, 0.2)',
+                        borderColor: 'rgba(78, 205, 196, 1)',
+                        pointBackgroundColor: 'rgba(255, 107, 107, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(255, 107, 107, 1)',
+                        borderWidth: 2,
+                        pointRadius: 4
+                    }]
+                };
+                
+                // チャートオプション
+                const chartOptions = {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(255, 255, 255, 0.2)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.2)'
+                            },
+                            pointLabels: {
+                                color: 'rgba(255, 255, 255, 0.8)',
+                                font: {
+                                    size: 14
+                                }
+                            },
+                            ticks: {
+                                backdropColor: 'transparent',
+                                color: 'rgba(255, 255, 255, 0.6)',
+                                z: 1,
+                                stepSize: 1,
+                                max: 5,
+                                min: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                            titleColor: '#fff',
+                            bodyColor: '#fff',
+                            callbacks: {
+                                label: function(context) {
+                                    return `${context.label}: ${context.raw}/5`;
+                                }
+                            }
+                        }
+                    }
+                };
+                
                 // 新しいチャートを作成
                 profileChartInstance = new Chart(ctx, {
                     type: 'radar',
@@ -1975,38 +1982,31 @@
             }
         }
 
-        // ウィスキーから蒸留所名を取得
+        // 蒸留所名の取得関数の改善
         function getDistilleryNameFromWhisky(whisky) {
-            if (!whisky) return null;
-            
-            // マッピングがあれば優先
-            if (brandToDistilleryMapping && brandToDistilleryMapping[whisky.name]) {
+            // brandToDistilleryMappingを使用して銘柄から蒸留所を特定
+            if (brandToDistilleryMapping && whisky.name in brandToDistilleryMapping) {
                 return brandToDistilleryMapping[whisky.name];
             }
             
-            // 名前から推測
-            const whiskyName = whisky.name.toLowerCase();
+            // 蒸留所名が含まれている可能性がある場合
             for (const distilleryName in distilleryDatabase) {
-                const lowerName = distilleryName.toLowerCase();
-                if (whiskyName.includes(lowerName)) {
+                const simpleName = distilleryName.replace('蒸溜所', '').trim();
+                if (whisky.name.includes(simpleName)) {
                     return distilleryName;
                 }
             }
             
-            // 産地から推測
+            // リージョン情報から推測
             if (whisky.region) {
-                const region = whisky.region.toLowerCase();
-                
-                if (region.includes('islay')) {
-                    return 'アードベッグ蒸溜所';
-                } else if (region.includes('skye')) {
-                    return 'タリスカー蒸溜所';
-                } else if (region.includes('speyside')) {
-                    return 'マッカラン蒸溜所';
-                } else if (region.includes('highland')) {
-                    return 'ハイランドパーク蒸溜所';
-                } else if (region.includes('japan')) {
-                    return '軽井沢蒸溜所';
+                // 地域名が含まれる蒸留所を探す
+                for (const distilleryName in distilleryDatabase) {
+                    const distillery = distilleryDatabase[distilleryName];
+                    if (distillery.region && 
+                        (whisky.region.includes(distillery.region) || 
+                        distillery.region.includes(whisky.region))) {
+                        return distilleryName;
+                    }
                 }
             }
             
