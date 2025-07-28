@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<!-- saved from url=(0131)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_hFrA25-7RaCrRFUGv6JWgw/whisky_list_width_fixed.html -->
+<!-- saved from url=(0130)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_LBd2w0vdTtOf_OswSt8juA/whisky_sommelier_final.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <!-- HTMLのheadタグ内にGoogle Fontsのリンクを追加 -->
+<!-- HTMLのheadタグ内にGoogle Fontsのリンクを追加 -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
@@ -58,6 +58,101 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             position: relative;
+        }
+        .header-title:after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.7), transparent);
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 5px rgba(78, 205, 196, 0.5);
+            }
+            to {
+                text-shadow: 0 0 15px rgba(78, 205, 196, 0.8), 0 0 20px rgba(255, 107, 107, 0.5);
+            }
+        }
+        /* 翻訳ボタンのスタイル */
+        .translate-link {
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 5px 10px;
+            margin-left: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .translate-link:hover {
+            background: rgba(78, 205, 196, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .translate-icon {
+            margin-right: 6px;
+        }
+
+        /* 言語リンクのスタイル */
+        .language-links {
+            display: flex;
+            margin-left: 15px;
+        }
+
+        .language-links .nav-link {
+            margin-left: 10px;
+            font-size: 14px;
+            padding: 5px 8px;
+        }
+
+        /* レスポンシブ対応 - 画面が狭い場合 */
+        @media (max-width: 768px) {
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .language-links {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        /* ヘッダーナビゲーションのスタイル修正 - 右端に配置 */
+        .nav-links {
+            position: absolute;
+            right: 20px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            font-size: 15px;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .nav-link:hover {
+            color: #fff;
+            background: rgba(78, 205, 196, 0.2);
+        }
+        
+        .nav-link.active {
+            color: #fff;
+            background: rgba(78, 205, 196, 0.3);
+            border-bottom: 2px solid #4ecdc4;
         }
 
         .container-custom {
@@ -748,12 +843,15 @@
   </style></head>
 <body>
     <div class="header-container">
-    <img class="logo" src="./NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
-    <h1 class="header-title">昼の月。ウィスキーリスト</h1>
-    <div class="header-nav" style="position: absolute; right: 20px; display: flex; gap: 20px;">
-        <a href="index.html" class="header-link">AIソムリエ</a>
-        <a href="whisky_list.html" class="header-link active">ウィスキーリスト</a>
-    </div>
+        <img class="logo" src="./NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
+        <h1 class="header-title">昼の月。AIソムリエ</h1>
+        <div class="nav-links">
+            <a href="index.html" class="nav-link" id="homeLink">AIソムリエ</a>    
+            <!-- 1つの翻訳ボタンに統合 -->
+            <a href="#" onclick="openGoogleTranslate(); return false;" class="nav-link translate-link">
+                <span class="translate-icon">🌐</span> 翻訳
+            </a>
+        </div>
     </div>
     
     <div class="container-custom">
@@ -761,7 +859,7 @@
             <h2>🍷 コンプリートウィスキーコレクション</h2>
             <div class="subtitle">全<span id="whiskyCount">1</span>銘柄の詳細データベース</div>
             <div class="description">
-                昼の月バーが誇る<strong>厳選ウィスキーコレクション</strong>を<br>
+                昼の月が誇る<strong>厳選ウィスキーコレクション</strong>を<br>
                 自由に探索してお好みの一本を見つけてください
             </div>
             <div class="whisky-stats">
@@ -1880,13 +1978,15 @@
         }
     </script>
 
-
-    <script id="html_badge_script1">
-        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDnlTdArxcB%2BDMVcOILYY6sRs%2F3ree3weJ5wDUxgVY0ShEQoKHeKFkKFv0PXe7HDWjzIJNhjnFOciTYC6SWzoBcrOyXcfG8UM4xMNFP1opqWlu2mo68YkWe03d%2Fkef4r7j3RHq9VgpwkhzI%2BBUyA19IKCL%2Boy2Uh3Affn9jSUcgDr6g4uUgTL2F4t%2FPRhn%2FONiMoNXWLszmhHFSr7sRJ4fIGCW7NVHgR%2BdI87rDfBKsLCffxI%2FHuJOVPrW%2BTifcVbA0i4KtZeYP4jc8O%2BilmZtPGMS3QkViL%2FEbqVFryceGE63T4nqDmoTjcdZYhOG3HqcnWb76x%2BO%2FIWbYuwKthGLQ1LE%2F%2B%2FMN5VaGIvKKLfyBxLeOe2K5l3GmRA3ydDR01O4PNBl6FfqID6EnmCL33irrS59eEPSUJXmtZ0%2BqpYWQy%2FyAtqEMWm9pJAwghECnb3gSbc1pCJQVOdOVARRUCzcPnspHRPjcPtuMQFLgQx%2BM52rNAuIPsiHI2jKZGWw8%2Br6Q%3D%3D";
-        window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDnlTdArxcB+DMVcOILYY6sRs/3ree3weJ5wDUxgVY0ShEQoKHeKFkKFv0PXe7HDWjzIJNhjnFOciTYC6SWzoBcrOyXcfG8UM4xMNFP1opqWlu2mo68YkWe03d/kef4r7j3RHq9VgpwkhzI+BUyA19IKCL+oy2Uh3Affn9jSUcgDr6g4uUgTL2F4t/PRhn/ONiMoNXWLszmhHFSr7sRJ4fIGCW7NVHgR+dI87rDfBKsLCffxI/HuJOVPrW+TifcVbA0i4KtZeYP4jc8O+ilmZtPGMS3QkViL/EbqVFryceGE63T4nqDmoTjcdZYhOG3HqcnWb76x+O/IWbYuwKthGLQ1LE/+/MN5VaGIvKKLfyBxLeOe2K5l3GmRA3ydDR01O4PNBl6FfqID6EnmCL33irrS59eEPSUJXmtZ0+qpYWQy/yAtqEMWm9pJAwghECnb3gSbc1pCJQVOdOVARRUCzcPnspHRPjcPtuMQFLgQx+M52rNAuIPsiHI2jKZGWw8+r6Q==";
-    </script>
+    <script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
+        <!-- ページ末尾に追加 -->
+        <script type="text/javascript">
+        function openGoogleTranslate() {
+            const currentUrl = window.location.href;
+            const translateUrl = `https://translate.google.com/translate?sl=auto&u=${encodeURIComponent(currentUrl)}`;
+            window.open(translateUrl, '_blank');
+        }
+        </script>
     
     <script id="html_notice_dialog_script" src="./whisky_list_files/notice_dialog.js.ダウンロード"></script>
     </body></html>
