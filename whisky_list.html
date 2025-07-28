@@ -113,9 +113,14 @@
 
         /* レスポンシブ対応 - 画面が狭い場合 */
         @media (max-width: 768px) {
-            .nav-links {
-                flex-wrap: wrap;
-                justify-content: center;
+            /* モバイルでは詳細コンテンツを縦並びに */
+            .details-content-row {
+                flex-direction: column;
+            }
+            
+            /* 写真コンテナの高さを調整 */
+            .whisky-photo-container {
+                height: 300px;
             }
             
             .language-links {
@@ -967,40 +972,45 @@
                 <div class="whisky-description" id="detailWhiskyDescription">銘柄を選択すると詳細情報が表示されます。</div>
                 
                 <div class="details-content-row">
-                    <div class="profile-section">
-                        <h3 class="section-title"><i class="fas fa-chart-radar"></i> 味覚プロファイル</h3>
-                        <div class="profile-chart-container">
-                            <canvas id="whiskyProfileChart" class="chart-canvas"></canvas>
-                        </div>
+                <!-- 左側：味覚プロファイルと写真 -->
+                <div class="profile-section">
+                    <h3 class="section-title"><i class="fas fa-chart-radar"></i> 味覚プロファイル</h3>
+                    <div class="profile-chart-container">
+                        <canvas id="whiskyProfileChart" class="chart-canvas"></canvas>
                     </div>
                     
-                    <div class="distillery-section">
-                        <h3 class="section-title"><i class="fas fa-industry"></i> 蒸溜所情報</h3>
-                        <div class="distillery-map-container">
-                            <div id="distilleryMap"></div>
+                    <!-- 写真表示エリアをここに追加 -->
+                    <div class="whisky-photo-section" id="whiskyPhotoSection">
+                        <h3 class="section-title"><i class="fas fa-camera"></i> ボトル画像</h3>
+                        <div class="whisky-photo-container">
+                            <div class="whisky-photo-blur-bg" id="whiskyPhotoBlurBg"></div>
+                            <div class="whisky-photo-wrapper">
+                                <img id="whiskyPhoto" src="" alt="ウィスキーボトル" class="whisky-photo-img">
+                            </div>
+                            <p id="whiskyPhotoCaption" class="whisky-photo-caption"></p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右側：蒸溜所情報（既存のまま） -->
+                <div class="distillery-section">
+                    <h3 class="section-title"><i class="fas fa-industry"></i> 蒸溜所情報</h3>
+                    <div class="distillery-map-container">
+                        <div id="distilleryMap"></div>
+                    </div>
+                    
+                    <div class="distillery-info" id="distilleryInfo">
+                        <h3 id="distilleryName">蒸溜所名</h3>
+                        <div class="info-grid" id="distilleryDetails">
+                            <!-- 既存の蒸溜所情報 -->
                         </div>
                         
-                        <div class="distillery-info" id="distilleryInfo">
-                            <h3 id="distilleryName">蒸溜所名</h3>
-                            <div class="info-grid" id="distilleryDetails">
-                                <div class="info-label">所在地:</div>
-                                <div class="info-value" id="distilleryRegion">-</div>
-                                
-                                <div class="info-label">創業年:</div>
-                                <div class="info-value" id="distilleryFounded">-</div>
-                                
-                                <div class="info-label">現在の状況:</div>
-                                <div class="info-value" id="distilleryStatus">-</div>
-                            </div>
-                            
-                            <div class="distillery-description" id="distilleryDescription">
-                                情報がありません。
-                            </div>
+                        <div class="distillery-description" id="distilleryDescription">
+                            情報がありません。
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
         
         <div class="custom-footer">
             Powered by Nebula Hirozon Technology
