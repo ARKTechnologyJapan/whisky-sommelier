@@ -1992,15 +1992,16 @@
                 }
             }
             
-            // 地域の抽出
+            // 地域の抽出（修正版）
             if (message.includes('アイラ') || message.includes('islay')) {
                 preferences.region = 'Islay';
             } else if (message.includes('スペイサイド') || message.includes('speyside')) {
                 preferences.region = 'Speyside';
             } else if (message.includes('ハイランド') || message.includes('highland')) {
                 preferences.region = 'Highland';
-            } else if (message.includes('日本') || message.includes('ジャパン')) {
-                preferences.region = 'Japan';
+            } else if (message.includes('日本') || message.includes('ジャパン') || message.includes('ジャパニーズ') || 
+                    message.includes('japan') || message.includes('japanese')) {
+                preferences.region = 'Japan';  // 「Japan」または「Japanese」を含む場合
             }
             
             // 味の傾向の抽出
@@ -2128,7 +2129,6 @@
             return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
         }
 
-        // AI推薦を取得
         // AI推薦を取得（修正版）
         async function getRecommendation() {
             // ローディング表示
@@ -2157,6 +2157,12 @@
                     maxPrice: savedUserPreferences.maxPrice !== null ? savedUserPreferences.maxPrice : maxPrice,
                     region: savedUserPreferences.region
                 };
+
+                        // ここに新しいデバッグログを追加
+                console.log('検索開始 - 好み情報:', {
+                    savedPreferences: savedUserPreferences,
+                    combinedPreferences: combinedPreferences
+                });
 
                 // プログレスバーの表示（既存コード）
                 document.getElementById('loadingIndicator').style.display = 'none';
@@ -2303,67 +2309,143 @@
             }
         }
 
-        // マッチするウィスキーを見つける
         // マッチするウィスキーを見つける（修正版）
-        function findMatchingWhiskies(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region = null) {
-            if (!whiskyData || whiskyData.length === 0) return [];
+            function findMatchingWhiskies(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region = null) {
+                console.log('検索条件:', { tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region });
+                
+                if (!whiskyData || whiskyData.length === 0) return [];
 
-            // 価格を数値に変換
-            const whiskiesWithNumericPrice = whiskyData.map(whisky => {
-                const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
-                return { ...whisky, numericPrice };
-            });
+                // 価格を数値に変換
+                const whiskiesWithNumericPrice = whiskyData.map(whisky => {
+                    const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
+                    return { ...whisky, numericPrice };
+                });
 
-            // 価格帯でフィルタリング
-            const priceFiltered = whiskiesWithNumericPrice.filter(
-                whisky => whisky.numericPrice >= minPrice && whisky.numericPrice <= maxPrice
-            );
-
-            // 新しく追加: 地域でフィルタリング
-            let regionFiltered = priceFiltered;
-            if (region) {
-                regionFiltered = priceFiltered.filter(whisky => 
-                    whisky.region && whisky.region.toLowerCase().includes(region.toLowerCase())
+                // 価格帯でフィルタリング
+                const priceFiltered = whiskiesWithNumericPrice.filter(
+                    whisky => whisky.numericPrice >= minPrice && whisky.numericPrice <= maxPrice
                 );
                 
-                // 地域フィルタリング後に結果がない場合は価格フィルタのみ適用
-                if (regionFiltered.length === 0) {
-                    regionFiltered = priceFiltered;
+                console.log(`価格帯でフィルタリング: ${minPrice}円〜${maxPrice}円 => ${priceFiltered.length}件`);
+
+                // 地域でフィルタリング（拡張版）
+                let regionFiltered = priceFiltered;
+                if (region) {
+                    console.log(`地域フィルタリング: "${region}" を検索中...`);
+                    
+                    // 検索用の正規表現パターンを作成
+                    const searchRegion = region.toLowerCase();
+                    
+                    // 日本のウィスキーを特別に処理
+                    if (searchRegion === 'japan') {
+                        regionFiltered = priceFiltered.filter(whisky => {
+                            const whiskyRegion = (whisky.region || '').toLowerCase();
+                            const whiskyName = (whisky.name || '').toLowerCase();
+                            const whiskySubcategory = (whisky.subcategory || '').toLowerCase();
+                            
+                            return whiskyRegion.includes('japan') || 
+                                whiskyRegion.includes('japanese') || 
+                                whiskyRegion.includes('日本') || 
+                                whiskySubcategory.includes('japan') || 
+                                whiskySubcategory.includes('japanese') || 
+                                whiskySubcategory.includes('日本') || 
+                                whiskyName.includes('軽井沢') ||
+                                whiskyName.includes('山崎') ||
+                                whiskyName.includes('白州') ||
+                                whiskyName.includes('響') ||
+                                whiskyName.includes('長濱') ||
+                                whiskyName.includes('余市') ||
+                                whiskyName.includes('宮城峡') ||
+                                whiskyName.includes('知多');
+                        });
+                    } else {
+                        // 通常の地域フィルタリング
+                        regionFiltered = priceFiltered.filter(whisky => {
+                            const whiskyRegion = (whisky.region || '').toLowerCase();
+                            const whiskySubcategory = (whisky.subcategory || '').toLowerCase();
+                            
+                            return whiskyRegion.includes(searchRegion) || 
+                                whiskySubcategory.includes(searchRegion);
+                        });
+                    }
+                    
+                    console.log(`地域フィルタリング結果: ${regionFiltered.length}件見つかりました`);
+                    
+                    // 地域フィルタリング後に結果が少ない場合は柔軟なフィルタを追加
+                    if (regionFiltered.length < 3) {
+                        console.log('地域フィルタリングの結果が少ないため、より柔軟な検索を適用します');
+                        
+                        const additionalResults = priceFiltered.filter(whisky => {
+                            // すでにフィルタされたものは除外
+                            if (regionFiltered.includes(whisky)) return false;
+                            
+                            const whiskyName = (whisky.name || '').toLowerCase();
+                            const whiskyNote = (whisky.tastingNote_ja || '').toLowerCase();
+                            
+                            // 日本のウィスキーの場合
+                            if (searchRegion === 'japan') {
+                                return whiskyName.includes('japan') || 
+                                    whiskyName.includes('japanese') || 
+                                    whiskyName.includes('日本') || 
+                                    whiskyNote.includes('日本') || 
+                                    whiskyNote.includes('japan');
+                            } else {
+                                return whiskyName.includes(searchRegion) || 
+                                    whiskyNote.includes(searchRegion);
+                            }
+                        });
+                        
+                        // 追加の結果をマージ
+                        regionFiltered = [...regionFiltered, ...additionalResults];
+                        console.log(`拡張検索後の結果: ${regionFiltered.length}件`);
+                    }
+                    
+                    // それでも結果がない場合は価格フィルタのみを適用
+                    if (regionFiltered.length === 0) {
+                        console.log('地域フィルタリングの結果が0件のため、価格フィルタのみを適用します');
+                        regionFiltered = priceFiltered;
+                    }
                 }
+
+                if (regionFiltered.length === 0) {
+                    // 価格帯に合うものがない場合は全てから選択
+                    console.log('フィルタリング結果が0件のため、全データから選択します');
+                    return whiskiesWithNumericPrice.slice(0, 3);
+                }
+
+                // 味覚プロファイルの基準
+                const targetFruity = tasteY < 0.5 ? 4 : 2;  // フルーティーかスモーキーか
+                const targetSmoky = tasteY > 0.5 ? 4 : 2;   // スモーキーかフルーティーか
+                const targetBody = tasteX > 0.5 ? 4 : 3;    // ヘビーかライトか
+                const targetComplexity = complexityX > 0.5 ? 4 : 3; // 熟成か若いか
+
+                // スコアリング関数
+                function scoreWhisky(whisky) {
+                    if (!whisky.taste_profile) return 0;
+
+                    const fruityScore = 5 - Math.abs((whisky.taste_profile.fruity || 0) - targetFruity);
+                    const smokyScore = 5 - Math.abs((whisky.taste_profile.smoky || 0) - targetSmoky);
+                    const bodyScore = 5 - Math.abs((whisky.taste_profile.body || 0) - targetBody);
+                    const complexityScore = 5 - Math.abs((whisky.taste_profile.complexity || 0) - targetComplexity);
+
+                    return fruityScore + smokyScore + bodyScore + complexityScore;
+                }
+
+                // スコアでソート
+                const scored = regionFiltered.map(whisky => ({
+                    ...whisky,
+                    score: scoreWhisky(whisky)
+                })).sort((a, b) => b.score - a.score);
+
+                console.log('スコアリング結果（上位3件）:', scored.slice(0, 3).map(w => ({
+                    name: w.whisky.name,
+                    score: w.score,
+                    region: w.whisky.region
+                })));
+
+                // 上位3つを返す
+                return scored.slice(0, 3).map(item => item.whisky);
             }
-
-            if (regionFiltered.length === 0) {
-                // 価格帯に合うものがない場合は全てから選択
-                return whiskiesWithNumericPrice.slice(0, 3);
-            }
-
-            // 味覚プロファイルの基準（既存のコード）
-            const targetFruity = tasteY < 0.5 ? 4 : 2;
-            const targetSmoky = tasteY > 0.5 ? 4 : 2;
-            const targetBody = tasteX > 0.5 ? 4 : 3;
-            const targetComplexity = complexityX > 0.5 ? 4 : 3;
-
-            // スコアリング関数（既存のコード）
-            function scoreWhisky(whisky) {
-                if (!whisky.taste_profile) return 0;
-
-                const fruityScore = 5 - Math.abs(whisky.taste_profile.fruity - targetFruity);
-                const smokyScore = 5 - Math.abs(whisky.taste_profile.smoky - targetSmoky);
-                const bodyScore = 5 - Math.abs(whisky.taste_profile.body - targetBody);
-                const complexityScore = 5 - Math.abs(whisky.taste_profile.complexity - targetComplexity);
-
-                return fruityScore + smokyScore + bodyScore + complexityScore;
-            }
-
-            // スコアでソート（地域でフィルタリングしたリストを使用）
-            const scored = regionFiltered.map(whisky => ({
-                ...whisky,
-                score: scoreWhisky(whisky)
-            })).sort((a, b) => b.score - a.score);
-
-            // 上位3つを返す
-            return scored.slice(0, 3);
-        }
 
         // ローカルデータからの提案を表示
         function displayLocalRecommendations(whiskies) {
