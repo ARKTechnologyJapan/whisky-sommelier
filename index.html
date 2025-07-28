@@ -2879,10 +2879,20 @@
                 showSimpleDistilleryInfo(whisky);
             }
 
-            // チャートパネルにスクロール
+            // チャートパネルのスクロール処理を改善
             const chartPanel = document.getElementById('chartPanel');
             if (chartPanel) {
-                chartPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                // 1. パネル内のスクロール位置を最上部に設定
+                chartPanel.scrollTop = 0;
+                
+                // 2. モバイルなど小さい画面サイズでは、パネル自体も視界に入れる
+                if (window.innerWidth <= 1024) {
+                    chartPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                } else {
+                    // PCサイズの場合は、パネルが画面に表示されるようスクロール
+                    // しかし、急激なスクロールではなくスムーズに
+                    chartPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
             }
         }
 
