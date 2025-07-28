@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0133)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/toolu_0128UyBddTnWaKVwBJbhBktA/whisky_list_final_perfect.html -->
+<!-- saved from url=(0134)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/toolu_01BhEQEdUjubi6XgKFjD7BdZ/whisky_list_ultimate_final.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <!-- Google Fontsのリンク -->
@@ -442,7 +442,6 @@
             border: 1px solid rgba(78, 205, 196, 0.2);
             border-radius: 12px;
             padding: 20px;
-            padding-top: 30px;
             margin-top: 10px;
             scroll-margin-top: 80px;
         }
@@ -496,7 +495,7 @@
             margin-top: 20px;
         }
         
-        /* ここがキーポイント: profile-sectionとdistillery-sectionを同じ幅に設定 */
+        /* プロファイルセクションと蒸留所セクションを同じ幅に設定 */
         .profile-section, .distillery-section {
             flex: 1;
             background: rgba(255, 255, 255, 0.03);
@@ -568,15 +567,6 @@
         .info-label {
             color: rgba(255, 255, 255, 0.7);
             font-weight: bold;
-        }
-        
-        .info-value {
-            color: rgba(255, 255, 255, 0.9);
-        }
-        
-        .distillery-description {
-            margin-top: 15px;
-            line-height: 1.6;
         }
         
         .status-active {
@@ -675,22 +665,12 @@
 
         /* Leaflet特有のスタイル上書き */
         .leaflet-container {
-            background-color: #121212 !important;
+            background-color: #111 !important;
         }
 
         .leaflet-tile-pane {
-            opacity: 1.0; /* 透明度調整 */
-            filter: brightness(0.7) contrast(1.1); /* 明るさとコントラスト調整 */
-        }
-
-        .leaflet-popup-content-wrapper {
-            background-color: rgba(30, 34, 42, 0.95) !important;
-            color: #fff !important;
-            border: 1px solid rgba(78, 205, 196, 0.5);
-        }
-
-        .leaflet-popup-tip {
-            background-color: rgba(30, 34, 42, 0.95) !important;
+            opacity: 0.85;
+            filter: brightness(0.7) contrast(1.2);
         }
 
         .leaflet-control-zoom a {
@@ -701,6 +681,16 @@
 
         .leaflet-control-zoom a:hover {
             background-color: rgba(78, 205, 196, 0.3) !important;
+        }
+        
+        .leaflet-popup-content-wrapper {
+            background-color: rgba(30, 34, 42, 0.95) !important;
+            color: #fff !important;
+            border: 1px solid rgba(78, 205, 196, 0.5);
+        }
+        
+        .leaflet-popup-tip {
+            background-color: rgba(30, 34, 42, 0.95) !important;
         }
         
         /* レスポンシブスタイル */
@@ -754,63 +744,14 @@
         .highlight-panel {
             animation: highlight-pulse 1s ease-out;
         }
-
-        /* 選択した蒸留所のマーカースタイル */
-        .selected-marker-dot {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 12px;
-            height: 12px;
-            background-color: #ff6b6b; /* 赤色のドット */
-            border-radius: 50%;
-            box-shadow: 0 0 8px rgba(255, 107, 107, 0.8);
-            z-index: 2;
-        }
-
-        .selected-marker-radar {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 40px;
-            height: 40px;
-            background-color: transparent;
-            border: 2px solid rgba(255, 107, 107, 0.7);
-            border-radius: 50%;
-            animation: radar-pulse 2s infinite;
-            z-index: 1;
-        }
-
-        @keyframes radar-pulse {
-            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
-        }
-
-        /* 通常マーカーのスタイル */
-        .marker-dot {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 12px;
-            height: 12px;
-            background-color: #4ecdc4; /* ティール色のドット */
-            border-radius: 50%;
-            box-shadow: 0 0 8px rgba(78, 205, 196, 0.8);
-            z-index: 2;
-        }
-
-        .pulse-circle {
-            animation: pulse 2s infinite;
-        }
-
+        
+        /* マーカーアニメーション */
         @keyframes pulse {
             0% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
             50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.5; }
             100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
         }
-        
+
         /* ウィスキー写真表示用スタイル */
         .whisky-photo-section {
             margin-top: 30px;
@@ -897,11 +838,58 @@
             font-style: italic;
         }
         
-        /* マーカー管理用 */
+        /* 選択した蒸留所のマーカースタイル */
+        .selected-marker-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background-color: #ff6b6b; /* 赤色のドット */
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(255, 107, 107, 0.8);
+            z-index: 2;
+        }
+
+        .selected-marker-radar {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 40px;
+            height: 40px;
+            background-color: transparent;
+            border: 2px solid rgba(255, 107, 107, 0.7);
+            border-radius: 50%;
+            animation: radar-pulse 2s infinite;
+            z-index: 1;
+        }
+
+        @keyframes radar-pulse {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+        }
+
+        /* 通常マーカーのスタイル */
+        .marker-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background-color: #4ecdc4; /* ティール色のドット */
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(78, 205, 196, 0.8);
+            z-index: 2;
+        }
+
         .custom-map-marker {
             position: relative;
-            width: 20px;
-            height: 20px;
+        }
+
+        .pulse-circle {
+            animation: pulse 2s infinite;
         }
     </style>
 <style>
@@ -1010,9 +998,9 @@
         <img class="logo" src="./whisky_list_files/NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
         <h1 class="header-title">昼の月。AIソムリエ</h1>
         <div class="nav-links">
-            <a href="index.html" class="nav-link" id="homeLink">AIソムリエ</a>    
+            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/toolu_01BhEQEdUjubi6XgKFjD7BdZ/index.html" class="nav-link" id="homeLink">AIソムリエ</a>    
             <!-- 1つの翻訳ボタンに統合 -->
-            <a href="whisky_list.html#" onclick="openGoogleTranslate(); return false;" class="nav-link translate-link">
+            <a href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/toolu_01BhEQEdUjubi6XgKFjD7BdZ/whisky_list_ultimate_final.html#" onclick="openGoogleTranslate(); return false;" class="nav-link translate-link">
                 <span class="translate-icon">🌐</span> 翻訳
             </a>
         </div>
@@ -1020,7 +1008,7 @@
     
     <div class="container-custom">
         <div class="whisky-overview">
-            <h2>🍷 コンプリートウィスキーコレクション</h2>
+            <h2>🥃 コンプリートウィスキーコレクション</h2>
             <div class="subtitle">全<span id="whiskyCount">1</span>銘柄の詳細データベース</div>
             <div class="description">
                 昼の月が誇る<strong>厳選ウィスキーコレクション</strong>を<br>
@@ -1036,7 +1024,7 @@
                     <div class="stat-label">産地数</div>
                 </div>
                 <div class="stat-item">
-                    <span class="stat-number" id="priceRange">￥80,400〜￥80,400</span>
+                    <span class="stat-number" id="priceRange">¥80,400〜¥80,400</span>
                     <div class="stat-label">価格帯</div>
                 </div>
             </div>
@@ -1100,7 +1088,7 @@
                         <th data-sort="complexity" class="hide-mobile">複雑さ <i class="fas fa-sort"></i></th>
                     </tr>
                 </thead>
-                    <tbody id="whiskyTableBody"><tr data-id="1"><td>タリスカー　44年　オフィシャルボトル</td><td>¥80,400</td><td>Scotland, Isle of Skye</td><td class="hide-mobile">49.1%</td><td class="hide-mobile"><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-gray-500">☆</span></td><td class="hide-mobile"><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-gray-500">☆</span><span class="text-gray-500">☆</span></td><td class="hide-mobile"><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span><span class="text-yellow-400">★</span></td></tr></tbody>
+                    <tbody id="whiskyTableBody"><tr data-id="1" class="selected"><td>タリスカー　44年　オフィシャルボトル</td><td>¥80,400</td><td>Scotland, Isle of Skye</td><td class="hide-mobile">49.1%</td><td class="hide-mobile">4/5</td><td class="hide-mobile">3/5</td><td class="hide-mobile">5/5</td></tr></tbody>
                 </table>
             </div>
             
@@ -1112,30 +1100,30 @@
             </div>
         </div>
         
-        <div class="details-section" id="whiskyDetails" style="display: none;">
+        <div class="details-section" id="whiskyDetails" style="display: flex;">
             <h2 class="text-2xl font-bold mb-4">
-                🍸 ウィスキー詳細情報
+                <i class="fas fa-info-circle"></i> ウィスキー詳細情報
             </h2>
             
             <div id="selectedWhiskyDetails">
                 <div class="whisky-details-header">
                     <div>
-                        <h3 class="whisky-name" id="detailWhiskyName">銘柄を選択してください</h3>
-                        <div class="whisky-tags" id="detailWhiskyTags"></div>
+                        <h3 class="whisky-name" id="detailWhiskyName">タリスカー　44年　オフィシャルボトル</h3>
+                        <div class="whisky-tags" id="detailWhiskyTags"><div class="tag">Scotland, Isle of Skye</div><div class="tag">Single Malt Scotch Whisky</div><div class="tag">49.1%</div></div>
                     </div>
-                    <div class="whisky-price" id="detailWhiskyPrice">-</div>
+                    <div class="whisky-price" id="detailWhiskyPrice">¥80,400</div>
                 </div>
                 
-                <div class="whisky-description" id="detailWhiskyDescription">銘柄を選択すると詳細情報が表示されます。</div>
+                <div class="whisky-description" id="detailWhiskyDescription">この非常に希少なタリスカー44年は、強い海岸の塩気を持つ複雑な海洋性の特徴を提供します。豊かなドライフルーツ、ダークチョコレート、アンティークレザーの層がタリスカー特有のピリッとしたスモークと調和しています。長期熟成により、トロピカルフルーツ、ミツロウ、繊細な樽のスパイスのノートを持つ驚くべき深みが生まれ、非常に長く温かみのある余韻へと続きます。</div>
                 
                 <div class="details-content-row">
-                    <!-- 左側：味覚プロファイルと写真 -->
+                    <!-- 左側：味覚プロファイル -->
                     <div class="profile-section">
                         <h3 class="section-title">
                             <i class="fas fa-chart-pie"></i> 味覚プロファイル
                         </h3>
                         <div class="profile-chart-container">
-                            <canvas id="whiskyProfileChart" class="chart-canvas"></canvas>
+                            <canvas id="whiskyProfileChart" class="chart-canvas" style="box-sizing: border-box; display: block; height: 400px; width: 519px;" width="649" height="500"></canvas>
                         </div>
                         
                         <!-- 写真表示エリア -->
@@ -1143,13 +1131,16 @@
                             <h3 class="section-title">
                                 <i class="fas fa-camera"></i> ボトル画像
                             </h3>
-                            <div class="whisky-photo-container">
-                                <div class="whisky-photo-blur-bg" id="whiskyPhotoBlurBg"></div>
+                            <div class="whisky-photo-container no-photo">
+                                <div class="whisky-photo-blur-bg" id="whiskyPhotoBlurBg" style="background-image: none;"></div>
                                 <div class="whisky-photo-wrapper">
-                                    <img id="whiskyPhoto" src="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/toolu_0128UyBddTnWaKVwBJbhBktA/whisky_list_final_perfect.html" alt="ウィスキーボトル" class="whisky-photo-img">
+                                    <img id="whiskyPhoto" src="./whisky_list_files/1.jpg" alt="ウィスキーボトル" class="whisky-photo-img" style="display: none;">
                                 </div>
-                                <p id="whiskyPhotoCaption" class="whisky-photo-caption"></p>
-                            </div>
+                                <p id="whiskyPhotoCaption" class="whisky-photo-caption">タリスカー　44年　オフィシャルボトルの画像は現在ありません</p>
+                            <div class="no-photo-content">
+                    <i class="fas fa-image no-photo-icon"></i>
+                    <div class="no-photo-text">画像準備中</div>
+                </div></div>
                         </div>
                     </div>
                     
@@ -1159,32 +1150,30 @@
                             <i class="fas fa-map-marker-alt"></i> 蒸溜所情報
                         </h3>
                         <div class="distillery-map-container">
-                            <div id="distilleryMap" class="leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" tabindex="0"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(0px, 0px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 19; transform: translate3d(0px, 0px, 0px) scale(1);"><img alt="" src="./whisky_list_files/19@2x.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-74px, -238px, 0px); opacity: 1;"></div></div></div><div class="leaflet-pane leaflet-overlay-pane"></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-marker-pane"><div class="leaflet-marker-icon custom-map-marker leaflet-zoom-animated leaflet-interactive" tabindex="0" role="button" style="margin-left: -10px; margin-top: -10px; width: 20px; height: 20px; transform: translate3d(-107px, -108px, 0px); z-index: -108;"><div class="marker-dot pulse-circle"></div></div></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/toolu_0128UyBddTnWaKVwBJbhBktA/whisky_list_final_perfect.html#" title="Zoom in" role="button" aria-label="Zoom in" aria-disabled="false"><span aria-hidden="true">+</span></a><a class="leaflet-control-zoom-out" href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/toolu_0128UyBddTnWaKVwBJbhBktA/whisky_list_final_perfect.html#" title="Zoom out" role="button" aria-label="Zoom out" aria-disabled="false"><span aria-hidden="true">−</span></a></div></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-attribution leaflet-control"><a href="https://leafletjs.com/" title="A JavaScript library for interactive maps"><svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="8" viewBox="0 0 12 8" class="leaflet-attribution-flag"><path fill="#4C7BE1" d="M0 0h12v4H0z"></path><path fill="#FFD500" d="M0 4h12v3H0z"></path><path fill="#E0BC00" d="M0 7h12v1H0z"></path></svg> Leaflet</a> <span aria-hidden="true">|</span> © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a></div></div></div></div>
+                            <div id="distilleryMap" class="leaflet-container leaflet-touch leaflet-retina leaflet-fade-anim leaflet-grab leaflet-touch-drag leaflet-touch-zoom" tabindex="0"><div class="leaflet-pane leaflet-map-pane" style="transform: translate3d(0px, 0px, 0px);"><div class="leaflet-pane leaflet-tile-pane"><div class="leaflet-layer " style="z-index: 1; opacity: 1;"><div class="leaflet-tile-container leaflet-zoom-animated" style="z-index: 19; transform: translate3d(0px, 0px, 0px) scale(1);"><img alt="" role="presentation" src="./whisky_list_files/78@2x.png" class="leaflet-tile leaflet-tile-loaded" style="width: 256px; height: 256px; transform: translate3d(-123px, -8px, 0px); opacity: 1;"></div></div></div><div class="leaflet-pane leaflet-shadow-pane"></div><div class="leaflet-pane leaflet-overlay-pane"></div><div class="leaflet-pane leaflet-marker-pane"><div class="leaflet-marker-icon custom-map-marker leaflet-zoom-animated leaflet-interactive" tabindex="0" style="margin-left: -10px; margin-top: -10px; width: 20px; height: 20px; transform: translate3d(0px, 0px, 0px); z-index: 0;"><div class="marker-dot pulse-circle"></div></div></div><div class="leaflet-pane leaflet-tooltip-pane"></div><div class="leaflet-pane leaflet-popup-pane"></div><div class="leaflet-proxy leaflet-zoom-animated" style="transform: translate3d(31610.9px, 19976.3px, 0px) scale(128);"></div></div><div class="leaflet-control-container"><div class="leaflet-top leaflet-left"><div class="leaflet-control-zoom leaflet-bar leaflet-control"><a class="leaflet-control-zoom-in" href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/toolu_01BhEQEdUjubi6XgKFjD7BdZ/whisky_list_ultimate_final.html#" title="Zoom in" role="button" aria-label="Zoom in">+</a><a class="leaflet-control-zoom-out" href="https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/toolu_01BhEQEdUjubi6XgKFjD7BdZ/whisky_list_ultimate_final.html#" title="Zoom out" role="button" aria-label="Zoom out">−</a></div></div><div class="leaflet-top leaflet-right"></div><div class="leaflet-bottom leaflet-left"></div><div class="leaflet-bottom leaflet-right"><div class="leaflet-control-attribution leaflet-control"><a href="https://leafletjs.com/" title="A JS library for interactive maps">Leaflet</a> | © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors © <a href="https://carto.com/attributions">CARTO</a></div></div></div></div>
                         </div>
                         
                         <div class="distillery-info" id="distilleryInfo">
-                            <h3 id="distilleryName">蒸溜所名</h3>
+                            <h3 id="distilleryName">タリスカー蒸溜所 (Talisker Distillery)</h3>
                             <div class="info-grid" id="distilleryDetails">
                                 <div class="info-label">所在地:</div>
-                                <div class="info-value" id="distilleryRegion">-</div>
+                                <div class="info-value" id="distilleryRegion">Scotland Isle of Skye</div>
                                 
                                 <div class="info-label">創業年:</div>
-                                <div class="info-value" id="distilleryFounded">-</div>
+                                <div class="info-value" id="distilleryFounded">1830</div>
                                 
                                 <div class="info-label">現在の状況:</div>
-                                <div class="info-value" id="distilleryStatus">-</div>
+                                <div class="status-active" id="distilleryStatus">アクティブ</div>
                             </div>
                             
-                            <div class="distillery-description" id="distilleryDescription">
-                                情報がありません。
-                            </div>
+                            <div class="distillery-description" id="distilleryDescription">スカイ島で最も古い蒸留所で、嵐が吹き荒れる海岸線に位置し、海の塩気と力強いピートスモークが特徴。1960年に火災で被害を受けましたが、伝統的な製法を守りながら再建されました。「島の味」と称される独特の海洋性風味で知られています。</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-
+    
     <script>
         // グローバル変数
         let whiskyData = [];
@@ -1249,6 +1238,8 @@
                     const response = await fetch(filePath);
                     if (response.ok) {
                         const data = await response.json();
+                        console.log('Loaded data structure:', data);
+                        
                         // 新しいJSON構造に対応
                         if (data.whiskies && Array.isArray(data.whiskies)) {
                             whiskyData = data.whiskies;
@@ -1260,6 +1251,7 @@
                             whiskyData = [data]; // 単一オブジェクトの場合は配列に変換
                             console.log(`Single whisky data loaded from ${filePath}`);
                         }
+                        
                         dataLoaded = true;
                         break;
                     }
@@ -1272,6 +1264,18 @@
                 console.warn('Could not load whisky data from files, using default data');
                 whiskyData = getDefaultWhiskyData();
             }
+            
+            // データの検証とサニタイズ
+            whiskyData = whiskyData.map(whisky => {
+                // 必須フィールドの確認と設定
+                if (!whisky.taste_profile) {
+                    whisky.taste_profile = {
+                        fruity: 0, spicy: 0, body: 0, 
+                        smoky: 0, sweetness: 0, complexity: 0
+                    };
+                }
+                return whisky;
+            });
             
             return whiskyData;
         }
@@ -1295,6 +1299,8 @@
                     const response = await fetch(filePath);
                     if (response.ok) {
                         const data = await response.json();
+                        console.log('Loaded distillery data structure:', data);
+                        
                         // 新しいJSON構造に対応
                         if (data.distilleries && typeof data.distilleries === 'object') {
                             distilleryDatabase = data.distilleries;
@@ -1306,6 +1312,7 @@
                             distilleryDatabase = data;
                             console.log(`Legacy distillery data loaded from ${filePath}`);
                         }
+                        
                         dataLoaded = true;
                         break;
                     }
@@ -1321,192 +1328,156 @@
             
             return distilleryDatabase;
         }
-
-        // サンプルウィスキーデータを定義
-        function getDefaultWhiskyData() {
-            return [
-                {
-                    id: "1",
-                    name: "タリスカー　44年　オフィシャルボトル",
-                    price: "¥80,400",
-                    abv: 49.1,
-                    photoUrl: "1.jpg",
-                    category: "Whiskey",
-                    region: "Scotland, Isle of Skye",
-                    subcategory: "Single Malt Scotch Whisky",
-                    tastingNote_ja: "この非常に希少なタリスカー44年は、強い海岸の塩気を持つ複雑な海洋性の特徴を提供します。豊かなドライフルーツ、ダークチョコレート、アンティークレザーの層がタリスカー特有のピリッとしたスモークと調和しています。長期熟成により、トロピカルフルーツ、ミツロウ、繊細な樽のスパイスのノートを持つ驚くべき深みが生まれ、非常に長く温かみのある余韻へと続きます。",
-                    taste_profile: {
-                        fruity: 3,
-                        spicy: 4,
-                        body: 5,
-                        smoky: 4,
-                        sweetness: 2,
-                        complexity: 5
-                    }
-                }
-            ];
-        }
-
-        // サンプル蒸留所データを定義
-        function getDefaultDistilleryData() {
-            return {
-                "タリスカー蒸溜所": {
-                    name: "タリスカー蒸溜所 (Talisker Distillery)",
-                    location: {
-                        lat: 57.302,
-                        lng: -6.356
-                    },
-                    region: "Scotland Isle of Skye",
-                    foundedYear: 1830,
-                    status: "アクティブ",
-                    description: "スカイ島で最も古い蒸留所で、嵐が吹き荒れる海岸線に位置し、海の塩気と力強いピートスモークが特徴。1960年に火災で被害を受けましたが、伝統的な製法を守りながら再建されました。「島の味」と称される独特の海洋性風味で知られています。",
-                    zoomLevel: 8
-                }
-            };
-        }
-
+        
         // UI初期化
         function initializeUI() {
-            // ウィスキー数の表示
-            document.getElementById('whiskyCount').textContent = whiskyData.length;
-            document.getElementById('totalWhiskies').textContent = whiskyData.length;
+            console.log('Initializing UI...');
             
-            // 地域数の表示
-            const uniqueRegions = new Set();
-            whiskyData.forEach(whisky => {
-                if (whisky.region) {
-                    const mainRegion = whisky.region.split(',')[0].trim();
-                    uniqueRegions.add(mainRegion);
-                }
-            });
-            document.getElementById('uniqueRegions').textContent = uniqueRegions.size;
+            // 統計情報を更新
+            updateStatistics();
             
-            // 価格範囲の表示
-            let minPrice = Infinity;
-            let maxPrice = 0;
-            
-            whiskyData.forEach(whisky => {
-                if (whisky.price) {
-                    const price = parseFloat(whisky.price.replace(/[^0-9.]/g, ''));
-                    if (!isNaN(price)) {
-                        minPrice = Math.min(minPrice, price);
-                        maxPrice = Math.max(maxPrice, price);
-                    }
-                }
-            });
-            
-            if (minPrice !== Infinity && maxPrice !== 0) {
-                const formatter = new Intl.NumberFormat('ja-JP', {
-                    style: 'currency',
-                    currency: 'JPY',
-                    maximumFractionDigits: 0
-                });
-                
-                document.getElementById('priceRange').textContent = `${formatter.format(minPrice)}〜${formatter.format(maxPrice)}`;
-            }
-            
-            // 地域フィルターの初期化
-            const regionFilter = document.getElementById('regionFilter');
-            regionFilter.innerHTML = '<option value="">すべての産地</option>';
-            
-            const regionCounts = {};
-            whiskyData.forEach(whisky => {
-                if (whisky.region) {
-                    const mainRegion = whisky.region.split(',')[0].trim();
-                    regionCounts[mainRegion] = (regionCounts[mainRegion] || 0) + 1;
-                }
-            });
-            
-            Object.keys(regionCounts).sort().forEach(region => {
-                const option = document.createElement('option');
-                option.value = region;
-                option.textContent = `${region} (${regionCounts[region]})`;
-                regionFilter.appendChild(option);
-            });
+            // フィルターオプションを生成
+            populateFilterOptions();
             
             // 蒸留所マップの初期化
             initializeDistilleryMap();
         }
-
+        
+        // 統計情報の更新
+        function updateStatistics() {
+            document.getElementById('whiskyCount').textContent = whiskyData.length;
+            document.getElementById('totalWhiskies').textContent = whiskyData.length;
+            
+            // ユニークな産地数を計算
+            const uniqueRegions = new Set();
+            whiskyData.forEach(whisky => {
+                if (whisky.region) {
+                    uniqueRegions.add(whisky.region.split(',')[0].trim());
+                }
+            });
+            document.getElementById('uniqueRegions').textContent = uniqueRegions.size;
+            
+            // 価格範囲を計算
+            const prices = whiskyData
+                .map(whisky => {
+                    const priceStr = whisky.price || '';
+                    return parseInt(priceStr.replace(/[^\d]/g, '')) || 0;
+                })
+                .filter(price => price > 0);
+            
+            if (prices.length > 0) {
+                const minPrice = Math.min(...prices);
+                const maxPrice = Math.max(...prices);
+                document.getElementById('priceRange').textContent = `¥${minPrice.toLocaleString()}〜¥${maxPrice.toLocaleString()}`;
+            }
+        }
+        
+        // フィルターオプションの生成
+        function populateFilterOptions() {
+            // 産地フィルターのオプション生成
+            const regionFilter = document.getElementById('regionFilter');
+            regionFilter.innerHTML = '<option value="">すべての産地</option>';
+            
+            const regions = {};
+            whiskyData.forEach(whisky => {
+                if (whisky.region) {
+                    const mainRegion = whisky.region.split(',')[0].trim();
+                    regions[mainRegion] = (regions[mainRegion] || 0) + 1;
+                }
+            });
+            
+            Object.entries(regions)
+                .sort((a, b) => a[0].localeCompare(b[0]))
+                .forEach(([region, count]) => {
+                    const option = document.createElement('option');
+                    option.value = region;
+                    option.textContent = `${region} (${count})`;
+                    regionFilter.appendChild(option);
+                });
+        }
+        
         // イベントリスナーの初期化
         function initializeEventListeners() {
-            // 検索フィルター
+            // 検索機能
             document.getElementById('searchInput').addEventListener('input', function() {
                 currentPage = 1;
-                applyFilters();
+                displayWhiskies();
             });
             
-            // 地域フィルター
+            // フィルター
             document.getElementById('regionFilter').addEventListener('change', function() {
                 currentPage = 1;
-                applyFilters();
+                displayWhiskies();
             });
             
-            // 価格フィルター
             document.getElementById('priceFilter').addEventListener('change', function() {
                 currentPage = 1;
-                applyFilters();
+                displayWhiskies();
             });
             
-            // 味わいフィルター
             document.getElementById('flavorFilter').addEventListener('change', function() {
                 currentPage = 1;
-                applyFilters();
+                displayWhiskies();
             });
             
-            // リセットボタン
-            document.getElementById('resetFilters').addEventListener('click', resetFilters);
+            // ソート
+            document.querySelectorAll('.whisky-list-table th[data-sort]').forEach(th => {
+                th.addEventListener('click', function() {
+                    const field = this.getAttribute('data-sort');
+                    
+                    if (sortField === field) {
+                        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+                    } else {
+                        sortField = field;
+                        sortOrder = 'asc';
+                    }
+                    
+                    displayWhiskies();
+                });
+            });
             
-            // 表示件数の変更
+            // ページネーション
             document.getElementById('perPageSelect').addEventListener('change', function() {
                 itemsPerPage = parseInt(this.value);
                 currentPage = 1;
                 displayWhiskies();
             });
             
-            // テーブルヘッダーのソート
-            document.querySelectorAll('.whisky-list-table th[data-sort]').forEach(th => {
-                th.addEventListener('click', function() {
-                    const field = this.getAttribute('data-sort');
-                    
-                    if (sortField === field) {
-                        // 同じフィールドの場合、順序を反転
-                        sortOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-                    } else {
-                        // 新しいフィールドの場合、昇順にする
-                        sortField = field;
-                        sortOrder = 'asc';
-                    }
-                    
-                    // ソートマーカーの更新
-                    document.querySelectorAll('.whisky-list-table th i').forEach(icon => {
-                        icon.className = 'fas fa-sort';
-                    });
-                    
-                    const icon = this.querySelector('i');
-                    icon.className = sortOrder === 'asc' ? 'fas fa-sort-up' : 'fas fa-sort-down';
-                    
-                    displayWhiskies();
-                });
+            // フィルターリセット
+            document.getElementById('resetFilters').addEventListener('click', function() {
+                document.getElementById('searchInput').value = '';
+                document.getElementById('regionFilter').value = '';
+                document.getElementById('priceFilter').value = '';
+                document.getElementById('flavorFilter').value = '';
+                document.getElementById('perPageSelect').value = '20';
+                itemsPerPage = 20;
+                currentPage = 1;
+                sortField = '';
+                sortOrder = 'asc';
+                displayWhiskies();
             });
-            
-            // Google翻訳を開く関数
-            window.openGoogleTranslate = function() {
-                const currentUrl = encodeURIComponent(window.location.href);
-                window.open(`https://translate.google.com/translate?sl=auto&tl=en&u=${currentUrl}`, '_blank');
-            };
         }
-
-        // フィルター適用
-        function applyFilters() {
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        
+        // ウィスキーリストの表示
+        function displayWhiskies() {
+            console.log('Displaying whiskies...');
+            
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const whiskyTable = document.getElementById('whiskyTable');
+            
+            // ローディング表示
+            loadingSpinner.style.display = 'flex';
+            whiskyTable.style.display = 'none';
+            
+            // 検索とフィルタリング
+            const searchQuery = document.getElementById('searchInput').value.toLowerCase();
             const regionFilter = document.getElementById('regionFilter').value;
             const priceFilter = document.getElementById('priceFilter').value;
             const flavorFilter = document.getElementById('flavorFilter').value;
             
             filteredWhiskies = whiskyData.filter(whisky => {
-                // 検索フィルター
-                if (searchTerm) {
+                // 検索クエリでフィルタリング
+                if (searchQuery) {
                     const searchFields = [
                         whisky.name,
                         whisky.region,
@@ -1514,204 +1485,163 @@
                         whisky.tastingNote_ja
                     ].filter(Boolean).map(field => field.toLowerCase());
                     
-                    if (!searchFields.some(field => field.includes(searchTerm))) {
-                        return false;
-                    }
+                    const matchesSearch = searchFields.some(field => field.includes(searchQuery));
+                    if (!matchesSearch) return false;
                 }
                 
-                // 地域フィルター
-                if (regionFilter && (!whisky.region || !whisky.region.includes(regionFilter))) {
-                    return false;
+                // 産地フィルター
+                if (regionFilter && whisky.region) {
+                    const mainRegion = whisky.region.split(',')[0].trim();
+                    if (mainRegion !== regionFilter) return false;
                 }
                 
                 // 価格フィルター
                 if (priceFilter && whisky.price) {
-                    const price = parseFloat(whisky.price.replace(/[^0-9.]/g, ''));
+                    const price = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
                     
-                    if (!isNaN(price)) {
-                        const [min, max] = priceFilter.split('-').map(val => parseInt(val.replace(/\+$/, '')));
-                        
-                        if (priceFilter.endsWith('+')) {
-                            if (price < min) return false;
-                        } else {
-                            if (price < min || price > max) return false;
-                        }
-                    }
+                    if (priceFilter === '0-3000' && price > 3000) return false;
+                    if (priceFilter === '3000-5000' && (price < 3000 || price > 5000)) return false;
+                    if (priceFilter === '5000-10000' && (price < 5000 || price > 10000)) return false;
+                    if (priceFilter === '10000-20000' && (price < 10000 || price > 20000)) return false;
+                    if (priceFilter === '20000+' && price < 20000) return false;
                 }
                 
                 // 味わいフィルター
                 if (flavorFilter && whisky.taste_profile) {
-                    switch (flavorFilter) {
-                        case 'fruity':
-                            if (whisky.taste_profile.fruity < 3) return false;
-                            break;
-                        case 'smoky':
-                            if (whisky.taste_profile.smoky < 3) return false;
-                            break;
-                        case 'spicy':
-                            if (whisky.taste_profile.spicy < 3) return false;
-                            break;
-                        case 'sweet':
-                            if (whisky.taste_profile.sweetness < 3) return false;
-                            break;
-                        case 'complex':
-                            if (whisky.taste_profile.complexity < 4) return false;
-                            break;
-                    }
+                    const profile = whisky.taste_profile;
+                    
+                    if (flavorFilter === 'fruity' && (!profile.fruity || profile.fruity < 3)) return false;
+                    if (flavorFilter === 'smoky' && (!profile.smoky || profile.smoky < 3)) return false;
+                    if (flavorFilter === 'spicy' && (!profile.spicy || profile.spicy < 3)) return false;
+                    if (flavorFilter === 'sweet' && (!profile.sweetness || profile.sweetness < 3)) return false;
+                    if (flavorFilter === 'complex' && (!profile.complexity || profile.complexity < 4)) return false;
                 }
                 
                 return true;
             });
             
-            displayWhiskies();
-        }
-
-        // フィルターリセット
-        function resetFilters() {
-            document.getElementById('searchInput').value = '';
-            document.getElementById('regionFilter').value = '';
-            document.getElementById('priceFilter').value = '';
-            document.getElementById('flavorFilter').value = '';
-            
-            currentPage = 1;
-            applyFilters();
-        }
-
-        // ウィスキー一覧の表示
-        function displayWhiskies() {
-            const whiskiesToDisplay = filteredWhiskies.length > 0 ? filteredWhiskies : whiskyData;
-            
             // ソート
             if (sortField) {
-                whiskiesToDisplay.sort((a, b) => {
+                filteredWhiskies.sort((a, b) => {
                     let valueA, valueB;
                     
-                    // 特殊なフィールドの処理
-                    if (sortField === 'price') {
-                        valueA = parseFloat((a.price || '').replace(/[^0-9.]/g, '')) || 0;
-                        valueB = parseFloat((b.price || '').replace(/[^0-9.]/g, '')) || 0;
-                    } else if (sortField.match(/^(fruity|spicy|body|smoky|sweetness|complexity)$/)) {
+                    if (sortField === 'name' || sortField === 'region') {
+                        valueA = (a[sortField] || '').toLowerCase();
+                        valueB = (b[sortField] || '').toLowerCase();
+                    } else if (sortField === 'price') {
+                        valueA = parseInt((a[sortField] || '').replace(/[^\d]/g, '')) || 0;
+                        valueB = parseInt((b[sortField] || '').replace(/[^\d]/g, '')) || 0;
+                    } else if (sortField === 'abv') {
+                        valueA = a[sortField] || 0;
+                        valueB = b[sortField] || 0;
+                    } else if (['smoky', 'fruity', 'complexity'].includes(sortField)) {
                         valueA = (a.taste_profile && a.taste_profile[sortField]) || 0;
                         valueB = (b.taste_profile && b.taste_profile[sortField]) || 0;
                     } else {
                         valueA = a[sortField] || '';
                         valueB = b[sortField] || '';
-                        
-                        if (typeof valueA === 'string' && typeof valueB === 'string') {
-                            return sortOrder === 'asc' 
-                                ? valueA.localeCompare(valueB) 
-                                : valueB.localeCompare(valueA);
-                        }
                     }
                     
-                    return sortOrder === 'asc' ? valueA - valueB : valueB - valueA;
+                    if (valueA < valueB) return sortOrder === 'asc' ? -1 : 1;
+                    if (valueA > valueB) return sortOrder === 'asc' ? 1 : -1;
+                    return 0;
                 });
             }
             
             // ページネーション
-            const start = (currentPage - 1) * itemsPerPage;
-            const end = start + itemsPerPage;
-            const paginatedWhiskies = whiskiesToDisplay.slice(start, end);
+            const totalPages = Math.ceil(filteredWhiskies.length / itemsPerPage);
+            if (currentPage > totalPages) currentPage = 1;
             
-            // テーブルボディの更新
-            const tbody = document.getElementById('whiskyTableBody');
-            tbody.innerHTML = '';
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = Math.min(startIndex + itemsPerPage, filteredWhiskies.length);
+            const currentWhiskies = filteredWhiskies.slice(startIndex, endIndex);
             
-            if (paginatedWhiskies.length === 0) {
+            // テーブル本体の更新
+            const tableBody = document.getElementById('whiskyTableBody');
+            tableBody.innerHTML = '';
+            
+            if (currentWhiskies.length === 0) {
+                // データがない場合
                 const row = document.createElement('tr');
                 const cell = document.createElement('td');
                 cell.colSpan = 7;
-                cell.textContent = '該当するウィスキーが見つかりません';
+                cell.textContent = '条件に一致するウィスキーが見つかりませんでした。';
                 cell.style.textAlign = 'center';
                 cell.style.padding = '20px';
                 row.appendChild(cell);
-                tbody.appendChild(row);
+                tableBody.appendChild(row);
             } else {
-                paginatedWhiskies.forEach(whisky => {
+                // データを表示
+                currentWhiskies.forEach(whisky => {
                     const row = document.createElement('tr');
-                    row.dataset.id = whisky.id;
+                    row.setAttribute('data-id', whisky.id);
                     
-                    // 銘柄
+                    // 各セルの内容を設定
                     const nameCell = document.createElement('td');
                     nameCell.textContent = whisky.name;
                     row.appendChild(nameCell);
                     
-                    // 価格
                     const priceCell = document.createElement('td');
                     priceCell.textContent = whisky.price || '-';
                     row.appendChild(priceCell);
                     
-                    // 産地
                     const regionCell = document.createElement('td');
                     regionCell.textContent = whisky.region || '-';
                     row.appendChild(regionCell);
                     
-                    // アルコール度数
                     const abvCell = document.createElement('td');
                     abvCell.className = 'hide-mobile';
                     abvCell.textContent = whisky.abv ? `${whisky.abv}%` : '-';
                     row.appendChild(abvCell);
                     
-                    // スモーキー
                     const smokyCell = document.createElement('td');
                     smokyCell.className = 'hide-mobile';
-                    smokyCell.innerHTML = getRatingStars(whisky.taste_profile ? whisky.taste_profile.smoky : 0);
+                    const smokyValue = whisky.taste_profile ? whisky.taste_profile.smoky || 0 : 0;
+                    smokyCell.textContent = `${smokyValue}/5`;
                     row.appendChild(smokyCell);
                     
-                    // フルーティー
                     const fruityCell = document.createElement('td');
                     fruityCell.className = 'hide-mobile';
-                    fruityCell.innerHTML = getRatingStars(whisky.taste_profile ? whisky.taste_profile.fruity : 0);
+                    const fruityValue = whisky.taste_profile ? whisky.taste_profile.fruity || 0 : 0;
+                    fruityCell.textContent = `${fruityValue}/5`;
                     row.appendChild(fruityCell);
                     
-                    // 複雑さ
                     const complexityCell = document.createElement('td');
                     complexityCell.className = 'hide-mobile';
-                    complexityCell.innerHTML = getRatingStars(whisky.taste_profile ? whisky.taste_profile.complexity : 0);
+                    const complexityValue = whisky.taste_profile ? whisky.taste_profile.complexity || 0 : 0;
+                    complexityCell.textContent = `${complexityValue}/5`;
                     row.appendChild(complexityCell);
                     
                     // クリックイベント
                     row.addEventListener('click', function() {
+                        document.querySelectorAll('.whisky-list-table tbody tr').forEach(r => {
+                            r.classList.remove('selected');
+                        });
+                        this.classList.add('selected');
+                        
                         selectWhisky(whisky);
                     });
                     
-                    tbody.appendChild(row);
+                    tableBody.appendChild(row);
                 });
             }
             
-            // ページ情報の更新
-            const totalItems = whiskiesToDisplay.length;
-            const pageInfo = document.getElementById('pageInfo');
-            pageInfo.textContent = totalItems === 0 
-                ? '0 / 0' 
-                : `${start + 1} - ${Math.min(end, totalItems)} / ${totalItems}`;
+            // ページ情報を更新
+            document.getElementById('pageInfo').textContent = 
+                `${startIndex + 1} - ${endIndex} / ${filteredWhiskies.length}`;
             
-            // ページネーション更新
-            updatePagination(totalItems);
+            // ページネーションボタンを更新
+            updatePagination(totalPages);
+            
+            // 表示を切り替え
+            loadingSpinner.style.display = 'none';
+            whiskyTable.style.display = 'table';
         }
-
-        // 評価スターの取得
-        function getRatingStars(rating) {
-            const maxStars = 5;
-            let starsHtml = '';
-            
-            for (let i = 1; i <= maxStars; i++) {
-                if (i <= rating) {
-                    starsHtml += '<span class="text-yellow-400">★</span>';
-                } else {
-                    starsHtml += '<span class="text-gray-500">☆</span>';
-                }
-            }
-            
-            return starsHtml;
-        }
-
-        // ページネーション更新
-        function updatePagination(totalItems) {
+        
+        // ページネーションの更新
+        function updatePagination(totalPages) {
             const pagination = document.getElementById('pagination');
             pagination.innerHTML = '';
-            
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
             
             // 前へボタン
             const prevBtn = document.createElement('button');
@@ -1727,16 +1657,18 @@
             pagination.appendChild(prevBtn);
             
             // ページ番号ボタン
-            let startPage = Math.max(1, currentPage - 2);
-            let endPage = Math.min(totalPages, startPage + 4);
+            const maxButtons = 5;
+            let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
+            let endPage = Math.min(totalPages, startPage + maxButtons - 1);
             
-            if (endPage - startPage < 4 && totalPages > 4) {
-                startPage = Math.max(1, endPage - 4);
+            if (endPage - startPage + 1 < maxButtons) {
+                startPage = Math.max(1, endPage - maxButtons + 1);
             }
             
             for (let i = startPage; i <= endPage; i++) {
                 const pageBtn = document.createElement('button');
-                pageBtn.className = 'pagination-btn' + (i === currentPage ? ' active' : '');
+                pageBtn.className = 'pagination-btn';
+                if (i === currentPage) pageBtn.classList.add('active');
                 pageBtn.textContent = i;
                 pageBtn.addEventListener('click', function() {
                     currentPage = i;
@@ -1758,279 +1690,90 @@
             });
             pagination.appendChild(nextBtn);
         }
-
-        // ウィスキー選択
+        
+        // ウィスキー選択時の処理
         function selectWhisky(whisky) {
-            console.log('Selected whisky:', whisky);
+            console.log('選択されたウィスキー:', whisky.name);
             
-            // 選択状態のリセット
-            document.querySelectorAll('.whisky-list-table tr').forEach(row => {
-                row.classList.remove('selected');
-            });
-            
-            // 選択行のハイライト
-            const selectedRow = document.querySelector(`.whisky-list-table tr[data-id="${whisky.id}"]`);
-            if (selectedRow) {
-                selectedRow.classList.add('selected');
-            }
-            
-            // 詳細表示
+            // 詳細セクションを表示
             const detailsSection = document.getElementById('whiskyDetails');
             detailsSection.style.display = 'flex';
             
-            // スクロール
-            setTimeout(() => {
-                detailsSection.scrollIntoView({ behavior: 'smooth' });
-                detailsSection.classList.add('highlight-panel');
-                setTimeout(() => {
-                    detailsSection.classList.remove('highlight-panel');
-                }, 1000);
-            }, 100);
-            
-            // 基本情報の表示
+            // 詳細情報を更新
             document.getElementById('detailWhiskyName').textContent = whisky.name;
             document.getElementById('detailWhiskyPrice').textContent = whisky.price || '-';
             
-            // タグの表示
+            // タグの更新
             const tagsContainer = document.getElementById('detailWhiskyTags');
             tagsContainer.innerHTML = '';
             
             if (whisky.region) {
-                const regionTag = document.createElement('span');
+                const regionTag = document.createElement('div');
                 regionTag.className = 'tag';
                 regionTag.textContent = whisky.region;
                 tagsContainer.appendChild(regionTag);
             }
             
             if (whisky.subcategory) {
-                const categoryTag = document.createElement('span');
+                const categoryTag = document.createElement('div');
                 categoryTag.className = 'tag';
                 categoryTag.textContent = whisky.subcategory;
                 tagsContainer.appendChild(categoryTag);
             }
             
             if (whisky.abv) {
-                const abvTag = document.createElement('span');
+                const abvTag = document.createElement('div');
                 abvTag.className = 'tag';
                 abvTag.textContent = `${whisky.abv}%`;
                 tagsContainer.appendChild(abvTag);
             }
             
-            // テイスティングノートの表示
+            // テイスティングノートの更新
             document.getElementById('detailWhiskyDescription').textContent = 
                 whisky.tastingNote_ja || '詳細情報はありません。';
             
-            // 味覚プロファイルの表示
-            if (whisky.taste_profile) {
-                updateProfileChart(whisky.taste_profile);
-            } else {
-                updateProfileChart({
-                    fruity: 0,
-                    spicy: 0,
-                    body: 0,
-                    smoky: 0,
-                    sweetness: 0,
-                    complexity: 0
-                });
-            }
+            // 味覚プロファイルの更新
+            const profile = whisky.taste_profile || {};
+            updateProfileChart(profile);
             
-            // 写真の表示
+            // 写真の更新
             updateWhiskyPhoto(whisky);
             
             // 蒸留所情報を表示
             const distilleryName = getDistilleryNameFromWhisky(whisky);
+            console.log('対応する蒸留所名:', distilleryName);
+            
             if (distilleryName) {
                 showDistilleryInfo(distilleryName);
                 
-                // 重要: マーカーの更新を実行
-                updateSelectedDistilleryMarker(distilleryName);
+                // 選択された蒸留所のマーカーを更新
+                updateSelectedDistillery(distilleryName);
             } else {
-                showNoDistilleryInfo();
-            }
-        }
-
-        // 写真URLの処理を改善
-        function updateWhiskyPhoto(whisky) {
-            console.log('Updating whisky photo for:', whisky.name, 'photoUrl:', whisky.photoUrl);
-            
-            const photoSection = document.getElementById('whiskyPhotoSection');
-            const photoImg = document.getElementById('whiskyPhoto');
-            const photoBg = document.getElementById('whiskyPhotoBlurBg');
-            const photoCaption = document.getElementById('whiskyPhotoCaption');
-            const photoContainer = document.querySelector('.whisky-photo-container');
-            
-            if (!photoSection || !photoImg || !photoBg || !photoCaption || !photoContainer) {
-                console.warn('写真表示要素が見つかりません');
-                return;
-            }
-            
-            // 写真URLの処理を改善
-            if (whisky.photoUrl) {
-                // 写真がある場合の表示
-                photoContainer.classList.remove('no-photo');
-                photoImg.style.display = 'block';
+                console.warn('このウィスキーに対応する蒸留所が見つかりません');
+                // 蒸留所情報をクリア
+                document.getElementById('distilleryName').textContent = '蒸留所情報なし';
+                document.getElementById('distilleryRegion').textContent = '-';
+                document.getElementById('distilleryFounded').textContent = '-';
+                document.getElementById('distilleryStatus').textContent = '-';
+                document.getElementById('distilleryDescription').textContent = 'このウィスキーに対応する蒸留所情報は登録されていません。';
                 
-                // パスの処理 - スラッシュに統一し、相対パスを適切に処理
-                let photoUrl = whisky.photoUrl;
-                // バックスラッシュをスラッシュに変換
-                photoUrl = photoUrl.replace(/\\/g, '/');
-                // 先頭のスラッシュを確保
-                if (!photoUrl.startsWith('./') && !photoUrl.startsWith('/') && !photoUrl.startsWith('http')) {
-                    photoUrl = './' + photoUrl;
-                }
-                
-                console.log('処理後の画像URL:', photoUrl);
-                
-                photoImg.src = photoUrl;
-                photoBg.style.backgroundImage = `url(${photoUrl})`;
-                photoCaption.textContent = `${whisky.name}のボトル画像`;
-                
-                // 画像読み込みエラー時の処理
-                photoImg.onerror = function() {
-                    console.warn(`画像の読み込みに失敗しました: ${photoUrl}`);
-                    // 別のパスも試みる
-                    const alternativeUrl = './whisky-sommelier/photo/' + whisky.photoUrl.split('/').pop().split('\\').pop();
-                    console.log('別のパスを試行:', alternativeUrl);
-                    photoImg.src = alternativeUrl;
-                    photoBg.style.backgroundImage = `url(${alternativeUrl})`;
-                    
-                    // 2回目のエラーハンドリング
-                    photoImg.onerror = function() {
-                        console.warn(`代替パスでも画像の読み込みに失敗しました: ${alternativeUrl}`);
-                        showNoPhotoState(photoContainer, photoCaption, whisky.name);
-                    };
-                };
-                
-                // no-photo-contentがあれば削除
-                const noPhotoContent = photoContainer.querySelector('.no-photo-content');
-                if (noPhotoContent) {
-                    photoContainer.removeChild(noPhotoContent);
-                }
-            } else {
-                // 写真がない場合
-                showNoPhotoState(photoContainer, photoCaption, whisky.name);
-            }
-        }
-
-        // 写真なし状態表示の改善
-        function showNoPhotoState(container, caption, whiskyName) {
-            // DOMを壊さないよう、適切な方法で状態を変更
-            container.classList.add('no-photo');
-            
-            // 写真要素を非表示に
-            const photoImg = document.getElementById('whiskyPhoto');
-            if (photoImg) {
-                photoImg.style.display = 'none';
-            }
-            
-            // 背景ぼかしをクリア
-            const photoBg = document.getElementById('whiskyPhotoBlurBg');
-            if (photoBg) {
-                photoBg.style.backgroundImage = 'none';
-            }
-            
-            // キャプションを更新
-            if (caption) {
-                caption.textContent = `${whiskyName}の画像は現在ありません`;
-            }
-            
-            // No Photo表示用の要素を追加（既存なら再利用）
-            let noPhotoContent = container.querySelector('.no-photo-content');
-            if (!noPhotoContent) {
-                noPhotoContent = document.createElement('div');
-                noPhotoContent.className = 'no-photo-content';
-                noPhotoContent.innerHTML = `
-                    <i class="fas fa-image no-photo-icon"></i>
-                    <div class="no-photo-text">画像準備中</div>
-                `;
-                container.appendChild(noPhotoContent);
-            }
-        }
-
-        // 蒸留所名の取得
-        function getDistilleryNameFromWhisky(whisky) {
-            // brandToDistilleryMappingを使用して銘柄から蒸留所を特定
-            if (brandToDistilleryMapping && whisky.name in brandToDistilleryMapping) {
-                return brandToDistilleryMapping[whisky.name];
-            }
-            
-            // 蒸留所名が含まれている可能性がある場合
-            for (const distilleryName in distilleryDatabase) {
-                const simpleName = distilleryName.replace('蒸溜所', '').trim();
-                if (whisky.name.includes(simpleName)) {
-                    return distilleryName;
+                // マップをリセット
+                resetAllMarkers();
+                if (distilleryMap) {
+                    distilleryMap.setView([56.0, -4.0], 6);
                 }
             }
             
-            // リージョン情報から推測
-            if (whisky.region) {
-                // 地域名が含まれる蒸留所を探す
-                for (const distilleryName in distilleryDatabase) {
-                    const distillery = distilleryDatabase[distilleryName];
-                    if (distillery.region && 
-                        (whisky.region.includes(distillery.region) || 
-                         distillery.region.includes(whisky.region))) {
-                        return distilleryName;
-                    }
-                }
-            }
+            // 詳細セクションにスクロール
+            detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
             
-            return null;
+            // ハイライトアニメーション
+            detailsSection.classList.add('highlight-panel');
+            setTimeout(() => {
+                detailsSection.classList.remove('highlight-panel');
+            }, 1000);
         }
-
-        // 蒸留所情報の表示
-        function showDistilleryInfo(distilleryName) {
-            const distillery = distilleryDatabase[distilleryName];
-            
-            if (!distillery) {
-                showNoDistilleryInfo();
-                return;
-            }
-            
-            document.getElementById('distilleryName').textContent = distillery.name || distilleryName;
-            document.getElementById('distilleryRegion').textContent = distillery.region || '-';
-            document.getElementById('distilleryFounded').textContent = distillery.foundedYear || '-';
-            
-            const statusElement = document.getElementById('distilleryStatus');
-            statusElement.textContent = distillery.status || '-';
-            
-            if (distillery.status) {
-                if (distillery.status.includes('アクティブ') || distillery.status.includes('稼働')) {
-                    statusElement.className = 'info-value status-active';
-                } else if (distillery.status.includes('閉鎖')) {
-                    statusElement.className = 'info-value status-closed';
-                } else {
-                    statusElement.className = 'info-value status-unknown';
-                }
-            } else {
-                statusElement.className = 'info-value';
-            }
-            
-            document.getElementById('distilleryDescription').textContent = 
-                distillery.description || '蒸留所に関する詳細情報はありません。';
-            
-            // マップの更新
-            if (distillery.location) {
-                updateDistilleryMap(distillery);
-            }
-        }
-
-        // 蒸留所情報がない場合の表示
-        function showNoDistilleryInfo() {
-            document.getElementById('distilleryName').textContent = '蒸留所情報なし';
-            document.getElementById('distilleryRegion').textContent = '-';
-            document.getElementById('distilleryFounded').textContent = '-';
-            document.getElementById('distilleryStatus').textContent = '-';
-            document.getElementById('distilleryStatus').className = 'info-value';
-            document.getElementById('distilleryDescription').textContent = 
-                'この銘柄の蒸留所情報は登録されていません。';
-            
-            // マップのリセット
-            if (distilleryMap) {
-                distilleryMap.setView([56.0, -4.0], 6);
-            }
-        }
-
+        
         // 味覚プロファイルチャートの更新
         function updateProfileChart(profile) {
             const chartCanvas = document.getElementById('whiskyProfileChart');
@@ -2134,9 +1877,213 @@
                 console.error('Error creating chart:', error);
             }
         }
-
-        // 蒸留所マップの初期化
+        
+        // 写真表示の更新
+        function updateWhiskyPhoto(whisky) {
+            console.log('写真を更新:', whisky.name, 'photoUrl:', whisky.photoUrl);
+            
+            const photoSection = document.getElementById('whiskyPhotoSection');
+            const photoImg = document.getElementById('whiskyPhoto');
+            const photoBg = document.getElementById('whiskyPhotoBlurBg');
+            const photoCaption = document.getElementById('whiskyPhotoCaption');
+            const photoContainer = document.querySelector('.whisky-photo-container');
+            
+            if (!photoSection || !photoImg || !photoBg || !photoCaption || !photoContainer) {
+                console.warn('写真表示要素が見つかりません');
+                return;
+            }
+            
+            // 写真URLの処理を改善
+            if (whisky.photoUrl) {
+                // 写真がある場合の表示
+                photoContainer.classList.remove('no-photo');
+                photoImg.style.display = 'block';
+                
+                // パスの処理 - スラッシュに統一し、相対パスを適切に処理
+                let photoUrl = whisky.photoUrl;
+                // バックスラッシュをスラッシュに変換
+                photoUrl = photoUrl.replace(/\\/g, '/');
+                
+                console.log('処理後の画像URL:', photoUrl);
+                
+                // 複数の可能性のあるパスを試す
+                const possiblePaths = [
+                    photoUrl,
+                    `./${photoUrl}`,
+                    `./whisky-sommelier/photo/${photoUrl.split('/').pop()}`,
+                    `/whisky-sommelier/photo/${photoUrl.split('/').pop()}`,
+                    `./photo/${photoUrl.split('/').pop()}`,
+                    `/photo/${photoUrl.split('/').pop()}`,
+                    `1.jpg` // 最後の手段としてハードコードされたファイル名
+                ];
+                
+                // 最初のパスを設定
+                photoImg.src = possiblePaths[0];
+                photoBg.style.backgroundImage = `url(${possiblePaths[0]})`;
+                photoCaption.textContent = `${whisky.name}のボトル画像`;
+                
+                // エラーハンドリングを改善
+                let pathIndex = 0;
+                photoImg.onerror = function() {
+                    console.warn(`画像の読み込みに失敗しました: ${possiblePaths[pathIndex]}`);
+                    pathIndex++;
+                    
+                    if (pathIndex < possiblePaths.length) {
+                        console.log(`別のパスを試行 (${pathIndex}/${possiblePaths.length}): ${possiblePaths[pathIndex]}`);
+                        photoImg.src = possiblePaths[pathIndex];
+                        photoBg.style.backgroundImage = `url(${possiblePaths[pathIndex]})`;
+                    } else {
+                        console.warn('すべてのパスを試しましたが画像を読み込めませんでした');
+                        showNoPhotoState(photoContainer, photoCaption, whisky.name);
+                    }
+                };
+                
+                // no-photo-contentがあれば削除
+                const noPhotoContent = photoContainer.querySelector('.no-photo-content');
+                if (noPhotoContent) {
+                    photoContainer.removeChild(noPhotoContent);
+                }
+            } else {
+                // 写真がない場合
+                showNoPhotoState(photoContainer, photoCaption, whisky.name);
+            }
+        }
+        
+        // 写真なし状態の表示
+        function showNoPhotoState(container, caption, whiskyName) {
+            // DOMを壊さないよう、要素の置き換えではなく属性変更で対応
+            container.classList.add('no-photo');
+            
+            // 写真要素を非表示に
+            const photoImg = document.getElementById('whiskyPhoto');
+            if (photoImg) {
+                photoImg.style.display = 'none';
+            }
+            
+            // 背景ぼかしをクリア
+            const photoBg = document.getElementById('whiskyPhotoBlurBg');
+            if (photoBg) {
+                photoBg.style.backgroundImage = 'none';
+            }
+            
+            // キャプションを更新
+            if (caption) {
+                caption.textContent = `${whiskyName}の画像は現在ありません`;
+            }
+            
+            // No Photo表示用の要素を追加（既存なら再利用）
+            let noPhotoContent = container.querySelector('.no-photo-content');
+            if (!noPhotoContent) {
+                noPhotoContent = document.createElement('div');
+                noPhotoContent.className = 'no-photo-content';
+                noPhotoContent.innerHTML = `
+                    <i class="fas fa-image no-photo-icon"></i>
+                    <div class="no-photo-text">画像準備中</div>
+                `;
+                container.appendChild(noPhotoContent);
+            }
+        }
+        
+        // 蒸留所名の取得
+        function getDistilleryNameFromWhisky(whisky) {
+            // brandToDistilleryMappingを使用して銘柄から蒸留所を特定
+            if (brandToDistilleryMapping && whisky.name in brandToDistilleryMapping) {
+                return brandToDistilleryMapping[whisky.name];
+            }
+            
+            // ウィスキー名から蒸留所名を抽出（一般的には最初の単語が蒸留所名）
+            const firstWord = whisky.name.split(' ')[0].trim();
+            
+            // 蒸留所データベースを検索
+            for (const distilleryName in distilleryDatabase) {
+                // 蒸留所名の最初の単語と一致するか確認
+                const distFirstWord = distilleryName.split(' ')[0].trim();
+                if (distFirstWord.toLowerCase() === firstWord.toLowerCase()) {
+                    return distilleryName;
+                }
+                
+                // 蒸留所名が含まれているか確認
+                if (whisky.name.toLowerCase().includes(distilleryName.toLowerCase())) {
+                    return distilleryName;
+                }
+                
+                // 「蒸溜所」を除いた名前で検索
+                const simpleName = distilleryName.replace('蒸溜所', '').trim();
+                if (whisky.name.toLowerCase().includes(simpleName.toLowerCase())) {
+                    return distilleryName;
+                }
+            }
+            
+            // リージョン情報から推測
+            if (whisky.region) {
+                // 地域名が含まれる蒸留所を探す
+                for (const distilleryName in distilleryDatabase) {
+                    const distillery = distilleryDatabase[distilleryName];
+                    if (distillery.region && 
+                        (whisky.region.includes(distillery.region) || 
+                         distillery.region.includes(whisky.region))) {
+                        return distilleryName;
+                    }
+                }
+            }
+            
+            // タリスカーの特別対応
+            if (whisky.name.includes('タリスカー')) {
+                for (const distilleryName in distilleryDatabase) {
+                    if (distilleryName.includes('タリスカー')) {
+                        return distilleryName;
+                    }
+                }
+            }
+            
+            return null;
+        }
+        
+        // 蒸留所情報の表示
+        function showDistilleryInfo(distilleryName) {
+            console.log('蒸留所情報を表示:', distilleryName);
+            
+            const distillery = distilleryDatabase[distilleryName];
+            if (!distillery) {
+                console.warn(`蒸留所情報が見つかりません: ${distilleryName}`);
+                return;
+            }
+            
+            // 蒸留所情報を更新
+            document.getElementById('distilleryName').textContent = distillery.name || distilleryName;
+            document.getElementById('distilleryRegion').textContent = distillery.region || '-';
+            document.getElementById('distilleryFounded').textContent = distillery.foundedYear || '-';
+            
+            // 状態の表示
+            const statusElement = document.getElementById('distilleryStatus');
+            if (distillery.status) {
+                statusElement.textContent = distillery.status;
+                
+                if (distillery.status.includes('アクティブ') || distillery.status.includes('稼働')) {
+                    statusElement.className = 'status-active';
+                } else if (distillery.status.includes('閉鎖')) {
+                    statusElement.className = 'status-closed';
+                } else {
+                    statusElement.className = 'status-unknown';
+                }
+            } else {
+                statusElement.textContent = '-';
+                statusElement.className = '';
+            }
+            
+            // 説明文
+            document.getElementById('distilleryDescription').textContent = distillery.description || '詳細情報はありません。';
+            
+            // マップの更新
+            if (distillery.location) {
+                updateDistilleryMap(distillery);
+            }
+        }
+        
+        // マップの初期化
         function initializeDistilleryMap() {
+            console.log('蒸留所マップを初期化');
+            
             // マップが既に初期化されている場合は削除
             if (distilleryMap) {
                 distilleryMap.remove();
@@ -2159,72 +2106,89 @@
             // 既存のマーカーをリセット
             distilleryMarkers = {};
             selectedMarker = null;
+        }
+        
+        // 蒸留所マップの更新
+        function updateDistilleryMap(distillery) {
+            console.log('蒸留所マップを更新:', distillery.name);
             
-            // すべての蒸留所のマーカーを追加
-            for (const distilleryName in distilleryDatabase) {
-                const distillery = distilleryDatabase[distilleryName];
-                if (distillery.location && distillery.location.lat && distillery.location.lng) {
-                    addDistilleryMarker(distilleryMap, distillery, false);
+            if (!distilleryMap) {
+                initializeDistilleryMap();
+            }
+            
+            // マップの中心を移動
+            const lat = distillery.location.lat;
+            const lng = distillery.location.lng;
+            const zoom = distillery.zoomLevel || 8;
+            
+            distilleryMap.setView([lat, lng], zoom);
+        }
+        
+        // 選択された蒸留所のマーカーを更新
+        function updateSelectedDistillery(distilleryName) {
+            console.log('選択された蒸留所を更新:', distilleryName);
+            
+            // すべての既存マーカーを一度削除して初期化
+            resetAllMarkers();
+            
+            // 蒸留所データベースのすべての蒸留所を表示
+            for (const distKey in distilleryDatabase) {
+                const distillery = distilleryDatabase[distKey];
+                if (distillery.location) {
+                    // 選択された蒸留所かどうかをチェック
+                    const isSelected = (distillery.name === distilleryName);
+                    // マーカーを追加
+                    addDistilleryMarker(distilleryMap, distillery, isSelected);
+                }
+            }
+            
+            // 選択された蒸留所を記録
+            selectedMarker = distilleryName;
+            
+            // 選択された蒸留所があれば、マップの中心を移動
+            if (distilleryName) {
+                const distillery = Object.values(distilleryDatabase).find(d => d.name === distilleryName);
+                if (distillery && distillery.location) {
+                    distilleryMap.setView([distillery.location.lat, distillery.location.lng], distillery.zoomLevel || 8);
                 }
             }
         }
-
-        // 蒸留所マップの更新
-        function updateDistilleryMap(distillery) {
-            if (!distilleryMap || !distillery.location) return;
-            
-            const zoom = distillery.zoomLevel || 8;
-            distilleryMap.setView([distillery.location.lat, distillery.location.lng], zoom);
-        }
-
-        // 選択された蒸留所のマーカーを更新
-        function updateSelectedDistilleryMarker(distilleryName) {
-            const distillery = distilleryDatabase[distilleryName];
-            if (!distillery || !distillery.location) return;
-            
-            console.log('Updating selected distillery marker for:', distilleryName);
-            
-            // すべてのマーカーを通常表示にリセット
-            Object.keys(distilleryMarkers).forEach(name => {
-                const dist = distilleryDatabase[name];
-                if (dist && dist.location) {
-                    // 既存のマーカーを削除
-                    if (distilleryMarkers[name]) {
-                        distilleryMap.removeLayer(distilleryMarkers[name]);
-                        delete distilleryMarkers[name];
-                    }
-                    
-                    // 選択されていない蒸留所のマーカーを追加
-                    if (name !== distilleryName) {
-                        addDistilleryMarker(distilleryMap, dist, false);
-                    }
+        
+        // すべてのマーカーをリセット
+        function resetAllMarkers() {
+            console.log('すべてのマーカーをリセット');
+            // すべての既存マーカーを削除
+            for (const markerKey in distilleryMarkers) {
+                if (distilleryMarkers[markerKey]) {
+                    distilleryMap.removeLayer(distilleryMarkers[markerKey]);
+                    delete distilleryMarkers[markerKey];
                 }
-            });
-            
-            // 選択された蒸留所のマーカーを追加
-            addDistilleryMarker(distilleryMap, distillery, true);
-            
-            // 選択された蒸留所名を保存
-            selectedMarker = distilleryName;
-            
-            // マップの中心を選択した蒸留所に移動
-            updateDistilleryMap(distillery);
+            }
         }
-
+        
         // マーカーを追加する関数
-        function addDistilleryMarker(map, distillery, isSelected) {
-            if (!distillery.location || !distillery.location.lat || !distillery.location.lng) return null;
+        function addDistilleryMarker(map, distillery, isSelected = false) {
+            console.log(`マーカー追加: ${distillery.name}, 選択状態: ${isSelected}`);
             
-            // マーカークラスを決定
+            // すでに同じ名前のマーカーが存在する場合は削除
+            if (distilleryMarkers[distillery.name]) {
+                map.removeLayer(distilleryMarkers[distillery.name]);
+                delete distilleryMarkers[distillery.name];
+            }
+            
+            // マーカーのスタイルを決定
+            const markerClass = isSelected ? 'selected-marker-dot' : 'marker-dot pulse-circle';
+            
+            // HTML構造を改善して位置ずれを修正
             const customIcon = L.divIcon({
                 className: 'custom-map-marker',
                 html: isSelected 
-                    ? '<div class="selected-marker-dot"></div><div class="selected-marker-radar"></div>' 
-                    : '<div class="marker-dot pulse-circle"></div>',
+                    ? `<div class="${markerClass}"></div><div class="selected-marker-radar"></div>` 
+                    : `<div class="${markerClass}"></div>`,
                 iconSize: [20, 20],
                 iconAnchor: [10, 10]
             });
-            
+
             // マーカーを作成
             const marker = L.marker([distillery.location.lat, distillery.location.lng], {
                 icon: customIcon
@@ -2247,19 +2211,61 @@
             return marker;
         }
         
-        // Google翻訳を開く
+        // Googleトランスレート用の関数
         function openGoogleTranslate() {
-            const currentUrl = encodeURIComponent(window.location.href);
-            window.open(`https://translate.google.com/translate?sl=auto&tl=en&u=${currentUrl}`, '_blank');
+            window.open('https://translate.google.com/translate?hl=&sl=ja&tl=en&u=' + encodeURIComponent(window.location.href), '_blank');
+        }
+        
+        // サンプルウィスキーデータを定義
+        function getDefaultWhiskyData() {
+            return [
+                {
+                    id: "1",
+                    name: "タリスカー　44年　オフィシャルボトル",
+                    price: "¥80,400",
+                    abv: 49.1,
+                    photoUrl: "1.jpg",
+                    category: "Whiskey",
+                    region: "Scotland, Isle of Skye",
+                    subcategory: "Single Malt Scotch Whisky",
+                    tastingNote_ja: "この非常に希少なタリスカー44年は、強い海岸の塩気を持つ複雑な海洋性の特徴を提供します。豊かなドライフルーツ、ダークチョコレート、アンティークレザーの層がタリスカー特有のピリッとしたスモークと調和しています。長期熟成により、トロピカルフルーツ、ミツロウ、繊細な樽のスパイスのノートを持つ驚くべき深みが生まれ、非常に長く温かみのある余韻へと続きます。",
+                    taste_profile: {
+                        fruity: 3,
+                        spicy: 4,
+                        body: 5,
+                        smoky: 4,
+                        sweetness: 2,
+                        complexity: 5
+                    }
+                }
+            ];
+        }
+        
+        // サンプル蒸留所データを定義
+        function getDefaultDistilleryData() {
+            return {
+                "タリスカー蒸溜所": {
+                    name: "タリスカー蒸溜所 (Talisker Distillery)",
+                    location: {
+                        lat: 57.302,
+                        lng: -6.356
+                    },
+                    region: "Scotland Isle of Skye",
+                    foundedYear: 1830,
+                    status: "アクティブ",
+                    description: "スカイ島で最も古い蒸留所で、嵐が吹き荒れる海岸線に位置し、海の塩気と力強いピートスモークが特徴。1960年に火災で被害を受けましたが、伝統的な製法を守りながら再建されました。「島の味」と称される独特の海洋性風味で知られています。",
+                    zoomLevel: 8
+                }
+            };
         }
     </script>
 
 
     <script id="html_badge_script1">
         window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDpz%2FvildGKsFFAVhBZ9IjYKeFu3of0JSjRJSlRItOQiLEi0FKPrNK%2FOSRghiTu6hfnslilckqZcmCpBqnJQViok4quB9y0NJ2AnCU6Xb70bDzbJc2y9TxNXlb1mZV1tHQOebzVTvAVdDm4Tg%2FQFOlGL61xnbj0F%2FAe7ZkNsP3peqA%2FwCvANR0Nqy1y3UP%2FNa51Y%2B6Df05yC2JGzbMm1LDBV2K9u%2BCBGZrJ65MNOci6UP4UPC5%2FYVrKKiCcJjX%2BnIgjQebg4M9Xp2Oat9TE%2FzhNFp7eKgaueeAH3vxF7UwCblVDAswyhT0%2FswInoHp0vHtIql0RKWhJ4X3iP8Umw9gFv0Huoq2rHbU%2BeA4QOthB9NWDxujyvxtnpWtjBvpPPtDcgBmm2yglUZWq%2BY362mPSP2fiApF5glFKqvqHQBfcIfatCOeSDcWjkd5lIO7m%2FKFASdeEhP5g8%2BLC7j%2BEn8A0HNkMULlK1t%2BNFcTwNeULY9V1CY0a5BoQgOEt705XhCciT8CQysxd9JMfg8fde%2F0pg%3D";
+            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDogmtnxbmwo9mmd5Yh5Ja0otGV%2BlzXbizX9DslFiWqvAcSkCdXjZxM90LAAQ71zejeBEuNpfj87zgboTy5j9Qf4M83zQrIIiht6KZY5dyI6hR8BYZTFS8Qm88R1Cude5nVOrBKfFJETTXt73rSMWgTN5k32Nvkz6oU3Itqpd7OCxiWnLGDZPawNL6Z8xtcYow%2B6iSRkCGKH9ivQ2hXQdrRYwZsCRX5k0zo3HzyXhbLeUpKkeDVvLM%2Fto%2BaFGr9D1814be%2FuWMUvzC376KdLH8rz5WVsw2EsYQtOulZvt5fCs%2B3s8qeNwF5zVlX9OD5qrjMROPiJGvg7QrSn%2BIwY6iWh%2FuZ2uYgdKuIKaDJ3ZmTS3UHlobL%2Fd%2BMjtAjFnPPyNYIIe180CVUPiO4kZLGXFoCqZsaNPRUevjPF4j3nbo7GQsIOlQeKHiQqJcIk5VHpuAZyn71znJFJUO1DIC409ye9IA4h%2BhbX4GdFopLTcaZB71FcENxp6xarJMFOU07i4T%2BGH4iRkUmJzAMmM4G6gqbA%3D";
         window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDpz/vildGKsFFAVhBZ9IjYKeFu3of0JSjRJSlRItOQiLEi0FKPrNK/OSRghiTu6hfnslilckqZcmCpBqnJQViok4quB9y0NJ2AnCU6Xb70bDzbJc2y9TxNXlb1mZV1tHQOebzVTvAVdDm4Tg/QFOlGL61xnbj0F/Ae7ZkNsP3peqA/wCvANR0Nqy1y3UP/Na51Y+6Df05yC2JGzbMm1LDBV2K9u+CBGZrJ65MNOci6UP4UPC5/YVrKKiCcJjX+nIgjQebg4M9Xp2Oat9TE/zhNFp7eKgaueeAH3vxF7UwCblVDAswyhT0/swInoHp0vHtIql0RKWhJ4X3iP8Umw9gFv0Huoq2rHbU+eA4QOthB9NWDxujyvxtnpWtjBvpPPtDcgBmm2yglUZWq+Y362mPSP2fiApF5glFKqvqHQBfcIfatCOeSDcWjkd5lIO7m/KFASdeEhP5g8+LC7j+En8A0HNkMULlK1t+NFcTwNeULY9V1CY0a5BoQgOEt705XhCciT8CQysxd9JMfg8fde/0pg=";
+        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDogmtnxbmwo9mmd5Yh5Ja0otGV+lzXbizX9DslFiWqvAcSkCdXjZxM90LAAQ71zejeBEuNpfj87zgboTy5j9Qf4M83zQrIIiht6KZY5dyI6hR8BYZTFS8Qm88R1Cude5nVOrBKfFJETTXt73rSMWgTN5k32Nvkz6oU3Itqpd7OCxiWnLGDZPawNL6Z8xtcYow+6iSRkCGKH9ivQ2hXQdrRYwZsCRX5k0zo3HzyXhbLeUpKkeDVvLM/to+aFGr9D1814be/uWMUvzC376KdLH8rz5WVsw2EsYQtOulZvt5fCs+3s8qeNwF5zVlX9OD5qrjMROPiJGvg7QrSn+IwY6iWh/uZ2uYgdKuIKaDJ3ZmTS3UHlobL/d+MjtAjFnPPyNYIIe180CVUPiO4kZLGXFoCqZsaNPRUevjPF4j3nbo7GQsIOlQeKHiQqJcIk5VHpuAZyn71znJFJUO1DIC409ye9IA4h+hbX4GdFopLTcaZB71FcENxp6xarJMFOU07i4T+GH4iRkUmJzAMmM4G6gqbA=";
     </script>
     
     <script id="html_notice_dialog_script" src="./whisky_list_files/notice_dialog.js.ダウンロード"></script>
