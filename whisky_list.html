@@ -740,6 +740,92 @@
             50% { transform: scale(1.2); opacity: 0.5; }
             100% { transform: scale(1); opacity: 0.8; }
         }
+
+        /* ウィスキー写真表示用スタイル */
+        .whisky-photo-section {
+            margin-top: 30px;
+            position: relative;
+        }
+
+        .whisky-photo-container {
+            position: relative;
+            height: 350px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .whisky-photo-blur-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            filter: blur(15px);
+            opacity: 0.3;
+            transform: scale(1.1); /* ぼかし時の境界エッジを隠す */
+        }
+
+        .whisky-photo-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 80%;
+            max-height: 90%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .whisky-photo-img {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .whisky-photo-img:hover {
+            transform: scale(1.05);
+        }
+
+        .whisky-photo-caption {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+            z-index: 2;
+            padding: 0 15px;
+        }
+
+        /* 写真未設定時のスタイル */
+        .whisky-photo-container.no-photo {
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .no-photo-icon {
+            font-size: 50px;
+            color: rgba(255, 255, 255, 0.2);
+            margin-bottom: 15px;
+        }
+
+        .no-photo-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+        }
         
         .pulse-circle {
             animation: pulse 2s infinite;
@@ -956,22 +1042,22 @@
         </div>
         
         <div class="details-section" id="whiskyDetails" style="display: none;">
-            <h2 class="text-2xl font-bold mb-4">
-                🍸 ウィスキー詳細情報
-            </h2>
-            
-            <div id="selectedWhiskyDetails">
-                <div class="whisky-details-header">
-                    <div>
-                        <h3 class="whisky-name" id="detailWhiskyName">銘柄を選択してください</h3>
-                        <div class="whisky-tags" id="detailWhiskyTags"></div>
-                    </div>
-                    <div class="whisky-price" id="detailWhiskyPrice">-</div>
+        <h2 class="text-2xl font-bold mb-4">
+            🍸 ウィスキー詳細情報
+        </h2>
+        
+        <div id="selectedWhiskyDetails">
+            <div class="whisky-details-header">
+                <div>
+                    <h3 class="whisky-name" id="detailWhiskyName">銘柄を選択してください</h3>
+                    <div class="whisky-tags" id="detailWhiskyTags"></div>
                 </div>
-                
-                <div class="whisky-description" id="detailWhiskyDescription">銘柄を選択すると詳細情報が表示されます。</div>
-                
-                <div class="details-content-row">
+                <div class="whisky-price" id="detailWhiskyPrice">-</div>
+            </div>
+            
+            <div class="whisky-description" id="detailWhiskyDescription">銘柄を選択すると詳細情報が表示されます。</div>
+            
+            <div class="details-content-row">
                 <!-- 左側：味覚プロファイルと写真 -->
                 <div class="profile-section">
                     <h3 class="section-title"><i class="fas fa-chart-radar"></i> 味覚プロファイル</h3>
@@ -1011,10 +1097,7 @@
                     </div>
                 </div>
             </div>
-        
-        <div class="custom-footer">
-            Powered by Nebula Hirozon Technology
-        </div>
+        </div> <!-- selectedWhiskyDetailsの閉じタグを追加 -->
     </div>
     
     <script>
@@ -1169,29 +1252,29 @@
             return distilleryDatabase;
         }
 
-        // デフォルトウィスキーデータ
+        // デフォルトデータ更新例
         function getDefaultWhiskyData() {
-        return [
-            {
-                id: "1",
-                name: "サンプルウィスキー",
-                price: "¥3,000",
-                region: "Scotland",
-                subcategory: "Single Malt Scotch Whisky",
-                abv: 40.0, // ABV情報を追加
-                tastingNote_ja: "サンプルのテイスティングノートです。",
-                taste_profile: {
-                    fruity: 3,
-                    spicy: 2,
-                    body: 3,
-                    smoky: 2,
-                    sweetness: 3,
-                    complexity: 3
+            return [
+                {
+                    id: "1",
+                    name: "サンプルウィスキー",
+                    price: "¥3,000",
+                    region: "Scotland",
+                    subcategory: "Single Malt Scotch Whisky",
+                    abv: 40.0,
+                    photoUrl: "images/whisky/sample_whisky.jpg", // 写真URLを追加
+                    tastingNote_ja: "サンプルのテイスティングノートです。",
+                    taste_profile: {
+                        fruity: 3,
+                        spicy: 2,
+                        body: 3,
+                        smoky: 2,
+                        sweetness: 3,
+                        complexity: 3
+                    }
                 }
-            }
-        ];
-    }
-
+            ];
+        }
         // デフォルト蒸留所データ
         function getDefaultDistilleryData() {
             return {
@@ -1208,6 +1291,53 @@
                     zoomLevel: 8
                 }
             };
+        }
+
+        // 写真表示用の新しい関数
+        function updateWhiskyPhoto(whisky) {
+            const photoSection = document.getElementById('whiskyPhotoSection');
+            const photoImg = document.getElementById('whiskyPhoto');
+            const photoBlurBg = document.getElementById('whiskyPhotoBlurBg');
+            const photoCaption = document.getElementById('whiskyPhotoCaption');
+            const photoContainer = photoImg.closest('.whisky-photo-container');
+            
+            if (whisky.photoUrl) {
+                // 写真がある場合
+                photoSection.style.display = 'block';
+                photoImg.src = whisky.photoUrl;
+                photoImg.alt = `${whisky.name}の画像`;
+                photoBlurBg.style.backgroundImage = `url(${whisky.photoUrl})`;
+                photoCaption.textContent = whisky.name;
+                
+                // no-photoクラスを削除
+                if (photoContainer) {
+                    photoContainer.classList.remove('no-photo');
+                }
+                
+                // 画像読み込みエラー時の処理
+                photoImg.onerror = function() {
+                    showNoPhotoState(photoContainer, photoCaption, whisky.name);
+                };
+            } else {
+                // 写真がない場合
+                showNoPhotoState(photoContainer, photoCaption, whisky.name);
+            }
+        }
+
+        // 写真がない場合の表示
+        function showNoPhotoState(container, caption, whiskyName) {
+            if (container) {
+                container.classList.add('no-photo');
+                container.innerHTML = `
+                    <div class="no-photo-icon">
+                        <i class="fas fa-camera"></i>
+                    </div>
+                    <div class="no-photo-text">画像は現在利用できません</div>
+                `;
+                if (caption) {
+                    caption.textContent = `${whiskyName}の画像`;
+                }
+            }
         }
 
         // UI初期化
@@ -1648,12 +1778,12 @@
                 tagsContainer.appendChild(subcategoryTag);
             }
             
-            // ABV情報タグを追加（新規追加）
+            // ABV情報タグを追加
             if (whisky.abv) {
                 const abvTag = document.createElement('div');
                 abvTag.className = 'tag';
                 abvTag.textContent = `${whisky.abv}% ABV`;
-                abvTag.style.backgroundColor = 'rgba(255, 107, 107, 0.1)'; // 目立つ色
+                abvTag.style.backgroundColor = 'rgba(255, 107, 107, 0.1)';
                 abvTag.style.borderColor = 'rgba(255, 107, 107, 0.3)';
                 abvTag.style.color = '#ff6b6b';
                 tagsContainer.appendChild(abvTag);
@@ -1666,6 +1796,9 @@
             if (whisky.taste_profile) {
                 updateProfileChart(whisky.taste_profile);
             }
+            
+            // 写真表示の更新（この行を追加）
+            updateWhiskyPhoto(whisky);
             
             // 蒸留所情報の表示
             const distilleryName = getDistilleryNameFromWhisky(whisky);
