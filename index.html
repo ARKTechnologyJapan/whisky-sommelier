@@ -1382,9 +1382,10 @@
             });
         }
 
-        // ウィスキーデータを読み込む
+        // ウィスキーデータを読み込む（デバッグ強化版）
         async function loadWhiskyData() {
-            console.log('Loading whisky data...');
+            console.log('ウィスキーデータ読み込み開始...');
+            
             // JSONファイルのパス（複数試行用）
             const possibleFiles = [
                 'whisky_data.json',
@@ -1396,75 +1397,40 @@
             // 各ファイルパスを順に試行
             for (const filePath of possibleFiles) {
                 try {
-                    console.log(`Trying to fetch: ${filePath}`);
+                    console.log(`ファイル取得試行: ${filePath}`);
                     const response = await fetch(filePath);
+                    console.log(`レスポンス: ${response.status} ${response.statusText}`);
+                    
                     if (response.ok) {
                         const data = await response.json();
-                        console.log(`Successfully loaded from: ${filePath}`);
+                        console.log(`データ読み込み成功: ${filePath}`, data);
+                        
                         // データ構造の検証
                         if (data && data.whiskies && Array.isArray(data.whiskies)) {
                             whiskyData = data.whiskies;
-                            console.log(`Loaded ${whiskyData.length} whisky entries`);
+                            console.log(`ウィスキーデータ読み込み完了: ${whiskyData.length}件`);
+                            
+                            // 最初の数件を表示
+                            console.log('サンプルデータ:');
+                            whiskyData.slice(0, 3).forEach((w, i) => console.log(`${i + 1}. ${w.name} (${w.region})`));
+                            
                             return whiskyData;
                         } else {
-                            console.warn(`Invalid data structure in: ${filePath}`);
+                            console.warn(`無効なデータ構造: ${filePath}`);
                         }
                     } else {
-                        console.warn(`Fetch failed for: ${filePath} (${response.status})`);
+                        console.warn(`取得失敗: ${filePath} (${response.status})`);
                     }
                 } catch (err) {
-                    console.warn(`Error loading from ${filePath}:`, err);
+                    console.warn(`読み込みエラー ${filePath}:`, err);
                 }
             }
 
             // すべてのファイルで失敗した場合はデフォルトデータを返す
-            console.warn('All file paths failed, using default whisky data');
-            return getDefaultWhiskyData();
-        }
-
-        // 蒸溜所データを読み込む
-        async function loadDistilleryData() {
-            console.log('Loading distillery data...');
-            // JSONファイルのパス（複数試行用）
-            const possibleFiles = [
-                'distillery_data.json',
-                './distillery_data.json',
-                './data/distillery_data.json',
-                '/distillery_data.json'
-            ];
-
-            // 各ファイルパスを順に試行
-            for (const filePath of possibleFiles) {
-                try {
-                    console.log(`Trying to fetch distillery data from: ${filePath}`);
-                    const response = await fetch(filePath);
-                    if (response.ok) {
-                        const data = await response.json();
-                        console.log(`Successfully loaded distillery data from: ${filePath}`);
-                        // データ構造の検証
-                        if (data && data.distilleries) {
-                            distilleryDatabase = data.distilleries;
-                            console.log('Distillery data loaded');
-                            // ブランドと蒸溜所のマッピングがあれば読み込む
-                            if (data.brandToDistillery) {
-                                brandToDistilleryMapping = data.brandToDistillery;
-                                console.log('Brand to distillery mapping loaded');
-                            }
-                            return distilleryDatabase;
-                        } else {
-                            console.warn(`Invalid distillery data structure in: ${filePath}`);
-                        }
-                    } else {
-                        console.warn(`Fetch failed for distillery data: ${filePath} (${response.status})`);
-                    }
-                } catch (err) {
-                    console.warn(`Error loading distillery data from ${filePath}:`, err);
-                }
-            }
-
-            // すべてのファイルで失敗した場合はデフォルトデータを返す
-            console.warn('All distillery data file paths failed, using default data');
-            return getDefaultDistilleryData();
+            console.warn('全ファイルパスで失敗、デフォルトデータを使用');
+            const defaultData = getDefaultWhiskyData();
+            whiskyData = defaultData;
+            return defaultData;
         }
 
         // デフォルトウィスキーデータ
@@ -2286,121 +2252,102 @@
             document.getElementById('complexityDescription').textContent = complexityDesc;
         }
 
-        // 推薦結果を表示（修正版）
+        // 推薦結果を表示（エラーチェック強化版）
         async function showRecommendationResult(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, chatPreferences, region = null) {
+            console.log('showRecommendationResult 開始:', { tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region });
+            
             try {
                 // 表示コンテナを表示
                 document.getElementById('splitLayoutContainer').style.display = 'grid';
 
-                // ローカルデータからのマッチング（修正: 地域パラメータを追加）
+                // ローカルデータからのマッチング
+                console.log('findMatchingWhiskies 呼び出し前...');
                 const recommendedWhiskies = findMatchingWhiskies(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region);
+                console.log('findMatchingWhiskies 結果:', recommendedWhiskies);
 
                 // 推奨ウィスキーの表示
+                if (!recommendedWhiskies) {
+                    console.error('recommendedWhiskies が undefined です');
+                    displayDefaultRecommendations();
+                    return;
+                }
+                
+                if (recommendedWhiskies.length === 0) {
+                    console.error('recommendedWhiskies が空の配列です');
+                    displayDefaultRecommendations();
+                    return;
+                }
+
+                console.log('displayLocalRecommendations 呼び出し前...');
                 displayLocalRecommendations(recommendedWhiskies);
 
                 // 最初のウィスキーを選択
                 if (recommendedWhiskies.length > 0) {
+                    console.log('selectWhisky 呼び出し前:', recommendedWhiskies[0]);
                     selectWhisky(recommendedWhiskies[0]);
                 }
             } catch (error) {
-                console.error('Error showing recommendation result:', error);
-                // エラー時のフォールバック表示
+                console.error('showRecommendationResult エラー:', error);
+                console.error('スタックトレース:', error.stack);
                 displayDefaultRecommendations();
             }
         }
 
-        // マッチするウィスキーを見つける（修正版）
-            function findMatchingWhiskies(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region = null) {
-                console.log('検索条件:', { tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region });
-                
-                if (!whiskyData || whiskyData.length === 0) return [];
+        // マッチするウィスキーを見つける（デバッグ強化版）
+        function findMatchingWhiskies(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region = null) {
+            console.log('findMatchingWhiskies 開始:', { tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region });
+            console.log('whiskyData の状態:', whiskyData ? `${whiskyData.length}件のデータあり` : 'データなし');
+            
+            if (!whiskyData || whiskyData.length === 0) {
+                console.error('ウィスキーデータがありません');
+                return [];
+            }
 
+            try {
                 // 価格を数値に変換
                 const whiskiesWithNumericPrice = whiskyData.map(whisky => {
-                    const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
-                    return { ...whisky, numericPrice };
+                    try {
+                        const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
+                        return { ...whisky, numericPrice };
+                    } catch (err) {
+                        console.error('価格変換エラー:', whisky, err);
+                        return { ...whisky, numericPrice: 0 };
+                    }
                 });
+                console.log('価格変換後:', `${whiskiesWithNumericPrice.length}件`);
 
                 // 価格帯でフィルタリング
                 const priceFiltered = whiskiesWithNumericPrice.filter(
                     whisky => whisky.numericPrice >= minPrice && whisky.numericPrice <= maxPrice
                 );
-                
-                console.log(`価格帯でフィルタリング: ${minPrice}円〜${maxPrice}円 => ${priceFiltered.length}件`);
+                console.log('価格フィルタ後:', `${priceFiltered.length}件`);
 
-                // 地域でフィルタリング（拡張版）
+                // 地域でフィルタリング
                 let regionFiltered = priceFiltered;
                 if (region) {
                     console.log(`地域フィルタリング: "${region}" を検索中...`);
                     
-                    // 検索用の正規表現パターンを作成
-                    const searchRegion = region.toLowerCase();
+                    // サンプルデータの地域情報を表示
+                    console.log('サンプルデータ地域情報:');
+                    priceFiltered.slice(0, 5).forEach(w => console.log(`- ${w.name}: region=${w.region}, subcategory=${w.subcategory}`));
                     
-                    // 日本のウィスキーを特別に処理
-                    if (searchRegion === 'japan') {
-                        regionFiltered = priceFiltered.filter(whisky => {
-                            const whiskyRegion = (whisky.region || '').toLowerCase();
-                            const whiskyName = (whisky.name || '').toLowerCase();
-                            const whiskySubcategory = (whisky.subcategory || '').toLowerCase();
-                            
-                            return whiskyRegion.includes('japan') || 
-                                whiskyRegion.includes('japanese') || 
-                                whiskyRegion.includes('日本') || 
-                                whiskySubcategory.includes('japan') || 
-                                whiskySubcategory.includes('japanese') || 
-                                whiskySubcategory.includes('日本') || 
-                                whiskyName.includes('軽井沢') ||
-                                whiskyName.includes('山崎') ||
-                                whiskyName.includes('白州') ||
-                                whiskyName.includes('響') ||
-                                whiskyName.includes('長濱') ||
-                                whiskyName.includes('余市') ||
-                                whiskyName.includes('宮城峡') ||
-                                whiskyName.includes('知多');
-                        });
-                    } else {
-                        // 通常の地域フィルタリング
-                        regionFiltered = priceFiltered.filter(whisky => {
-                            const whiskyRegion = (whisky.region || '').toLowerCase();
-                            const whiskySubcategory = (whisky.subcategory || '').toLowerCase();
-                            
-                            return whiskyRegion.includes(searchRegion) || 
-                                whiskySubcategory.includes(searchRegion);
-                        });
-                    }
+                    // 地域フィルタリング
+                    regionFiltered = priceFiltered.filter(whisky => 
+                        (whisky.region && whisky.region.toLowerCase().includes(region.toLowerCase())) ||
+                        (whisky.subcategory && whisky.subcategory.toLowerCase().includes(region.toLowerCase())) ||
+                        (region.toLowerCase() === 'japan' && whisky.name && (
+                            whisky.name.toLowerCase().includes('japan') ||
+                            whisky.name.toLowerCase().includes('japanese') ||
+                            whisky.name.toLowerCase().includes('軽井沢') ||
+                            whisky.name.toLowerCase().includes('山崎') ||
+                            whisky.name.toLowerCase().includes('白州') ||
+                            whisky.name.toLowerCase().includes('響') ||
+                            whisky.name.toLowerCase().includes('長濱')
+                        ))
+                    );
+                    console.log('地域フィルタ後:', `${regionFiltered.length}件`);
                     
-                    console.log(`地域フィルタリング結果: ${regionFiltered.length}件見つかりました`);
-                    
-                    // 地域フィルタリング後に結果が少ない場合は柔軟なフィルタを追加
-                    if (regionFiltered.length < 3) {
-                        console.log('地域フィルタリングの結果が少ないため、より柔軟な検索を適用します');
-                        
-                        const additionalResults = priceFiltered.filter(whisky => {
-                            // すでにフィルタされたものは除外
-                            if (regionFiltered.includes(whisky)) return false;
-                            
-                            const whiskyName = (whisky.name || '').toLowerCase();
-                            const whiskyNote = (whisky.tastingNote_ja || '').toLowerCase();
-                            
-                            // 日本のウィスキーの場合
-                            if (searchRegion === 'japan') {
-                                return whiskyName.includes('japan') || 
-                                    whiskyName.includes('japanese') || 
-                                    whiskyName.includes('日本') || 
-                                    whiskyNote.includes('日本') || 
-                                    whiskyNote.includes('japan');
-                            } else {
-                                return whiskyName.includes(searchRegion) || 
-                                    whiskyNote.includes(searchRegion);
-                            }
-                        });
-                        
-                        // 追加の結果をマージ
-                        regionFiltered = [...regionFiltered, ...additionalResults];
-                        console.log(`拡張検索後の結果: ${regionFiltered.length}件`);
-                    }
-                    
-                    // それでも結果がない場合は価格フィルタのみを適用
+                    // 結果がない場合は価格フィルタのみ適用
                     if (regionFiltered.length === 0) {
                         console.log('地域フィルタリングの結果が0件のため、価格フィルタのみを適用します');
                         regionFiltered = priceFiltered;
@@ -2414,96 +2361,147 @@
                 }
 
                 // 味覚プロファイルの基準
-                const targetFruity = tasteY < 0.5 ? 4 : 2;  // フルーティーかスモーキーか
-                const targetSmoky = tasteY > 0.5 ? 4 : 2;   // スモーキーかフルーティーか
-                const targetBody = tasteX > 0.5 ? 4 : 3;    // ヘビーかライトか
-                const targetComplexity = complexityX > 0.5 ? 4 : 3; // 熟成か若いか
+                console.log('味覚プロファイルの基準を設定...');
+                const targetFruity = tasteY < 0.5 ? 4 : 2;
+                const targetSmoky = tasteY > 0.5 ? 4 : 2;
+                const targetBody = tasteX > 0.5 ? 4 : 3;
+                const targetComplexity = complexityX > 0.5 ? 4 : 3;
+                console.log('ターゲット値:', { targetFruity, targetSmoky, targetBody, targetComplexity });
 
                 // スコアリング関数
                 function scoreWhisky(whisky) {
-                    if (!whisky.taste_profile) return 0;
+                    try {
+                        if (!whisky.taste_profile) {
+                            console.log(`${whisky.name}: taste_profileなし`);
+                            return 0;
+                        }
 
-                    const fruityScore = 5 - Math.abs((whisky.taste_profile.fruity || 0) - targetFruity);
-                    const smokyScore = 5 - Math.abs((whisky.taste_profile.smoky || 0) - targetSmoky);
-                    const bodyScore = 5 - Math.abs((whisky.taste_profile.body || 0) - targetBody);
-                    const complexityScore = 5 - Math.abs((whisky.taste_profile.complexity || 0) - targetComplexity);
+                        const fruityScore = 5 - Math.abs((whisky.taste_profile.fruity || 0) - targetFruity);
+                        const smokyScore = 5 - Math.abs((whisky.taste_profile.smoky || 0) - targetSmoky);
+                        const bodyScore = 5 - Math.abs((whisky.taste_profile.body || 0) - targetBody);
+                        const complexityScore = 5 - Math.abs((whisky.taste_profile.complexity || 0) - targetComplexity);
 
-                    return fruityScore + smokyScore + bodyScore + complexityScore;
+                        return fruityScore + smokyScore + bodyScore + complexityScore;
+                    } catch (err) {
+                        console.error('スコアリングエラー:', whisky, err);
+                        return 0;
+                    }
                 }
 
                 // スコアでソート
-                const scored = regionFiltered.map(whisky => ({
-                    ...whisky,
-                    score: scoreWhisky(whisky)
-                })).sort((a, b) => b.score - a.score);
-
-                console.log('スコアリング結果（上位3件）:', scored.slice(0, 3).map(w => ({
-                    name: w.whisky.name,
-                    score: w.score,
-                    region: w.whisky.region
-                })));
+                console.log('スコアリング開始...');
+                const scored = regionFiltered.map(whisky => {
+                    try {
+                        return {
+                            whisky: whisky,
+                            score: scoreWhisky(whisky)
+                        };
+                    } catch (err) {
+                        console.error('スコアマッピングエラー:', whisky, err);
+                        return { whisky: whisky, score: 0 };
+                    }
+                }).sort((a, b) => b.score - a.score);
+                
+                console.log('スコアリング完了。上位スコア:');
+                scored.slice(0, 5).forEach(item => console.log(`- ${item.whisky.name}: ${item.score}`));
 
                 // 上位3つを返す
-                return scored.slice(0, 3).map(item => item.whisky);
+                const result = scored.slice(0, 3).map(item => item.whisky);
+                console.log('最終結果:', result.map(w => w.name));
+                return result;
+            } catch (error) {
+                console.error('findMatchingWhiskies エラー:', error);
+                console.error('スタックトレース:', error.stack);
+                return [];
             }
+        }
 
-        // ローカルデータからの提案を表示
+                // ローカルデータからの提案を表示（エラーチェック強化版）
         function displayLocalRecommendations(whiskies) {
-            const recommendationContent = document.getElementById('recommendationContent');
-            recommendationContent.innerHTML = '';
+            console.log('displayLocalRecommendations 開始:', whiskies);
+            
+            try {
+                const recommendationContent = document.getElementById('recommendationContent');
+                if (!recommendationContent) {
+                    console.error('recommendationContent 要素が見つかりません');
+                    return;
+                }
+                
+                recommendationContent.innerHTML = '';
 
-            if (!whiskies || whiskies.length === 0) {
-                displayDefaultRecommendations();
-                return;
-            }
-
-            whiskies.forEach((whisky, index) => {
-                const whiskeyCard = document.createElement('div');
-                whiskeyCard.className = 'whisky-card';
-                if (index === 0) {
-                    whiskeyCard.classList.add('featured', 'selected');
+                if (!whiskies || whiskies.length === 0) {
+                    console.error('表示するウィスキーがありません');
+                    displayDefaultRecommendations();
+                    return;
                 }
 
-                whiskeyCard.innerHTML = `
-                    ${index === 0 ? '<div class="featured-label">おすすめ</div>' : ''}
-                    <div class="flex justify-between mb-2">
-                        <h3 class="text-lg font-bold text-cyan-400">${whisky.name}</h3>
-                        <span class="text-pink-500 font-bold">${whisky.price}</span>
-                    </div>
-                    <div class="mb-2">
-                        <span class="text-gray-400 text-sm">${whisky.region || 'N/A'} | ${whisky.subcategory || 'Whisky'}</span>
-                    </div>
-                    <p class="text-sm mb-3">${whisky.tastingNote_ja || '情報がありません。'}</p>
-                    <div class="grid grid-cols-3 gap-2 text-center text-xs">
-                        <div>
-                            <span class="block text-yellow-400">フルーティー</span>
-                            <span class="block">${'★'.repeat(whisky.taste_profile?.fruity || 0)}${'☆'.repeat(5 - (whisky.taste_profile?.fruity || 0))}</span>
-                        </div>
-                        <div>
-                            <span class="block text-yellow-400">スモーキー</span>
-                            <span class="block">${'★'.repeat(whisky.taste_profile?.smoky || 0)}${'☆'.repeat(5 - (whisky.taste_profile?.smoky || 0))}</span>
-                        </div>
-                        <div>
-                            <span class="block text-yellow-400">複雑さ</span>
-                            <span class="block">${'★'.repeat(whisky.taste_profile?.complexity || 0)}${'☆'.repeat(5 - (whisky.taste_profile?.complexity || 0))}</span>
-                        </div>
-                    </div>
-                `;
+                whiskies.forEach((whisky, index) => {
+                    try {
+                        console.log(`ウィスキーカード作成 ${index}:`, whisky.name);
+                        
+                        const whiskeyCard = document.createElement('div');
+                        whiskeyCard.className = 'whisky-card';
+                        if (index === 0) {
+                            whiskeyCard.classList.add('featured', 'selected');
+                        }
 
-                // クリックで選択
-                whiskeyCard.addEventListener('click', function() {
-                    // 選択状態を更新
-                    document.querySelectorAll('.whisky-card').forEach(card => {
-                        card.classList.remove('selected');
-                    });
-                    whiskeyCard.classList.add('selected');
+                        // HTMLエスケープ関数
+                        function escapeHtml(text) {
+                            if (text === undefined || text === null) return '';
+                            return String(text)
+                                .replace(/&/g, '&amp;')
+                                .replace(/</g, '&lt;')
+                                .replace(/>/g, '&gt;')
+                                .replace(/"/g, '&quot;')
+                                .replace(/'/g, '&#039;');
+                        }
 
-                    // ウィスキーを選択
-                    selectWhisky(whisky);
+                        // 安全なHTMLの作成
+                        whiskeyCard.innerHTML = `
+                            ${index === 0 ? '<div class="featured-label">おすすめ</div>' : ''}
+                            <div class="flex justify-between mb-2">
+                                <h3 class="text-lg font-bold text-cyan-400">${escapeHtml(whisky.name)}</h3>
+                                <span class="text-pink-500 font-bold">${escapeHtml(whisky.price)}</span>
+                            </div>
+                            <div class="mb-2">
+                                <span class="text-gray-400 text-sm">${escapeHtml(whisky.region || 'N/A')} | ${escapeHtml(whisky.subcategory || 'Whisky')}</span>
+                            </div>
+                            <p class="text-sm mb-3">${escapeHtml(whisky.tastingNote_ja || '情報がありません。')}</p>
+                            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                                <div>
+                                    <span class="block text-yellow-400">フルーティー</span>
+                                    <span class="block">${'★'.repeat((whisky.taste_profile?.fruity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.fruity || 0))}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-yellow-400">スモーキー</span>
+                                    <span class="block">${'★'.repeat((whisky.taste_profile?.smoky || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.smoky || 0))}</span>
+                                </div>
+                                <div>
+                                    <span class="block text-yellow-400">複雑さ</span>
+                                    <span class="block">${'★'.repeat((whisky.taste_profile?.complexity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.complexity || 0))}</span>
+                                </div>
+                            </div>
+                        `;
+
+                        // クリックで選択
+                        whiskeyCard.addEventListener('click', function() {
+                            document.querySelectorAll('.whisky-card').forEach(card => {
+                                card.classList.remove('selected');
+                            });
+                            whiskeyCard.classList.add('selected');
+                            selectWhisky(whisky);
+                        });
+
+                        recommendationContent.appendChild(whiskeyCard);
+                    } catch (err) {
+                        console.error(`ウィスキーカード ${index} の作成中にエラーが発生:`, err);
+                    }
                 });
-
-                recommendationContent.appendChild(whiskeyCard);
-            });
+            } catch (error) {
+                console.error('displayLocalRecommendations エラー:', error);
+                // エラー時のフォールバック表示
+                displayDefaultRecommendations();
+            }
         }
 
         // デフォルトの提案を表示
