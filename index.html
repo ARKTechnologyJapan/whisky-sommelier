@@ -2901,7 +2901,7 @@
             }
         }
 
-        // 簡易的な蒸留所情報表示（マップなし）
+            // 蒸留所情報表示関数（左寄せに修正）
         function showSimpleDistilleryInfo(whisky) {
             try {
                 // 蒸留所セクションを表示
@@ -2928,20 +2928,46 @@
                     distilleryName = `${whisky.region}の蒸溜所`;
                 }
                 
-                // 蒸留所情報の表示
-                document.getElementById('distilleryName').textContent = distilleryName;
-                document.getElementById('distilleryRegion').textContent = whisky.region || '情報なし';
-                document.getElementById('distilleryFounded').textContent = '情報なし';
+                // 蒸留所情報の表示（左寄せに修正）
+                const distilleryNameElement = document.getElementById('distilleryName');
+                if (distilleryNameElement) {
+                    distilleryNameElement.textContent = distilleryName;
+                    distilleryNameElement.style.textAlign = 'left'; // 左寄せに変更
+                }
+                
+                const distilleryRegionElement = document.getElementById('distilleryRegion');
+                if (distilleryRegionElement) {
+                    distilleryRegionElement.textContent = whisky.region || '情報なし';
+                    distilleryRegionElement.style.textAlign = 'left'; // 左寄せに変更
+                }
+                
+                const distilleryFoundedElement = document.getElementById('distilleryFounded');
+                if (distilleryFoundedElement) {
+                    distilleryFoundedElement.textContent = '情報なし';
+                    distilleryFoundedElement.style.textAlign = 'left'; // 左寄せに変更
+                }
                 
                 const statusElement = document.getElementById('distilleryStatus');
                 if (statusElement) {
                     statusElement.textContent = '情報なし';
                     statusElement.className = 'status-unknown';
+                    statusElement.style.textAlign = 'left'; // 左寄せに変更
                 }
                 
-                // 蒸留所の説明
-                document.getElementById('distilleryDescription').textContent = 
-                    `${whisky.name}の蒸留所情報は現在利用できません。このウィスキーは${whisky.region || '不明な地域'}で製造されています。`;
+                // 蒸留所の説明（左寄せに修正）
+                const distilleryDescriptionElement = document.getElementById('distilleryDescription');
+                if (distilleryDescriptionElement) {
+                    distilleryDescriptionElement.textContent = 
+                        `${whisky.name}の蒸留所情報は現在利用できません。このウィスキーは${whisky.region || '不明な地域'}で製造されています。`;
+                    distilleryDescriptionElement.style.textAlign = 'left'; // 左寄せに変更
+                }
+                
+                // 情報グリッド全体も左寄せに
+                const distilleryInfoGrid = document.querySelector('.distillery-info-grid');
+                if (distilleryInfoGrid) {
+                    distilleryInfoGrid.style.textAlign = 'left'; // 左寄せに変更
+                }
+                
             } catch (err) {
                 console.error('簡易蒸留所情報表示エラー:', err);
             }
