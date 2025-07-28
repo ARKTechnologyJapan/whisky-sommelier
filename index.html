@@ -141,8 +141,8 @@
                         linear-gradient(to top, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%);
         }
         .taste-dot {
-            width: 16px;
-            height: 16px;
+            width: 24px;
+            height: 24px;
             background-color: #ff6b6b;
             border-radius: 50%;
             position: absolute;
@@ -212,7 +212,12 @@
             padding-top: 0px;      /* 上部の余白を追加 */
             padding-bottom: 15px;   /* 下部の余白を追加 */
             line-height: 0.8;       /* 行の高さを調整 */
-            margin-bottom: 10px;    /* 下のマージンを設定（mb-4を上書き） */
+            margin-bottom: 20px;    /* 下のマージンを設定（mb-4を上書き） */
+        }
+
+        /* split-layoutの調整 - パネル間の間隔を広げる */
+        .split-layout {
+            gap: 400px;               /* パネル間の間隔をより広く */
         }
 
         .whisky-card {
@@ -350,35 +355,41 @@
             color: #ff6b6b;
         }
         
+       /* split-layoutの修正 - 余白を増やす */
         .split-layout {
             display: grid;
-            grid-template-columns: 1fr 1fr; /* 均等に分割するように変更 */
-            gap: 20px;
+            grid-template-columns: 1fr 1fr; /* 均等に分割 */
+            gap: 30px; /* 間隔を広げる（元は20px） */
             align-items: start;
+            margin-bottom: 30px; /* 下部に余白を追加 */
         }
         
+        /* レコメンデーションパネルの修正 */
         .recommendations-panel {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
             padding: 24px;
             backdrop-filter: blur(10px);
-            max-height: 80vh;
+            max-height: 85vh; /* 少し高さを増やす */
             overflow-y: auto;
+            margin-bottom: 30px; /* 下部の余白を追加 */
         }
         
+        /* チャートパネルの修正 - 重要な修正部分 */
         .chart-panel {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
             border-radius: 12px;
-            padding: 20px;
+            padding: 30px 20px; /* 上下のパディングを増やす */
             backdrop-filter: blur(10px);
             position: sticky;
-            top: 120px;
-            max-height: 80vh;
+            top: 130px; /* 少し下げる */
+            max-height: 85vh; /* 少し高さを増やす */
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: rgba(78, 205, 196, 0.5) rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px; /* 下部の余白を追加 */
         }
         
         .chart-panel::-webkit-scrollbar {
@@ -395,24 +406,33 @@
             border-radius: 4px;
         }
         
+        /* チャートコンテナの修正 */
         .chart-container {
-            height: 350px;
+            height: 380px; /* 高さを増やす（元は350px） */
             width: 100%;
             position: relative;
+            margin-bottom: 30px; /* 下部の余白を追加 */
         }
+        /* チャートコンテナの見出し修正 */
         .chart-container h3 {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 25px; /* 余白を増やす */
             color: #4ecdc4;
             font-size: 16px;
+            padding-top: 10px; /* 上部の余白を追加 */
         }
+        /* チャートキャンバスの修正 */
         .chart-canvas {
             height: 350px !important;
             width: 100% !important;
+            margin-top: 15px; /* 上部の余白を追加 */
         }
+
         #combinedProfileChart {
-            height: 320px !important;
+            height: 350px !important; /* 高さを増やす（元は320px） */
             width: 100% !important;
+            margin-top: 20px; /* 上部の余白を追加 */
+            margin-bottom: 20px; /* 下部の余白を追加 */
         }
         .recommendation-summary {
             background: rgba(78, 205, 196, 0.1);
@@ -648,14 +668,17 @@
             border-radius: 3px;
         }
         
+       /* レスポンシブ対応の修正 */
         @media (max-width: 1024px) {
             .split-layout {
                 grid-template-columns: 1fr;
-                gap: 20px;
+                gap: 30px; /* 間隔を広げる */
             }
             
             .chart-panel {
                 position: static;
+                margin-top: 30px; /* 上部の余白を追加 */
+                padding: 30px; /* パディングを均等に */
             }
             
             .whisky-overview h2 {
@@ -929,14 +952,15 @@
             border-bottom: 2px solid #4ecdc4;
         }
 
+        /* AI提案メッセージの修正 */
         .ai-recommendation-message {
             background: rgba(78, 205, 196, 0.15);
             border-left: 3px solid #4ecdc4;
             color: #fff;
-            padding: 15px;
+            padding: 20px; /* パディングを増やす */
             border-radius: 8px;
-            margin-bottom: 15px;
-            line-height: 1.6;
+            margin-bottom: 25px; /* 下部の余白を増やす */
+            line-height: 1.8; /* 行間を広げる */
         }
     </style>
 <style>
@@ -1154,7 +1178,7 @@
             <div class="chat-input-container">
                 <input type="text" id="chatInput" class="chat-input" placeholder="質問を入力してください...">
                 <button id="voiceInputBtn" class="voice-input-btn">
-                    🎤
+                    🎙️
                 </button>
                 <button id="sendChatBtn" class="btn-primary">💬 質問する</button>
             </div>
@@ -1184,8 +1208,8 @@
         
         <div id="splitLayoutContainer" class="split-layout" style="display: none;">
             <div id="recommendationsPanel" class="recommendations-panel">
-                <h2 class="text-2xl font-bold mb-4">
-                    🎯 AI提案結果
+                <h2 class="text-2xl font-bold mb-4" style="margin-top: 0px; margin-bottom: 10px; padding-bottom: 15px; line-height: 2;">
+                    🌙 AI提案結果
                 </h2>
                 <div id="preferencesSummary" class="recommendation-summary" style="display: block;">
                     <h3 class="text-lg font-bold mb-3">🎯 あなたの好みの傾向</h3>
@@ -1208,8 +1232,8 @@
             </div>
             
             <div id="chartPanel" class="chart-panel">
-                <h2 class="text-2xl font-bold mb-4">
-                    📊 味覚プロファイル比較
+                <h2 class="text-2xl font-bold mb-4" style="margin-top: 0px; margin-bottom: 10px; padding-bottom: 15px; line-height: 2;">
+                    🕸️ 味覚プロファイル比較
                 </h2>
                 <div class="chart-container">
                     <h3 id="chartTitle">あなたの好み</h3>
@@ -1221,8 +1245,8 @@
                 
                 <!-- 蒸留所マップと情報セクション -->
                 <div id="distillerySection" class="distillery-section">
-                    <h2 class="text-xl font-bold mb-3 text-center">
-                        🌍 蒸留所情報
+                    <h2 class="text-xl font-bold mb-3 text-center" style="margin-top: 0px; margin-bottom: 10px; padding-bottom: 15px; line-height: 2;">
+                        🗾 蒸留所情報
                     </h2>
                     <div class="distillery-container">
                         <div class="map-container">
@@ -1790,7 +1814,7 @@
                     // 録音終了
                     recognition.stop();
                     voiceButton.classList.remove('recording');
-                    voiceButton.textContent = '🎤';
+                    voiceButton.textContent = '🎙️';
                     isRecording = false;
                 }
             });
@@ -1809,7 +1833,7 @@
             recognition.onerror = (event) => {
                 console.error('Speech recognition error', event.error);
                 voiceButton.classList.remove('recording');
-                voiceButton.textContent = '🎤';
+                voiceButton.textContent = '🎙️';
                 isRecording = false;
 
                 if (event.error === 'not-allowed') {
@@ -1820,7 +1844,7 @@
             // 終了処理
             recognition.onend = () => {
                 voiceButton.classList.remove('recording');
-                voiceButton.textContent = '🎤';
+                voiceButton.textContent = '🎙️';
                 isRecording = false;
             };
         }
