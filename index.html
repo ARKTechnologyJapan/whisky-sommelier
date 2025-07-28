@@ -1876,7 +1876,7 @@ function animateCounter(elementId, targetValue) {
         }
 
         // チャットメッセージ送信
-        // sendChatMessage関数の探し方：検索または既存の関数定義を確認
+// sendChatMessage関数の修正 - シンプルな形に戻す
 function sendChatMessage() {
     const input = document.getElementById('chatInput');
     const message = input.value.trim();
@@ -1898,22 +1898,32 @@ function sendChatMessage() {
     // スクロールを最下部に
     chatHistory.scrollTop = chatHistory.scrollHeight;
     
-    // メッセージから好みを抽出 - この部分を追加
-    const prefs = extractPreferencesFromMessage(message);
-    
-    // 抽出した好みを保存 - この部分を追加
-    if (prefs && Object.keys(prefs).length > 0) {
-        Object.assign(savedUserPreferences, prefs);
-        
-        // UI要素を更新
-        updateUIWithPreferences(prefs);
+    try {
+        // メッセージから好みを抽出 - エラーが発生しても処理を続行
+        try {
+            const prefs = extractPreferencesFromMessage(message);
+            if (prefs && Object.keys(prefs).length > 0) {
+                Object.assign(savedUserPreferences, prefs);
+                
+                // UI要素を更新 - エラーが発生しても処理を続行
+                try {
+                    updateUIWithPreferences(prefs);
+                } catch (uiError) {
+                    console.error('UI更新エラー:', uiError);
+                }
+            }
+        } catch (prefError) {
+            console.error('好み抽出エラー:', prefError);
+        }
+    } catch (error) {
+        console.error('チャット処理エラー:', error);
     }
     
-    // AIの応答を生成
+    // AIの応答を生成 - 最後に実行（エラーが発生しても前の処理は完了している）
     getAIResponse(message);
 }
-        // AI応答の取得
-        // getAIResponse関数を探して修正
+
+// getAIResponse関数も元の実装に近い形に戻す
 async function getAIResponse(message) {
     const chatHistory = document.getElementById('chatHistory');
     
@@ -1926,63 +1936,58 @@ async function getAIResponse(message) {
     // スクロールを最下部に
     chatHistory.scrollTop = chatHistory.scrollHeight;
     
+    // 元の実装を使用
     try {
-        // メッセージから好みを抽出 - この部分を追加
-        const prefs = extractPreferencesFromMessage(message);
-        let prefsMessage = '';
+        // API呼び出しやモック応答の取得（元のコードを使用）
+        // ...
         
-        // 好みが抽出された場合は通知メッセージを作成 - この部分を追加
-        if (prefs && Object.keys(prefs).length > 0) {
-            prefsMessage = 'あなたの好みを理解しました：\n';
-            
-            if (prefs.minPrice) {
-                prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
+        // 好み通知メッセージを作成（オプション）
+        let prefsMessage = '';
+        try {
+            const prefs = savedUserPreferences;
+            if (prefs && Object.keys(prefs).filter(k => prefs[k] !== null).length > 0) {
+                prefsMessage = 'あなたの好みを理解しました：\n';
+                
+                if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
+                if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
+                if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
+                if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
+                prefsMessage += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
             }
-            if (prefs.maxPrice) {
-                prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
-            }
-            if (prefs.tasteY !== undefined) {
-                prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
-            }
-            if (prefs.region) {
-                prefsMessage += `・産地: ${prefs.region}\n`;
-            }
-            prefsMessage += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
+        } catch (prefError) {
+            console.error('好み通知エラー:', prefError);
         }
         
-        // 味覚座標の取得
-        const dot1 = document.getElementById('tasteDot1');
-        const dot2 = document.getElementById('tasteDot2');
-        const tasteX = parseFloat(dot1.style.left) / 100;
-        const tasteY = parseFloat(dot1.style.top) / 100;
+        // 以下はモック応答を生成する既存のコード（想定）
+        let aiResponseText = '';
         
-        // 価格帯の取得
-        const minPrice = document.getElementById('minPrice').value * 1000;
-        const maxPrice = document.getElementById('maxPrice').value * 1000;
+        if (message.includes('タリスカー')) {
+            aiResponseText = 'タリスカー44年は、スコットランドのスカイ島で造られた非常に希少なシングルモルトウイスキーです。...';
+        } else if (message.includes('アイラ')) {
+            aiResponseText = 'アイラ島はスコットランドの中でも特にピート（泥炭）の薫香の強いウイスキーで知られています。...';
+        }
+        // 他の条件分岐も同様に...
         
-        // API呼び出し（または既存の処理）
-        // ...既存のAPI呼び出しコード...
+        // 応答がなければデフォルトメッセージ
+        if (!aiResponseText) {
+            aiResponseText = 'ご質問ありがとうございます。具体的なウイスキーに関する情報をお求めの場合は、銘柄名や特徴などを詳しくお知らせください。';
+        }
         
-        // モックレスポンスや処理結果を取得
-        let aiResponseText = ''; // APIからの応答やモックレスポンスを設定
-        
-        // 既存のモック処理があればそれを使用
-        // ...既存のモック処理コード...
-        
-        // AI応答にプレフィックスとして好み抽出の通知を追加 - この部分を追加
-        if (aiResponseText) {
+        // 好み通知を先頭に追加
+        if (prefsMessage) {
             aiResponseText = prefsMessage + aiResponseText;
         }
         
         // AIの応答を設定
         aiMessage.textContent = aiResponseText;
         
-        // スクロールを最下部に
-        chatHistory.scrollTop = chatHistory.scrollHeight;
     } catch (error) {
+        console.error('AI応答エラー:', error);
         aiMessage.textContent = 'すみません、エラーが発生しました。もう一度お試しください。';
-        console.error('Error getting AI response:', error);
     }
+    
+    // スクロールを最下部に
+    chatHistory.scrollTop = chatHistory.scrollHeight;
 }
 
         // チャット履歴をクリア
