@@ -1566,17 +1566,35 @@
                     <td class="hide-mobile">${whisky.taste_profile ? generateStars(whisky.taste_profile.complexity || 0) : ''}</td>
                 `;
                 
-                // クリックイベント
-                row.addEventListener('click', function() {
+                // クリックイベント - より堅牢な実装
+                row.addEventListener('click', function(event) {
+                    // イベントが複数回処理されるのを防止
+                    event.stopPropagation();
+                    
+                    console.log(`行クリック: ${whisky.name}`); // デバッグログ
+                    
                     // 選択状態の更新
                     document.querySelectorAll('#whiskyTableBody tr').forEach(r => {
                         r.classList.remove('selected');
                     });
                     row.classList.add('selected');
                     
-                    // 詳細表示
+                    // 状態変数の更新
                     selectedWhiskyId = whisky.id;
+                    
+                    // 詳細表示
                     showWhiskyDetails(whisky);
+                    
+                    // 確実にスクロールするための処理 - タイムアウトを使用して非同期処理の完了後に実行
+                    setTimeout(() => {
+                        const detailsSection = document.getElementById('whiskyDetails');
+                        if (detailsSection) {
+                            console.log('詳細セクションへスクロール'); // デバッグログ
+                            detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        } else {
+                            console.warn('詳細セクションが見つかりません');
+                        }
+                    }, 100);
                 });
                 
                 tbody.appendChild(row);
@@ -1647,6 +1665,8 @@
 
         // ウィスキーの詳細を表示
         function showWhiskyDetails(whisky) {
+            console.log(`詳細表示: ${whisky.name}`); // デバッグログ
+            
             // 詳細セクションを表示
             const detailsSection = document.getElementById('whiskyDetails');
             detailsSection.style.display = 'flex';
@@ -1693,8 +1713,11 @@
             // 蒸留所情報を更新
             updateDistilleryInfo(whisky);
             
-            // スクロール位置を調整（ユーザークリック時のみスクロール）
-            detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // より確実なスクロール処理（3回目以降のクリックでも動作するよう改善）
+            setTimeout(() => {
+                console.log('詳細へスクロール実行');
+                detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 200);
         }
 
         // レーダーチャートを更新
