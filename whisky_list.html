@@ -1830,8 +1830,8 @@ function parsePrice(priceStr) {
             paginationContainer.appendChild(nextButton);
         }
 
-        // プロファイルチャートの更新
-        function updateProfileChart(whisky) {
+        // 味覚プロファイルチャートの更新
+        function updateTasteProfileChart(whisky) {
             console.log(`プロファイルチャート更新: ${whisky.name}`);
             
             const chartCanvas = document.getElementById('whiskyProfileChart');
@@ -1958,10 +1958,23 @@ function parsePrice(priceStr) {
             // 蒸留所情報を更新
             updateDistilleryInfo(whisky);
             
-            // 自動スクロール（少し遅延させる）
+            // 自動スクロール（より堅牢な実装）
             setTimeout(() => {
-                detailsSection.scrollIntoView({ behavior: 'smooth' });
-            }, 100);
+                const detailsSection = document.getElementById('whiskyDetails');
+                if (detailsSection) {
+                    // スクロール位置を詳細セクションの少し上に設定
+                    const offset = 80; // ヘッダーの高さなどを考慮
+                    const sectionTop = detailsSection.getBoundingClientRect().top + window.pageYOffset - offset;
+                    
+                    // スムーズスクロールを実行
+                    window.scrollTo({
+                        top: sectionTop,
+                        behavior: 'smooth'
+                    });
+                    
+                    console.log('詳細セクションへスクロール実行:', sectionTop);
+                }
+            }, 200); // 少し長めの遅延
             
             // 診断モードがONの場合は診断情報を表示
             if (diagnosticsMode) {
