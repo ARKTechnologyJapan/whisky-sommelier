@@ -799,11 +799,12 @@
             color: rgba(255, 255, 255, 0.9);
         }
 
+        /* distilleryDescriptionを左寄せにするCSS修正 */
         .distillery-description {
             margin-top: 15px;
             line-height: 1.6;
+            text-align: left; /* 左寄せを明示的に指定 */
         }
-
         .status-active {
             color: #4ecdc4;
             font-weight: bold;
@@ -962,6 +963,24 @@
             margin-bottom: 25px; /* 下部の余白を増やす */
             line-height: 1.8; /* 行間を広げる */
         }
+
+        @keyframes thinking {
+            0% { content: "考えています"; }
+            25% { content: "考えています."; }
+            50% { content: "考えています.."; }
+            75% { content: "考えています..."; }
+            100% { content: "考えています...."; }
+        }
+
+        .thinking-animation {
+            position: relative;
+        }
+
+        .thinking-animation::after {
+            content: "考えています";
+            animation: thinking 1.5s infinite;
+        }
+
     </style>
 <style>
     .genspark-notice-dialog {
@@ -1243,7 +1262,7 @@
                 <!-- 蒸留所マップと情報セクション -->
                 <div id="distillerySection" class="distillery-section">
                     <h2 class="text-xl font-bold mb-3 text-center" style="margin-top: 0px; margin-bottom: 10px; padding-bottom: 15px; line-height: 2;">
-                        🗾 蒸留所情報
+                        🗾 蒸溜所情報
                     </h2>
                     <div class="distillery-container">
                         <div class="map-container">
@@ -1895,8 +1914,8 @@
             // AIの応答を生成中であることを表示
             const chatHistory = document.getElementById('chatHistory');
             const aiMessage = document.createElement('div');
-            aiMessage.className = 'chat-message ai-message';
-            aiMessage.textContent = '考えています...';
+            aiMessage.className = 'chat-message ai-message thinking-animation';
+            aiMessage.textContent = ''; // テキストは空に、アニメーションがコンテンツを表示します
             chatHistory.appendChild(aiMessage);
 
             // スクロールを最下部に
