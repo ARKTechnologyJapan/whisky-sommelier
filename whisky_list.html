@@ -1663,6 +1663,82 @@
             paginationContainer.appendChild(nextButton);
         }
 
+        // プロファイルチャートの更新
+        function updateProfileChart(whisky) {
+            console.log(`プロファイルチャート更新: ${whisky.name}`);
+            
+            const chartCanvas = document.getElementById('whiskyProfileChart');
+            if (!chartCanvas) {
+                console.error('チャートキャンバスが見つかりません');
+                return;
+            }
+            
+            // 既存のチャートがあれば破棄
+            if (profileChartInstance) {
+                profileChartInstance.destroy();
+            }
+            
+            // taste_profileオブジェクトのチェック
+            const taste_profile = whisky.taste_profile || {};
+            
+            // チャートデータ
+            const data = {
+                labels: ['スモーキー', 'フルーティー', '複雑さ', 'スパイシー', '甘味'],
+                datasets: [{
+                    label: '味わいプロファイル',
+                    data: [
+                        taste_profile.smoky || 0,
+                        taste_profile.fruity || 0,
+                        taste_profile.complexity || 0,
+                        taste_profile.spicy || 0,
+                        taste_profile.sweetness || 0
+                    ],
+                    backgroundColor: 'rgba(78, 205, 196, 0.2)',
+                    borderColor: 'rgba(78, 205, 196, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(255, 107, 107, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(255, 107, 107, 1)',
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            };
+            
+            // チャートオプション
+            const options = {
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 5,
+                        stepSize: 1,
+                        ticks: {
+                            display: false
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                responsive: true,
+                maintainAspectRatio: false
+            };
+            
+            // チャート作成
+            try {
+                profileChartInstance = new Chart(chartCanvas, {
+                    type: 'radar',
+                    data: data,
+                    options: options
+                });
+                console.log('プロファイルチャート更新完了');
+            } catch (error) {
+                console.error('チャート作成エラー:', error);
+            }
+        }
+
         // ウィスキーの詳細を表示（修正版）
         function showWhiskyDetails(whisky) {
         console.log(`詳細表示: ${whisky.name}`);
