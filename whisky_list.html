@@ -1663,150 +1663,155 @@
             paginationContainer.appendChild(nextButton);
         }
 
-        // ウィスキーの詳細を表示
+        // ウィスキーの詳細を表示（完全修正版）
         function showWhiskyDetails(whisky) {
             console.log(`詳細表示: ${whisky.name}`); // デバッグログ
             
-            // 詳細セクションを表示
-            const detailsSection = document.getElementById('whiskyDetails');
-            detailsSection.style.display = 'flex';
-            
-            // ウィスキー情報を設定
-            document.getElementById('detailWhiskyName').textContent = whisky.name;
-            document.getElementById('detailWhiskyPrice').textContent = whisky.price;
-            
-            // タグを設定
-            const tagsContainer = document.getElementById('detailWhiskyTags');
-            tagsContainer.innerHTML = '';
-            
-            if (whisky.region) {
-                const tag = document.createElement('span');
-                tag.className = 'tag';
-                tag.textContent = whisky.region;
-                tagsContainer.appendChild(tag);
-            }
-            
-            if (whisky.subcategory) {
-                const tag = document.createElement('span');
-                tag.className = 'tag';
-                tag.textContent = whisky.subcategory;
-                tagsContainer.appendChild(tag);
-            }
-            
-            if (whisky.abv) {
-                const tag = document.createElement('span');
-                tag.className = 'tag';
-                tag.textContent = whisky.abv + '%';
-                tagsContainer.appendChild(tag);
-            }
-            
-            // 説明文を設定
-            document.getElementById('detailWhiskyDescription').textContent = 
-                whisky.tastingNote_ja || '詳細情報がありません';
-            
-            // レーダーチャートを更新
-            updateProfileChart(whisky);
-            
-            // 写真を更新
-            updateWhiskyPhoto(whisky);
-            
-            // 蒸留所情報を更新
-            updateDistilleryInfo(whisky);
-            
-            // より確実なスクロール処理（3回目以降のクリックでも動作するよう改善）
-            setTimeout(() => {
-                console.log('詳細へスクロール実行');
-                detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            }, 200);
-        }
-
-        // レーダーチャートを更新
-        function updateProfileChart(whisky) {
-            const ctx = document.getElementById('whiskyProfileChart');
-            
-            // 既存のチャートを破棄
-            if (profileChartInstance) {
-                profileChartInstance.destroy();
-            }
-            
-            // 味覚プロファイルがない場合
-            if (!whisky.taste_profile) {
-                ctx.getContext('2d').clearRect(0, 0, ctx.width, ctx.height);
+            if (!whisky) {
+                console.error('ウィスキーデータがありません');
                 return;
             }
             
-            // データセット
-            const data = {
-                labels: ['フルーティー', 'スパイシー', 'ボディ', 'スモーキー', '甘さ', '複雑さ'],
-                datasets: [{
-                    label: whisky.name,
-                    data: [
-                        whisky.taste_profile.fruity || 0,
-                        whisky.taste_profile.spicy || 0,
-                        whisky.taste_profile.body || 0,
-                        whisky.taste_profile.smoky || 0,
-                        whisky.taste_profile.sweetness || 0,
-                        whisky.taste_profile.complexity || 0
-                    ],
-                    backgroundColor: 'rgba(78, 205, 196, 0.2)',
-                    borderColor: '#4ecdc4',
-                    pointBackgroundColor: '#4ecdc4',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: '#4ecdc4',
-                    fill: true
-                }]
-            };
+            // 詳細セクションを表示
+            const detailsSection = document.getElementById('whiskyDetails');
+            if (!detailsSection) {
+                console.error('詳細セクションが見つかりません');
+                return;
+            }
             
-            // チャートのオプション
-            const options = {
-                scales: {
-                    r: {
-                        angleLines: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        pointLabels: {
-                            font: {
-                                size: 14
-                            },
-                            color: 'rgba(255, 255, 255, 0.9)'
-                        },
-                        ticks: {
-                            display: false,
-                            backdropColor: 'transparent'
-                        },
-                        suggestedMin: 0,
-                        suggestedMax: 5
-                    }
-                },
-                plugins: {
-                    legend: {
-                        display: false
-                    }
-                },
-                maintainAspectRatio: false
-            };
+            // 詳細表示の前に必ず表示状態にする
+            detailsSection.style.display = 'flex';
             
-            // チャートを作成
-            profileChartInstance = new Chart(ctx, {
-                type: 'radar',
-                data: data,
-                options: options
-            });
+            try {
+                // ウィスキー情報を設定
+                document.getElementById('detailWhiskyName').textContent = whisky.name;
+                document.getElementById('detailWhiskyPrice').textContent = whisky.price;
+                
+                // タグを設定
+                const tagsContainer = document.getElementById('detailWhiskyTags');
+                tagsContainer.innerHTML = '';
+                
+                if (whisky.region) {
+                    const tag = document.createElement('span');
+                    tag.className = 'tag';
+                    tag.textContent = whisky.region;
+                    tagsContainer.appendChild(tag);
+                }
+                
+                if (whisky.subcategory) {
+                    const tag = document.createElement('span');
+                    tag.className = 'tag';
+                    tag.textContent = whisky.subcategory;
+                    tagsContainer.appendChild(tag);
+                }
+                
+                if (whisky.abv) {
+                    const tag = document.createElement('span');
+                    tag.className = 'tag';
+                    tag.textContent = whisky.abv + '%';
+                    tagsContainer.appendChild(tag);
+                }
+                
+                // 説明文を設定
+                document.getElementById('detailWhiskyDescription').textContent = 
+                    whisky.tastingNote_ja || '詳細情報がありません';
+                
+                // 非同期処理の実行
+                // 処理順序を固定: チャート → 写真 → 蒸留所情報 → スクロール
+                Promise.resolve()
+                    .then(() => {
+                        // レーダーチャートを更新
+                        console.log('チャート更新開始');
+                        updateProfileChart(whisky);
+                        console.log('チャート更新完了');
+                    })
+                    .then(() => {
+                        // 写真を更新（確実に初期化してから）
+                        console.log('写真更新開始');
+                        const photoContainer = document.querySelector('.whisky-photo-container');
+                        if (photoContainer) {
+                            // 写真コンテナを初期状態に戻す
+                            photoContainer.innerHTML = `
+                                <div class="whisky-photo-blur-bg" id="whiskyPhotoBlurBg"></div>
+                                <div class="whisky-photo-wrapper">
+                                    <img id="whiskyPhoto" src="" alt="ウィスキーボトル" class="whisky-photo-img">
+                                </div>
+                                <p id="whiskyPhotoCaption" class="whisky-photo-caption"></p>
+                            `;
+                            photoContainer.classList.remove('no-photo');
+                        }
+                        updateWhiskyPhoto(whisky);
+                        console.log('写真更新完了');
+                    })
+                    .then(() => {
+                        // 蒸留所情報を更新
+                        console.log('蒸留所情報更新開始');
+                        updateDistilleryInfo(whisky);
+                        console.log('蒸留所情報更新完了');
+                    })
+                    .then(() => {
+                        // 確実にスクロールするため300ms待機
+                        return new Promise(resolve => setTimeout(resolve, 300));
+                    })
+                    .then(() => {
+                        // スクロール処理
+                        console.log('詳細へスクロール実行');
+                        detailsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    })
+                    .catch(error => {
+                        console.error('詳細表示処理エラー:', error);
+                    });
+                    
+            } catch (error) {
+                console.error('詳細表示エラー:', error);
+            }
         }
 
-        // 写真を更新
+        // 写真を更新（完全修正版）
         function updateWhiskyPhoto(whisky) {
+            if (!whisky) {
+                console.error('写真更新: ウィスキーデータがありません');
+                return;
+            }
+            
+            console.log(`写真更新: ${whisky.name}`);
+            
+            // 写真関連の要素を取得
             const photoContainer = document.querySelector('.whisky-photo-container');
+            if (!photoContainer) {
+                console.error('写真コンテナが見つかりません');
+                return;
+            }
+            
+            // 必要な要素が揃っているか確認
             const photoImg = document.getElementById('whiskyPhoto');
             const photoBg = document.getElementById('whiskyPhotoBlurBg');
             const photoCaption = document.getElementById('whiskyPhotoCaption');
             
-            // キャプションを更新
-            photoCaption.textContent = `${whisky.name}のボトル画像`;
+            if (!photoImg || !photoBg || !photoCaption) {
+                console.error('写真表示に必要な要素が見つかりません');
+                // 要素がなければ再作成
+                photoContainer.innerHTML = `
+                    <div class="whisky-photo-blur-bg" id="whiskyPhotoBlurBg"></div>
+                    <div class="whisky-photo-wrapper">
+                        <img id="whiskyPhoto" src="" alt="ウィスキーボトル" class="whisky-photo-img">
+                    </div>
+                    <p id="whiskyPhotoCaption" class="whisky-photo-caption"></p>
+                `;
+                // 再取得
+                const photoImg = document.getElementById('whiskyPhoto');
+                const photoBg = document.getElementById('whiskyPhotoBlurBg');
+                const photoCaption = document.getElementById('whiskyPhotoCaption');
+                
+                // 再度チェック
+                if (!photoImg || !photoBg || !photoCaption) {
+                    console.error('写真表示要素の再作成に失敗しました');
+                    return;
+                }
+            }
+            
+            // キャプションを空に設定（要望通り）
+            photoCaption.textContent = '';
             
             // 写真URLの処理
             if (whisky.photoUrl) {
@@ -1815,58 +1820,68 @@
                 // 写真のパスを試行
                 const photoId = whisky.id;
                 const possiblePaths = [
-                    whisky.photoUrl,                    // 元のパス (例: "1.jpg")
-                    `./photo/${whisky.photoUrl}`,       // ./photo/1.jpg
-                    `/photo/${whisky.photoUrl}`,        // /photo/1.jpg
-                    `photo/${whisky.photoUrl}`,         // photo/1.jpg
+                    `photo/${photoId}.jpg`,             // photo/1.jpg (IDを使用)
                     `./photo/${photoId}.jpg`,           // ./photo/1.jpg (IDを使用)
                     `/photo/${photoId}.jpg`,            // /photo/1.jpg (IDを使用)
-                    `photo/${photoId}.jpg`,             // photo/1.jpg (IDを使用)
-                    `./images/${whisky.photoUrl}`,      // ./images/1.jpg
+                    `photo/${whisky.photoUrl}`,         // photo/1.jpg
+                    `./photo/${whisky.photoUrl}`,       // ./photo/1.jpg
+                    `/photo/${whisky.photoUrl}`,        // /photo/1.jpg
+                    whisky.photoUrl,                    // 元のパス (例: "1.jpg")
                     `./images/${photoId}.jpg`,          // ./images/1.jpg (IDを使用)
-                    `../photo/${whisky.photoUrl}`,      // ../photo/1.jpg
-                    `../photo/${photoId}.jpg`           // ../photo/1.jpg (IDを使用)
+                    `../photo/${photoId}.jpg`,          // ../photo/1.jpg (IDを使用)
+                    `images/${photoId}.jpg`,            // images/1.jpg (IDを使用)
+                    `./images/${whisky.photoUrl}`,      // ./images/1.jpg
                 ];
                 
-                // 画像の試行
-                tryImagePaths(possiblePaths, 0);
+                // 画像の試行（全て非同期処理で）
+                let imageLoaded = false;
                 
-                function tryImagePaths(paths, index) {
-                    if (index >= paths.length) {
-                        // すべてのパスが失敗した場合
-                        showNoPhotoState();
-                        return;
+                // 各パスを順番に試す
+                (async function tryPaths() {
+                    for (const path of possiblePaths) {
+                        if (imageLoaded) break;
+                        
+                        try {
+                            await new Promise((resolve, reject) => {
+                                const testImg = new Image();
+                                
+                                testImg.onload = () => {
+                                    console.log(`写真読み込み成功: ${path}`);
+                                    // 画像を表示
+                                    photoImg.src = path;
+                                    photoImg.style.display = 'block';
+                                    photoBg.style.backgroundImage = `url(${path})`;
+                                    
+                                    // 成功フラグを設定
+                                    imageLoaded = true;
+                                    resolve();
+                                };
+                                
+                                testImg.onerror = () => {
+                                    // このパスは失敗
+                                    console.log(`写真読み込み失敗: ${path}`);
+                                    reject();
+                                };
+                                
+                                // 読み込み開始
+                                testImg.src = path;
+                            });
+                        } catch (error) {
+                            // エラーは無視して次のパスへ
+                            continue;
+                        }
                     }
                     
-                    const testImg = new Image();
-                    testImg.onload = function() {
-                        // 画像の読み込み成功
-                        photoImg.src = paths[index];
-                        photoImg.style.display = 'block';
-                        photoBg.style.backgroundImage = `url(${paths[index]})`;
-                        
-                        // 写真が存在する場合のスタイル
-                        photoContainer.classList.remove('no-photo');
-                        photoContainer.innerHTML = `
-                            <div class="whisky-photo-blur-bg" id="whiskyPhotoBlurBg" style="background-image: url(${paths[index]})"></div>
-                            <div class="whisky-photo-wrapper">
-                                <img id="whiskyPhoto" src="${paths[index]}" alt="ウィスキーボトル" class="whisky-photo-img">
-                            </div>
-                            <p id="whiskyPhotoCaption" class="whisky-photo-caption">${whisky.name}のボトル画像</p>
-                        `;
-                        
-                        console.log(`写真の読み込み成功: ${paths[index]}`);
-                    };
-                    
-                    testImg.onerror = function() {
-                        // 次のパスを試す
-                        tryImagePaths(paths, index + 1);
-                    };
-                    
-                    testImg.src = paths[index];
-                }
+                    // すべてのパスが失敗した場合
+                    if (!imageLoaded) {
+                        console.warn('すべての写真パスが失敗しました');
+                        showNoPhotoState();
+                    }
+                })();
+                
             } else {
                 // 写真URLがない場合
+                console.log('写真URLがありません');
                 showNoPhotoState();
             }
             
