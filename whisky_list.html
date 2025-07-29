@@ -1492,6 +1492,27 @@
             
             // 表示更新
             displayWhiskies();
+            
+            // 選択中のウィスキーがある場合、詳細情報とマップを強制的に更新
+            if (selectedWhiskyId) {
+                const selectedWhisky = whiskyData.find(w => w.id === selectedWhiskyId);
+                if (selectedWhisky) {
+                    // マップの更新が必要なため、少し遅延させてからマップサイズを更新
+                    setTimeout(() => {
+                        // マップが存在する場合はサイズを更新
+                        if (distilleryMap) {
+                            distilleryMap.invalidateSize();
+                            
+                            // さらに100ms後に再度更新を試みる
+                            setTimeout(() => {
+                                if (distilleryMap) {
+                                    distilleryMap.invalidateSize();
+                                }
+                            }, 100);
+                        }
+                    }, 200);
+                }
+            }
         }
 
         // ソートアイコンを更新
@@ -1965,6 +1986,16 @@
                 // 蒸留所の説明
                 document.getElementById('distilleryDescription').textContent = 
                     distillery.description || '詳細情報がありません';
+                
+                // マップのサイズを強制的に更新（複数回）
+                for (let i = 0; i <= 3; i++) {
+                    setTimeout(() => {
+                        if (distilleryMap) {
+                            distilleryMap.invalidateSize();
+                        }
+                    }, 100 + i * 100); // 100ms, 200ms, 300ms, 400msでそれぞれ更新
+                }
+                
             } else {
                 // 蒸留所情報がない場合
                 document.getElementById('distilleryName').textContent = '情報なし';
@@ -2023,6 +2054,17 @@
         // 蒸留所マップを初期化
         function initializeDistilleryMap() {
             const mapContainer = document.getElementById('distilleryMap');
+            if (!mapContainer) {
+                console.error('マップコンテナが見つかりません');
+                return;
+            }
+            
+            // マップコンテナのサイズを確認
+            if (mapContainer.clientWidth === 0 || mapContainer.clientHeight === 0) {
+                console.warn('マップコンテナのサイズが0です。マップが正しく表示されない可能性があります。');
+                // 最小サイズを一時的に設定
+                mapContainer.style.minHeight = '400px';
+            }
             
             // 既存のマップを削除
             if (distilleryMap) {
@@ -2031,28 +2073,37 @@
             }
             
             // 新しいマップを作成
-            distilleryMap = L.map('distilleryMap', {
-                center: [55.0, -3.0], // スコットランド中心
-                zoom: 5,
-                zoomControl: false
-            });
-            
-            // 暗いスタイルのタイルレイヤーを使用
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-                subdomains: 'abcd',
-                maxZoom: 19
-            }).addTo(distilleryMap);
-            
-            // ズームコントロールを右下に配置
-            L.control.zoom({
-                position: 'bottomright'
-            }).addTo(distilleryMap);
-            
-            // マップのサイズを更新
-            setTimeout(() => {
-                distilleryMap.invalidateSize();
-            }, 100);
+            try {
+                distilleryMap = L.map('distilleryMap', {
+                    center: [55.0, -3.0], // スコットランド中心
+                    zoom: 5,
+                    zoomControl: false
+                });
+                
+                // 暗いスタイルのタイルレイヤーを使用
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                    subdomains: 'abcd',
+                    maxZoom: 19
+                }).addTo(distilleryMap);
+                
+                // ズームコントロールを右下に配置
+                L.control.zoom({
+                    position: 'bottomright'
+                }).addTo(distilleryMap);
+                
+                // マップのサイズを複数回更新（タイミングを変えて試行）
+                for (let i = 0; i <= 3; i++) {
+                    setTimeout(() => {
+                        if (distilleryMap) {
+                            distilleryMap.invalidateSize();
+                        }
+                    }, i * 100); // 0ms, 100ms, 200ms, 300msでそれぞれ更新
+                }
+                
+            } catch (error) {
+                console.error('マップの初期化エラー:', error);
+            }
         }
 
         // 蒸留所マーカーを更新
