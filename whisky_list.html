@@ -938,9 +938,9 @@ td img:hover {
 }
 
   </style></head>
-<body>
-    <div class="header-container">
-<a href="https://www.hirunotsuki.com/" target="_blank" style="position: absolute; left: 20px; width: 90px; height: 90px; display: block;">
+        <body>
+        <div class="header-container">
+            <a href="https://www.hirunotsuki.com/" target="_blank" style="position: absolute; left: 20px; width: 90px; height: 90px; display: block;">
     <img class="logo" src="./NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
 </a>
         <h1 class="header-title">昼の月。ウィスキーリスト</h1>
@@ -1887,7 +1887,11 @@ td img:hover {
                     photoContainer.innerHTML = `
                         <div class="whisky-photo-blur-bg" id="whiskyPhotoBlurBg"></div>
                         <div class="whisky-photo-wrapper">
-                            <img id="whiskyPhoto" src="" alt="ウィスキーボトル" class="whisky-photo-img">
+                            <img id="whiskyPhoto" 
+                                src="" 
+                                alt="${whisky.name}" 
+                                data-name="${whisky.name}"
+                                class="whisky-photo-img whisky-photo">
                         </div>
                         <p id="whiskyPhotoCaption" class="whisky-photo-caption"></p>
                     `;
@@ -2218,11 +2222,12 @@ function initImageModal() {
 
     // 写真クリックイベント部分を以下に修正
 document.addEventListener('click', function(e) {
-    // ウィスキー画像かどうかを確認
-    if (e.target.tagName === 'IMG' && 
-        (e.target.classList.contains('whisky-photo') || 
-         e.target.src.includes('whisky') || 
-         e.target.closest('td'))) {
+// ウィスキー画像かどうかを確認（ロゴを除外）
+if (e.target.tagName === 'IMG' && 
+    !e.target.classList.contains('logo') &&  // ロゴクラスを除外
+    (e.target.classList.contains('whisky-photo') || 
+     e.target.src.includes('whisky') || 
+     e.target.closest('td'))) {
         
         console.log('ウィスキー画像クリック:', e.target.src);
         
@@ -2253,9 +2258,10 @@ document.addEventListener('click', function(e) {
             whiskyName = e.target.dataset.name;
         }
         
-        // フォールバック
+        // フォールバック - 銘柄名が取得できない場合は何もしない
         if (!whiskyName) {
-            whiskyName = "ウィスキー";
+            console.log('銘柄名が取得できませんでした');
+            return; // モーダルを表示しない
         }
         
         // モーダル表示
