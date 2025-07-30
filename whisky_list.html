@@ -856,6 +856,70 @@
       box-sizing: border-box;
       width: 100%;
     }
+
+    /* モーダルスタイル */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 9999;
+    padding-top: 100px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+}
+
+.modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    max-height: 80%;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.close {
+    position: absolute;
+    top: 60px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: #bbb;
+    text-decoration: none;
+}
+
+#caption {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    text-align: center;
+    color: #ccc;
+    padding: 10px 0;
+    height: 150px;
+}
+
+/* 写真をクリック可能にするスタイル */
+.whisky-photo {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.whisky-photo:hover {
+    transform: scale(1.05);
+}
+
   </style></head>
 <body>
     <div class="header-container">
@@ -1057,6 +1121,12 @@
             </div>
         </div>
     </div>
+    <!-- 画像モーダル -->
+<div id="imageModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="modalImage">
+    <div id="caption"></div>
+</div>
 
         <script>
                 // グローバル変数
@@ -2115,6 +2185,47 @@
                     const translateUrl = `https://translate.google.com/translate?sl=auto&tl=en&u=${encodeURIComponent(currentUrl)}`;
                     window.open(translateUrl, '_blank');
                 }
+
+                // 画像モーダル機能
+            function initImageModal() {
+                const modal = document.getElementById("imageModal");
+                const modalImg = document.getElementById("modalImage");
+                const captionText = document.getElementById("caption");
+                const span = document.getElementsByClassName("close")[0];
+
+                // 全ての写真にクリックイベントを追加
+                document.addEventListener('click', function(e) {
+                    if (e.target.classList.contains('whisky-photo')) {
+                        modal.style.display = "block";
+                        modalImg.src = e.target.src;
+                        captionText.innerHTML = e.target.alt || "ウィスキー写真";
+                    }
+                });
+
+                // 閉じるボタン
+                span.onclick = function() {
+                    modal.style.display = "none";
+                }
+
+                // 背景クリックで閉じる
+                modal.onclick = function(event) {
+                    if (event.target == modal) {
+                        modal.style.display = "none";
+                    }
+                }
+
+                // ESCキーで閉じる
+                document.addEventListener('keydown', function(event) {
+                    if (event.key === "Escape") {
+                        modal.style.display = "none";
+                    }
+                });
+            }
+
+            // ページ読み込み後に初期化
+            document.addEventListener('DOMContentLoaded', function() {
+                initImageModal();
+            });
         </script>
 <script defer="" src="./whisky_list_files/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon="{&quot;rayId&quot;:&quot;96688a25299a6871&quot;,&quot;serverTiming&quot;:{&quot;name&quot;:{&quot;cfExtPri&quot;:true,&quot;cfEdge&quot;:true,&quot;cfOrigin&quot;:true,&quot;cfL4&quot;:true,&quot;cfSpeedBrain&quot;:true,&quot;cfCacheStatus&quot;:true}},&quot;version&quot;:&quot;2025.7.0&quot;,&quot;token&quot;:&quot;4edd5f8ec12a48cfa682ab8261b80a79&quot;}" crossorigin="anonymous"></script>
 
