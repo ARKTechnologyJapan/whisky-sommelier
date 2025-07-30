@@ -861,14 +861,14 @@
 .modal {
     display: none;
     position: fixed;
-    z-index: 9999;
-    padding-top: 100px;
+    z-index: 99999;
     left: 0;
     top: 0;
     width: 100%;
     height: 100%;
     overflow: auto;
     background-color: rgba(0,0,0,0.9);
+    padding: 50px 20px; /* この行を追加 */
 }
 
 .modal-content {
@@ -917,6 +917,23 @@
 }
 
 .whisky-photo:hover {
+    transform: scale(1.05);
+}
+
+/* 🆕 新規追加部分 */
+.whisky-photo, 
+td img {
+    cursor: pointer;
+    transition: transform 0.2s;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    pointer-events: auto;
+}
+
+.whisky-photo:hover,
+td img:hover {
     transform: scale(1.05);
 }
 
@@ -2186,41 +2203,105 @@
                     window.open(translateUrl, '_blank');
                 }
 
-                // 画像モーダル機能
-            function initImageModal() {
-                const modal = document.getElementById("imageModal");
-                const modalImg = document.getElementById("modalImage");
-                const captionText = document.getElementById("caption");
-                const span = document.getElementsByClassName("close")[0];
+                // 改良版モーダル機能
+function initImageModal() {
+    console.log('モーダル初期化開始');
+    
+    const modal = document.getElementById("imageModal");
+    const modalImg = document.getElementById("modalImage");
+    const captionText = document.getElementById("caption");
+    
+    if (!modal || !modalImg || !captionText) {
+        console.error('モーダル要素が見つかりません！');
+        return;
+    }
 
-                // 全ての写真にクリックイベントを追加
-                document.addEventListener('click', function(e) {
-                    if (e.target.classList.contains('whisky-photo')) {
-                        modal.style.display = "block";
-                        modalImg.src = e.target.src;
-                        captionText.innerHTML = e.target.alt || "ウィスキー写真";
-                    }
-                });
-
-                // 閉じるボタン
-                span.onclick = function() {
-                    modal.style.display = "none";
+    // 写真クリックイベント部分を以下に修正
+document.addEventListener('click', function(e) {
+    // ウィスキー画像かどうかを確認
+    if (e.target.tagName === 'IMG' && 
+        (e.target.classList.contains('whisky-photo') || 
+         e.target.src.includes('whisky') || 
+         e.target.closest('td'))) {
+        
+        console.log('ウィスキー画像クリック:', e.target.src);
+        
+        // デフォルト動作を防止
+        e.preventDefault();
+        e.stopPropagation();
+        
+        // 銘柄名を取得する方法を複数試す
+        let whiskyName = '';
+        
+        // 方法1: alt属性から取得
+        if (e.target.alt && e.target.alt !== 'ウィスキー写真') {
+            whiskyName = e.target.alt;
+        }
+        // 方法2: 同じ行のテーブルセルから銘柄名を取得
+        else {
+            const row = e.target.closest('tr');
+            if (row) {
+                const nameCell = row.querySelector('td:first-child'); // 最初のセル（銘柄名）
+                if (nameCell) {
+                    whiskyName = nameCell.textContent.trim();
                 }
-
-                // 背景クリックで閉じる
-                modal.onclick = function(event) {
-                    if (event.target == modal) {
-                        modal.style.display = "none";
-                    }
-                }
-
-                // ESCキーで閉じる
-                document.addEventListener('keydown', function(event) {
-                    if (event.key === "Escape") {
-                        modal.style.display = "none";
-                    }
-                });
             }
+        }
+        
+        // 方法3: データ属性がある場合
+        if (!whiskyName && e.target.dataset.name) {
+            whiskyName = e.target.dataset.name;
+        }
+        
+        // フォールバック
+        if (!whiskyName) {
+            whiskyName = "ウィスキー";
+        }
+        
+        // モーダル表示
+        modal.style.display = "block";
+        modalImg.src = e.target.src;
+        captionText.innerHTML = whiskyName; // 銘柄名を表示
+    }
+});
+
+    // 画像の右クリックを防止
+    document.addEventListener('contextmenu', function(e) {
+        if (e.target.tagName === 'IMG' && 
+            (e.target.classList.contains('whisky-photo') || 
+             e.target.src.includes('whisky'))) {
+            e.preventDefault();
+        }
+    });
+
+    // 画像のドラッグを防止
+    document.addEventListener('dragstart', function(e) {
+        if (e.target.tagName === 'IMG') {
+            e.preventDefault();
+        }
+    });
+
+    // 閉じる機能
+    const closeBtn = modal.querySelector('.close');
+    if (closeBtn) {
+        closeBtn.onclick = function() {
+            modal.style.display = "none";
+        }
+    }
+
+    modal.onclick = function(event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // ESCキーで閉じる
+    document.addEventListener('keydown', function(event) {
+        if (event.key === "Escape" && modal.style.display === "block") {
+            modal.style.display = "none";
+        }
+    });
+}
 
             // ページ読み込み後に初期化
             document.addEventListener('DOMContentLoaded', function() {
