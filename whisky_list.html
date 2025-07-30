@@ -937,6 +937,18 @@ td img:hover {
     transform: scale(1.05);
 }
 
+/* 蒸溜所マーカーのツールチップ */
+.distillery-tooltip {
+    background-color: rgba(40, 44, 52, 0.95);
+    color: #fff;
+    border: 1px solid rgba(78, 205, 196, 0.5);
+    border-radius: 4px;
+    padding: 5px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
   </style></head>
         <body>
         <div class="header-container">
@@ -2047,86 +2059,168 @@ td img:hover {
                 }
 
                 // 蒸溜所をマップに表示
-                // 蒸溜所をマップに表示
-        function showDistilleryOnMap(lat, lng, name, distilleryInfo) {
-            // マップが初期化されていない場合は初期化
-            if (!distilleryMap) {
-                distilleryMap = L.map('distilleryMap').setView([lat, lng], 10);
-                
-                // 暗いスタイルのタイルレイヤーを使用
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-                    subdomains: 'abcd',
-                    maxZoom: 19
-                }).addTo(distilleryMap);
-            }
-            
-            // 既存のマーカーをすべてクリア
-            distilleryMap.eachLayer(function(layer) {
-                if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
-                    distilleryMap.removeLayer(layer);
-                }
-            });
-            
-            // すべての蒸溜所をグリーンで表示
-            Object.keys(distilleryDatabase).forEach(distilleryKey => {
-                const distillery = distilleryDatabase[distilleryKey];
-                if (distillery.location && distillery.location.lat && distillery.location.lng) {
-                    const marker = L.circleMarker([distillery.location.lat, distillery.location.lng], {
-                        radius: 6,
-                        fillColor: '#4ecdc4',  // グリーン
-                        color: '#4ecdc4',
-                        weight: 2,
+                function showDistilleryOnMap(lat, lng, name, distilleryInfo) {
+                    // マップが初期化されていない場合は初期化
+                    if (!distilleryMap) {
+                        distilleryMap = L.map('distilleryMap').setView([lat, lng], 6); // より広い視点に変更
+                        
+                        // 暗いスタイルのタイルレイヤーを使用
+                        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                            subdomains: 'abcd',
+                            maxZoom: 19
+                        }).addTo(distilleryMap);
+                        
+                        // マップクリックイベントを無効化（地図の下のUI要素が反応するのを防止）
+                        distilleryMap.on('click', L.DomEvent.stopPropagation);
+                    }
+                    
+                    // 既存のマーカーをすべてクリア
+                    distilleryMap.eachLayer(function(layer) {
+                        if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
+                            distilleryMap.removeLayer(layer);
+                        }
+                    });
+                    
+                    // マーカーオブジェクトを保存する配列
+                    const allMarkers = [];
+                    
+                    // すべての蒸溜所をグリーンで表示
+                    Object.keys(distilleryDatabase).forEach(distilleryKey => {
+                        const distillery = distilleryDatabase[distilleryKey];
+                        if (distillery.location && distillery.location.lat && distillery.location.lng) {
+                            const marker = L.circleMarker([distillery.location.lat, distillery.location.lng], {
+                                radius: 6,
+                                fillColor: '#4ecdc4',  // グリーン
+                                color: '#4ecdc4',
+                                weight: 2,
+                                opacity: 1,
+                                fillOpacity: 0.7
+                            }).addTo(distilleryMap);
+                            
+                            // クリックイベントを追加
+                            marker.on('click', function() {
+                                displayDistilleryInfo({
+                                    name: distilleryKey // ウィスキー名の代わりに蒸溜所名を使用
+                                });
+                                
+                                // 既存のアクティブマーカーを削除
+                                if (window.activeMarker) {
+                                    distilleryMap.removeLayer(window.activeMarker);
+                                }
+                                if (window.pulseMarker) {
+                                    distilleryMap.removeLayer(window.pulseMarker);
+                                    clearInterval(window.pulseInterval);
+                                }
+                                
+                                // 新しいアクティブマーカーを作成
+                                window.activeMarker = L.circleMarker([distillery.location.lat, distillery.location.lng], {
+                                    radius: 10,
+                                    fillColor: '#ff6b6b',  // 赤
+                                    color: '#ff6b6b',
+                                    weight: 3,
+                                    opacity: 1,
+                                    fillOpacity: 0.8
+                                }).addTo(distilleryMap);
+                                
+                                // パルスマーカーを作成
+                                window.pulseMarker = L.circleMarker([distillery.location.lat, distillery.location.lng], {
+                                    radius: 15,
+                                    fillColor: 'rgba(255, 107, 107, 0.3)',
+                                    color: '#ff6b6b',
+                                    weight: 1,
+                                    opacity: 0.6,
+                                    fillOpacity: 0.2
+                                }).addTo(distilleryMap);
+                                
+                                // パルスアニメーション
+                                let currentRadius = 15;
+                                let growing = true;
+                                window.pulseInterval = setInterval(() => {
+                                    if (growing) {
+                                        currentRadius += 0.5;
+                                        if (currentRadius >= 25) growing = false;
+                                    } else {
+                                        currentRadius -= 0.5;
+                                        if (currentRadius <= 12) growing = true;
+                                    }
+                                    window.pulseMarker.setRadius(currentRadius);
+                                }, 100);
+                                
+                                // マップの中心を更新
+                                distilleryMap.setView([distillery.location.lat, distillery.location.lng], 10);
+                            });
+                            
+                            // ホバー効果
+                            marker.on('mouseover', function() {
+                                marker.setStyle({
+                                    radius: 8,
+                                    fillOpacity: 0.9
+                                });
+                                
+                                // ツールチップ表示（オプション）
+                                marker.bindTooltip(distilleryKey, {
+                                    permanent: false,
+                                    direction: 'top',
+                                    className: 'distillery-tooltip'
+                                }).openTooltip();
+                            });
+                            
+                            marker.on('mouseout', function() {
+                                marker.setStyle({
+                                    radius: 6,
+                                    fillOpacity: 0.7
+                                });
+                            });
+                            
+                            allMarkers.push(marker);
+                        }
+                    });
+                    
+                    // 選択された蒸溜所を赤いビーコンで表示
+                    window.activeMarker = L.circleMarker([lat, lng], {
+                        radius: 10,
+                        fillColor: '#ff6b6b',  // 赤
+                        color: '#ff6b6b',
+                        weight: 3,
                         opacity: 1,
-                        fillOpacity: 0.7
+                        fillOpacity: 0.8
                     }).addTo(distilleryMap);
+                    
+                    // ビーコン効果（パルス）
+                    window.pulseMarker = L.circleMarker([lat, lng], {
+                        radius: 15,
+                        fillColor: 'rgba(255, 107, 107, 0.3)',
+                        color: '#ff6b6b',
+                        weight: 1,
+                        opacity: 0.6,
+                        fillOpacity: 0.2
+                    }).addTo(distilleryMap);
+                    
+                    // パルスアニメーション
+                    let currentRadius = 15;
+                    let growing = true;
+                    window.pulseInterval = setInterval(() => {
+                        if (growing) {
+                            currentRadius += 0.5;
+                            if (currentRadius >= 25) growing = false;
+                        } else {
+                            currentRadius -= 0.5;
+                            if (currentRadius <= 12) growing = true;
+                        }
+                        window.pulseMarker.setRadius(currentRadius);
+                    }, 100);
+                    
+                    // マップの中心を更新
+                    distilleryMap.setView([lat, lng], distilleryInfo.zoomLevel || 8);
+                    
+                    // マップのサイズを調整
+                    setTimeout(function() {
+                        if (distilleryMap) {
+                            distilleryMap.invalidateSize();
+                        }
+                    }, 100);
                 }
-            });
-            
-            // 選択された蒸溜所を赤いビーコンで表示
-            const activeMarker = L.circleMarker([lat, lng], {
-                radius: 10,
-                fillColor: '#ff6b6b',  // 赤
-                color: '#ff6b6b',
-                weight: 3,
-                opacity: 1,
-                fillOpacity: 0.8
-            }).addTo(distilleryMap);
-            
-            // ビーコン効果（パルス）
-            const pulseMarker = L.circleMarker([lat, lng], {
-                radius: 15,
-                fillColor: 'rgba(255, 107, 107, 0.3)',
-                color: '#ff6b6b',
-                weight: 1,
-                opacity: 0.6,
-                fillOpacity: 0.2
-            }).addTo(distilleryMap);
-            
-            // パルスアニメーション
-            let currentRadius = 15;
-            let growing = true;
-            const pulseInterval = setInterval(() => {
-                if (growing) {
-                    currentRadius += 0.5;
-                    if (currentRadius >= 25) growing = false;
-                } else {
-                    currentRadius -= 0.5;
-                    if (currentRadius <= 12) growing = true;
-                }
-                pulseMarker.setRadius(currentRadius);
-            }, 100);
-            
-            // マップの中心を更新
-            distilleryMap.setView([lat, lng], distilleryInfo.zoomLevel || 10);
-            
-            // マップのサイズを調整
-            setTimeout(function() {
-                if (distilleryMap) {
-                    distilleryMap.invalidateSize();
-                }
-            }, 100);
-        }
 
                 // 蒸溜所情報を更新
                 function updateDistilleryInfo(whisky) {
