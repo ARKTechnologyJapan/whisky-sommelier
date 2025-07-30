@@ -1062,6 +1062,7 @@
                 // グローバル変数
                 let whiskyData = [];
                 let distilleryDatabase = {};
+                let brandToDistilleryMapping = {};
                 let distilleryMarkers = {};
                 let pulseMarkers = {};
                 let distilleryMap = null;
@@ -1102,26 +1103,23 @@
                     try {
                         const response = await fetch('unified_whisky_data.json');
                         const data = await response.json();
-                        whiskyData = data.whiskies || [];
                         
-                        // 各ウィスキーデータから蒸溜所情報を抽出してdistilleryDatabaseを構築
-                        distilleryDatabase = {};
-                        whiskyData.forEach(whisky => {
-                            if (whisky.distillery) {
-                                const distilleryKey = whisky.distillery.name || whisky.name.split(' ')[0];
-                                distilleryDatabase[distilleryKey] = whisky.distillery;
-                            }
-                        });
+                        // JSONの構造に合わせてデータを取得
+                        whiskyData = data.whiskies || [];
+                        distilleryDatabase = data.distilleries || {};
+                        brandToDistilleryMapping = data.brandToDistillery || {};
                         
                         // フィルター適用前にすべてのウィスキーを保存
                         filteredWhiskies = [...whiskyData];
                         
                         console.log('統合データを正常に読み込みました:', whiskyData.length, '銘柄');
-                        console.log('蒸溜所データベースを構築しました:', Object.keys(distilleryDatabase).length, '蒸溜所');
+                        console.log('蒸溜所データベース:', Object.keys(distilleryDatabase).length, '蒸溜所');
+                        console.log('ブランドマッピング:', Object.keys(brandToDistilleryMapping).length, '件');
                     } catch (error) {
                         console.error('統合ウィスキーデータの読み込みに失敗しました:', error);
                         whiskyData = [];
                         distilleryDatabase = {};
+                        brandToDistilleryMapping = {};
                         
                         // エラー時はデフォルトデータを使用
                         whiskyData = getDefaultWhiskyData();
@@ -1185,6 +1183,31 @@
                             link.classList.remove('active');
                         }
                     });
+                }
+
+                // ウィスキーから蒸溜所を取得する関数
+                function getDistilleryForWhisky(whisky) {
+                    // 1. brandToDistilleryMappingから直接取得を試す
+                    if (brandToDistilleryMapping[whisky.name]) {
+                        const distilleryKey = brandToDistilleryMapping[whisky.name];
+                        if (distilleryDatabase[distilleryKey]) {
+                            console.log(`ブランドマッピングで発見: ${whisky.name} -> ${distilleryKey}`);
+                            return distilleryDatabase[distilleryKey];
+                        }
+                    }
+
+                    // 2. 部分一致で検索
+                    const whiskyNameLower = whisky.name.toLowerCase();
+                    for (const distilleryKey in distilleryDatabase) {
+                        const distilleryNameLower = distilleryKey.toLowerCase().replace(/蒸溜所/g, '');
+                        if (whiskyNameLower.includes(distilleryNameLower)) {
+                            console.log(`部分一致で発見: ${whisky.name} -> ${distilleryKey}`);
+                            return distilleryDatabase[distilleryKey];
+                        }
+                    }
+
+                    console.log(`蒸溜所が見つかりません: ${whisky.name}`);
+                    return null;
                 }
 
                 // デフォルトウィスキーデータ
@@ -1861,16 +1884,17 @@
 
                 // 蒸溜所情報を表示
                 function displayDistilleryInfo(whisky) {
-                    const distillery = whisky.distillery;
+                    // 統合JSONの構造に合わせて蒸溜所を取得
+                    const distillery = getDistilleryForWhisky(whisky);
                     
                     if (distillery) {
-                        // 統合データから直接蒸溜所情報を表示
+                        // 蒸溜所情報が見つかった場合
                         document.getElementById('distilleryName').textContent = distillery.name || '不明';
                         document.getElementById('distilleryRegion').textContent = distillery.region || whisky.region || '不明';
                         
                         // 設立年の表示
-                        if (distillery.founded) {
-                            document.getElementById('distilleryFounded').textContent = distillery.founded + '年';
+                        if (distillery.foundedYear) {
+                            document.getElementById('distilleryFounded').textContent = distillery.foundedYear + '年';
                         } else {
                             document.getElementById('distilleryFounded').textContent = '不明';
                         }
@@ -1893,9 +1917,9 @@
                         // 説明文の表示
                         document.getElementById('distilleryDescription').textContent = distillery.description || '蒸溜所の詳細情報は準備中です。';
                         
-                        // マップ表示
-                        if (distillery.latitude && distillery.longitude) {
-                            showDistilleryOnMap(distillery.latitude, distillery.longitude, distillery.name, distillery);
+                        // マップ表示（location.lat, location.lngを使用）
+                        if (distillery.location && distillery.location.lat && distillery.location.lng) {
+                            showDistilleryOnMap(distillery.location.lat, distillery.location.lng, distillery.name, distillery);
                         } else {
                             // 座標がない場合のデフォルト表示
                             showDistilleryOnMap(55.8642, -4.2518, 'スコットランド', {
@@ -1916,7 +1940,7 @@
                         
                         document.getElementById('distilleryDescription').textContent = '蒸溜所情報が見つかりません。';
                         
-                        // デフォルトマップ表示
+                        // デフォルトマップ表示（スコットランド中央）
                         showDistilleryOnMap(55.8642, -4.2518, 'スコットランド', {
                             name: '不明',
                             region: whisky.region || '不明',
@@ -1931,32 +1955,41 @@
                     if (!distilleryMap) {
                         distilleryMap = L.map('distilleryMap').setView([lat, lng], 10);
                         
-                        // タイルレイヤーを追加
-                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                            attribution: '© OpenStreetMap contributors'
+                        // 暗いスタイルのタイルレイヤーを使用
+                        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+                            subdomains: 'abcd',
+                            maxZoom: 19
                         }).addTo(distilleryMap);
                     } else {
                         // 既存のマーカーをクリア
                         distilleryMap.eachLayer(function(layer) {
-                            if (layer instanceof L.Marker) {
+                            if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
                                 distilleryMap.removeLayer(layer);
                             }
                         });
                     }
                     
                     // マップの中心を更新
-                    distilleryMap.setView([lat, lng], 10);
+                    distilleryMap.setView([lat, lng], distilleryInfo.zoomLevel || 10);
                     
                     // マーカーを追加
-                    const marker = L.marker([lat, lng]).addTo(distilleryMap);
+                    const marker = L.circleMarker([lat, lng], {
+                        radius: 8,
+                        fillColor: '#ff6b6b',
+                        color: '#ff6b6b',
+                        weight: 2,
+                        opacity: 1,
+                        fillOpacity: 0.7
+                    }).addTo(distilleryMap);
                     
                     // ポップアップ情報を作成
                     let popupContent = `<strong>${name}</strong><br>`;
                     if (distilleryInfo.region) {
                         popupContent += `地域: ${distilleryInfo.region}<br>`;
                     }
-                    if (distilleryInfo.founded) {
-                        popupContent += `設立: ${distilleryInfo.founded}年<br>`;
+                    if (distilleryInfo.foundedYear) {
+                        popupContent += `設立: ${distilleryInfo.foundedYear}年<br>`;
                     }
                     if (distilleryInfo.status) {
                         popupContent += `状態: ${distilleryInfo.status}<br>`;
@@ -1967,15 +2000,22 @@
                     
                     marker.bindPopup(popupContent);
                     
+                    // ポップアップを自動で開く
+                    setTimeout(() => {
+                        marker.openPopup();
+                    }, 500);
+                    
                     // マップのサイズを調整
                     setTimeout(function() {
-                        distilleryMap.invalidateSize();
+                        if (distilleryMap) {
+                            distilleryMap.invalidateSize();
+                        }
                     }, 100);
                 }
 
                 // 蒸溜所情報を更新
                 function updateDistilleryInfo(whisky) {
-                    // 統合データから直接蒸溜所情報を取得
+                    // 統合データから蒸溜所情報を取得して表示
                     displayDistilleryInfo(whisky);
                 }
 
