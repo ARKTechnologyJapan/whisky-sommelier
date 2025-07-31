@@ -40,11 +40,189 @@ exports.handler = async (event, context) => {
       };
     }
 
+    // チャット履歴から言及された銘柄を抽出する関数
+    function extractMentionedWhiskies(chatHistory) {
+      const mentionedWhiskies = new Set();
+      const knownBrands = [
+        'ボウモア', 'bowmore', 'マッカラン', 'タリスカー', 'アードベッグ',
+        'カリラ', 'キルホーマン', '山崎', '白州', '響', '軽井沢', 'ポートエレン',
+        'CAOL ILA', 'カオルアイラ', 'GLENLIVET', 'グレンリベット',
+        'SPRINGBANK', 'スプリングバンク', 'ABERFELDY', 'アベラフェルディ', 'アバフェルディ',
+        'MORTLACH', 'モートラック', 'KILCHOMAN', 'キルホーマン',
+        'DAILUAINE', 'デイルアイン', 'ダリュイン', 'BRUICHLADDICH', 'ブルックラディ',
+        'GLENGLASSAUGH', 'グレングラッサ', 'ARDBEG', 'アードベック',
+        'ジュラ', 'Jura', 'ハイランドパーク', 'HIGHLAND PARK', 'Orkney',
+        'ローズバンク', 'BUNNAHABHAIN', 'ブナハーブン', 'GLENTAUCHERS', 'グレンタウチャーズ',
+        'BEN NEVIS', 'ベンネビス', 'High Coast', 'ハイコースト',
+        'Benromach', 'ベンロマック', '長濱', 'NAGAHAMA', 'クライヌリッシュ',
+        'glengarioch', 'GlenGarioch', 'グレンギリー', 'BLAIR ATHOL', 'ブレアアソル',
+        'FETTERCAIRN', 'フェッターケアン', 'Glenfarclas', 'グレンファークラス',
+        'Linkwood', 'リンクウッド', '津貫', 'MARS', 'マルス',
+        'GLEN GLASSAUGH', 'グレングラッサウ', 'GLEN GRANT', 'グレングラント',
+        'イチローズモルト', '秩父', 'LEDAIG', 'レダイグ', 'トバモリー',
+        'GLEN ORD', 'グレンオード', '桜尾', 'Royal Brackla', 'ロイヤルブラックラ',
+        'TAMDHU', 'タムドゥ', 'Glentauchers', 'グレントファース', 
+        'Invergoroon', 'インヴァーゴードン', '安積', 'YAMAZAKURA',
+        'TOMINTOUL', 'トミントウル', 'TEANINICH', 'ティーニニック', 
+        'PITTYVAICH', 'ピティヴァイク', 'GLENMORANGIE', 'グレンモーレンジー',
+        'YUZA', '游佐', '明石', '三郎丸', 'ダルウィニー', '厚岸',
+        'Teeling', 'ティーリング'
+      ];
+      
+      if (chatHistory && Array.isArray(chatHistory)) {
+        chatHistory.forEach(message => {
+          if (message.content) {
+            knownBrands.forEach(brand => {
+              if (message.content.toLowerCase().includes(brand.toLowerCase())) {
+                mentionedWhiskies.add(brand);
+              }
+            });
+          }
+        });
+      }
+
+      // additionalPreferences からも銘柄を検索（チャット履歴がない場合）
+      if (requestData.additionalPreferences) {
+        knownBrands.forEach(brand => {
+          if (requestData.additionalPreferences.toLowerCase().includes(brand.toLowerCase())) {
+            mentionedWhiskies.add(brand);
+          }
+        });
+      }
+      
+      return Array.from(mentionedWhiskies);
+    }
+
     // メッセージの処理
     const messages = [];
 
+    // 在庫している主要銘柄リストと蒸留所情報（システムプロンプトに統合）
+    const whiskyCatalog = `
+    【当店の取り扱い主要銘柄と蒸留所リスト】
+    
+    ■ スコットランド - アイラ島
+    - タリスカー44年 オフィシャルボトル (¥80,400) - タリスカー蒸溜所
+    - タリスカー11年 - タリスカー蒸溜所
+    - ポートエレン25年 one of only bottles - ポートエレン蒸溜所
+    - ボウモア26年 ダンカンテイラー - ボウモア蒸溜所
+    - ボウモア15年 マリナー (¥4,800) - ボウモア蒸溜所
+    - ボウモア13年 1998-2011 - ボウモア蒸溜所
+    - ボウモア12年 (¥3,500) - ボウモア蒸溜所
+    - ブナハーブン12年 80年代 (BUNNAHABHAIN) - ブナハーブン蒸溜所
+    - アードベッグ10年 (¥5,100) - アードベッグ蒸溜所
+    - アードベッグ19年 バッチ2 - アードベッグ蒸溜所
+    - アードベッグ9年 1990-2000 - アードベッグ蒸溜所
+    - ISLAY KILDALTON13年 2009-2022 (アードベッグ) - アードベッグ蒸溜所
+    - キルホーマン マキヤーベイ (¥4,200) - キルホーマン蒸溜所
+    - キルホーマン2022 - キルホーマン蒸溜所
+    - キルホーマン2021 - キルホーマン蒸溜所
+    - キルホーマン2013-2021 信濃屋 - キルホーマン蒸溜所
+    - キルホーマン2013-2021 - キルホーマン蒸溜所
+    - キルホーマン2010 シェリーカスク (¥5,200) - キルホーマン蒸溜所
+    - カリラ (CAOL ILA) 18年 1974-1993 - カリラ蒸溜所
+    - カリラ (CAOL ILA) 14年 2008-2023 - カリラ蒸溜所
+    - カリラ (CAOL ILA) 2003-2017 - カリラ蒸溜所
+    - ブルックラディ (ASTER11年BRUICHLADDICH) 2012 - ブルックラディ蒸溜所
+    - レダイグ (LEDAIG) 1992-1999 - トバモリー蒸溜所（レダイグ）
+    
+    ■ スコットランド - スペイサイド/ハイランド
+    - マッカラン1990年 SAMAROLI - マッカラン蒸溜所
+    - マッカラン22年 1985-2007 - マッカラン蒸溜所
+    - マッカラン7年 - マッカラン蒸溜所
+    - グレンリベット (GLENLIVET) 20年 2003-2023 - グレンリベット蒸溜所
+    - アバフェルディ (ABERFELDY) 18年 1999 - アバフェルディ蒸溜所
+    - モートラック (MORTLACH) 14年 2007-2021 - モートラック蒸溜所
+    - モートラック (MORTLACH) 13年 2007-2020 - モートラック蒸溜所
+    - モートラック (MORTLACH) 2023 - モートラック蒸溜所
+    - ダリュイン (DAILUAINE) RUM10年 2012-2022 - ダリュイン蒸溜所
+    - ダリュイン (DAILUAINE) 23年 1997-2021 - ダリュイン蒸溜所
+    - ダリュイン (DAILUAINE) 10年 2011-2021 - ダリュイン蒸溜所
+    - ダリュイン (DAILUAINE) 9年 2013-2022 - ダリュイン蒸溜所
+    - ベンネビス (BEN NEVIS) 2009-2021 11年 - ベンネビス蒸溜所
+    - ベンネビス (Benrinnes) 1973-1998 - ベンネビス蒸溜所
+    - ハイランドパーク (ORKNEY) 18年 2004-2023 - ハイランドパーク蒸溜所
+    - ハイランドパーク (ORKNEY) 22年 1999-2021 - オークニー（ハイランドパーク）蒸溜所
+    - ハイランドパーク (ORKNEY) 13年 2008 - オークニー（ハイランドパーク）蒸溜所
+    - ハイランドパーク (HIGHLAND PARK) 1986-2006 - ハイランドパーク蒸溜所
+    - ベンロマック (Benromach) 2009-2021 223瓶限定 - ベンロマック蒸溜所
+    - グレンタウチャーズ (GLENTAUCHERS) 11年 2011-2023 - グレンタウチャーズ蒸溜所
+    - グレンタウチャーズ (Glentauchers) 31年 1989-2021 - グレントファース蒸溜所
+    - グレンギリー (glengarioch) 14年 2008 - グレンギリー蒸溜所
+    - グレンギリー (GlenGarioch) 18年 1994-2013 - グレンギリー蒸溜所
+    - ブレアアソル (BLAIR ATHOL) 11年 2011-2023 - ブレアアソル蒸溜所
+    - グレンファークラス (Glenfarclas) 莨樽周年 2008-2023 - グレンファークラス蒸溜所
+    - グレンファークラス (Glenfarclas) 11年 2009-2021 - グレンファークラス蒸溜所
+    - リンクウッド (Linkwood) 15年 2008-2023 - リンクウッド蒸溜所
+    - リンクウッド (LINKWOOD) 13年 SHIMAJIボトル - リンクウッド蒸溜所
+    - フェッターケアン (FETTERCAIRN) 25年 1995-2021 - フェッターケアン蒸溜所
+    - フェッターケアン (Old FETTERCAIRN) 80年代 - フェッターケアン蒸溜所
+    - グレングラッサウ (GLEN GLASSAUGH) 1973 - グレングラッサウ蒸溜所
+    - グレングラント (GLENGRANT) 25年 1995 - グレングラント蒸溜所
+    - グレンオード (GLEN ORD) 2009-2023 - グレンオード蒸溜所
+    - ロイヤルブラックラ (Royal Brackla) 2011-2021 - ロイヤルブラックラ蒸溜所
+    - ロイヤルブラックラ (ROYAL BRACKLA) 13年 2009-2022 - ロイヤルブラックラ蒸溜所
+    - タムドゥ (TAMDHU) 2006-2022 - タムドゥ蒸溜所
+    - インヴァーゴードン (Invergoroon) 1972-2021 49年 - インヴァーゴードン蒸溜所
+    - トミントウル (TOMINTOUL) 16年 1999 19年 - トミントウル蒸溜所
+    - ティーニニック (TEANINICH) 21年 1999-2020 - ティーニニック蒸溜所
+    - ピティヴァイク (PITTYVAICH) 2019年 29年 - ピティヴァイク蒸溜所
+    - グレンモーレンジー (GLENMORANGIE) 10Years Old - グレンモーレンジー蒸溜所
+    - グレンモーレンジー (GLENMORANGIE) PORT WOOD FINISH - グレンモーレンジー蒸溜所
+    - ダルウィニー30年 2019 - ダルウィニー蒸溜所
+
+    ■ スコットランド - キャンベルタウン
+    - スプリングバンク (SPRINGBANK) 21年 2022年 - スプリングバンク蒸溜所
+    - スプリングバンク (ADELPHI Springbank) 22年 1998-2021 - スプリングバンク蒸溜所
+    - スプリングバンク (SPRINGBANK) 12年 1997-2009 - スプリングバンク蒸溜所
+
+    ■ スコットランド - その他
+    - ローズバンク1990年 イエコーン - ローズバンク蒸溜所
+    - ジュラ (Jura) 1999 - ジュラ蒸溜所
+    - エドラダワー (エドラタワー) 10年750ml 80年代 - エドラダワー蒸溜所
+
+    ■ 日本
+    - 軽井沢 (KARUIZAWA) 25年 - 軽井沢蒸溜所
+    - 軽井沢 (軽井沢) 12年 - 軽井沢蒸溜所
+    - 軽井沢 (軽井沢) 100%malt - 軽井沢蒸溜所
+    - 山崎蒸留所樽出原酒58度大阪50周年 - 山崎蒸溜所
+    - 山崎 (山崎) 10年 - 山崎蒸溜所
+    - 長濱 (NAGAHAMA) INAZUMA2021 - 長濱蒸溜所
+    - 長濱 (NAGAHAMA) シングルモルト2019-2022 - 長濱蒸溜所
+    - 秩父 (秩父) 2016-2021 イチローズモルト - 秩父蒸溜所
+    - 秩父 (秩父) ESTABLISHED2004 - 秩父蒸溜所
+    - 秩父 (秩父) 第二蒸留所 ウィスキー - 秩父蒸溜所
+    - 秩父 (IchirosMWR) - 秩父蒸溜所
+    - 秩父 (IchirosWWR) - 秩父蒸溜所
+    - 秩父 (IchirosDD) - 秩父蒸溜所
+    - マルス (MARS) The YA屋久岛 - マルス駒ヶ岳蒸溜所
+    - マルス (MARS) ラッキーキャット ウィスキー - マルス駒ヶ岳蒸溜所
+    - マルス (駒ヶ岳) 蝶々2024 - マルス駒ヶ岳蒸溜所
+    - 津貫 (津贯) 2018-2021 ５周年記念ボトル - マルス津貫蒸溜所
+    - 桜尾 (樱尾) 2020-2023 - 桜尾蒸溜所
+    - 桜尾 (樱尾) 2020-2023 信濃屋 - 桜尾蒸溜所
+    - 桜尾 (樱尾) 4年2020 - 桜尾蒸溜所
+    - 安積 (安積) 2017－2022 - 安積蒸溜所（YAMAZAKURA）
+    - 游佐 (YUZA) 2022ウィスキー - 游佐蒸溜所
+    - 明石 (明石) 3年粉色ウィスキー - 明石蒸溜所
+    - 三郎丸 (三郎丸) 2020-2025 ウィスキー - 三郎丸蒸溜所
+    - 厚岸 (厚岸) 小暑2024 ウィスキー - 厚岸蒸溜所
+
+    ■ アイルランド
+    - ティーリング (Teeling) 2021年祭ボトル - ティーリング蒸溜所
+    - ティーリング (Teeling) 2012-2020 - ティーリング蒸溜所
+    - ティーリング (TEELING) 18年 2005-2023 - ティーリング蒸溜所
+
+    ■ スウェーデン
+    - ハイコースト (High Coast) 2013-2021 - ハイコースト蒸溜所
+    `;
+
     // システムプロンプト - リクエストタイプによって変更
     if (isFullRecommendation) {
+      // 言及された銘柄を抽出
+      const mentionedWhiskies = extractMentionedWhiskies(requestData.chatHistory);
+      const mentionedWhiskiesInstructions = mentionedWhiskies.length > 0 ? 
+        `\n\n【重要指示】ユーザーが「${mentionedWhiskies.join('」「')}」に言及しています。これらの銘柄の中から条件に合うものを必ず1つ以上、推薦リストに含めてください。言及された銘柄が条件に合わない場合でも、可能な限り近いプロファイルの銘柄として含めるようにしてください。` : '';
+
       messages.push({
         role: 'system',
         content: `あなたは「昼の月バー」の熟練ウィスキーソムリエです。以下の形式でJSON出力を生成してください:
@@ -80,12 +258,21 @@ exports.handler = async (event, context) => {
           ]
         }
         
-        必ず3つのウィスキーを推薦し、JSONとして有効な形式で出力してください。`
+        ${whiskyCatalog}
+        
+        必ず3つのウィスキーを推薦し、JSONとして有効な形式で出力してください。${mentionedWhiskiesInstructions}`
       });
     } else {
+      // 言及された銘柄を抽出
+      const mentionedWhiskies = extractMentionedWhiskies(requestData.chatHistory);
+      const mentionedWhiskiesInstructions = mentionedWhiskies.length > 0 ? 
+        `\n\n【重要指示】ユーザーが「${mentionedWhiskies.join('」「')}」に言及しています。これらの銘柄について質問されている場合は、在庫リストに基づいて正確に回答してください。` : '';
+
       messages.push({
         role: 'system',
-        content: `あなたは「昼の月バー」の熟練ウィスキーソムリエです。常に温かく専門的に応答し、具体的な銘柄名と価格を含め、なぜその銘柄がおすすめかの理由を明確に説明してください。`
+        content: `あなたは「昼の月バー」の熟練ウィスキーソムリエです。常に温かく専門的に応答し、具体的な銘柄名と価格を含め、なぜその銘柄がおすすめかの理由を明確に説明してください。
+        
+        ${whiskyCatalog}${mentionedWhiskiesInstructions}`
       });
     }
 
@@ -112,8 +299,10 @@ exports.handler = async (event, context) => {
       ▼complexity最高（5点）: タリスカー44年、ポートエレン25年、マッカラン1990年、軽井沢25年など30銘柄
       
       【最近追加された銘柄】
-      • ポウモア18年 ディープ&コンプレックス（¥8,200）: Body:4、Smoky:4、Complexity:4のプロファイル。アイラモルトの重厚さ、スモーキーさを持ち、熟成による複雑な味わいが特徴です。
-      • ボウモアIsBS ディープコンプレックス（¥8,200）: Body:4、Smoky:4、Complexity:4のプロファイル、ヘビーでスモーキーなプロファイルをお探しの方におすすめです。18年熟成により、アイラモルトの特有の海の香りや、複雑な味の展開が楽しめます。
+      • ボウモア 15年 マリナー（¥4,800）: Smoky(3点)とFruity(3点)のバランスが絶妙。お客様の味覚座標(X=${requestData.tasteX || 0.5}, Y=${requestData.tasteY || 0.5})に近い位置づけです。
+      • ボウモア 26年 ダンカンテイラー: 長期熟成による豊かで複雑な香り、アイラ特有のスモーキーさと甘みが絶妙に調和しています。
+      • ボウモア 12年 (¥3,500): スタンダードながら上質なアイラモルトで、バランスの取れた味わいが特徴です。
+      • ボウモア 13年 1998-2011: 希少なヴィンテージボトリングで、独特の複雑さを楽しめます。
       • アードベッグ 10年（¥5,100）: スモーキーさが特徴的な定番アイラモルト。
       • 山崎蒸留所限定（¥7,500）: 日本を代表するウィスキーで、蜂蜜のような甘さとフルーティーさが特徴。
       
@@ -138,7 +327,7 @@ exports.handler = async (event, context) => {
       ${isFullRecommendation ? 
         `【リクエスト】
         顧客の好みに合わせた最適なウィスキー3本を選んでください。最もマッチする1本を最初に、次点2本を続けて提案してください。
-        必ず上記「最近追加された銘柄」も考慮に含め、顧客の好みに合っていればポウモア18年やボウモアIsBS ディープコンプレックスなども候補に入れてください。
+        必ず上記「最近追加された銘柄」も考慮に含め、顧客の好みに合っていればボウモア15年やボウモア26年などのボウモアシリーズも候補に入れてください。
         回答は指定されたJSON形式で出力してください。` :
         
         `【顧客からの質問】
@@ -228,6 +417,33 @@ exports.handler = async (event, context) => {
           
           // JSON構造を検証
           if (parsedJson && parsedJson.recommendations && Array.isArray(parsedJson.recommendations)) {
+            // チャットで言及された銘柄が含まれているか確認
+            const mentionedWhiskies = extractMentionedWhiskies(requestData.chatHistory);
+            
+            // 言及された銘柄が含まれているか確認し、含まれていない場合は注記を追加
+            if (mentionedWhiskies.length > 0) {
+              let hasMentionedWhisky = false;
+              
+              // 推薦リスト内に言及された銘柄があるか確認
+              for (const whisky of parsedJson.recommendations) {
+                for (const brand of mentionedWhiskies) {
+                  if (whisky.name.toLowerCase().includes(brand.toLowerCase())) {
+                    hasMentionedWhisky = true;
+                    break;
+                  }
+                }
+                if (hasMentionedWhisky) break;
+              }
+              
+              // 言及された銘柄が含まれていない場合、強制的に追加する
+              if (!hasMentionedWhisky) {
+                console.log(`言及された銘柄「${mentionedWhiskies.join('」「')}」が推薦リストに含まれていません。注記を追加します。`);
+                
+                // 言及された銘柄について注記
+                parsedJson.summary = `お話にあった「${mentionedWhiskies.join('」「')}」は現在の設定条件では上位に入りませんでしたが、以下の3つの銘柄が最もお好みに合うと思われます。\n` + parsedJson.summary;
+              }
+            }
+            
             claudeData.content[0].text = JSON.stringify(parsedJson);
           }
         }
