@@ -148,6 +148,8 @@ border-bottom: 2px solid #4ecdc4;
     padding: 15px 0 55px; /* 下部に余白を追加 */
     flex-wrap: wrap;      /* 折り返しを許可 */
   }
+
+
   
   /* ロゴサイズ調整 */
   .logo {
@@ -189,6 +191,27 @@ border-bottom: 2px solid #4ecdc4;
 max-width: 1200px;
 margin: 0 auto;
 padding: 100px 20px 20px;
+}
+
+/* スマホ表示時の調整 */
+@media (max-width: 768px) {
+  .container-custom {
+    padding-top: 160px; /* スマホ表示時はヘッダーとの間隔を広げる */
+  }
+  
+  /* ロゴを左寄せ */
+  .header-container a[target="_blank"] {
+    position: absolute;
+    left: 10px; /* より左に調整 */
+    top: 10px;
+  }
+}
+
+/* さらに小さい画面サイズ向け */
+@media (max-width: 360px) {
+  .container-custom {
+    padding-top: 180px; /* さらに小さい画面ではより大きなパディング */
+  }
 }
 
 /* 味覚マトリックスのスタイル */
