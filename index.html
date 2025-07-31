@@ -1815,126 +1815,224 @@
 
         // AI応答の取得（修正版）
 async function getAIResponse(message) {
-    // AIの応答を生成中であることを表示
-    const chatHistory = document.getElementById('chatHistory');
-    const aiMessage = document.createElement('div');
-    aiMessage.className = 'chat-message ai-message thinking-animation';
-    aiMessage.textContent = ''; // テキストは空に、アニメーションがコンテンツを表示します
-    chatHistory.appendChild(aiMessage);
+  // AIの応答を生成中であることを表示
+  const chatHistory = document.getElementById('chatHistory');
+  const aiMessage = document.createElement('div');
+  aiMessage.className = 'chat-message ai-message thinking-animation';
+  aiMessage.textContent = ''; // テキストは空に、アニメーションがコンテンツを表示します
+  chatHistory.appendChild(aiMessage);
 
+  // スクロールを最下部に
+  chatHistory.scrollTop = chatHistory.scrollHeight;
+
+  try {
+    // 新しく追加: 好み通知メッセージの作成
+    let prefsMessage = '';
+    const prefs = extractPreferencesFromMessage(message);
+    
+    if (prefs && Object.keys(prefs).length > 0) {
+      prefsMessage = 'あなたの好みを理解しました：\n';
+      
+      if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
+      if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
+      if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
+      if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
+      prefsMessage += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
+    }
+
+    // 味覚座標の取得
+    const dot1 = document.getElementById('tasteDot1');
+    const dot2 = document.getElementById('tasteDot2');
+    const tasteX = parseFloat(dot1.style.left) / 100;
+    const tasteY = parseFloat(dot1.style.top) / 100;
+
+    // 価格帯の取得
+    const minPrice = document.getElementById('minPrice').value * 1000;
+    const maxPrice = document.getElementById('maxPrice').value * 1000;
+
+    // チャット履歴を収集
+    const chatHistoryData = collectChatHistory();
+
+    // API呼び出し
+    const response = await fetch('/.netlify/functions/claude-api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        minPrice: minPrice,
+        maxPrice: maxPrice,
+        tasteX: tasteX.toFixed(2),
+        tasteY: tasteY.toFixed(2),
+        additionalPreferences: message,
+        chatHistory: chatHistoryData // チャット履歴を追加
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`API error: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    // API応答を表示
+    let aiResponseText = '';
+    if (data.success && data.data) {
+      if (data.data.choices && data.data.choices[0] && data.data.choices[0].message) {
+        // 新しい構造: data.data.choices[0].message.content
+        aiResponseText = data.data.choices[0].message.content;
+      } else if (data.data.content && data.data.content.length > 0) {
+        // 古い構造: data.data.content[0].text
+        aiResponseText = data.data.content[0].text;
+      } else {
+        throw new Error('Invalid API response structure');
+      }
+    } else {
+      throw new Error('API response missing success or data field');
+    }
+
+    // 新しく追加: 好み通知を先頭に追加
+    if (prefsMessage) {
+      aiResponseText = prefsMessage + aiResponseText;
+    }
+
+    aiMessage.textContent = aiResponseText;
+    aiMessage.classList.remove('thinking-animation'); // この行を追加
+    updateRecommendationsFromChat(aiResponseText); // この行を追加
+
+  } catch (error) {
+    console.error('Chat error:', error);
+
+    // エラーの場合、既存のモックレスポンスを使用
+    let aiResponseText;
+
+    // 質問に基づいてモック応答を生成（既存のコード）
+    if (message.includes('タリスカー44年')) {
+      aiResponseText = '🍷 タリスカー44年オフィシャルボトルは...';
+    } else if (message.includes('3000円以下') && message.includes('スモーキー') && message.includes('アイラ')) {
+      aiResponseText = '🌊 キルホーマン2013-2021信濃屋（¥2,000）が...';
+    } else if (message.includes('日本') && (message.includes('軽井沢') || message.includes('長濱'))) {
+      aiResponseText = '🍯 軽井沢25年（¥25,000）は日本を代表する銘柄で...';
+    } else if (message.includes('5000円前後') && message.includes('complexity5点')) {
+      aiResponseText = '⭐ 5000円前後でcomplexity5点を持つおすすめは...';
+    } else {
+      aiResponseText = '申し訳ありません、現在AIチャット機能が使えません。味覚プロファイルからあなたに最適なウィスキーを提案します。';
+    }
+
+    // 新しく追加: 好みを抽出できていれば通知を追加
+    const prefs = extractPreferencesFromMessage(message);
+    if (prefs && Object.keys(prefs).length > 0) {
+      let prefsMessage = 'あなたの好みを理解しました：\n';
+      
+      if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
+      if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
+      if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
+      if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
+      prefsMessage += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
+      
+      aiResponseText = prefsMessage + aiResponseText;
+    }
+
+    aiMessage.textContent = aiResponseText;
+    aiMessage.classList.remove('thinking-animation'); // この行を追加
+    updateRecommendationsFromChat(aiResponseText); // この行を追加
+  } finally {
     // スクロールを最下部に
     chatHistory.scrollTop = chatHistory.scrollHeight;
+  }
+}
 
-    try {
-        // 新しく追加: 好み通知メッセージの作成
-        let prefsMessage = '';
-        const prefs = extractPreferencesFromMessage(message);
+        // チャット履歴を収集する関数
+        function collectChatHistory() {
+        const chatHistory = document.getElementById('chatHistory');
+        if (!chatHistory) return [];
         
-        if (prefs && Object.keys(prefs).length > 0) {
-            prefsMessage = 'あなたの好みを理解しました：\n';
-            
-            if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
-            if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
-            if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
-            if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
-            prefsMessage += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
-        }
-
-        // 味覚座標の取得
-        const dot1 = document.getElementById('tasteDot1');
-        const dot2 = document.getElementById('tasteDot2');
-        const tasteX = parseFloat(dot1.style.left) / 100;
-        const tasteY = parseFloat(dot1.style.top) / 100;
-
-        // 価格帯の取得
-        const minPrice = document.getElementById('minPrice').value * 1000;
-        const maxPrice = document.getElementById('maxPrice').value * 1000;
-
-        // API呼び出し
-        const response = await fetch('/.netlify/functions/claude-api', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                minPrice: minPrice,
-                maxPrice: maxPrice,
-                tasteX: tasteX.toFixed(2),
-                tasteY: tasteY.toFixed(2),
-                additionalPreferences: message
-            })
-        });
-
-        if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
-        }
-
-        const data = await response.json();
-
-        // API応答を表示
-        let aiResponseText = '';
-        if (data.success && data.data) {
-            if (data.data.choices && data.data.choices[0] && data.data.choices[0].message) {
-                // 新しい構造: data.data.choices[0].message.content
-                aiResponseText = data.data.choices[0].message.content;
-            } else if (data.data.content && data.data.content.length > 0) {
-                // 古い構造: data.data.content[0].text
-                aiResponseText = data.data.content[0].text;
-            } else {
-                throw new Error('Invalid API response structure');
+        const messages = chatHistory.querySelectorAll('.chat-message');
+        const history = [];
+        
+        messages.forEach(message => {
+            const isAI = message.classList.contains('ai-message');
+            // thinking-animationクラスを持つメッセージは除外
+            if (!message.classList.contains('thinking-animation')) {
+            history.push({
+                role: isAI ? 'assistant' : 'user',
+                content: message.textContent
+            });
             }
-        } else {
-            throw new Error('API response missing success or data field');
+        });
+        
+        return history;
         }
 
-        // 新しく追加: 好み通知を先頭に追加
-        if (prefsMessage) {
-            aiResponseText = prefsMessage + aiResponseText;
-        }
-
-        aiMessage.textContent = aiResponseText;
-        aiMessage.classList.remove('thinking-animation'); // この行を追加
-
-    } catch (error) {
-        console.error('Chat error:', error);
-
-        // エラーの場合、既存のモックレスポンスを使用
-        let aiResponseText;
-
-        // 質問に基づいてモック応答を生成（既存のコード）
-        if (message.includes('タリスカー44年')) {
-            aiResponseText = '🍷 タリスカー44年オフィシャルボトルは...';
-        } else if (message.includes('3000円以下') && message.includes('スモーキー') && message.includes('アイラ')) {
-            aiResponseText = '🌊 キルホーマン2013-2021信濃屋（¥2,000）が...';
-        } else if (message.includes('日本') && (message.includes('軽井沢') || message.includes('長濱'))) {
-            aiResponseText = '🍯 軽井沢25年（¥25,000）は日本を代表する銘柄で...';
-        } else if (message.includes('5000円前後') && message.includes('complexity5点')) {
-            aiResponseText = '⭐ 5000円前後でcomplexity5点を持つおすすめは...';
-        } else {
-            aiResponseText = '申し訳ありません、現在AIチャット機能が使えません。味覚プロファイルからあなたに最適なウィスキーを提案します。';
-        }
-
-        // 新しく追加: 好みを抽出できていれば通知を追加
-        const prefs = extractPreferencesFromMessage(message);
-        if (prefs && Object.keys(prefs).length > 0) {
-            let prefsMessage = 'あなたの好みを理解しました：\n';
-            
-            if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
-            if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
-            if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
-            if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
-            prefsMessage += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
-            
-            aiResponseText = prefsMessage + aiResponseText;
-        }
-
-        aiMessage.textContent = aiResponseText;
-        aiMessage.classList.remove('thinking-animation'); // この行を追加
-
-    } finally {
-        // スクロールを最下部に
-        chatHistory.scrollTop = chatHistory.scrollHeight;
+        // チャット応答からウィスキー名を抽出し、推奨リストに反映する関数
+function updateRecommendationsFromChat(chatResponseText) {
+  if (!chatResponseText || !whiskyData || whiskyData.length === 0) return;
+  
+  console.log('チャット応答からウィスキー銘柄を抽出中...');
+  
+  // ウィスキー名を抽出するパターン
+  const patterns = [
+    /「([^」]+)」/g,  // 「」で囲まれた部分
+    /『([^』]+)』/g,  // 『』で囲まれた部分
+    /(\S+\s?\d+年[^\s、。,\.]+)/g,  // "〇〇 XX年" パターン
+    /((?:DAILUAINE|タリスカー|ポートエレン|マッカラン|軽井沢|山崎|白州|響|長濱|キルホーマン|ABERFELDY|GLENLIVET|SPRINGBANK|GLENGLASSAUGH|ARDBEG|MORTLACH|CAOL ILA|KILCHOMAN)[^\s、。,\.]*\s?\d*年?[^\s、。,\.]*)/g  // 特定の銘柄名
+  ];
+  
+  // 抽出されたウィスキー名を保存する配列
+  let extractedNames = [];
+  
+  // 各パターンで抽出を試みる
+  patterns.forEach(pattern => {
+    let match;
+    while ((match = pattern.exec(chatResponseText)) !== null) {
+      if (match[1]) {
+        extractedNames.push(match[1].trim());
+      } else if (match[0]) {
+        extractedNames.push(match[0].trim());
+      }
     }
+  });
+  
+  // 重複を削除
+  extractedNames = [...new Set(extractedNames)];
+  
+  console.log('抽出されたウィスキー銘柄:', extractedNames);
+  
+  if (extractedNames.length === 0) {
+    console.log('ウィスキー銘柄を抽出できませんでした');
+    return;
+  }
+  
+  // 抽出した銘柄名に最も近いウィスキーを探す
+  const recommendedWhiskies = [];
+  
+  extractedNames.forEach(name => {
+    // 完全一致または部分一致を探す
+    const matchingWhisky = whiskyData.find(w => 
+      w.name === name || 
+      w.name.includes(name) || 
+      name.includes(w.name)
+    );
+    
+    if (matchingWhisky) {
+      console.log(`マッチしたウィスキー: ${name} → ${matchingWhisky.name}`);
+      recommendedWhiskies.push(matchingWhisky);
+    }
+  });
+  
+  // マッチしたウィスキーがあれば表示
+  if (recommendedWhiskies.length > 0) {
+    console.log(`${recommendedWhiskies.length}個のウィスキーをチャットから抽出して表示します`);
+    displayLocalRecommendations(recommendedWhiskies);
+    
+    // 最初のウィスキーを選択
+    if (recommendedWhiskies.length > 0) {
+      selectWhisky(recommendedWhiskies[0]);
+    }
+    
+    // 推奨パネルを表示
+    document.getElementById('splitLayoutContainer').style.display = 'grid';
+  }
 }
 
         // チャットメッセージから好みを抽出する関数
@@ -3223,6 +3321,189 @@ async function getAIResponse(message) {
                 }
             }, 5000);
         }
+
+        // 別の提案を受けるボタンの機能強化 - 重複なしのランダム選択
+document.addEventListener('DOMContentLoaded', function() {
+  // ページ読み込み完了後に実行
+  setTimeout(function() {
+    // ボタンの参照を取得（ID、テキスト内容、または属性で検索）
+    const refreshButton = document.querySelector('button:contains("別の提案")') || 
+                         document.getElementById('getAnotherRecommendation') ||
+                         document.querySelector('[id*="refresh"][id*="recommendation"]');
+    
+    // querySelectorの:containsがサポートされていない場合の代替手段
+    if (!refreshButton) {
+      const allButtons = Array.from(document.querySelectorAll('button'));
+      const targetButton = allButtons.find(btn => 
+        btn.textContent.includes('別の提案') || 
+        btn.innerHTML.includes('別の提案')
+      );
+      
+      if (targetButton) {
+        setupRefreshButtonHandler(targetButton);
+      } else {
+        console.error('「別の提案を受ける」ボタンが見つかりませんでした');
+      }
+    } else {
+      setupRefreshButtonHandler(refreshButton);
+    }
+  }, 1000); // DOMContentLoaded後に少し待つ
+  
+  // 以前に表示したウィスキーを記録する配列
+  window.previouslyShownWhiskies = window.previouslyShownWhiskies || [];
+  
+  // ボタンのイベントハンドラを設定する関数
+  function setupRefreshButtonHandler(button) {
+    console.log('「別の提案を受ける」ボタンが見つかりました:', button);
+    
+    // 既存のイベントリスナーをクリア（二重登録防止）
+    const newButton = button.cloneNode(true);
+    button.parentNode.replaceChild(newButton, button);
+    
+    // 新しいイベントリスナーを追加
+    newButton.addEventListener('click', function() {
+      console.log('「別の提案を受ける」ボタンがクリックされました - 新しいウィスキーを選択します');
+      
+      // 現在表示中のウィスキー名を取得
+      const currentlyShownNames = [];
+      document.querySelectorAll('.whisky-card h3').forEach(h3 => {
+        if (h3.textContent && h3.textContent.trim()) {
+          currentlyShownNames.push(h3.textContent.trim());
+        }
+      });
+      
+      console.log('現在表示中のウィスキー:', currentlyShownNames);
+      
+      // 以前表示したウィスキー名リストを更新
+      window.previouslyShownWhiskies = [
+        ...window.previouslyShownWhiskies,
+        ...currentlyShownNames
+      ];
+      
+      // 重複を排除
+      window.previouslyShownWhiskies = [...new Set(window.previouslyShownWhiskies)];
+      
+      // リストが長すぎる場合は古いものから削除（最大50件）
+      if (window.previouslyShownWhiskies.length > 50) {
+        window.previouslyShownWhiskies = window.previouslyShownWhiskies.slice(-50);
+      }
+      
+      console.log('表示履歴:', window.previouslyShownWhiskies);
+      
+      // 現在の価格設定を取得
+      const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+      const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
+      
+      // 価格でフィルタリング
+      const priceFiltered = whiskyData.filter(whisky => {
+        try {
+          const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
+          return numericPrice >= minPrice && numericPrice <= maxPrice;
+        } catch (err) {
+          console.warn('価格解析エラー:', err);
+          return false;
+        }
+      });
+      
+      console.log(`価格フィルター後: ${priceFiltered.length}件のウィスキー`);
+      
+      if (priceFiltered.length === 0) {
+        alert('価格条件に合うウィスキーがありません。価格範囲を広げてください。');
+        return;
+      }
+      
+      // 以前表示したウィスキーを除外
+      const newCandidates = priceFiltered.filter(whisky => 
+        !window.previouslyShownWhiskies.includes(whisky.name)
+      );
+      
+      console.log(`新しい候補: ${newCandidates.length}件`);
+      
+      // 候補が少ない場合は全体から選択（履歴をリセット）
+      let sourceArray;
+      if (newCandidates.length < 3) {
+        console.log('候補が少ないため全体から選択します。履歴をリセットします。');
+        window.previouslyShownWhiskies = [...currentlyShownNames]; // 現在表示中のもののみ履歴に残す
+        sourceArray = priceFiltered.filter(w => !currentlyShownNames.includes(w.name));
+      } else {
+        sourceArray = newCandidates;
+      }
+      
+      // ランダムに3つ選ぶ
+      const selected = [];
+      const usedIndices = new Set();
+      
+      // 最大100回のランダム選択を試みる
+      let attempts = 0;
+      while (selected.length < 3 && attempts < 100 && usedIndices.size < sourceArray.length) {
+        attempts++;
+        const randomIndex = Math.floor(Math.random() * sourceArray.length);
+        
+        // 既に選択済みのインデックスはスキップ
+        if (usedIndices.has(randomIndex)) continue;
+        
+        usedIndices.add(randomIndex);
+        selected.push(sourceArray[randomIndex]);
+      }
+      
+      console.log('新しく選択されたウィスキー:', selected.map(w => w.name));
+      
+      // 選択が十分でない場合の対処
+      if (selected.length < 3) {
+        console.warn(`選択されたウィスキーが${selected.length}件しかありません。ランダム補完します。`);
+        
+        // ランダムに追加選択（現在表示中のものは除外）
+        const remainingOptions = priceFiltered.filter(w => 
+          !selected.map(s => s.name).includes(w.name) && 
+          !currentlyShownNames.includes(w.name)
+        );
+        
+        if (remainingOptions.length > 0) {
+          while (selected.length < 3 && remainingOptions.length > 0) {
+            const randomIndex = Math.floor(Math.random() * remainingOptions.length);
+            selected.push(remainingOptions[randomIndex]);
+            remainingOptions.splice(randomIndex, 1);
+          }
+        }
+        
+        // それでも足りない場合は全体から選択
+        if (selected.length < 3) {
+          const allRemaining = priceFiltered.filter(w => 
+            !selected.map(s => s.name).includes(w.name)
+          );
+          
+          while (selected.length < 3 && allRemaining.length > 0) {
+            const randomIndex = Math.floor(Math.random() * allRemaining.length);
+            selected.push(allRemaining[randomIndex]);
+            allRemaining.splice(randomIndex, 1);
+          }
+        }
+        
+        console.log('最終的に選択されたウィスキー:', selected.map(w => w.name));
+      }
+      
+      if (selected.length === 0) {
+        console.error('ウィスキーの選択に失敗しました');
+        return;
+      }
+      
+      try {
+        // 選択したウィスキーを表示
+        displayLocalRecommendations(selected);
+        
+        // 最初のウィスキーを選択
+        selectWhisky(selected[0]);
+        
+        console.log('ウィスキーの表示を更新しました');
+      } catch (err) {
+        console.error('ウィスキー表示中にエラー:', err);
+      }
+    });
+    
+    console.log('「別の提案を受ける」ボタンにランダム選択機能を追加しました');
+  }
+});
+
 </script>
 
 
