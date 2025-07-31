@@ -3612,6 +3612,304 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 })();
 </script>
+<script>
+// AIチャットからの銘柄抽出と推奨リストの連携を改善（類似度マッチング版）
+(function() {
+  // AIの応答を処理する関数を改善する
+  function enhanceAIResponseProcessing() {
+    // 元のgetAIResponse関数をバックアップ
+    const originalGetAIResponse = window.getAIResponse;
+    
+    // もし元の関数が存在しなければ終了
+    if (typeof originalGetAIResponse !== 'function') {
+      console.error('元のgetAIResponse関数が見つかりません');
+      return;
+    }
+    
+    // 拡張版のgetAIResponse関数
+    window.getAIResponse = async function(message) {
+      // まず銘柄名を探索
+      const mentionedWhiskies = findWhiskiesInText(message);
+      console.log('チャットメッセージから抽出した銘柄:', mentionedWhiskies);
+      
+      // 元の関数を呼び出して応答を取得
+      const result = await originalGetAIResponse.apply(this, arguments);
+      
+      // メッセージ内で言及された銘柄を表示リストに含める
+      if (mentionedWhiskies.length > 0) {
+        setTimeout(() => {
+          updateRecommendationsWithMentioned(mentionedWhiskies);
+        }, 1000); // AIの応答が表示された後に実行
+      }
+      
+      return result;
+    };
+    
+    console.log('getAIResponse関数を拡張しました - チャット内の銘柄名抽出と表示を連携');
+  }
+  
+  // テキスト内で言及されている銘柄を検出する関数（類似度を使用）
+  function findWhiskiesInText(text) {
+    if (!text || typeof text !== 'string') return [];
+    if (!window.whiskyData || !Array.isArray(window.whiskyData)) return [];
+    
+    // 結果を格納する配列
+    const result = [];
+    
+    // テキストを前処理（小文字化、空白の正規化）
+    const normalizedText = text.toLowerCase().replace(/\s+/g, ' ');
+    
+    // 特徴的なキーワード（主要銘柄名）
+    const commonWhiskyNames = [
+      '山崎', '白州', '響', '軽井沢', '長濱', 'タリスカー', 'マッカラン', 'アードベッグ', 
+      'ポートエレン', 'NAGAHAMA', 'DAILUAINE', 'キルホーマン', 'GLENLIVET', 'ABERFELDY', 
+      'SPRINGBANK', 'MORTLACH', 'CAOL ILA', 'KILCHOMAN', '秩父'
+    ];
+    
+    // 直接的な銘柄名の検索（完全一致または主要部分が一致）
+    const matches = [];
+    window.whiskyData.forEach(whisky => {
+      // 銘柄名を正規化
+      const whiskyName = whisky.name.toLowerCase();
+      
+      // 完全一致または部分一致
+      if (normalizedText.includes(whiskyName) || 
+          whiskyName.includes(normalizedText) || 
+          textSimilarity(normalizedText, whiskyName) > 0.7) {
+        matches.push({
+          whisky: whisky,
+          score: 1.0,
+          matchType: 'direct'
+        });
+        return;
+      }
+      
+      // 主要キーワードのチェック
+      for (const keyword of commonWhiskyNames) {
+        const normalizedKeyword = keyword.toLowerCase();
+        if ((whiskyName.includes(normalizedKeyword) || 
+             normalizedKeyword.includes(whiskyName)) && 
+            normalizedText.includes(normalizedKeyword)) {
+          matches.push({
+            whisky: whisky,
+            score: 0.9,
+            matchType: 'keyword'
+          });
+          return;
+        }
+      }
+      
+      // トークンベースの部分一致チェック
+      const whiskyTokens = whiskyName.split(/[\s\d]+/);
+      const textTokens = normalizedText.split(/[\s\d]+/);
+      
+      for (const whiskyToken of whiskyTokens) {
+        if (whiskyToken.length < 2) continue; // 短すぎるトークンは無視
+        
+        for (const textToken of textTokens) {
+          if (textToken.length < 2) continue; // 短すぎるトークンは無視
+          
+          if (whiskyToken === textToken || 
+              whiskyToken.includes(textToken) || 
+              textToken.includes(whiskyToken)) {
+            matches.push({
+              whisky: whisky,
+              score: 0.8,
+              matchType: 'token',
+              token: whiskyToken
+            });
+            return;
+          }
+        }
+      }
+    });
+    
+    // スコアでソート
+    matches.sort((a, b) => b.score - a.score);
+    
+    // 結果の抽出
+    return matches.map(match => match.whisky);
+  }
+  
+  // テキストの類似度を計算する関数
+  function textSimilarity(text1, text2) {
+    // 簡易的な類似度計算（Levenshtein距離の正規化版）
+    function levenshteinDistance(a, b) {
+      const matrix = [];
+      
+      // 初期化
+      for (let i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
+      }
+      for (let j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+      }
+      
+      // 計算
+      for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+          if (b.charAt(i-1) === a.charAt(j-1)) {
+            matrix[i][j] = matrix[i-1][j-1];
+          } else {
+            matrix[i][j] = Math.min(
+              matrix[i-1][j-1] + 1, // 置換
+              Math.min(
+                matrix[i][j-1] + 1, // 挿入
+                matrix[i-1][j] + 1  // 削除
+              )
+            );
+          }
+        }
+      }
+      
+      return matrix[b.length][a.length];
+    }
+    
+    // 最大の長さ
+    const maxLength = Math.max(text1.length, text2.length);
+    if (maxLength === 0) return 1.0; // 両方が空文字列
+    
+    // 距離を計算
+    const distance = levenshteinDistance(text1, text2);
+    
+    // 正規化（0-1の範囲に）
+    return 1.0 - (distance / maxLength);
+  }
+  
+  // AIの応答から銘柄名を抽出する関数
+  function extractWhiskyNamesFromAIResponse(response) {
+    if (!response || typeof response !== 'string') return [];
+    if (!window.whiskyData || !Array.isArray(window.whiskyData)) return [];
+    
+    // 結果を格納する配列
+    const result = [];
+    
+    // 「」や『』で囲まれた部分を抽出
+    const quotedMatches = response.match(/[「『]([^」』]+)[」』]/g) || [];
+    for (const match of quotedMatches) {
+      const extractedName = match.replace(/[「『」』]/g, '');
+      // データベース内で類似する銘柄を検索
+      const similarWhisky = findSimilarWhisky(extractedName);
+      if (similarWhisky && !result.includes(similarWhisky)) {
+        result.push(similarWhisky);
+      }
+    }
+    
+    // 年数を含む特徴的なパターンを抽出（例：タリスカー44年）
+    const ageMatches = response.match(/(\S+\s?\d+年[^\s、。,.]+)/g) || [];
+    for (const match of ageMatches) {
+      const similarWhisky = findSimilarWhisky(match);
+      if (similarWhisky && !result.includes(similarWhisky)) {
+        result.push(similarWhisky);
+      }
+    }
+    
+    return result;
+  }
+  
+  // テキストに最も類似した銘柄を見つける関数
+  function findSimilarWhisky(text) {
+    if (!text || !window.whiskyData) return null;
+    
+    let bestMatch = null;
+    let highestScore = 0;
+    
+    for (const whisky of window.whiskyData) {
+      const similarityScore = textSimilarity(
+        text.toLowerCase(), 
+        whisky.name.toLowerCase()
+      );
+      
+      if (similarityScore > highestScore && similarityScore > 0.6) {
+        highestScore = similarityScore;
+        bestMatch = whisky;
+      }
+    }
+    
+    return bestMatch;
+  }
+  
+  // 言及された銘柄を推奨リストに含める
+  function updateRecommendationsWithMentioned(mentionedWhiskies) {
+    if (!mentionedWhiskies || mentionedWhiskies.length === 0) return;
+    
+    console.log('銘柄推奨リストに含める:', mentionedWhiskies.map(w => w.name));
+    
+    // 現在の価格設定を取得
+    const minPrice = parseInt(document.getElementById('minPrice').value) * 1000 || 0;
+    const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000 || 100000;
+    
+    // 価格範囲内の言及銘柄をフィルタリング
+    const filteredWhiskies = mentionedWhiskies.filter(whisky => {
+      try {
+        const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
+        return numericPrice >= minPrice && numericPrice <= maxPrice;
+      } catch (err) {
+        return true; // 価格解析エラーの場合は含める
+      }
+    });
+    
+    if (filteredWhiskies.length === 0) {
+      console.log('言及された銘柄が価格範囲外です');
+      return;
+    }
+    
+    // 足りない場合はランダムに追加
+    const finalSelection = [...filteredWhiskies];
+    if (finalSelection.length < 3) {
+      // 現在のウィスキーと言及されたものを除外してランダム選択
+      const currentNames = finalSelection.map(w => w.name);
+      const additionalCandidates = window.whiskyData.filter(w => {
+        try {
+          const numericPrice = parseInt(w.price.replace(/[^\d]/g, '')) || 0;
+          return numericPrice >= minPrice && numericPrice <= maxPrice && !currentNames.includes(w.name);
+        } catch (err) {
+          return false;
+        }
+      });
+      
+      // ランダムに並べ替えて必要な数だけ追加
+      const shuffled = additionalCandidates.sort(() => 0.5 - Math.random());
+      while (finalSelection.length < 3 && shuffled.length > 0) {
+        finalSelection.push(shuffled.pop());
+      }
+    }
+    
+    // 最終的な選択結果が得られた場合、表示を更新
+    if (finalSelection.length > 0) {
+      console.log('最終的に選択された銘柄:', finalSelection.map(w => w.name));
+      
+      try {
+        // 推奨パネルを表示
+        document.getElementById('splitLayoutContainer').style.display = 'grid';
+        
+        // 銘柄を表示
+        if (typeof displayLocalRecommendations === 'function') {
+          displayLocalRecommendations(finalSelection);
+          
+          // 最初の銘柄を選択（言及された銘柄を優先）
+          if (filteredWhiskies.length > 0 && typeof selectWhisky === 'function') {
+            selectWhisky(filteredWhiskies[0]);
+          } else if (finalSelection.length > 0 && typeof selectWhisky === 'function') {
+            selectWhisky(finalSelection[0]);
+          }
+        }
+      } catch (err) {
+        console.error('表示更新中にエラー:', err);
+      }
+    }
+  }
+  
+  // 実行タイミングの調整
+  if (document.readyState === 'complete') {
+    setTimeout(enhanceAIResponseProcessing, 2000);
+  } else {
+    window.addEventListener('load', function() {
+      setTimeout(enhanceAIResponseProcessing, 2000);
+    });
+  }
+})();
+</script>
 
 
     <script id="html_badge_script1">
