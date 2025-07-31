@@ -1438,6 +1438,79 @@ function initializeChat() {
         });
     });
 
+    // 統合ウィスキーデータを非同期で読み込む関数を追加
+async function loadUnifiedWhiskyData() {
+    try {
+        const response = await fetch('unified_whisky_data.json');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        // JSONの構造に合わせてデータを取得
+        whiskyData = data.whiskies || [];
+        distilleryDatabase = data.distilleries || {};
+        brandToDistilleryMapping = data.brandToDistillery || {};
+        
+        console.log('統合データを正常に読み込みました:', whiskyData.length, '銘柄');
+        console.log('蒸溜所データベース:', Object.keys(distilleryDatabase).length, '蒸溜所');
+        
+        return true;
+    } catch (error) {
+        console.error('JSONファイルの読み込みに失敗しました:', error);
+        
+        // エラー時はフォールバック処理
+        console.log('デフォルトデータを使用します');
+        whiskyData = getDefaultWhiskyData();
+        return false;
+    }
+}
+
+document.addEventListener('DOMContentLoaded', async function() {
+    console.log('DOM fully loaded - JSON読み込み開始');
+    
+    // ローディング表示
+    showLoadingSpinner();
+    
+    try {
+        // 統合データ読み込みを最優先で実行
+        const loadSuccess = await loadUnifiedWhiskyData();
+        
+        if (loadSuccess) {
+            console.log('JSONデータ読み込み成功');
+        } else {
+            console.log('JSONデータ読み込み失敗 - デフォルトデータを使用');
+        }
+        
+        // 初期化処理を実行
+        await initializeApp();
+        
+    } catch (error) {
+        console.error('初期化エラー:', error);
+        // エラーでもデフォルトデータで動作
+        whiskyData = getDefaultWhiskyData();
+        await initializeApp();
+    } finally {
+        hideLoadingSpinner();
+    }
+});
+
+function showLoadingSpinner() {
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) {
+        spinner.style.display = 'flex';
+    }
+}
+
+function hideLoadingSpinner() {
+    const spinner = document.getElementById('loadingSpinner');
+    if (spinner) {
+        spinner.style.display = 'none';
+    }
+}
+
     // チャット送信ボタンのイベントリスナー
     // 注: ID "sendChatBtn" と "sendChatButton" の両方に対応
     const sendButton = document.getElementById("sendChatButton") || document.getElementById("sendChatBtn");
