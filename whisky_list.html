@@ -131,77 +131,82 @@
 @media (max-width: 768px) {
     /* ヘッダー構造を修正 */
     .header-container {
-        padding: 5px 0 50px; /* 下部のパディングを十分に確保 */
-        flex-direction: column; /* 縦に並べる */
+        padding: 5px 0 38px; /* 下部のパディングを少し減らして全体を短く */
+        flex-direction: column;
         align-items: center;
         height: auto;
     }
     
     /* ロゴの配置と大きさ */
     .logo {
-        width: 50px;
-        height: 50px;
+        width: 70px;
+        height: 70px;
     }
     
     /* ロゴを左上に配置 */
     .header-container a[target="_blank"] {
         position: absolute;
         left: 5px;
-        top: 5px;
+        top: 0px;
     }
     
     /* タイトルを調整 - 中央配置でロゴと重ならないように */
     .header-title {
         font-size: 18px;
-        margin: 5px auto 25px; /* 上部と下部に十分な余白 */
-        padding-top: 15px; /* ロゴの高さに合わせて下げる */
+        margin: 5px auto 10px; /* 下マージンを小さくして距離を縮める */
+        padding-top: 15px;
         width: 80%;
-        padding-left: 50px; /* ロゴのスペースを確保 */
+        padding-left: 50px;
     }
     
-    /* ナビゲーションをタイトル下に完全に分離 */
+    /* ナビゲーションをタイトルにより近づける */
     .nav-links {
-        position: absolute; /* 絶対位置で */
-        top: auto; /* 上部配置ではなく */
-        bottom: 10px; /* ヘッダー下部に配置 */
+        position: absolute;
+        top: auto;
+        bottom: 8px; /* 下端からの距離を縮める */
         left: 0;
         right: 0;
         width: 100%;
         justify-content: center;
-        gap: 10px;
+        gap: 8px; /* リンク間の間隔も少し縮める */
     }
     
     /* リンクスタイルの調整 */
     .nav-link {
         font-size: 12px;
-        padding: 3px 8px;
-        line-height: 1.5;
+        padding: 2px 6px; /* パディングを少し減らしてコンパクトに */
+        line-height: 1.4;
     }
     
-    /* コンテンツ開始位置の調整 */
+    /* コンテンツ開始位置の調整 - ヘッダーとの重なりを防ぐために下げる */
     .container-custom {
-        padding-top: 120px; /* ヘッダーの高さに合わせる */
+        padding-top: 130px; /* 余裕を持たせて下げる */
+    }
+    
+    /* ウィスキー概要セクションの上部余白を追加 */
+    .whisky-overview {
+        margin-top: 15px; /* 上部に余白を追加してヘッダーからさらに離す */
     }
 }
 
 /* さらに小さい画面用の調整 */
 @media (max-width: 360px) {
     .header-container {
-        padding-bottom: 55px; /* さらに余裕を持たせる */
+        padding-bottom: 40px; /* 全体の高さをさらに縮める */
     }
     
     .container-custom {
-        padding-top: 130px; /* さらに余裕を持たせる */
+        padding-top: 140px; /* より小さい画面ではさらに下げる */
     }
     
     .nav-links {
         gap: 5px;
-        bottom: 8px;
+        bottom: 6px; /* より上に */
     }
     
     .nav-link {
         font-size: 11px;
-        padding: 2px 6px;
+        padding: 2px 5px;
     }
 }
 
