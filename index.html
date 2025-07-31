@@ -145,7 +145,7 @@ border-bottom: 2px solid #4ecdc4;
 @media (max-width: 768px) {
   /* ヘッダーの高さを増やして余裕を持たせる */
   .header-container {
-    padding: 15px 0 0px; /* 下部に余白を追加 */
+    padding: 15px 0 10px; /* 下部に余白を追加 */
     flex-wrap: wrap;      /* 折り返しを許可 */
   }
   
@@ -1266,7 +1266,7 @@ AI技術で分析・提案いたします
 </div>
 
 <div class="text-center mb-8">
-<button id="getRecommendation" class="btn-primary text-lg mr-4">🎯 AIウィスキー提案を受ける</button>
+<button id="getRecommendation" class="btn-primary text-lg mr-4">🎯 AI提案を開始</button>
 <button id="refreshRecommendation" class="btn-secondary text-lg">
 🔄 リフレッシュして再提案
 </button>
@@ -1884,7 +1884,7 @@ if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
 if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
 if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
 if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
-prefsMessage += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
+prefsMessage += '\n提案システムに反映しました。「AI提案を開始」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
 }
 
 // 味覚座標の取得
@@ -1975,7 +1975,7 @@ if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
 if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
 if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
 if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
-prefsMessage += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
+prefsMessage += '\n提案システムに反映しました。「AI提案を開始」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
 
 aiResponseText = prefsMessage + aiResponseText;
 }
