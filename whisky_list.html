@@ -87,6 +87,77 @@
                 text-shadow: 0 0 15px rgba(78, 205, 196, 0.8), 0 0 20px rgba(255, 107, 107, 0.5);
             }
         }
+
+        /* レスポンシブ対応 - スマホ画面で重なり回避 */
+@media (max-width: 768px) {
+  /* ヘッダーを大幅にコンパクト化 */
+  .header-container {
+    padding: 5px 0 20px; /* 上下のパディングを減らす */
+    flex-wrap: wrap;
+    min-height: auto;
+  }
+  
+  /* ロゴをさらに小さく */
+  .logo {
+    width: 50px;
+    height: 50px;
+  }
+  
+  /* ロゴの位置調整 */
+  .header-container a[target="_blank"] {
+    position: absolute;
+    left: 15px;
+    top: 5px;
+  }
+  
+  /* タイトルをさらに小さく */
+  .header-title {
+    font-size: 18px;
+    margin: 0 auto 3px;
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* ナビゲーションをコンパクトに */
+  .nav-links {
+    position: relative;
+    top: 0px;
+    right: 0;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  /* リンクをさらにコンパクトに */
+  .nav-link {
+    font-size: 11px;
+    padding: 2px 6px;
+  }
+
+  /* コンテンツのパディング調整 */
+  .container-custom {
+    padding-top: 90px; /* ヘッダー高さに合わせて調整 */
+  }
+}
+
+/* さらに小さい画面用の調整 */
+@media (max-width: 360px) {
+  .container-custom {
+    padding-top: 100px; /* さらに小さい画面では少し余裕を持たせる */
+  }
+  
+  /* ナビゲーションをよりコンパクトに */
+  .nav-links {
+    gap: 5px;
+  }
+  
+  .nav-link {
+    font-size: 10px;
+    padding: 2px 5px;
+  }
+}
+
         /* ヘッダーナビゲーションのスタイル修正 - 右端に配置 */
         .nav-links {
             position: absolute;
