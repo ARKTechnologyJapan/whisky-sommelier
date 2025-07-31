@@ -111,18 +111,78 @@ font-size: 14px;
 padding: 5px 8px;
 }
 
-/* レスポンシブ対応 - 画面が狭い場合 */
-@media (max-width: 768px) {
+/* ヘッダーナビゲーションのスタイル修正 - 右端に配置 */
 .nav-links {
-flex-wrap: wrap;
-justify-content: center;
+position: absolute;
+right: 20px;
+display: flex;
+gap: 15px;
 }
 
-.language-links {
-margin-top: 10px;
-width: 100%;
-justify-content: center;
+.nav-link {
+color: rgba(255, 255, 255, 0.8);
+text-decoration: none;
+font-size: 15px;
+font-weight: 600;
+transition: all 0.2s ease;
+padding: 5px 10px;
+border-radius: 5px;
+background: rgba(255, 255, 255, 0.05);
 }
+
+.nav-link:hover {
+color: #fff;
+background: rgba(78, 205, 196, 0.2);
+}
+
+.nav-link.active {
+color: #fff;
+background: rgba(78, 205, 196, 0.3);
+border-bottom: 2px solid #4ecdc4;
+}
+
+/* レスポンシブ対応 - スマホ画面で重なり回避 */
+@media (max-width: 768px) {
+  /* ヘッダーの高さを増やして余裕を持たせる */
+  .header-container {
+    padding: 15px 0 55px; /* 下部に余白を追加 */
+    flex-wrap: wrap;      /* 折り返しを許可 */
+  }
+  
+  /* ロゴサイズ調整 */
+  .logo {
+    width: 70px;
+    height: 70px;
+  }
+  
+  /* タイトルを調整 */
+  .header-title {
+    font-size: 24px;
+    margin: 0 auto 10px;
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* ナビゲーションをヘッダー下部に移動して中央揃え */
+  .nav-links {
+    position: relative;
+    top: 10px;
+    right: 0;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .nav-link {
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+
+  .language-links {
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 .container-custom {
@@ -130,14 +190,17 @@ max-width: 1200px;
 margin: 0 auto;
 padding: 100px 20px 20px;
 }
+
+/* 味覚マトリックスのスタイル */
 .taste-matrix {
-width: 300px;
+width: 300px; /* PC表示時のサイズ */
 height: 300px;
 border: 2px solid #fff;
 position: relative;
 background: linear-gradient(to right, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%), 
 linear-gradient(to top, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%);
 }
+
 .taste-dot {
 width: 24px;
 height: 24px;
@@ -148,23 +211,69 @@ transform: translate(-50%, -50%);
 cursor: pointer;
 box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
 }
+
 .dual-matrix-container {
 display: grid;
 grid-template-columns: 1fr 1fr;
 gap: 40px;
 margin-top: 20px;
 }
+
 .matrix-wrapper {
 display: flex;
 flex-direction: column;
 align-items: center;
 }
+
 .matrix-title {
 font-size: 18px;
 font-weight: bold;
 margin-bottom: 20px;
 color: #4ecdc4;
 }
+
+/* スマホ表示の修正 */
+@media (max-width: 1024px) {
+  .dual-matrix-container {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+/* スマホサイズでマトリックスをスクリーンに収める */
+@media (max-width: 768px) {
+  .taste-matrix {
+    width: 250px; /* スマホ表示時は幅を縮小 */
+    height: 250px;
+  }
+  
+  .matrix-wrapper {
+    max-width: 100%;
+  }
+  
+  /* 余白調整 */
+  .absolute.left-1\/2 {
+    width: 100%;
+  }
+}
+
+/* さらに小さいスマホ画面の対応 */
+@media (max-width: 360px) {
+  .taste-matrix {
+    width: 220px; /* より小さいスマホ表示時はさらに縮小 */
+    height: 220px;
+  }
+  
+  /* 軸ラベルの位置調整 */
+  .absolute.-left-12 {
+    left: -10px;
+  }
+  
+  .absolute.-right-12 {
+    right: -10px;
+  }
+}
+
 .btn-primary {
 background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
 border: none;
@@ -921,36 +1030,6 @@ opacity: 1;
 }
 }
 
-/* ヘッダーナビゲーションのスタイル修正 - 右端に配置 */
-.nav-links {
-position: absolute;
-right: 20px;
-display: flex;
-gap: 15px;
-}
-
-.nav-link {
-color: rgba(255, 255, 255, 0.8);
-text-decoration: none;
-font-size: 15px;
-font-weight: 600;
-transition: all 0.2s ease;
-padding: 5px 10px;
-border-radius: 5px;
-background: rgba(255, 255, 255, 0.05);
-}
-
-.nav-link:hover {
-color: #fff;
-background: rgba(78, 205, 196, 0.2);
-}
-
-.nav-link.active {
-color: #fff;
-background: rgba(78, 205, 196, 0.3);
-border-bottom: 2px solid #4ecdc4;
-}
-
 /* AI提案メッセージの修正 */
 .ai-recommendation-message {
 background: rgba(78, 205, 196, 0.15);
@@ -979,107 +1058,6 @@ content: "考えています";
 animation: thinking 1.5s infinite;
 }
 
-</style>
-<style>
-.genspark-notice-dialog {
-display: flex;
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background-color: rgba(0, 0, 0, 0.5);
-z-index: 10001;
-align-items: center;
-justify-content: center;
-}
-
-.genspark-notice-content {
-background-color: white;
-border-radius: 8px;
-max-width: 600px;
-width: 90%;
-box-sizing: border-box;
-padding: 10px 30px 30px 30px;
-box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-font-size: 16px;
-}
-
-.genspark-notice-title {
-color: #000;
-font-family: Arial;
-font-size: 20px;
-font-style: normal;
-font-weight: 700;
-line-height: 150%; 
-}
-
-.genspark-notice-list {
-margin: 24px 0;
-
-color: #606366;
-font-family: Arial;
-font-size: 14px;
-font-style: normal;
-font-weight: 400;
-line-height: 150%;
-padding-left: 12px;
-}
-
-.genspark-notice-list li {
-margin-bottom: 12px;
-list-style-type: disc;
-}
-
-.genspark-notice-list li a {
-color: #606366;
-text-decoration: underline;
-}
-
-.genspark-notice-checkbox {
-display: flex;
-align-items: center;
-margin-top: 20px;
-gap: 10px;
-
-color: #232425;
-
-font-family: Arial;
-font-size: 14px;
-font-style: normal;
-font-weight: 400;
-line-height: normal;
-}
-
-.genspark-notice-actions {
-display: flex;
-justify-content: center;
-margin-top: 20px;
-}
-
-.genspark-notice-ok {
-color: #232425;
-
-text-align: center;
-font-family: Arial;
-font-size: 16px;
-font-style: normal;
-font-weight: 700;
-line-height: 150%; 
-
-cursor: pointer;
-display: flex;
-height: 40px;
-padding: 6px 14px;
-justify-content: center;
-align-items: center;
-gap: 10px;
-align-self: stretch;
-border-radius: 8px;
-border: 1px solid #000;
-box-sizing: border-box;
-width: 100%;
-}
 /* 蒸溜所マーカーのツールチップ */
 .distillery-tooltip {
 background-color: rgba(40, 44, 52, 0.95);
