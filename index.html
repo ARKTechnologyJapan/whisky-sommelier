@@ -1398,6 +1398,37 @@
                 sendChatMessage();
             });
         });
+
+         // チャット履歴表示を有効化
+        const chatHistoryElement = document.getElementById("chatHistory");
+        if (chatHistoryElement) {
+            chatHistoryElement.style.display = "block";
+        }
+
+        // 質問例クリックイベントを設定
+        document.querySelectorAll('.question-example').forEach(question => {
+            question.addEventListener('click', function() {
+                document.getElementById("chatInput").value = this.textContent.trim();
+            });
+        });
+
+        // チャット送信ボタンのイベントリスナー
+        const sendButton = document.getElementById("sendChatButton");
+        if (sendButton) {
+            sendButton.addEventListener('click', () => sendChatMessage());
+        }
+
+        // Enterキーでの送信
+        const chatInput = document.getElementById("chatInput");
+        if (chatInput) {
+            chatInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendChatMessage();
+                }
+            });
+        }
+    });
         
         // 音声入力ボタンの設定（対応ブラウザのみ）
         const voiceInputBtn = document.getElementById("voiceInputBtn");
@@ -1603,140 +1634,153 @@
         ];
     }
     
-    // AI推薦を取得する関数（LLM API活用版）
-    async function getRecommendation() {
-        // プログレスバーの表示
-        showProgress();
+    // AI推薦を取得する関数（改修）
+async function getRecommendation() {
+    // プログレスバーの表示
+    showProgress();
+    try {
+        // ユーザー設定を取得
+        const userPreferences = {
+            minPrice: parseFloat(document.getElementById("minPrice").value) * 1000,
+            maxPrice: parseFloat(document.getElementById("maxPrice").value) * 1000,
+            tasteX: x1,
+            tasteY: y1,
+            complexityX: x2,
+            complexityY: y2,
+            additionalPreferences: savedUserPreferences || "",
+            chatHistory: chatHistory // チャット履歴全体を送信
+        };
         
-        try {
-            // ユーザー設定を取得
-            const userPreferences = {
-                minPrice: parseFloat(document.getElementById("minPrice").value) * 1000,
-                maxPrice: parseFloat(document.getElementById("maxPrice").value) * 1000,
-                tasteX: x1, // 味覚マトリックス1のX座標
-                tasteY: y1, // 味覚マトリックス1のY座標
-                complexityX: x2, // 複雑さマトリックスのX座標
-                complexityY: y2, // 複雑さマトリックスのY座標
-                additionalPreferences: savedUserPreferences || ""
-            };
+        // Claude APIにリクエスト
+        const response = await fetch('/.netlify/functions/claude-api', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                ...userPreferences,
+                requestType: "full_recommendation",
+                outputFormat: "json"
+            })
+        });
+        
+        if (!response.ok) throw new Error('APIリクエストに失敗しました');
+        
+        const data = await response.json();
+        
+        // APIからのJSONレスポンスを処理
+        if (data.success && data.data && data.data.content) {
+            // APIからのレスポンステキストをJSON解析
+            const responseText = data.data.content[0].text;
+            let jsonStartIndex = responseText.indexOf('{');
+            let jsonEndIndex = responseText.lastIndexOf('}') + 1;
             
-            // Claude APIにリクエスト
-            const response = await fetch('/.netlify/functions/claude-api', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...userPreferences,
-                    requestType: "full_recommendation", // APIに「推薦リスト用」と通知
-                    outputFormat: "json" // 構造化された出力を要求
-                })
-            });
-            
-            if (!response.ok) throw new Error('APIリクエストに失敗しました');
-            
-            const data = await response.json();
-            
-            // APIからのJSONレスポンスを処理
-            if (data.success && data.data && data.data.content) {
-                // APIからのレスポンステキストをJSON解析
-                const responseText = data.data.content[0].text;
-                let jsonStartIndex = responseText.indexOf('{');
-                let jsonEndIndex = responseText.lastIndexOf('}') + 1;
-                
-                if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
-                    const jsonString = responseText.substring(jsonStartIndex, jsonEndIndex);
-                    try {
-                        const apiResponse = JSON.parse(jsonString);
-                        
-                        // 推薦結果の表示
-                        displayApiRecommendations(apiResponse);
-                    } catch (error) {
-                        console.error('JSON解析エラー:', error);
-                        // エラー時はローカルデータでフォールバック
-                        const matchingWhiskies = findMatchingWhiskies();
-                        displayLocalRecommendations(matchingWhiskies);
+            if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
+                const jsonString = responseText.substring(jsonStartIndex, jsonEndIndex);
+                try {
+                    const apiResponse = JSON.parse(jsonString);
+                    // 推薦結果の表示
+                    displayApiRecommendations(apiResponse);
+                    
+                    // 成功したらAIからのメッセージとして追加
+                    if (apiResponse && apiResponse.summary) {
+                        const aiMessage = `以下の3つのウィスキーをおすすめします:\n\n${apiResponse.summary}`;
+                        addMessageToHistory("assistant", aiMessage);
                     }
-                } else {
-                    // JSON形式でない場合もローカルデータでフォールバック
+                } catch (error) {
+                    console.error('JSON解析エラー:', error);
+                    // エラー時はローカルデータでフォールバック
                     const matchingWhiskies = findMatchingWhiskies();
                     displayLocalRecommendations(matchingWhiskies);
                 }
             } else {
-                throw new Error('APIからの応答が不正です');
+                // JSON形式でない場合もローカルデータでフォールバック
+                const matchingWhiskies = findMatchingWhiskies();
+                displayLocalRecommendations(matchingWhiskies);
             }
-        } catch (error) {
-            console.error('推薦取得エラー:', error);
-            // エラー時はローカルデータで対応
-            const matchingWhiskies = findMatchingWhiskies();
-            displayLocalRecommendations(matchingWhiskies);
-        } finally {
-            hideProgress();
+        } else {
+            throw new Error('APIからの応答が不正です');
         }
+    } catch (error) {
+        console.error('推薦取得エラー:', error);
+        // エラー時はローカルデータで対応
+        const matchingWhiskies = findMatchingWhiskies();
+        displayLocalRecommendations(matchingWhiskies);
+    } finally {
+        hideProgress();
+    }
+}
+    
+    // APIからの推薦結果を表示する関数（改修）
+function displayApiRecommendations(apiResponse) {
+    const recommendationContent = document.getElementById("recommendationContent");
+    recommendationContent.innerHTML = "";
+    
+    // 要約の表示
+    if (apiResponse.summary) {
+        const summary = document.createElement('div');
+        summary.className = 'recommendation-summary';
+        summary.innerHTML = `<p>${escapeHtml(apiResponse.summary)}</p>`;
+        recommendationContent.appendChild(summary);
     }
     
-    // APIからの推薦結果を表示する関数
-    function displayApiRecommendations(apiResponse) {
-        const recommendationContent = document.getElementById("recommendationContent");
-        recommendationContent.innerHTML = "";
-        
-        // 要約の表示
-        if (apiResponse.summary) {
-            const summary = document.createElement('div');
-            summary.className = 'recommendation-summary';
-            summary.innerHTML = `<p>${escapeHtml(apiResponse.summary)}</p>`;
-            recommendationContent.appendChild(summary);
+    // 各ウィスキーのカード表示
+    apiResponse.recommendations.forEach((whisky, index) => {
+        const whiskeyCard = document.createElement('div');
+        whiskeyCard.className = 'whisky-card';
+        if (index === 0) {
+            whiskeyCard.classList.add('featured', 'selected');
         }
         
-        // 各ウィスキーのカード表示
-        apiResponse.recommendations.forEach((whisky, index) => {
-            const whiskeyCard = document.createElement('div');
-            whiskeyCard.className = 'whisky-card';
-            if (index === 0) {
-                whiskeyCard.classList.add('featured', 'selected');
-            }
-            
-            whiskeyCard.innerHTML = `
-                ${index === 0 ? '<div class="featured-label">おすすめ</div>' : ''}
-                <div class="flex justify-between mb-2">
-                    <h3 class="text-lg font-bold text-cyan-400">${escapeHtml(whisky.name)}</h3>
-                    <span class="text-pink-500 font-bold">${escapeHtml(whisky.price)}</span>
+        // ウィスキーカードの内容を設定
+        whiskeyCard.innerHTML = `
+            ${index === 0 ? '<div class="featured-label">おすすめ</div>' : ''}
+            <div class="flex justify-between mb-2">
+                <h3 class="text-lg font-bold text-cyan-400">${escapeHtml(whisky.name)}</h3>
+                <span class="text-pink-500 font-bold">${escapeHtml(whisky.price)}</span>
+            </div>
+            <div class="mb-2">
+                <span class="text-gray-400 text-sm">
+                    ${escapeHtml(whisky.region || 'N/A')} | ${escapeHtml(whisky.type || 'Whisky')}
+                    ${whisky.abv ? ` | ${whisky.abv}% ABV` : ''}
+                </span>
+            </div>
+            <p class="text-sm mb-3 text-left">${escapeHtml(whisky.description || '情報がありません。')}</p>
+            <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                <div>
+                    <span class="block text-yellow-400">フルーティー</span>
+                    <span class="block">${'★'.repeat((whisky.taste_profile?.fruity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.fruity || 0))}</span>
                 </div>
-                <div class="mb-2">
-                    <span class="text-gray-400 text-sm">
-                        ${escapeHtml(whisky.region || 'N/A')} | ${escapeHtml(whisky.type || 'Whisky')}
-                        ${whisky.abv ? ` | ${whisky.abv}% ABV` : ''}
-                    </span>
+                <div>
+                    <span class="block text-yellow-400">スモーキー</span>
+                    <span class="block">${'★'.repeat((whisky.taste_profile?.smoky || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.smoky || 0))}</span>
                 </div>
-                <p class="text-sm mb-3 text-left">${escapeHtml(whisky.description || '情報がありません。')}</p>
-                <div class="grid grid-cols-3 gap-2 text-center text-xs">
-                    <div>
-                        <span class="block text-yellow-400">フルーティー</span>
-                        <span class="block">${'★'.repeat((whisky.taste_profile?.fruity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.fruity || 0))}</span>
-                    </div>
-                    <div>
-                        <span class="block text-yellow-400">スモーキー</span>
-                        <span class="block">${'★'.repeat((whisky.taste_profile?.smoky || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.smoky || 0))}</span>
-                    </div>
-                    <div>
-                        <span class="block text-yellow-400">複雑さ</span>
-                        <span class="block">${'★'.repeat((whisky.taste_profile?.complexity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.complexity || 0))}</span>
-                    </div>
+                <div>
+                    <span class="block text-yellow-400">複雑さ</span>
+                    <span class="block">${'★'.repeat((whisky.taste_profile?.complexity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.complexity || 0))}</span>
                 </div>
-            `;
-            
-            // カードクリックイベントの追加
-            whiskeyCard.addEventListener('click', () => selectWhisky(whisky, index));
-            
-            recommendationContent.appendChild(whiskeyCard);
-        });
+            </div>
+        `;
         
-        // 最初のウィスキーを選択状態に
-        if (apiResponse.recommendations.length > 0) {
-            selectWhisky(apiResponse.recommendations[0], 0);
+        // カードクリックイベントの追加
+        whiskeyCard.addEventListener('click', () => selectWhisky(whisky, index));
+        recommendationContent.appendChild(whiskeyCard);
+        
+        // 蒸留所情報を設定（存在する場合）
+        if (whisky.distillery_info && whisky.distillery_info.latitude && whisky.distillery_info.longitude) {
+            updateDistilleryInfo(whisky.distillery_info);
         }
-        
-        // 統計情報の更新
-        updateStatistics(apiResponse.recommendations.length);
+    });
+    
+    // 最初のウィスキーを選択状態に
+    if (apiResponse.recommendations.length > 0) {
+        selectWhisky(apiResponse.recommendations[0], 0);
     }
+    
+    // 統計情報の更新
+    updateStatistics(apiResponse.recommendations.length);
+    
+    // レコメンドセクションを表示
+    document.querySelector(".recommendations-panel").style.display = "block";
+}
     
     // ローカルデータからの推薦結果を表示する関数（APIフォールバック用）
     function displayLocalRecommendations(whiskies) {
@@ -2002,43 +2046,113 @@
         document.getElementById('distilleryCount').textContent = distilleries.size;
     }
     
-    // チャットでの質問に対するAI応答を取得する関数
-    async function getAIResponse(message) {
-        try {
-            // ユーザー設定を取得
-            const userPreferences = {
-                minPrice: parseFloat(document.getElementById("minPrice").value) * 1000,
-                maxPrice: parseFloat(document.getElementById("maxPrice").value) * 1000,
-                tasteX: x1,
-                tasteY: y1,
-                complexityX: x2,
-                complexityY: y2,
-                additionalPreferences: message // チャットメッセージを質問として使用
-            };
-            
-            // APIにリクエスト
-            const response = await fetch('/.netlify/functions/claude-api', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(userPreferences)
-            });
-            
-            if (!response.ok) throw new Error('APIリクエストに失敗しました');
-            
-            const data = await response.json();
-            
-            // APIからのレスポンスを処理
-            if (data.success && data.data && data.data.content) {
-                return data.data.content[0].text;
-            } else {
-                throw new Error('APIからの応答が不正です');
-            }
-        } catch (error) {
-            console.error('AI応答取得エラー:', error);
-            // エラー時のフォールバック応答
-            return "申し訳ありません、現在AIチャット機能が使えません。後ほどお試しください。";
+    // チャットでの質問に対するAI応答を取得する関数（改修）
+async function getAIResponse(message) {
+    try {
+        // ユーザー設定を取得
+        const userPreferences = {
+            minPrice: parseFloat(document.getElementById("minPrice").value) * 1000,
+            maxPrice: parseFloat(document.getElementById("maxPrice").value) * 1000,
+            tasteX: x1,
+            tasteY: y1,
+            complexityX: x2,
+            complexityY: y2,
+            additionalPreferences: message
+        };
+        
+        // APIにリクエスト（チャット履歴も含める）
+        const response = await fetch('/.netlify/functions/claude-api', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                ...userPreferences,
+                chatHistory: chatHistory.slice(-10) // 直近10件の履歴を送信
+            })
+        });
+        
+        if (!response.ok) throw new Error('APIリクエストに失敗しました');
+        
+        const data = await response.json();
+        
+        // APIからのレスポンスを処理
+        if (data.success && data.data && data.data.content) {
+            return data.data.content[0].text;
+        } else {
+            throw new Error('APIからの応答が不正です');
         }
+    } catch (error) {
+        console.error('AI応答取得エラー:', error);
+        // エラー時のフォールバック応答
+        return "申し訳ありません、現在AIチャット機能が使えません。後ほどお試しください。";
     }
+}
+
+// チャット内容からAI提案を更新する関数（新規）
+async function updateRecommendationsFromChatAI(message) {
+    try {
+        showProgress();
+        
+        // ユーザー設定を取得（チャットメッセージを追加好みとして）
+        const userPreferences = {
+            minPrice: parseFloat(document.getElementById("minPrice").value) * 1000,
+            maxPrice: parseFloat(document.getElementById("maxPrice").value) * 1000,
+            tasteX: x1,
+            tasteY: y1,
+            complexityX: x2,
+            complexityY: y2,
+            additionalPreferences: message,
+            chatHistory: chatHistory.slice(-10) // 直近10件の履歴を送信
+        };
+        
+        // API呼び出し（推薦リクエスト）
+        const response = await fetch('/.netlify/functions/claude-api', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                ...userPreferences,
+                requestType: "full_recommendation",
+                outputFormat: "json"
+            })
+        });
+        
+        if (!response.ok) throw new Error('APIリクエストに失敗しました');
+        
+        const data = await response.json();
+        
+        // APIからのレスポンスを処理
+        if (data.success && data.data && data.data.content) {
+            const responseText = data.data.content[0].text;
+            let jsonStartIndex = responseText.indexOf('{');
+            let jsonEndIndex = responseText.lastIndexOf('}') + 1;
+            
+            if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
+                const jsonString = responseText.substring(jsonStartIndex, jsonEndIndex);
+                try {
+                    const apiResponse = JSON.parse(jsonString);
+                    displayApiRecommendations(apiResponse);
+                } catch (error) {
+                    console.error('JSON解析エラー:', error);
+                    // ローカルデータでフォールバック
+                    const matchingWhiskies = findMatchingWhiskies();
+                    displayLocalRecommendations(matchingWhiskies);
+                }
+            } else {
+                // JSON形式でない場合
+                const matchingWhiskies = findMatchingWhiskies();
+                displayLocalRecommendations(matchingWhiskies);
+            }
+        } else {
+            throw new Error('APIからの応答が不正です');
+        }
+    } catch (error) {
+        console.error('推薦更新エラー:', error);
+        // ローカルデータでフォールバック
+        const matchingWhiskies = findMatchingWhiskies();
+        displayLocalRecommendations(matchingWhiskies);
+    } finally {
+        hideProgress();
+    }
+}
     
     // チャットから推薦を更新する関数
     async function updateRecommendationsFromChatAI(message) {
@@ -2092,23 +2206,29 @@
         }
     }
     
-    // チャットメッセージを履歴に追加する関数
-    function addMessageToHistory(role, message) {
-        const chatHistory = document.getElementById("chatHistory");
-        chatHistory.style.display = "block";
-        
-        const messageDiv = document.createElement("div");
-        messageDiv.className = `chat-message ${role}-message`;
-        messageDiv.innerHTML = message;
-        messageDiv.id = `message-${Date.now()}`; // メッセージIDを設定
-        
-        chatHistory.appendChild(messageDiv);
-        
-        // スクロールを最下部に
-        chatHistory.scrollTop = chatHistory.scrollHeight;
-        
-        return messageDiv.id; // メッセージIDを返す
+    // メッセージを履歴に追加する関数（改修）
+function addMessageToHistory(role, message) {
+    // チャット履歴に追加
+    chatHistory.push({ role: role, content: message });
+    
+    // チャット履歴が20件を超えたら古いものを削除
+    if (chatHistory.length > 20) {
+        chatHistory.shift();
     }
+    
+    // UIに表示
+    const chatHistoryElement = document.getElementById("chatHistory");
+    const messageElement = document.createElement('div');
+    messageElement.className = `chat-message ${role}-message`;
+    messageElement.textContent = message;
+    chatHistoryElement.appendChild(messageElement);
+    
+    // スクロールを一番下に
+    chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight;
+    
+    // チャット履歴を表示状態に
+    chatHistoryElement.style.display = "block";
+}
     
     // AIメッセージを更新する関数
     function updateAIMessage(messageId, text) {
@@ -2118,39 +2238,54 @@
         }
     }
     
-    // チャットメッセージ送信関数
-    async function sendChatMessage() {
-        const chatInput = document.getElementById("chatInput");
-        const message = chatInput.value.trim();
+    // チャットメッセージを送信する関数（改修）
+async function sendChatMessage() {
+    const chatInput = document.getElementById("chatInput");
+    const message = chatInput.value.trim();
+    
+    if (!message) return;
+    
+    // 入力欄をクリア
+    chatInput.value = "";
+    
+    // ユーザーメッセージを履歴に追加
+    addMessageToHistory("user", message);
+    
+    // AIの「考え中」メッセージを表示
+    const aiThinkingMessage = document.createElement('div');
+    aiThinkingMessage.className = 'chat-message ai-message thinking-animation';
+    aiThinkingMessage.id = 'aiThinkingMessage';
+    document.getElementById("chatHistory").appendChild(aiThinkingMessage);
+    document.getElementById("chatHistory").scrollTop = document.getElementById("chatHistory").scrollHeight;
+    
+    try {
+        // AI応答を取得
+        const response = await getAIResponse(message);
         
-        if (!message) return;
-        
-        chatInput.value = "";
-        
-        // ユーザーメッセージをチャット履歴に追加
-        addMessageToHistory("user", escapeHtml(message));
-        
-        // AI応答の表示（ローディング）
-        const aiMessageId = addMessageToHistory("ai", '<div class="thinking-animation"></div>');
-        
-        try {
-            // APIから応答取得
-            const aiResponse = await getAIResponse(message);
-            
-            // チャット履歴のAIメッセージを更新
-            updateAIMessage(aiMessageId, aiResponse);
-            
-            // 保存した好みを更新
-            savedUserPreferences = message;
-            
-            // チャットの応答に基づいて推薦リストも更新
-            await updateRecommendationsFromChatAI(message);
-            
-        } catch (error) {
-            console.error('チャットエラー:', error);
-            updateAIMessage(aiMessageId, "申し訳ありません、エラーが発生しました。もう一度お試しください。");
+        // 考え中メッセージを削除
+        const thinkingMessage = document.getElementById('aiThinkingMessage');
+        if (thinkingMessage) {
+            thinkingMessage.remove();
         }
+        
+        // AI応答を履歴に追加
+        addMessageToHistory("assistant", response);
+        
+        // チャット内容からAI推薦も更新
+        updateRecommendationsFromChatAI(message);
+        
+    } catch (error) {
+        console.error('チャット処理エラー:', error);
+        // 考え中メッセージを削除
+        const thinkingMessage = document.getElementById('aiThinkingMessage');
+        if (thinkingMessage) {
+            thinkingMessage.remove();
+        }
+        
+        // エラーメッセージを表示
+        addMessageToHistory("assistant", "申し訳ありません、エラーが発生しました。もう一度お試しください。");
     }
+}
     
     // プログレスバーの表示関数
     function showProgress() {
@@ -2766,803 +2901,6 @@
       setTimeout(enhanceAIResponseProcessing, 2000);
     });
   }
-})();
-</script>
-
-
-<script>
-// 包括的な修正スクリプト - 詳細版
-(function() {
-  console.log("昼の月。AIソムリエ - 詳細修正スクリプトを実行します");
-  
-  // チャートエレメントの存在確認とフォールバック作成
-  function ensureChartElements() {
-    console.log("チャート関連要素のチェックと修正");
-    
-    // 必要なチャート要素をチェック
-    const chartPanel = document.getElementById('chartPanel');
-    if (!chartPanel) {
-      console.warn("チャートパネルが見つかりません。スキップします。");
-      return;
-    }
-    
-    // combinedProfileChartの確認
-    let combinedProfileChart = document.getElementById('combinedProfileChart');
-    if (!combinedProfileChart) {
-      console.warn("combinedProfileChartが見つかりません。作成します。");
-      combinedProfileChart = document.createElement('canvas');
-      combinedProfileChart.id = 'combinedProfileChart';
-      combinedProfileChart.className = 'chart-canvas';
-      
-      // 適切な場所に挿入
-      const chartContainer = document.querySelector('.chart-container');
-      if (chartContainer) {
-        chartContainer.appendChild(combinedProfileChart);
-      } else {
-        // コンテナがなければ作成
-        const newContainer = document.createElement('div');
-        newContainer.className = 'chart-container';
-        newContainer.innerHTML = '<h3>味覚プロファイル</h3>';
-        newContainer.appendChild(combinedProfileChart);
-        chartPanel.appendChild(newContainer);
-      }
-    }
-    
-    // tasteProfileChartの確認
-    let tasteProfileChart = document.getElementById('tasteProfileChart');
-    if (!tasteProfileChart) {
-      console.warn("tasteProfileChartが見つかりません。作成します。");
-      tasteProfileChart = document.createElement('canvas');
-      tasteProfileChart.id = 'tasteProfileChart';
-      tasteProfileChart.className = 'chart-canvas';
-      
-      // 適切な場所に挿入（存在しない場合は別のチャートの後に追加）
-      const chartContainer = document.querySelector('.chart-container');
-      if (chartContainer) {
-        chartContainer.appendChild(tasteProfileChart);
-      } else if (combinedProfileChart.parentNode) {
-        combinedProfileChart.parentNode.appendChild(tasteProfileChart);
-      }
-    }
-    
-    console.log("チャート要素の修正完了");
-  }
-  
-  // チャート更新関数の安全な実装
-  function safeUpdateTasteProfileChart(whisky) {
-    try {
-      console.log("チャート更新関数の安全な実行");
-      
-      // チャートの存在確認
-      ensureChartElements();
-      
-      // Chart.jsの存在チェック
-      if (typeof Chart === 'undefined') {
-        console.error("Chart.jsが読み込まれていません");
-        return;
-      }
-      
-      // 要素の取得と確認
-      const canvas = document.getElementById('tasteProfileChart');
-      if (!canvas) {
-        console.error("tasteProfileChartキャンバスが見つかりません");
-        return;
-      }
-      
-      const ctx = canvas.getContext('2d');
-      if (!ctx) {
-        console.error("2Dコンテキストを取得できません");
-        return;
-      }
-      
-      // 既存のチャートがあれば破棄
-      if (window.tasteProfileChart instanceof Chart) {
-        window.tasteProfileChart.destroy();
-      }
-      
-      // 味覚プロファイルデータの取得
-      const tasteProfile = whisky.taste_profile || {};
-      
-      // チャートデータ
-      const data = {
-        labels: ['フルーティー', 'スパイシー', 'ボディ', 'スモーキー', '甘さ', '複雑さ'],
-        datasets: [
-          {
-            label: whisky.name,
-            data: [
-              tasteProfile.fruity || 0,
-              tasteProfile.spicy || 0,
-              tasteProfile.body || 0,
-              tasteProfile.smoky || 0,
-              tasteProfile.sweetness || 0,
-              tasteProfile.complexity || 0
-            ],
-            fill: true,
-            backgroundColor: 'rgba(255, 107, 107, 0.2)',
-            borderColor: 'rgb(255, 107, 107)',
-            pointBackgroundColor: 'rgb(255, 107, 107)',
-            pointBorderColor: '#fff',
-            pointHoverBackgroundColor: '#fff',
-            pointHoverBorderColor: 'rgb(255, 107, 107)'
-          }
-        ]
-      };
-      
-      // チャート設定
-      const config = {
-        type: 'radar',
-        data: data,
-        options: {
-          scales: {
-            r: {
-              angleLines: {
-                color: 'rgba(255, 255, 255, 0.2)'
-              },
-              grid: {
-                color: 'rgba(255, 255, 255, 0.2)'
-              },
-              pointLabels: {
-                color: 'rgba(255, 255, 255, 0.8)',
-                font: {
-                  size: 12
-                }
-              },
-              ticks: {
-                color: 'rgba(255, 255, 255, 0.8)',
-                backdropColor: 'transparent',
-                z: 100,
-                font: {
-                  size: 10
-                }
-              },
-              suggestedMin: 0,
-              suggestedMax: 5
-            }
-          },
-          plugins: {
-            legend: {
-              labels: {
-                color: 'rgba(255, 255, 255, 0.8)',
-                font: {
-                  size: 12
-                }
-              }
-            }
-          }
-        }
-      };
-      
-      // チャートの作成
-      window.tasteProfileChart = new Chart(ctx, config);
-      console.log("チャート更新完了:", whisky.name);
-      
-    } catch (err) {
-      console.error("チャート更新中にエラーが発生:", err);
-    }
-  }
-  
-  // selectWhisky関数の安全なオーバーライド
-  function safeSelectWhisky(whisky, index) {
-    try {
-      console.log("ウィスキー選択関数の安全な実行:", whisky.name);
-      
-      // すべてのカードから選択状態を解除
-      const cards = document.querySelectorAll('.whisky-card');
-      cards.forEach(card => card.classList.remove('selected'));
-      
-      // 選択されたカードを強調表示
-      if (cards[index]) {
-        cards[index].classList.add('selected');
-      }
-      
-      // 安全なチャート更新を呼び出す
-      safeUpdateTasteProfileChart(whisky);
-      
-      // 蒸溜所情報の更新
-      try {
-        if (whisky.distillery_info) {
-          updateDistilleryInfo(whisky.distillery_info);
-        } else {
-          // 蒸溜所情報がない場合、銘柄名から推測
-          const distilleryName = whisky.name.split(' ')[0];
-          const distillery = window.distilleryDatabase ? 
-            window.distilleryDatabase[distilleryName] : null;
-            
-          if (distillery) {
-            updateDistilleryInfo(distillery);
-          }
-        }
-      } catch (distErr) {
-        console.error("蒸溜所情報更新中にエラー:", distErr);
-      }
-      
-      console.log("ウィスキー選択処理完了");
-    } catch (err) {
-      console.error("ウィスキー選択中にエラーが発生:", err);
-    }
-  }
-  
-  // API接続問題の対応 - sendChatMessage関数のオーバーライド
-  function safeSendChatMessage() {
-    try {
-      console.log("チャットメッセージ送信 - 安全実装");
-      
-      const chatInput = document.getElementById("chatInput");
-      const message = chatInput.value.trim();
-      
-      if (!message) return;
-      
-      chatInput.value = "";
-      
-      // ユーザーメッセージをチャット履歴に追加
-      const chatHistory = document.getElementById("chatHistory");
-      if (!chatHistory) {
-        console.error("チャット履歴要素が見つかりません");
-        return;
-      }
-      
-      chatHistory.style.display = "block";
-      
-      const userMessageDiv = document.createElement("div");
-      userMessageDiv.className = "chat-message user-message";
-      userMessageDiv.textContent = message;
-      chatHistory.appendChild(userMessageDiv);
-      
-      // AI応答の表示（ローディング）
-      const aiMessageDiv = document.createElement("div");
-      aiMessageDiv.className = "chat-message ai-message";
-      aiMessageDiv.innerHTML = '<div class="thinking-animation"></div>';
-      aiMessageDiv.id = `message-${Date.now()}`;
-      chatHistory.appendChild(aiMessageDiv);
-      
-      // スクロールを最下部に
-      chatHistory.scrollTop = chatHistory.scrollHeight;
-      
-      // ローカル応答生成（API接続の代わり）
-      generateLocalResponse(message, aiMessageDiv.id);
-      
-      // メッセージからウィスキー名を抽出して表示に反映
-      setTimeout(() => {
-        try {
-          const whiskyNames = [
-            "タリスカー", "マッカラン", "ポートエレン", "ポウモア", "ボウモア", "Bowmore",
-            "山崎", "白州", "響", "軽井沢", "知多", "余市"
-          ];
-          
-          // メッセージ内の銘柄名をチェック
-          const mentionedWhiskies = [];
-          const lowerMessage = message.toLowerCase();
-          
-          whiskyNames.forEach(name => {
-            if (lowerMessage.includes(name.toLowerCase())) {
-              // データベースから対応するウィスキーを検索
-              const matches = window.whiskyData.filter(w => 
-                w.name.toLowerCase().includes(name.toLowerCase())
-              );
-              
-              if (matches.length > 0) {
-                mentionedWhiskies.push(...matches);
-              }
-            }
-          });
-          
-          if (mentionedWhiskies.length > 0) {
-            console.log("チャットメッセージから検出した銘柄:", mentionedWhiskies.map(w => w.name));
-            
-            // パネルを表示
-            const splitLayoutContainer = document.getElementById("splitLayoutContainer");
-            if (splitLayoutContainer) {
-              splitLayoutContainer.style.display = "grid";
-            }
-            
-            // 上位3つまでを表示（重複を排除）
-            const uniqueWhiskies = [];
-            mentionedWhiskies.forEach(w => {
-              if (!uniqueWhiskies.some(existing => existing.id === w.id)) {
-                uniqueWhiskies.push(w);
-              }
-            });
-            
-            const displayWhiskies = uniqueWhiskies.slice(0, 3);
-            
-            // 3つに満たない場合は他のウィスキーを追加
-            if (displayWhiskies.length < 3) {
-              const others = window.whiskyData.filter(w => 
-                !displayWhiskies.some(selected => selected.id === w.id)
-              ).sort(() => 0.5 - Math.random()).slice(0, 3 - displayWhiskies.length);
-              
-              displayWhiskies.push(...others);
-            }
-            
-            // 表示関数を呼び出す
-            if (typeof displayLocalRecommendations === "function") {
-              try {
-                displayLocalRecommendations(displayWhiskies);
-                
-                // 最初のウィスキーを選択
-                if (displayWhiskies.length > 0) {
-                  safeSelectWhisky(displayWhiskies[0], 0);
-                }
-              } catch (displayErr) {
-                console.error("推薦表示中にエラー:", displayErr);
-              }
-            }
-          }
-        } catch (err) {
-          console.error("銘柄抽出処理でエラー:", err);
-        }
-      }, 1000);
-    } catch (err) {
-      console.error("チャットメッセージ送信中にエラー:", err);
-    }
-  }
-  
-  // ローカルでAI応答を生成する関数（API接続の代わり）
-  function generateLocalResponse(message, messageId) {
-    setTimeout(() => {
-      try {
-        // メッセージからキーワードを抽出
-        const lowerMsg = message.toLowerCase();
-        let response = "";
-        
-        // 銘柄名に基づいた応答生成
-        if (lowerMsg.includes("ポウモア") || lowerMsg.includes("ボウモア") || lowerMsg.includes("bowmore")) {
-          response = "ポウモア（Bowmore）はスコットランドのアイラ島にある蒸留所のウイスキーです。1779年に設立された歴史ある蒸留所で、バランスの取れたピート香と海の風味が特徴です。18年熟成のポウモアは、複雑な味わいと深いコクがあり、アイラモルトの中でも比較的バランスのとれた味わいを持っています。";
-        }
-        else if (lowerMsg.includes("タリスカー")) {
-          response = "タリスカーはスカイ島唯一の蒸留所で生産される、海の風味と独特のスモーキーさを持つウイスキーです。特にタリスカー44年はコレクターの間でも非常に希少な銘柄として知られています。";
-        }
-        else if (lowerMsg.includes("山崎")) {
-          response = "山崎は日本を代表するシングルモルトウイスキーで、サントリーの創業者である鳥井信治郎が1923年に開設した日本初のウイスキー蒸留所です。フルーティでまろやかな味わいが特徴です。";
-        }
-        else if (lowerMsg.includes("価格") || lowerMsg.includes("値段")) {
-          response = "現在のラインナップには様々な価格帯のウイスキーをご用意しています。リストの中には3,000円台から80,000円を超える希少なボトルまであります。具体的な価格帯やお好みの味わいがございましたら、お気軽にお申し付けください。";
-        }
-        else if (lowerMsg.includes("スモーキー")) {
-          response = "スモーキーな風味をお求めでしたら、アイラ島のウイスキーがおすすめです。特にポウモア（Bowmore）やアードベッグ、ラフロイグなどはピート香が強く、独特のスモーキーさが楽しめます。";
-        }
-        else if (lowerMsg.includes("フルーティー")) {
-          response = "フルーティーな風味のウイスキーをお探しでしたら、山崎や白州などの日本のウイスキー、あるいはスペイサイドのシングルモルト（グレンフィディックやグレンリベットなど）がおすすめです。";
-        }
-        else {
-          response = "ありがとうございます。ウイスキーに関するご質問やお好みの味わいについて、もう少し詳しく教えていただければ、最適な銘柄をご提案いたします。フルーティーさやスモーキーさ、価格帯などについてのご希望はございますか？";
-        }
-        
-        // 応答を表示
-        const aiMessageDiv = document.getElementById(messageId);
-        if (aiMessageDiv) {
-          aiMessageDiv.innerHTML = response;
-        }
-      } catch (err) {
-        console.error("応答生成中にエラー:", err);
-        
-        // エラー時のフォールバック
-        const aiMessageDiv = document.getElementById(messageId);
-        if (aiMessageDiv) {
-          aiMessageDiv.textContent = "申し訳ありません。応答の生成中にエラーが発生しました。";
-        }
-      }
-    }, 1500);
-  }
-  
-  // ボウモア/ポウモアデータの追加確認
-  function ensureBowmoreData() {
-    if (!window.whiskyData) {
-      console.log("whiskyDataが未定義です。初期化します。");
-      window.whiskyData = [];
-    }
-    
-    // 既存のデータを確認
-    const hasBowmore = window.whiskyData.some(whisky => 
-      whisky.name.toLowerCase().includes("ポウモア") || 
-      whisky.name.toLowerCase().includes("ボウモア") || 
-      whisky.name.toLowerCase().includes("bowmore")
-    );
-    
-    if (!hasBowmore) {
-      console.log("ポウモア(Bowmore)データを追加します");
-      window.whiskyData.push({
-        id: String(window.whiskyData.length + 1),
-        name: "ポウモア 18年 (Bowmore)",
-        price: "¥8,200",
-        region: "スコットランド / アイラ島",
-        subcategory: "シングルモルト",
-        abv: "43.0",
-        tastingNote_ja: "アイラ島の定番銘柄。バランスの取れたピート香と海の風味が特徴。18年熟成により、複雑な味わいと深いコクが楽しめます。",
-        taste_profile: {
-          fruity: 2,
-          spicy: 3,
-          smoky: 4,
-          body: 4,
-          sweetness: 2,
-          complexity: 4
-        },
-        distillery_info: {
-          name: "ポウモア蒸溜所",
-          location: "スコットランド, アイラ島",
-          founded: "1779年",
-          status: "稼働中",
-          latitude: 55.7561,
-          longitude: -6.2897,
-          description: "アイラ島で最も古い蒸溜所の一つであるポウモア(Bowmore)は、バランスの取れたピート香と海の風味が特徴です。"
-        }
-      });
-    }
-  }
-  
-  // 初期化関数 - DOMロード完了後に実行
-  function initializeApp() {
-    console.log("アプリケーション初期化開始");
-    
-    try {
-      // 1. まず関数のオーバーライド
-      if (typeof window.updateTasteProfileChart === "function") {
-        window.originalUpdateTasteProfileChart = window.updateTasteProfileChart;
-        window.updateTasteProfileChart = safeUpdateTasteProfileChart;
-      }
-      
-      if (typeof window.selectWhisky === "function") {
-        window.originalSelectWhisky = window.selectWhisky;
-        window.selectWhisky = safeSelectWhisky;
-      }
-      
-      if (typeof window.sendChatMessage === "function") {
-        window.originalSendChatMessage = window.sendChatMessage;
-        window.sendChatMessage = safeSendChatMessage;
-      }
-      
-      // 2. データの確認と初期化
-      ensureBowmoreData();
-      
-      // 3. チャート要素の確認と修正
-      ensureChartElements();
-      
-      // 4. イベントリスナーの設定
-      // チャット送信ボタン
-      const sendChatBtn = document.getElementById("sendChatBtn");
-      if (sendChatBtn) {
-        const newSendBtn = sendChatBtn.cloneNode(true);
-        sendChatBtn.parentNode.replaceChild(newSendBtn, sendChatBtn);
-        newSendBtn.id = "sendChatBtn";
-        
-        newSendBtn.addEventListener("click", safeSendChatMessage);
-      }
-      
-      // ウィスキー提案ボタン
-      const getRecommendBtn = document.getElementById("getRecommendation");
-      if (getRecommendBtn) {
-        const newBtn = getRecommendBtn.cloneNode(true);
-        getRecommendBtn.parentNode.replaceChild(newBtn, getRecommendBtn);
-        newBtn.id = "getRecommendation";
-        
-        newBtn.addEventListener("click", function() {
-          console.log("ウィスキー提案リクエスト");
-          
-          // プログレスバー表示
-          const progressContainer = document.getElementById("progressContainer");
-          if (progressContainer) progressContainer.style.display = "block";
-          
-          // ランダムに3つのウィスキーを選択して表示
-          setTimeout(() => {
-            try {
-              const shuffled = [...window.whiskyData].sort(() => 0.5 - Math.random());
-              const selected = shuffled.slice(0, 3);
-              
-              // パネルを表示
-              const splitLayoutContainer = document.getElementById("splitLayoutContainer");
-              if (splitLayoutContainer) {
-                splitLayoutContainer.style.display = "grid";
-              }
-              
-              // ポウモアを優先的に含める
-              const hasBowmore = selected.some(w => 
-                w.name.toLowerCase().includes("ポウモア") || 
-                w.name.toLowerCase().includes("ボウモア") || 
-                w.name.toLowerCase().includes("bowmore")
-              );
-              
-              if (!hasBowmore) {
-                // ポウモアを検索
-                const bowmoreWhisky = window.whiskyData.find(w => 
-                  w.name.toLowerCase().includes("ポウモア") || 
-                  w.name.toLowerCase().includes("ボウモア") || 
-                  w.name.toLowerCase().includes("bowmore")
-                );
-                
-                if (bowmoreWhisky) {
-                  selected.pop(); // 最後の要素を削除
-                  selected.unshift(bowmoreWhisky); // 最初にポウモアを追加
-                }
-              }
-              
-              // 表示関数を呼び出す
-              if (typeof displayLocalRecommendations === "function") {
-                displayLocalRecommendations(selected);
-                
-                // 最初のウィスキーを選択
-                if (selected.length > 0) {
-                  safeSelectWhisky(selected[0], 0);
-                }
-              }
-              
-              // プログレスバーを非表示
-              if (progressContainer) progressContainer.style.display = "none";
-            } catch (err) {
-              console.error("推薦処理中にエラー:", err);
-              
-              const progressContainer = document.getElementById("progressContainer");
-              if (progressContainer) progressContainer.style.display = "none";
-            }
-          }, 1500);
-        });
-      }
-      
-      // 質問例のクリックイベント
-      document.querySelectorAll(".question-example").forEach(example => {
-        example.addEventListener("click", function() {
-          const question = this.getAttribute("data-question") || this.textContent;
-          const chatInput = document.getElementById("chatInput");
-          if (chatInput) chatInput.value = question;
-          
-          safeSendChatMessage();
-        });
-      });
-      
-      console.log("アプリケーション初期化完了");
-    } catch (err) {
-      console.error("初期化中にエラーが発生:", err);
-    }
-  }
-  
-  // 実行タイミングの設定
-  if (document.readyState === "complete") {
-    setTimeout(initializeApp, 1000);
-  } else {
-    window.addEventListener("load", function() {
-      setTimeout(initializeApp, 1000);
-    });
-  }
-})();
-</script>
-
-<script>
-// ウィスキーデータJSONインポート用スクリプト
-(function() {
-  console.log("ウィスキーデータのインポート処理を開始します");
-  
-  // JSONのURL
-  const jsonUrl = "https://page.gensparksite.com/get_upload_url/ed37237272cab7bf3d2036a6cf69a750a40a49cc0ee56c9c7ebf0088d6221061/default/b43bd4eb-e81e-4853-9df4-b73c8807ccdd";
-  
-  // JSONデータを取得する関数
-  async function fetchWhiskyData() {
-    try {
-      console.log("JSONデータの取得を試みています...");
-      
-      const response = await fetch(jsonUrl);
-      if (!response.ok) {
-        throw new Error(`HTTP error: ${response.status}`);
-      }
-      
-      const jsonData = await response.json();
-      console.log("JSONデータを正常に取得しました");
-      
-      // データ形式の確認
-      if (jsonData && jsonData.whiskies && Array.isArray(jsonData.whiskies)) {
-        console.log(`${jsonData.whiskies.length}件のウィスキーデータを読み込みました`);
-        
-        // データを加工して既存のフォーマットに合わせる
-        const processedData = jsonData.whiskies.map(whisky => {
-          // 蒸溜所情報を抽出・推測
-          let distilleryInfo = null;
-          
-          // 名前から蒸溜所を推測
-          const whiskyName = whisky.name.split(' ')[0].toLowerCase();
-          
-          // 蒸溜所情報をマッチング
-          if (whiskyName.includes("タリスカー") || whiskyName.includes("talisker")) {
-            distilleryInfo = {
-              name: "タリスカー蒸溜所",
-              location: "スコットランド, スカイ島",
-              founded: "1830年",
-              status: "稼働中",
-              latitude: 57.302,
-              longitude: -6.356,
-              description: "スカイ島唯一の蒸溜所であるタリスカーは、海の近くに位置し、そのウイスキーは海の塩気と煙の特徴を併せ持ちます。"
-            };
-          } else if (whiskyName.includes("ポートエレン") || whiskyName.includes("port ellen")) {
-            distilleryInfo = {
-              name: "ポートエレン蒸溜所",
-              location: "スコットランド, アイラ島",
-              founded: "1825年",
-              status: "閉鎖（1983年）",
-              latitude: 55.6301,
-              longitude: -6.2035,
-              description: "1983年に閉鎖されたポートエレンはアイラ島のアイコンとされ、残されたボトルは希少価値が高いコレクターズアイテムとなっています。"
-            };
-          } else if (whiskyName.includes("マッカラン") || whiskyName.includes("macallan")) {
-            distilleryInfo = {
-              name: "マッカラン蒸溜所",
-              location: "スコットランド, スペイサイド",
-              founded: "1824年",
-              status: "稼働中",
-              latitude: 57.4843,
-              longitude: -3.2079,
-              description: "マッカランはシェリー樽熟成のシングルモルトウイスキーの代表格で、高品質なオーク樽の選定に定評があります。"
-            };
-          } else if (whiskyName.includes("ポウモア") || whiskyName.includes("ボウモア") || whiskyName.includes("bowmore")) {
-            distilleryInfo = {
-              name: "ポウモア蒸溜所",
-              location: "スコットランド, アイラ島",
-              founded: "1779年",
-              status: "稼働中",
-              latitude: 55.7561,
-              longitude: -6.2897,
-              description: "アイラ島で最も古い蒸溜所の一つであるポウモア(Bowmore)は、バランスの取れたピート香と海の風味が特徴です。"
-            };
-          } else if (whiskyName.includes("山崎") || whiskyName.includes("yamazaki")) {
-            distilleryInfo = {
-              name: "サントリー山崎蒸溜所",
-              location: "日本, 大阪府",
-              founded: "1923年",
-              status: "稼働中",
-              latitude: 34.8916,
-              longitude: 135.6733,
-              description: "日本最古のモルトウイスキー蒸溜所である山崎は、京都と大阪の境界にある自然豊かな地に位置しています。"
-            };
-          } else if (whiskyName.includes("白州") || whiskyName.includes("hakushu")) {
-            distilleryInfo = {
-              name: "サントリー白州蒸溜所",
-              location: "日本, 山梨県",
-              founded: "1973年",
-              status: "稼働中",
-              latitude: 35.7213,
-              longitude: 138.5126,
-              description: "南アルプスの麓に位置する白州蒸溜所は、清らかな水と豊かな自然に囲まれ、爽やかで軽やかなモルトウイスキーを生産しています。"
-            };
-          }
-          
-          // 処理したデータを返す
-          return {
-            id: whisky.id || String(Math.random()).substring(2, 10),
-            name: whisky.name,
-            price: whisky.price,
-            region: whisky.region || "不明",
-            subcategory: whisky.subcategory || "Whisky",
-            abv: whisky.abv ? String(whisky.abv) : "不明",
-            tastingNote_ja: whisky.tastingNote_ja || "情報がありません",
-            taste_profile: whisky.taste_profile || {
-              fruity: 3,
-              spicy: 3,
-              smoky: 3,
-              body: 3,
-              sweetness: 3,
-              complexity: 3
-            },
-            distillery_info: distilleryInfo
-          };
-        });
-        
-        // グローバル変数に設定
-        window.whiskyData = processedData;
-        console.log("ウィスキーデータをアプリケーションに統合しました");
-        
-        // UI更新
-        updateUIWithNewData();
-        
-        return true;
-      } else {
-        console.error("JSONデータの形式が正しくありません");
-        return false;
-      }
-    } catch (error) {
-      console.error("JSONデータの取得に失敗しました:", error);
-      return false;
-    }
-  }
-  
-  // UIを更新する関数
-  function updateUIWithNewData() {
-    try {
-      console.log("UIの更新を開始します");
-      
-      // 1. 統計情報の更新
-      const totalWhiskies = document.getElementById("totalWhiskies");
-      if (totalWhiskies) {
-        totalWhiskies.textContent = window.whiskyData.length;
-      }
-      
-      const whiskyCount = document.getElementById("whiskyCount");
-      if (whiskyCount) {
-        whiskyCount.textContent = window.whiskyData.length;
-      }
-      
-      // 2. 地域情報の更新
-      const regions = new Set();
-      window.whiskyData.forEach(whisky => {
-        if (whisky.region) {
-          regions.add(whisky.region);
-        }
-      });
-      
-      const uniqueRegions = document.getElementById("uniqueRegions");
-      if (uniqueRegions) {
-        uniqueRegions.textContent = regions.size;
-      }
-      
-      // 3. 蒸溜所情報の更新
-      const distilleries = new Set();
-      window.whiskyData.forEach(whisky => {
-        if (whisky.distillery_info && whisky.distillery_info.name) {
-          distilleries.add(whisky.distillery_info.name);
-        } else if (whisky.name) {
-          // 名前から蒸溜所を推測
-          const distilleryName = whisky.name.split(' ')[0];
-          distilleries.add(distilleryName);
-        }
-      });
-      
-      const distilleryCount = document.getElementById("distilleryCount");
-      if (distilleryCount) {
-        distilleryCount.textContent = distilleries.size;
-      }
-      
-      console.log("UIの更新が完了しました");
-    } catch (error) {
-      console.error("UI更新中にエラーが発生しました:", error);
-    }
-  }
-  
-  // 実行
-  setTimeout(() => {
-    fetchWhiskyData().then(success => {
-      if (!success) {
-        console.log("JSONインポート失敗のため、デフォルトデータを使用します");
-        
-        // デフォルトデータがあれば使用
-        if (typeof getDefaultWhiskyData === "function") {
-          window.whiskyData = getDefaultWhiskyData();
-          updateUIWithNewData();
-        }
-      }
-      
-      // ポウモア（Bowmore）の存在確認
-      const hasBowmore = window.whiskyData.some(whisky => 
-        whisky.name.toLowerCase().includes("ポウモア") || 
-        whisky.name.toLowerCase().includes("ボウモア") || 
-        whisky.name.toLowerCase().includes("bowmore")
-      );
-      
-      if (!hasBowmore) {
-        console.log("ポウモア/Bowmoreデータを追加します");
-        window.whiskyData.push({
-          id: String(window.whiskyData.length + 1),
-          name: "ポウモア 18年 (Bowmore)",
-          price: "¥8,200",
-          region: "スコットランド / アイラ島",
-          subcategory: "シングルモルト",
-          abv: "43.0",
-          tastingNote_ja: "アイラ島の定番銘柄。バランスの取れたピート香と海の風味が特徴。18年熟成により、複雑な味わいと深いコクが楽しめます。",
-          taste_profile: {
-            fruity: 2,
-            spicy: 3,
-            smoky: 4,
-            body: 4,
-            sweetness: 2,
-            complexity: 4
-          },
-          distillery_info: {
-            name: "ポウモア蒸溜所",
-            location: "スコットランド, アイラ島",
-            founded: "1779年",
-            status: "稼働中",
-            latitude: 55.7561,
-            longitude: -6.2897,
-            description: "アイラ島で最も古い蒸溜所の一つであるポウモア(Bowmore)は、バランスの取れたピート香と海の風味が特徴です。"
-          }
-        });
-      }
-    });
-  }, 2000);
 })();
 </script>
 
