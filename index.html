@@ -193,58 +193,65 @@ margin: 0 auto;
 padding: 100px 20px 20px;
 }
 
-/* スマホ表示時の調整 */
+/* レスポンシブ対応 - スマホ画面で重なり回避 */
 @media (max-width: 768px) {
-  .container-custom {
-    padding-top: 130px; /* ヘッダーが小さくなったので調整 */
-    padding-bottom: 0px; /* 下部のパディングを追加 */
-  }
-  
-  /* ヘッダーの高さを調整 - パディングを減らしてコンパクトに */
+  /* ヘッダーを大幅にコンパクト化 */
   .header-container {
-    padding: 10px 0 40px; /* 元は15px 0 55px - 上下のパディングを減らす */
+    padding: 5px 0 20px; /* さらに小さく：上5px、下20px */
     flex-wrap: wrap;
+    min-height: auto; /* 最小高さを自動に */
   }
   
-  /* タイトルをより小さく、マージンも小さく */
+  /* ロゴをさらに小さく */
+  .logo {
+    width: 50px; /* さらに小さく */
+    height: 50px;
+  }
+  
+  /* ロゴの位置調整 */
+  .header-container a[target="_blank"] {
+    position: absolute;
+    left: 15px;
+    top: 5px; /* より上に */
+  }
+  
+  /* タイトルをさらに小さく */
   .header-title {
-    font-size: 22px; /* 元は24px */
-    margin: 0 auto 5px; /* 元は0 auto 10px - 下マージンを減らす */
+    font-size: 18px; /* さらに小さく */
+    margin: 0 auto 3px; /* マージンを最小に */
+    width: 100%;
+    text-align: center;
   }
   
-  /* ナビゲーションの位置も上に */
+  /* ナビゲーションをさらに上に */
   .nav-links {
     position: relative;
-    top: 5px; /* 元は10px - 上に移動 */
+    top: 0px; /* 上の余白をなくす */
     right: 0;
     width: 100%;
     justify-content: center;
     flex-wrap: wrap;
+    gap: 8px; /* 間隔を狭く */
   }
   
-  /* リンクをよりコンパクトに */
+  /* リンクをさらにコンパクトに */
   .nav-link {
-    font-size: 12px; /* 元は13px */
-    padding: 3px 7px; /* 元は4px 8px - パディングを小さく */
+    font-size: 11px; /* さらに小さく */
+    padding: 2px 6px; /* パディングを最小に */
   }
 
-  /* 言語リンクのマージンも縮小 */
+  /* 言語リンクの余白を最小に */
   .language-links {
-    margin-top: 5px; /* 元は10px */
+    margin-top: 2px; /* 最小のマージン */
     width: 100%;
     justify-content: center;
   }
-  
-  /* ロゴを左寄せ＆小さく */
-  .header-container a[target="_blank"] {
-    position: absolute;
-    left: 20px;
-    top: 5px; /* 少し上に */
-  }
-  
-  .logo {
-    width: 60px; /* 元は70px */
-    height: 60px; /* 元は70px */
+}
+
+/* スマホ表示時の調整 */
+@media (max-width: 768px) {
+  .container-custom {
+    padding-top: 90px; /* ヘッダーがさらに小さくなったので大幅に削減 */
   }
 }
 
