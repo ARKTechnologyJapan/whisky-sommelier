@@ -90,59 +90,89 @@
 
         /* レスポンシブ対応 - スマホ画面で重なり回避 */
 @media (max-width: 768px) {
-  /* ヘッダーを大幅にコンパクト化 */
+  /* ヘッダーをさらにコンパクト化 */
   .header-container {
-    padding: 5px 0 20px; /* 上下のパディングを減らす */
+    padding: 5px 0 30px; /* 下部のパディングを増やす */
     flex-wrap: wrap;
     min-height: auto;
     flex-direction: column; /* 縦方向に配置 */
+    height: auto; /* 高さを自動に */
   }
   
   /* ロゴをさらに小さく */
   .logo {
-    width: 70px;
-    height: 70px;
+    width: 50px;
+    height: 50px;
   }
   
- /* ロゴの位置調整 - 最も左上に */
-.header-container a[target="_blank"] {
-  position: absolute;
-  left: 5px;   /* さらに左に */
-  top: 0px;    /* 最上部に */
-}
+  /* ロゴの位置調整 - 左上に */
+  .header-container a[target="_blank"] {
+    position: absolute;
+    left: 5px;
+    top: 0px;
   }
   
-  /* タイトルをさらに小さく */
+  /* タイトルの調整 - 位置をロゴに干渉しないよう調整 */
   .header-title {
     font-size: 18px;
-    margin: 0 auto 8px; /* 下マージンを少し広げて次の要素との間隔を確保 */
+    margin: 0 auto 15px; /* 下マージンを増やしてナビゲーションとの間隔を確保 */
     width: 100%;
     text-align: center;
-    padding-top: 5px; /* ロゴの高さに合わせる */
+    padding-top: 10px; /* ロゴの高さに合わせる */
+    padding-left: 50px; /* ロゴと重ならないよう左側にパディング */
+    padding-right: 50px; /* バランスのため右側にも */
   }
   
-  /* ナビゲーションをタイトルの下に */
+  /* ナビゲーションの調整 - タイトルとの間隔を確保 */
   .nav-links {
     position: static; /* absoluteからstaticに変更 */
     width: 100%;
     justify-content: center;
     flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 0; /* 余分な余白をなくす */
-    order: 2; /* タイトルの後に表示 */
+    gap: 10px; /* リンク間の間隔を少し増やす */
+    margin-top: 5px; /* タイトルとの間に余白を追加 */
+    padding-bottom: 5px; /* 下部に余白を追加 */
   }
   
-  /* リンクをさらにコンパクトに */
+  /* リンクのスタイル調整 */
+  .nav-link {
+    font-size: 12px; /* 少し大きくして読みやすく */
+    padding: 3px 8px;
+    line-height: 1.5; /* 行の高さを確保 */
+    display: inline-block; /* ブロックレベル表示に */
+  }
+
+  /* コンテンツのパディング調整 */
+  .container-custom {
+    padding-top: 110px; /* ヘッダー高さの変更に合わせて調整 */
+  }
+}
+
+/* さらに小さい画面用の調整 */
+@media (max-width: 360px) {
+  .container-custom {
+    padding-top: 120px; /* さらに余裕をもたせる */
+  }
+  
+  .header-container {
+    padding-bottom: 35px; /* より下部パディングを増やす */
+  }
+  
+  /* ナビゲーションをよりコンパクトに */
+  .nav-links {
+    gap: 8px;
+  }
+  
   .nav-link {
     font-size: 11px;
     padding: 2px 6px;
   }
+}
 
   /* コンテンツのパディング調整 */
   .container-custom {
     padding-top: 90px; /* ヘッダー高さに合わせて調整 */
   }
-}
 
 /* さらに小さい画面用の調整 */
 @media (max-width: 360px) {
@@ -165,7 +195,6 @@
   .container-custom {
     padding-top: 90px; /* ヘッダー高さに合わせて調整 */
   }
-}
 
 /* さらに小さい画面用の調整 */
 @media (max-width: 360px) {
