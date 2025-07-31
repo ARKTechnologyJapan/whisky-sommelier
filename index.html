@@ -2769,39 +2769,174 @@
 })();
 </script>
 <script>
-// バグ修正と機能改善のためのスクリプト
+// バグ修正と機能改善のための包括的スクリプト - 更新版
 (function() {
-  console.log("昼の月。AIソムリエ - バグ修正と連携強化スクリプトを実行します");
+  console.log("昼の月。AIソムリエ - 包括的バグ修正と連携強化スクリプトを実行します");
   
   // DOMが完全に読み込まれた後に実行
   function initFixScript() {
-    // 1. 正しいID参照の修正
-    const getRecommendationBtn = document.getElementById("getRecommendation");
-    if (getRecommendationBtn) {
-      console.log("正しいID 'getRecommendation' でボタンを検出しました");
-      // 既存のリスナーをクリア
-      const newBtn = getRecommendationBtn.cloneNode(true);
-      getRecommendationBtn.parentNode.replaceChild(newBtn, getRecommendationBtn);
-      newBtn.id = "getRecommendation";
+    // 1. まずshowProgress関数のエラーを修正
+    if (typeof window.showProgress === "function") {
+      const originalShowProgress = window.showProgress;
       
-      // 正しいイベントリスナーを設定
-      newBtn.addEventListener("click", function() {
-        console.log("AIウィスキー提案を開始します");
-        if (typeof getRecommendation === "function") {
-          getRecommendation();
-        } else {
-          console.error("getRecommendation関数が見つかりません");
-          alert("申し訳ありません、推奨機能が利用できません。ページを再読み込みしてください。");
+      window.showProgress = function() {
+        document.getElementById("progressContainer").style.display = "block";
+        
+        // 問題のコード（null参照エラー）を修正
+        const recommendBtn = document.getElementById("getRecommendation");
+        if (recommendBtn) {
+          recommendBtn.disabled = true;
         }
-      });
-    } else {
-      console.error("ID 'getRecommendation' のボタンが見つかりません");
+        
+        // 残りの処理を継続
+        const progressFill = document.getElementById("progressFill");
+        let width = 0;
+        const interval = setInterval(() => {
+          if (width >= 100) {
+            clearInterval(interval);
+          } else {
+            width += 2;
+            if (progressFill) progressFill.style.width = width + "%";
+            const percentageEl = document.getElementById("progressPercentage");
+            if (percentageEl) percentageEl.textContent = width + "%";
+          }
+        }, 100);
+        
+        window.progressInterval = interval;
+      };
+      
+      console.log("showProgress関数を安全に修正しました");
     }
     
-    // 2. Bowmore/ポウモアの連携を強化する修正
-    // ウィスキーデータにポウモア（Bowmore）の情報を確実に含める
+    // 2. hideProgress関数も同様に修正
+    if (typeof window.hideProgress === "function") {
+      const originalHideProgress = window.hideProgress;
+      
+      window.hideProgress = function() {
+        clearInterval(window.progressInterval);
+        
+        const progressFill = document.getElementById("progressFill");
+        if (progressFill) progressFill.style.width = "100%";
+        
+        const percentageEl = document.getElementById("progressPercentage");
+        if (percentageEl) percentageEl.textContent = "100%";
+        
+        setTimeout(() => {
+          const progressContainer = document.getElementById("progressContainer");
+          if (progressContainer) progressContainer.style.display = "none";
+          
+          const recommendBtn = document.getElementById("getRecommendation");
+          if (recommendBtn) recommendBtn.disabled = false;
+        }, 500);
+      };
+      
+      console.log("hideProgress関数を安全に修正しました");
+    }
+    
+    // 3. 行1377付近のエラーを修正 - イベントリスナーの設定修正
+    // DOMContentLoaded時に実行される処理を安全に置き換え
+    // 最初にdocument.addEventListener("DOMContentLoaded", function() {})をオーバーライド
+    
+    // すべてのボタンに正しくリスナーを設定する総合的修正
+    // getRecommendationボタン
+    const getRecommendationBtn = document.getElementById("getRecommendation");
+    if (getRecommendationBtn) {
+      console.log("「AIウィスキー提案」ボタンを検出、リスナーを修正します");
+      // 既存のリスナーをクリア
+      const newRecommendBtn = getRecommendationBtn.cloneNode(true);
+      getRecommendationBtn.parentNode.replaceChild(newRecommendBtn, getRecommendationBtn);
+      newRecommendBtn.id = "getRecommendation";
+      
+      // 正しいイベントリスナーを設定
+      newRecommendBtn.addEventListener("click", function() {
+        console.log("AIウィスキー提案を開始します");
+        if (typeof getRecommendation === "function") {
+          try {
+            getRecommendation();
+          } catch (err) {
+            console.error("getRecommendation実行エラー:", err);
+            alert("提案機能でエラーが発生しました。");
+          }
+        }
+      });
+    }
+    
+    // refreshRecommendationボタン
+    const refreshBtn = document.getElementById("refreshRecommendation");
+    if (refreshBtn) {
+      console.log("「リフレッシュ」ボタンを検出、リスナーを修正します");
+      const newRefreshBtn = refreshBtn.cloneNode(true);
+      refreshBtn.parentNode.replaceChild(newRefreshBtn, refreshBtn);
+      newRefreshBtn.id = "refreshRecommendation";
+      
+      newRefreshBtn.addEventListener("click", function() {
+        console.log("リフレッシュして再提案を開始");
+        if (typeof getRecommendation === "function") {
+          try {
+            getRecommendation();
+          } catch (err) {
+            console.error("リフレッシュ実行エラー:", err);
+          }
+        }
+      });
+    }
+    
+    // チャット送信ボタン
+    const sendChatBtn = document.getElementById("sendChatBtn");
+    if (sendChatBtn) {
+      console.log("「質問する」ボタンを検出、リスナーを修正します");
+      const newSendBtn = sendChatBtn.cloneNode(true);
+      sendChatBtn.parentNode.replaceChild(newSendBtn, sendChatBtn);
+      newSendBtn.id = "sendChatBtn";
+      
+      newSendBtn.addEventListener("click", function() {
+        if (typeof sendChatMessage === "function") {
+          try {
+            sendChatMessage();
+          } catch (err) {
+            console.error("チャット送信エラー:", err);
+          }
+        }
+      });
+    }
+    
+    // チャットインプットのキーボードイベント
+    const chatInput = document.getElementById("chatInput");
+    if (chatInput) {
+      console.log("チャット入力欄を検出、キーイベント修正します");
+      chatInput.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (typeof sendChatMessage === "function") {
+            try {
+              sendChatMessage();
+            } catch (err) {
+              console.error("チャット送信エラー (Enter):", err);
+            }
+          }
+        }
+      });
+    }
+    
+    // 質問例のリスナー修正
+    document.querySelectorAll(".question-example").forEach(example => {
+      example.addEventListener("click", function() {
+        const question = this.getAttribute("data-question") || this.textContent;
+        if (chatInput) chatInput.value = question;
+        
+        if (typeof sendChatMessage === "function") {
+          try {
+            sendChatMessage();
+          } catch (err) {
+            console.error("質問例クリックエラー:", err);
+          }
+        }
+      });
+    });
+    
+    // 4. Bowmore/ポウモアの連携を強化
     if (window.whiskyData && Array.isArray(window.whiskyData)) {
-      // 既存のデータから「ポウモア」または「ボウモア」が含まれるか確認
+      // 既存のデータに「ポウモア」または「ボウモア」が含まれるか確認
       const hasBowmore = window.whiskyData.some(whisky => 
         whisky.name.includes("ポウモア") || 
         whisky.name.includes("ボウモア") ||
@@ -2840,117 +2975,201 @@
       }
     }
     
-    // 3. チャットとウィスキー提案の連携を強化
-    // 元のsendChatMessage関数を拡張
+    // 5. チャットとウィスキー提案の連携強化 - 実装を簡素化して堅牢に
+    // sendChatMessage関数が存在する場合のみ拡張
     if (typeof window.sendChatMessage === "function") {
       const originalSendChatMessage = window.sendChatMessage;
       
       window.sendChatMessage = async function() {
-        // 元の関数を呼び出す
-        await originalSendChatMessage.apply(this, arguments);
-        
-        // チャット履歴から最新のAIレスポンスを取得
-        setTimeout(() => {
-          const aiMessages = document.querySelectorAll(".ai-message");
-          if (aiMessages.length > 0) {
-            const latestMessage = aiMessages[aiMessages.length - 1].textContent;
-            
-            // メッセージからウィスキー名を抽出
-            extractWhiskyFromResponse(latestMessage);
-          }
-        }, 500);
+        try {
+          // 元の関数を呼び出す
+          await originalSendChatMessage.apply(this, arguments);
+          
+          // チャット履歴から最新のAIレスポンスを取得
+          setTimeout(() => {
+            const aiMessages = document.querySelectorAll(".ai-message");
+            if (aiMessages.length > 0) {
+              const latestMessage = aiMessages[aiMessages.length - 1].textContent;
+              
+              // メッセージからウィスキー名を抽出
+              extractWhiskyFromResponse(latestMessage);
+            }
+          }, 1000); // タイミングを少し長めに
+        } catch (error) {
+          console.error("拡張されたsendChatMessage関数でエラー:", error);
+        }
       };
       
-      console.log("チャット関数を拡張しました");
+      console.log("チャット関数を安全に拡張しました");
     }
     
-    // 4. AI応答からウィスキー名を抽出して提案リストに反映
+    // 6. AI応答からウィスキー名を抽出
     function extractWhiskyFromResponse(text) {
-      if (!text || !window.whiskyData) return;
+      if (!text || !window.whiskyData || !Array.isArray(window.whiskyData)) return;
       
-      // 検索する銘柄名パターン（特に問題となっているポウモア/Bowmore）
-      const keyWhiskies = [
-        {name: "ポウモア", aliases: ["ボウモア", "bowmore", "ぼうもあ"]},
-        {name: "タリスカー", aliases: ["たりすかー", "talisker"]},
-        {name: "マッカラン", aliases: ["まっからん", "macallan"]},
-        {name: "ポートエレン", aliases: ["ぽーとえれん", "port ellen"]},
-        {name: "山崎", aliases: ["やまざき", "yamazaki"]}
-      ];
-      
-      // 言及されているウィスキーを格納
-      const mentionedWhiskies = [];
-      
-      // テキストを小文字に変換
-      const lowerText = text.toLowerCase();
-      
-      // 各ウィスキーの言及をチェック
-      keyWhiskies.forEach(keyWhisky => {
-        if (
-          lowerText.includes(keyWhisky.name.toLowerCase()) || 
-          keyWhisky.aliases.some(alias => lowerText.includes(alias.toLowerCase()))
-        ) {
-          // データベースから対応するウィスキーを検索
-          const matchingWhiskies = window.whiskyData.filter(whisky => 
-            whisky.name.toLowerCase().includes(keyWhisky.name.toLowerCase()) ||
-            keyWhisky.aliases.some(alias => whisky.name.toLowerCase().includes(alias.toLowerCase()))
-          );
-          
-          if (matchingWhiskies.length > 0) {
-            console.log(`チャットで言及された「${keyWhisky.name}」を検出しました`);
-            mentionedWhiskies.push(...matchingWhiskies);
-          }
-        }
-      });
-      
-      // 言及されているウィスキーがあれば提案リストに表示
-      if (mentionedWhiskies.length > 0) {
-        console.log(`提案リストに追加: ${mentionedWhiskies.map(w => w.name).join(", ")}`);
+      try {
+        // 検索する銘柄名パターン（特に問題となっているポウモア/Bowmore）
+        const keyWhiskies = [
+          {name: "ポウモア", aliases: ["ボウモア", "bowmore", "ぼうもあ"]},
+          {name: "タリスカー", aliases: ["たりすかー", "talisker"]},
+          {name: "マッカラン", aliases: ["まっからん", "macallan"]},
+          {name: "ポートエレン", aliases: ["ぽーとえれん", "port ellen"]},
+          {name: "山崎", aliases: ["やまざき", "yamazaki"]}
+        ];
         
-        // パネルを表示
-        const splitLayoutContainer = document.getElementById("splitLayoutContainer");
-        if (splitLayoutContainer) {
-          splitLayoutContainer.style.display = "grid";
-        }
+        // 言及されているウィスキーを格納
+        const mentionedWhiskies = [];
         
-        // 提案リストに表示
-        if (typeof displayLocalRecommendations === "function") {
-          // 最大3つに制限
-          const whiskiesToDisplay = mentionedWhiskies.slice(0, 3);
-          
-          // 3つに満たない場合はランダムに他のウィスキーを追加
-          if (whiskiesToDisplay.length < 3 && window.whiskyData.length > 3) {
-            const remainingWhiskies = window.whiskyData.filter(w => 
-              !whiskiesToDisplay.some(selected => selected.id === w.id)
+        // テキストを小文字に変換
+        const lowerText = text.toLowerCase();
+        
+        // 各ウィスキーの言及をチェック
+        keyWhiskies.forEach(keyWhisky => {
+          if (
+            lowerText.includes(keyWhisky.name.toLowerCase()) || 
+            keyWhisky.aliases.some(alias => lowerText.includes(alias.toLowerCase()))
+          ) {
+            // データベースから対応するウィスキーを検索
+            const matchingWhiskies = window.whiskyData.filter(whisky => 
+              whisky.name.toLowerCase().includes(keyWhisky.name.toLowerCase()) ||
+              keyWhisky.aliases.some(alias => whisky.name.toLowerCase().includes(alias.toLowerCase()))
             );
             
-            // ランダムに選択
-            const randomWhiskies = remainingWhiskies
-              .sort(() => 0.5 - Math.random())
-              .slice(0, 3 - whiskiesToDisplay.length);
-            
-            whiskiesToDisplay.push(...randomWhiskies);
+            if (matchingWhiskies.length > 0) {
+              console.log(`チャットで言及された「${keyWhisky.name}」を検出しました`);
+              mentionedWhiskies.push(...matchingWhiskies);
+            }
+          }
+        });
+        
+        // 言及されているウィスキーがあれば提案リストに表示
+        if (mentionedWhiskies.length > 0) {
+          console.log(`提案リストに追加: ${mentionedWhiskies.map(w => w.name).join(", ")}`);
+          
+          // パネルを表示
+          const splitLayoutContainer = document.getElementById("splitLayoutContainer");
+          if (splitLayoutContainer) {
+            splitLayoutContainer.style.display = "grid";
           }
           
-          // 表示更新
-          displayLocalRecommendations(whiskiesToDisplay);
-          
-          // 最初のウィスキーを選択
-          if (typeof selectWhisky === "function" && whiskiesToDisplay.length > 0) {
-            selectWhisky(whiskiesToDisplay[0], 0);
+          // 提案リストに表示
+          if (typeof displayLocalRecommendations === "function") {
+            // 最大3つに制限（重複を排除）
+            const uniqueWhiskies = [];
+            mentionedWhiskies.forEach(whisky => {
+              if (!uniqueWhiskies.some(w => w.name === whisky.name)) {
+                uniqueWhiskies.push(whisky);
+              }
+            });
+            
+            const whiskiesToDisplay = uniqueWhiskies.slice(0, 3);
+            
+            // 3つに満たない場合はランダムに他のウィスキーを追加
+            if (whiskiesToDisplay.length < 3 && window.whiskyData.length > 3) {
+              const remainingWhiskies = window.whiskyData.filter(w => 
+                !whiskiesToDisplay.some(selected => selected.id === w.id)
+              );
+              
+              // ランダムに選択
+              const randomWhiskies = remainingWhiskies
+                .sort(() => 0.5 - Math.random())
+                .slice(0, 3 - whiskiesToDisplay.length);
+              
+              whiskiesToDisplay.push(...randomWhiskies);
+            }
+            
+            // 表示更新（安全に実行）
+            try {
+              displayLocalRecommendations(whiskiesToDisplay);
+              
+              // 最初のウィスキーを選択
+              if (typeof selectWhisky === "function" && whiskiesToDisplay.length > 0) {
+                selectWhisky(whiskiesToDisplay[0], 0);
+              }
+            } catch (err) {
+              console.error("推奨リスト表示エラー:", err);
+            }
           }
         }
+      } catch (error) {
+        console.error("ウィスキー抽出処理でエラー:", error);
       }
     }
     
-    console.log("バグ修正と連携強化スクリプトの初期化が完了しました");
+    // 7. getRecommendation関数の安全な実装（元の関数がない場合のバックアップ）
+    if (typeof window.getRecommendation !== "function") {
+      console.log("getRecommendation関数が見つかりません。代替実装を提供します");
+      
+      window.getRecommendation = async function() {
+        try {
+          // プログレスバーの表示
+          if (typeof window.showProgress === "function") {
+            window.showProgress();
+          } else {
+            const progressContainer = document.getElementById("progressContainer");
+            if (progressContainer) progressContainer.style.display = "block";
+          }
+          
+          setTimeout(() => {
+            try {
+              // ローカルデータからのフォールバック処理
+              console.log("ローカルデータで推奨リストを表示します");
+              
+              // ローカルウィスキーデータを使用
+              if (window.whiskyData && window.whiskyData.length > 0) {
+                // ランダムに3つ選択
+                const shuffled = [...window.whiskyData].sort(() => 0.5 - Math.random());
+                const selected = shuffled.slice(0, 3);
+                
+                // パネルを表示
+                const splitLayoutContainer = document.getElementById("splitLayoutContainer");
+                if (splitLayoutContainer) {
+                  splitLayoutContainer.style.display = "grid";
+                }
+                
+                // 選択したウィスキーを表示
+                if (typeof displayLocalRecommendations === "function") {
+                  displayLocalRecommendations(selected);
+                  
+                  // 最初のウィスキーを選択
+                  if (typeof selectWhisky === "function" && selected.length > 0) {
+                    selectWhisky(selected[0], 0);
+                  }
+                }
+              }
+              
+              // プログレスバーを非表示
+              if (typeof window.hideProgress === "function") {
+                window.hideProgress();
+              } else {
+                const progressContainer = document.getElementById("progressContainer");
+                if (progressContainer) progressContainer.style.display = "none";
+              }
+            } catch (err) {
+              console.error("バックアップ推奨処理でエラー:", err);
+              
+              const progressContainer = document.getElementById("progressContainer");
+              if (progressContainer) progressContainer.style.display = "none";
+            }
+          }, 2000);
+        } catch (error) {
+          console.error("代替getRecommendation関数でエラー:", error);
+          
+          const progressContainer = document.getElementById("progressContainer");
+          if (progressContainer) progressContainer.style.display = "none";
+        }
+      };
+    }
+    
+    console.log("包括的なバグ修正と連携強化スクリプトの初期化が完了しました");
   }
   
   // スクリプト実行のタイミング設定
   if (document.readyState === 'complete') {
-    setTimeout(initFixScript, 1000);
+    setTimeout(initFixScript, 1500);
   } else {
     window.addEventListener('load', function() {
-      setTimeout(initFixScript, 1000);
+      setTimeout(initFixScript, 1500);
     });
   }
 })();
