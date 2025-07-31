@@ -1814,125 +1814,128 @@
         }
 
         // AI応答の取得（修正版）
-        async function getAIResponse(message) {
-            // AIの応答を生成中であることを表示
-            const chatHistory = document.getElementById('chatHistory');
-            const aiMessage = document.createElement('div');
-            aiMessage.className = 'chat-message ai-message thinking-animation';
-            aiMessage.textContent = ''; // テキストは空に、アニメーションがコンテンツを表示します
-            chatHistory.appendChild(aiMessage);
+async function getAIResponse(message) {
+    // AIの応答を生成中であることを表示
+    const chatHistory = document.getElementById('chatHistory');
+    const aiMessage = document.createElement('div');
+    aiMessage.className = 'chat-message ai-message thinking-animation';
+    aiMessage.textContent = ''; // テキストは空に、アニメーションがコンテンツを表示します
+    chatHistory.appendChild(aiMessage);
 
-            // スクロールを最下部に
-            chatHistory.scrollTop = chatHistory.scrollHeight;
+    // スクロールを最下部に
+    chatHistory.scrollTop = chatHistory.scrollHeight;
 
-            try {
-                // 新しく追加: 好み通知メッセージの作成
-                let prefsMessage = '';
-                const prefs = extractPreferencesFromMessage(message);
-                
-                if (prefs && Object.keys(prefs).length > 0) {
-                    prefsMessage = 'あなたの好みを理解しました：\n';
-                    
-                    if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
-                    if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
-                    if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
-                    if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
-                    prefsMessage += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
-                }
-
-                // 味覚座標の取得
-                const dot1 = document.getElementById('tasteDot1');
-                const dot2 = document.getElementById('tasteDot2');
-                const tasteX = parseFloat(dot1.style.left) / 100;
-                const tasteY = parseFloat(dot1.style.top) / 100;
-
-                // 価格帯の取得
-                const minPrice = document.getElementById('minPrice').value * 1000;
-                const maxPrice = document.getElementById('maxPrice').value * 1000;
-
-                // API呼び出し
-                const response = await fetch('/.netlify/functions/claude-api', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        minPrice: minPrice,
-                        maxPrice: maxPrice,
-                        tasteX: tasteX.toFixed(2),
-                        tasteY: tasteY.toFixed(2),
-                        additionalPreferences: message
-                    })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`API error: ${response.status}`);
-                }
-
-                const data = await response.json();
-
-                // API応答を表示
-                let aiResponseText = '';
-                if (data.success && data.data) {
-                    if (data.data.choices && data.data.choices[0] && data.data.choices[0].message) {
-                        // 新しい構造: data.data.choices[0].message.content
-                        aiResponseText = data.data.choices[0].message.content;
-                    } else if (data.data.content && data.data.content.length > 0) {
-                        // 古い構造: data.data.content[0].text
-                        aiResponseText = data.data.content[0].text;
-                    } else {
-                        throw new Error('Invalid API response structure');
-                    }
-                } else {
-                    throw new Error('API response missing success or data field');
-                }
-
-                // 新しく追加: 好み通知を先頭に追加
-                if (prefsMessage) {
-                    aiResponseText = prefsMessage + aiResponseText;
-                }
-
-                aiMessage.textContent = aiResponseText;
-
-            } catch (error) {
-                console.error('Chat error:', error);
-
-                // エラーの場合、既存のモックレスポンスを使用
-                let aiResponseText;
-
-                // 質問に基づいてモック応答を生成（既存のコード）
-                if (message.includes('タリスカー44年')) {
-                    aiResponseText = '🍷 タリスカー44年オフィシャルボトルは...';
-                } else if (message.includes('3000円以下') && message.includes('スモーキー') && message.includes('アイラ')) {
-                    aiResponseText = '🌊 キルホーマン2013-2021信濃屋（¥2,000）が...';
-                } else if (message.includes('日本') && (message.includes('軽井沢') || message.includes('長濱'))) {
-                    aiResponseText = '🍯 軽井沢25年（¥25,000）は日本を代表する銘柄で...';
-                } else if (message.includes('5000円前後') && message.includes('complexity5点')) {
-                    aiResponseText = '⭐ 5000円前後でcomplexity5点を持つおすすめは...';
-                } else {
-                    aiResponseText = '申し訳ありません、現在AIチャット機能が使えません。味覚プロファイルからあなたに最適なウィスキーを提案します。';
-                }
-
-                // 新しく追加: 好みを抽出できていれば通知を追加
-                const prefs = extractPreferencesFromMessage(message);
-                if (prefs && Object.keys(prefs).length > 0) {
-                    let prefsMessage = 'あなたの好みを理解しました：\n';
-                    
-                    if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
-                    if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
-                    if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
-                    if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
-                    prefsMessage += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
-                    
-                    aiResponseText = prefsMessage + aiResponseText;
-                }
-
-                aiMessage.textContent = aiResponseText;
-            } finally {
-                // スクロールを最下部に
-                chatHistory.scrollTop = chatHistory.scrollHeight;
-            }
+    try {
+        // 新しく追加: 好み通知メッセージの作成
+        let prefsMessage = '';
+        const prefs = extractPreferencesFromMessage(message);
+        
+        if (prefs && Object.keys(prefs).length > 0) {
+            prefsMessage = 'あなたの好みを理解しました：\n';
+            
+            if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
+            if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
+            if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
+            if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
+            prefsMessage += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
         }
+
+        // 味覚座標の取得
+        const dot1 = document.getElementById('tasteDot1');
+        const dot2 = document.getElementById('tasteDot2');
+        const tasteX = parseFloat(dot1.style.left) / 100;
+        const tasteY = parseFloat(dot1.style.top) / 100;
+
+        // 価格帯の取得
+        const minPrice = document.getElementById('minPrice').value * 1000;
+        const maxPrice = document.getElementById('maxPrice').value * 1000;
+
+        // API呼び出し
+        const response = await fetch('/.netlify/functions/claude-api', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                minPrice: minPrice,
+                maxPrice: maxPrice,
+                tasteX: tasteX.toFixed(2),
+                tasteY: tasteY.toFixed(2),
+                additionalPreferences: message
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+        }
+
+        const data = await response.json();
+
+        // API応答を表示
+        let aiResponseText = '';
+        if (data.success && data.data) {
+            if (data.data.choices && data.data.choices[0] && data.data.choices[0].message) {
+                // 新しい構造: data.data.choices[0].message.content
+                aiResponseText = data.data.choices[0].message.content;
+            } else if (data.data.content && data.data.content.length > 0) {
+                // 古い構造: data.data.content[0].text
+                aiResponseText = data.data.content[0].text;
+            } else {
+                throw new Error('Invalid API response structure');
+            }
+        } else {
+            throw new Error('API response missing success or data field');
+        }
+
+        // 新しく追加: 好み通知を先頭に追加
+        if (prefsMessage) {
+            aiResponseText = prefsMessage + aiResponseText;
+        }
+
+        aiMessage.textContent = aiResponseText;
+        aiMessage.classList.remove('thinking-animation'); // この行を追加
+
+    } catch (error) {
+        console.error('Chat error:', error);
+
+        // エラーの場合、既存のモックレスポンスを使用
+        let aiResponseText;
+
+        // 質問に基づいてモック応答を生成（既存のコード）
+        if (message.includes('タリスカー44年')) {
+            aiResponseText = '🍷 タリスカー44年オフィシャルボトルは...';
+        } else if (message.includes('3000円以下') && message.includes('スモーキー') && message.includes('アイラ')) {
+            aiResponseText = '🌊 キルホーマン2013-2021信濃屋（¥2,000）が...';
+        } else if (message.includes('日本') && (message.includes('軽井沢') || message.includes('長濱'))) {
+            aiResponseText = '🍯 軽井沢25年（¥25,000）は日本を代表する銘柄で...';
+        } else if (message.includes('5000円前後') && message.includes('complexity5点')) {
+            aiResponseText = '⭐ 5000円前後でcomplexity5点を持つおすすめは...';
+        } else {
+            aiResponseText = '申し訳ありません、現在AIチャット機能が使えません。味覚プロファイルからあなたに最適なウィスキーを提案します。';
+        }
+
+        // 新しく追加: 好みを抽出できていれば通知を追加
+        const prefs = extractPreferencesFromMessage(message);
+        if (prefs && Object.keys(prefs).length > 0) {
+            let prefsMessage = 'あなたの好みを理解しました：\n';
+            
+            if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
+            if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
+            if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
+            if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
+            prefsMessage += '\n提案システムに反映しました。「AIウィスキー提案を受ける」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
+            
+            aiResponseText = prefsMessage + aiResponseText;
+        }
+
+        aiMessage.textContent = aiResponseText;
+        aiMessage.classList.remove('thinking-animation'); // この行を追加
+
+    } finally {
+        // スクロールを最下部に
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+    }
+}
 
         // チャットメッセージから好みを抽出する関数
         function extractPreferencesFromMessage(message) {
