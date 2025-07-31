@@ -2768,6 +2768,193 @@
   }
 })();
 </script>
+<script>
+// バグ修正と機能改善のためのスクリプト
+(function() {
+  console.log("昼の月。AIソムリエ - バグ修正と連携強化スクリプトを実行します");
+  
+  // DOMが完全に読み込まれた後に実行
+  function initFixScript() {
+    // 1. 正しいID参照の修正
+    const getRecommendationBtn = document.getElementById("getRecommendation");
+    if (getRecommendationBtn) {
+      console.log("正しいID 'getRecommendation' でボタンを検出しました");
+      // 既存のリスナーをクリア
+      const newBtn = getRecommendationBtn.cloneNode(true);
+      getRecommendationBtn.parentNode.replaceChild(newBtn, getRecommendationBtn);
+      newBtn.id = "getRecommendation";
+      
+      // 正しいイベントリスナーを設定
+      newBtn.addEventListener("click", function() {
+        console.log("AIウィスキー提案を開始します");
+        if (typeof getRecommendation === "function") {
+          getRecommendation();
+        } else {
+          console.error("getRecommendation関数が見つかりません");
+          alert("申し訳ありません、推奨機能が利用できません。ページを再読み込みしてください。");
+        }
+      });
+    } else {
+      console.error("ID 'getRecommendation' のボタンが見つかりません");
+    }
+    
+    // 2. Bowmore/ポウモアの連携を強化する修正
+    // ウィスキーデータにポウモア（Bowmore）の情報を確実に含める
+    if (window.whiskyData && Array.isArray(window.whiskyData)) {
+      // 既存のデータから「ポウモア」または「ボウモア」が含まれるか確認
+      const hasBowmore = window.whiskyData.some(whisky => 
+        whisky.name.includes("ポウモア") || 
+        whisky.name.includes("ボウモア") ||
+        (whisky.name.toLowerCase().includes("bowmore"))
+      );
+      
+      // なければ追加
+      if (!hasBowmore) {
+        console.log("ポウモア（Bowmore）データを追加します");
+        window.whiskyData.push({
+          id: String(window.whiskyData.length + 1),
+          name: "ポウモア 18年（Bowmore）",
+          price: "¥8,200",
+          region: "スコットランド / アイラ島",
+          subcategory: "シングルモルト",
+          abv: "43.0",
+          tastingNote_ja: "アイラ島の定番銘柄。バランスの取れたピート香と海の風味が特徴。18年熟成により、複雑な味わいと深いコクが楽しめます。",
+          taste_profile: {
+            fruity: 2,
+            spicy: 3,
+            smoky: 4,
+            body: 4,
+            sweetness: 2,
+            complexity: 4
+          },
+          distillery_info: {
+            name: "ポウモア蒸溜所",
+            location: "スコットランド, アイラ島",
+            founded: "1779年",
+            status: "稼働中",
+            latitude: 55.7561,
+            longitude: -6.2897,
+            description: "アイラ島で最も古い蒸溜所の一つであるポウモア(Bowmore)は、バランスの取れたピート香と海の風味が特徴です。"
+          }
+        });
+      }
+    }
+    
+    // 3. チャットとウィスキー提案の連携を強化
+    // 元のsendChatMessage関数を拡張
+    if (typeof window.sendChatMessage === "function") {
+      const originalSendChatMessage = window.sendChatMessage;
+      
+      window.sendChatMessage = async function() {
+        // 元の関数を呼び出す
+        await originalSendChatMessage.apply(this, arguments);
+        
+        // チャット履歴から最新のAIレスポンスを取得
+        setTimeout(() => {
+          const aiMessages = document.querySelectorAll(".ai-message");
+          if (aiMessages.length > 0) {
+            const latestMessage = aiMessages[aiMessages.length - 1].textContent;
+            
+            // メッセージからウィスキー名を抽出
+            extractWhiskyFromResponse(latestMessage);
+          }
+        }, 500);
+      };
+      
+      console.log("チャット関数を拡張しました");
+    }
+    
+    // 4. AI応答からウィスキー名を抽出して提案リストに反映
+    function extractWhiskyFromResponse(text) {
+      if (!text || !window.whiskyData) return;
+      
+      // 検索する銘柄名パターン（特に問題となっているポウモア/Bowmore）
+      const keyWhiskies = [
+        {name: "ポウモア", aliases: ["ボウモア", "bowmore", "ぼうもあ"]},
+        {name: "タリスカー", aliases: ["たりすかー", "talisker"]},
+        {name: "マッカラン", aliases: ["まっからん", "macallan"]},
+        {name: "ポートエレン", aliases: ["ぽーとえれん", "port ellen"]},
+        {name: "山崎", aliases: ["やまざき", "yamazaki"]}
+      ];
+      
+      // 言及されているウィスキーを格納
+      const mentionedWhiskies = [];
+      
+      // テキストを小文字に変換
+      const lowerText = text.toLowerCase();
+      
+      // 各ウィスキーの言及をチェック
+      keyWhiskies.forEach(keyWhisky => {
+        if (
+          lowerText.includes(keyWhisky.name.toLowerCase()) || 
+          keyWhisky.aliases.some(alias => lowerText.includes(alias.toLowerCase()))
+        ) {
+          // データベースから対応するウィスキーを検索
+          const matchingWhiskies = window.whiskyData.filter(whisky => 
+            whisky.name.toLowerCase().includes(keyWhisky.name.toLowerCase()) ||
+            keyWhisky.aliases.some(alias => whisky.name.toLowerCase().includes(alias.toLowerCase()))
+          );
+          
+          if (matchingWhiskies.length > 0) {
+            console.log(`チャットで言及された「${keyWhisky.name}」を検出しました`);
+            mentionedWhiskies.push(...matchingWhiskies);
+          }
+        }
+      });
+      
+      // 言及されているウィスキーがあれば提案リストに表示
+      if (mentionedWhiskies.length > 0) {
+        console.log(`提案リストに追加: ${mentionedWhiskies.map(w => w.name).join(", ")}`);
+        
+        // パネルを表示
+        const splitLayoutContainer = document.getElementById("splitLayoutContainer");
+        if (splitLayoutContainer) {
+          splitLayoutContainer.style.display = "grid";
+        }
+        
+        // 提案リストに表示
+        if (typeof displayLocalRecommendations === "function") {
+          // 最大3つに制限
+          const whiskiesToDisplay = mentionedWhiskies.slice(0, 3);
+          
+          // 3つに満たない場合はランダムに他のウィスキーを追加
+          if (whiskiesToDisplay.length < 3 && window.whiskyData.length > 3) {
+            const remainingWhiskies = window.whiskyData.filter(w => 
+              !whiskiesToDisplay.some(selected => selected.id === w.id)
+            );
+            
+            // ランダムに選択
+            const randomWhiskies = remainingWhiskies
+              .sort(() => 0.5 - Math.random())
+              .slice(0, 3 - whiskiesToDisplay.length);
+            
+            whiskiesToDisplay.push(...randomWhiskies);
+          }
+          
+          // 表示更新
+          displayLocalRecommendations(whiskiesToDisplay);
+          
+          // 最初のウィスキーを選択
+          if (typeof selectWhisky === "function" && whiskiesToDisplay.length > 0) {
+            selectWhisky(whiskiesToDisplay[0], 0);
+          }
+        }
+      }
+    }
+    
+    console.log("バグ修正と連携強化スクリプトの初期化が完了しました");
+  }
+  
+  // スクリプト実行のタイミング設定
+  if (document.readyState === 'complete') {
+    setTimeout(initFixScript, 1000);
+  } else {
+    window.addEventListener('load', function() {
+      setTimeout(initFixScript, 1000);
+    });
+  }
+})();
+</script>
 
 
     <script id="html_badge_script1">
