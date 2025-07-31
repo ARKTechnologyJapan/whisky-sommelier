@@ -1698,97 +1698,227 @@ function updateStatistics(count) {
             }
         ];
     }
-    
-    // AI推薦を取得する関数（強化版）
-async function getRecommendation() {
-    // プログレスバーの表示
-    showProgress();
-    try {
-        // 直近のチャットメッセージを取得（存在する場合）
-        let latestUserMessage = "";
-        if (chatHistory.length > 0) {
-            for (let i = chatHistory.length - 1; i >= 0; i--) {
-                if (chatHistory[i].role === "user") {
-                    latestUserMessage = chatHistory[i].content;
-                    break;
-                }
-            }
-        }
-        
-        // ユーザー設定を取得
-        const userPreferences = {
-            minPrice: parseFloat(document.getElementById("minPrice").value) * 1000,
-            maxPrice: parseFloat(document.getElementById("maxPrice").value) * 1000,
-            tasteX: x1,
-            tasteY: y1,
-            complexityX: x2,
-            complexityY: y2,
-            additionalPreferences: latestUserMessage || savedUserPreferences || "",
-            chatHistory: chatHistory // チャット履歴全体を送信
-        };
-        
-        // Claude APIにリクエスト
-        const response = await fetch('/.netlify/functions/claude-api', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                ...userPreferences,
-                requestType: "full_recommendation",
-                outputFormat: "json"
-            })
+
+/**
+ * チャット履歴から言及された銘柄を抽出する関数
+ * @param {Array} chatHistory - チャットのメッセージ履歴
+ * @param {string} additionalMessage - 最新のメッセージ（オプション）
+ * @return {Array} 言及された銘柄のリスト
+ */
+function extractMentionedWhiskies(chatHistory, additionalMessage = "") {
+  const mentionedWhiskies = new Set();
+  
+  // より広範な銘柄リスト（頻出銘柄に集中）
+  const knownBrands = [
+    'ボウモア', 'bowmore', 'マッカラン', 'タリスカー', 'アードベッグ',
+    'カリラ', 'キルホーマン', '山崎', '白州', '響', '軽井沢', 'ポートエレン',
+    'CAOL ILA', 'カオルアイラ', 'GLENLIVET', 'グレンリベット',
+    'SPRINGBANK', 'スプリングバンク', 'ABERFELDY', 'アベラフェルディ',
+    'MORTLACH', 'モートラック', 'KILCHOMAN', 'キルホーマン',
+    'DAILUAINE', 'デイルアイン', 'BRUICHLADDICH', 'ブルックラディ',
+    'GLENGLASSAUGH', 'グレングラッサ', 'ARDBEG', 'アードベック',
+    'ジュラ', 'Jura', 'ハイランドパーク', 'HIGHLAND PARK',
+    'グレンモーレンジー', 'TALISKER', 'MACALLAN'
+  ];
+  
+  // 追加メッセージを最初に確認
+  if (additionalMessage) {
+    knownBrands.forEach(brand => {
+      if (additionalMessage.toLowerCase().includes(brand.toLowerCase())) {
+        mentionedWhiskies.add(brand);
+        console.log(`直近メッセージから銘柄検出: ${brand}`);
+      }
+    });
+  }
+  
+  // チャット履歴を確認
+  if (chatHistory && Array.isArray(chatHistory)) {
+    // 直近3件のメッセージを特に重視
+    const recentMessages = chatHistory.slice(-3);
+    recentMessages.forEach(message => {
+      if (message && message.content) {
+        knownBrands.forEach(brand => {
+          if (message.content.toLowerCase().includes(brand.toLowerCase())) {
+            mentionedWhiskies.add(brand);
+            console.log(`チャット履歴から銘柄検出: ${brand}`);
+          }
         });
-        
-        if (!response.ok) throw new Error('APIリクエストに失敗しました');
-        
-        const data = await response.json();
-        
-        // APIからのJSONレスポンスを処理
-        if (data.success && data.data && data.data.content) {
-            // APIからのレスポンステキストをJSON解析
-            const responseText = data.data.content[0].text;
-            let jsonStartIndex = responseText.indexOf('{');
-            let jsonEndIndex = responseText.lastIndexOf('}') + 1;
-            
-            if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
-                const jsonString = responseText.substring(jsonStartIndex, jsonEndIndex);
-                try {
-                    let apiResponse = JSON.parse(jsonString);
-                    
-                    // チャットキーワードで推薦リストを強化（新機能）
-                    if (latestUserMessage) {
-                        apiResponse = emphasizeKeywordsInRecommendation(latestUserMessage, apiResponse);
-                    }
-                    
-                    // 推薦結果の表示
-                    displayApiRecommendations(apiResponse);
-                    
-                    // 成功したらAIからのメッセージとして追加
-                    if (apiResponse && apiResponse.summary) {
-                        const aiMessage = `以下の3つのウィスキーをおすすめします:\n\n${apiResponse.summary}`;
-                        addMessageToHistory("assistant", aiMessage);
-                    }
-                } catch (error) {
-                    console.error('JSON解析エラー:', error);
-                    // エラー時はローカルデータでフォールバック
-                    const matchingWhiskies = findMatchingWhiskies();
-                    displayLocalRecommendations(matchingWhiskies);
-                }
-            } else {
-                // JSON形式でない場合もローカルデータでフォールバック
-                const matchingWhiskies = findMatchingWhiskies();
-                displayLocalRecommendations(matchingWhiskies);
-            }
-        } else {
-            throw new Error('APIからの応答が不正です');
+      }
+    });
+  }
+  
+  return Array.from(mentionedWhiskies);
+}
+
+    /**
+ * APIレスポンスに特定の銘柄を強制的に追加する関数
+ * @param {Object} apiResponse - APIからのレスポンス（パース済みJSON）
+ * @param {Array} mentionedWhiskies - チャットで言及された銘柄のリスト
+ * @return {Object} 更新されたAPIレスポンス
+ */
+function forceIncludeMentionedWhiskies(apiResponse, mentionedWhiskies) {
+  if (!apiResponse || !apiResponse.recommendations || !Array.isArray(apiResponse.recommendations)) {
+    console.error('有効なAPIレスポンスが提供されていません');
+    return apiResponse;
+  }
+
+  if (!mentionedWhiskies || mentionedWhiskies.length === 0) {
+    return apiResponse; // 言及銘柄がなければそのまま返す
+  }
+
+  // 最も重要な言及銘柄を取得（配列の最初のもの）
+  const primaryBrand = mentionedWhiskies[0];
+  let hasMentionedWhisky = false;
+  
+  // 既に含まれているかチェック
+  apiResponse.recommendations.forEach(whisky => {
+    if (whisky && whisky.name && whisky.name.toLowerCase().includes(primaryBrand.toLowerCase())) {
+      hasMentionedWhisky = true;
+      console.log(`言及銘柄 ${primaryBrand} は既に推薦リストに含まれています`);
+    }
+  });
+  
+  // 含まれていない場合は強制的に追加
+  if (!hasMentionedWhisky) {
+    console.log(`銘柄 ${primaryBrand} を強制的に追加します`);
+    
+    // 言及銘柄に関連する情報を用意
+    const forcedWhisky = {
+      name: `${primaryBrand} 15年`,
+      price: "¥4,800",
+      region: "Scotland Islay",
+      type: "Single Malt",
+      abv: "43",
+      description: `お客様がご指定された${primaryBrand}です。このウイスキーは、豊かな風味と複雑さを持ち、バランスの取れた味わいが特徴です。`,
+      taste_profile: {
+        fruity: 3,
+        smoky: 3,
+        complexity: 4,
+        body: 3,
+        spicy: 2,
+        sweetness: 3
+      },
+      distillery_info: {
+        name: `${primaryBrand}蒸溜所`,
+        location: "Scotland",
+        founded: "1800年代",
+        status: "稼働中",
+        latitude: 55.7553,
+        longitude: -6.1702,
+        description: `${primaryBrand}蒸溜所は伝統的な製法を守りながら、独自の個性を持つウイスキーを製造しています。`
+      }
+    };
+    
+    // 3番目を外して1番目に強制的に挿入
+    apiResponse.recommendations.pop();
+    apiResponse.recommendations.unshift(forcedWhisky);
+    
+    // サマリーも更新
+    apiResponse.summary = `ご指定いただいた ${primaryBrand} を最優先でご提案いたします。` + (apiResponse.summary || '');
+  } else {
+    // 既に含まれている場合は順番を最初に入れ替える
+    const index = apiResponse.recommendations.findIndex(w => 
+      w.name.toLowerCase().includes(primaryBrand.toLowerCase()));
+    
+    if (index > 0) {
+      // 0番目ではない場合、0番目と入れ替え
+      const temp = apiResponse.recommendations[0];
+      apiResponse.recommendations[0] = apiResponse.recommendations[index];
+      apiResponse.recommendations[index] = temp;
+      
+      // サマリーも更新
+      apiResponse.summary = `ご指定いただいた ${primaryBrand} を最優先でご提案いたします。` + (apiResponse.summary || '');
+    }
+  }
+  
+  return apiResponse;
+}
+    
+   /**
+ * AI推薦を取得する関数（改修版）
+ */
+async function getRecommendation() {
+  // プログレスバーの表示
+  showProgress();
+  try {
+    // ユーザー設定を取得
+    const userPreferences = {
+      minPrice: parseFloat(document.getElementById("minPrice").value) * 1000,
+      maxPrice: parseFloat(document.getElementById("maxPrice").value) * 1000,
+      tasteX: x1,
+      tasteY: y1,
+      complexityX: x2,
+      complexityY: y2,
+      additionalPreferences: savedUserPreferences || "",
+      chatHistory: chatHistory // チャット履歴全体を送信
+    };
+    
+    // 言及銘柄を抽出（前処理）
+    const mentionedWhiskies = extractMentionedWhiskies(chatHistory, savedUserPreferences);
+    console.log("検出された銘柄:", mentionedWhiskies);
+    
+    // Claude APIにリクエスト
+    const response = await fetch('/.netlify/functions/claude-api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...userPreferences,
+        requestType: "full_recommendation",
+        outputFormat: "json"
+      })
+    });
+    
+    if (!response.ok) throw new Error('APIリクエストに失敗しました');
+    
+    const data = await response.json();
+    
+    // APIからのJSONレスポンスを処理
+    if (data.success && data.data && data.data.content) {
+      // APIからのレスポンステキストをJSON解析
+      const responseText = data.data.content[0].text;
+      let jsonStartIndex = responseText.indexOf('{');
+      let jsonEndIndex = responseText.lastIndexOf('}') + 1;
+      
+      if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
+        const jsonString = responseText.substring(jsonStartIndex, jsonEndIndex);
+        try {
+          let apiResponse = JSON.parse(jsonString);
+          
+          // 言及された銘柄を強制的に追加（重要）
+          if (mentionedWhiskies.length > 0) {
+            apiResponse = forceIncludeMentionedWhiskies(apiResponse, mentionedWhiskies);
+          }
+          
+          // 推薦結果の表示
+          displayApiRecommendations(apiResponse);
+          
+          // 成功したらAIからのメッセージとして追加
+          if (apiResponse && apiResponse.summary) {
+            const aiMessage = `以下の3つのウィスキーをおすすめします:\n\n${apiResponse.summary}`;
+            addMessageToHistory("assistant", aiMessage);
+          }
+        } catch (error) {
+          console.error('JSON解析エラー:', error);
+          // エラー時はローカルデータでフォールバック
+          const matchingWhiskies = findMatchingWhiskies();
+          displayLocalRecommendations(matchingWhiskies);
         }
-    } catch (error) {
-        console.error('推薦取得エラー:', error);
-        // エラー時はローカルデータで対応
+      } else {
+        // JSON形式でない場合もローカルデータでフォールバック
         const matchingWhiskies = findMatchingWhiskies();
         displayLocalRecommendations(matchingWhiskies);
-    } finally {
-        hideProgress();
+      }
+    } else {
+      throw new Error('APIからの応答が不正です');
     }
+  } catch (error) {
+    console.error('推薦取得エラー:', error);
+    // エラー時はローカルデータで対応
+    const matchingWhiskies = findMatchingWhiskies();
+    displayLocalRecommendations(matchingWhiskies);
+  } finally {
+    hideProgress();
+  }
 }
     
     // APIからの推薦結果を表示する関数（改修）
@@ -2233,208 +2363,84 @@ async function getAIResponse(message) {
     }
 }
 
-// チャット内容からAI提案を更新する関数（強化版）
+/**
+ * チャット内容からAI提案を更新する関数（改修版）
+ * @param {string} message - チャットメッセージ
+ */
 async function updateRecommendationsFromChatAI(message) {
-    try {
-        showProgress();
-        
-        // ユーザー設定を取得（チャットメッセージを追加好みとして）
-        const userPreferences = {
-            minPrice: parseFloat(document.getElementById("minPrice").value) * 1000,
-            maxPrice: parseFloat(document.getElementById("maxPrice").value) * 1000,
-            tasteX: x1,
-            tasteY: y1,
-            complexityX: x2,
-            complexityY: y2,
-            additionalPreferences: message,
-            chatHistory: chatHistory.slice(-10) // 直近10件の履歴を送信
-        };
-        
-        // API呼び出し（推薦リクエスト）
-        const response = await fetch('/.netlify/functions/claude-api', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                ...userPreferences,
-                requestType: "full_recommendation",
-                outputFormat: "json"
-            })
-        });
-        
-        if (!response.ok) throw new Error('APIリクエストに失敗しました');
-        
-        const data = await response.json();
-        
-        // APIからのレスポンスを処理
-        if (data.success && data.data && data.data.content) {
-            const responseText = data.data.content[0].text;
-            let jsonStartIndex = responseText.indexOf('{');
-            let jsonEndIndex = responseText.lastIndexOf('}') + 1;
-            
-            if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
-                const jsonString = responseText.substring(jsonStartIndex, jsonEndIndex);
-                try {
-                    let apiResponse = JSON.parse(jsonString);
-                    
-                    // チャットキーワードで推薦リストを強化（新機能）
-                    apiResponse = emphasizeKeywordsInRecommendation(message, apiResponse);
-                    
-                    displayApiRecommendations(apiResponse);
-                } catch (error) {
-                    console.error('JSON解析エラー:', error);
-                    // ローカルデータでフォールバック
-                    const matchingWhiskies = findMatchingWhiskies();
-                    displayLocalRecommendations(matchingWhiskies);
-                }
-            } else {
-                // JSON形式でない場合
-                const matchingWhiskies = findMatchingWhiskies();
-                displayLocalRecommendations(matchingWhiskies);
-            }
-        } else {
-            throw new Error('APIからの応答が不正です');
+  try {
+    showProgress();
+    
+    // ユーザー設定を取得（チャットメッセージを追加好みとして）
+    const userPreferences = {
+      minPrice: parseFloat(document.getElementById("minPrice").value) * 1000,
+      maxPrice: parseFloat(document.getElementById("maxPrice").value) * 1000,
+      tasteX: x1,
+      tasteY: y1,
+      complexityX: x2,
+      complexityY: y2,
+      additionalPreferences: message,
+      chatHistory: chatHistory.slice(-10) // 直近10件の履歴を送信
+    };
+    
+    // 言及銘柄を抽出（前処理）
+    const mentionedWhiskies = extractMentionedWhiskies(chatHistory, message);
+    console.log("チャットから検出された銘柄:", mentionedWhiskies);
+    
+    // API呼び出し（推薦リクエスト）
+    const response = await fetch('/.netlify/functions/claude-api', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        ...userPreferences,
+        requestType: "full_recommendation",
+        outputFormat: "json"
+      })
+    });
+    
+    if (!response.ok) throw new Error('APIリクエストに失敗しました');
+    
+    const data = await response.json();
+    
+    // APIからのレスポンスを処理
+    if (data.success && data.data && data.data.content) {
+      const responseText = data.data.content[0].text;
+      let jsonStartIndex = responseText.indexOf('{');
+      let jsonEndIndex = responseText.lastIndexOf('}') + 1;
+      
+      if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
+        const jsonString = responseText.substring(jsonStartIndex, jsonEndIndex);
+        try {
+          let apiResponse = JSON.parse(jsonString);
+          
+          // 言及された銘柄を強制的に追加（重要）
+          if (mentionedWhiskies.length > 0) {
+            apiResponse = forceIncludeMentionedWhiskies(apiResponse, mentionedWhiskies);
+          }
+          
+          displayApiRecommendations(apiResponse);
+        } catch (error) {
+          console.error('JSON解析エラー:', error);
+          // ローカルデータでフォールバック
+          const matchingWhiskies = findMatchingWhiskies();
+          displayLocalRecommendations(matchingWhiskies);
         }
-    } catch (error) {
-        console.error('推薦更新エラー:', error);
-        // ローカルデータでフォールバック
+      } else {
+        // JSON形式でない場合
         const matchingWhiskies = findMatchingWhiskies();
         displayLocalRecommendations(matchingWhiskies);
-    } finally {
-        hideProgress();
+      }
+    } else {
+      throw new Error('APIからの応答が不正です');
     }
-}
-    
-    // チャットから推薦を更新する関数
-    async function updateRecommendationsFromChatAI(message) {
-        // ユーザー設定を取得
-        const userPreferences = {
-            minPrice: parseFloat(document.getElementById("minPrice").value) * 1000,
-            maxPrice: parseFloat(document.getElementById("maxPrice").value) * 1000,
-            tasteX: x1,
-            tasteY: y1,
-            complexityX: x2,
-            complexityY: y2,
-            additionalPreferences: message // チャットメッセージを追加要望として使用
-        };
-        
-        try {
-            // チャット完了後、自動的に推薦リストも更新
-            const response = await fetch('/.netlify/functions/claude-api', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    ...userPreferences,
-                    requestType: "full_recommendation",
-                    outputFormat: "json"
-                })
-            });
-            
-            if (!response.ok) return;
-            
-            const data = await response.json();
-            
-            if (data.success && data.data && data.data.content) {
-                try {
-                    // APIからのレスポンステキストをJSON解析
-                    const responseText = data.data.content[0].text;
-                    let jsonStartIndex = responseText.indexOf('{');
-                    let jsonEndIndex = responseText.lastIndexOf('}') + 1;
-                    
-                    if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
-                        const jsonString = responseText.substring(jsonStartIndex, jsonEndIndex);
-                        const apiResponse = JSON.parse(jsonString);
-                        
-                        // 新しい推薦リストを表示
-                        displayApiRecommendations(apiResponse);
-                    }
-                } catch (error) {
-                    console.error('推薦JSONパースエラー:', error);
-                }
-            }
-        } catch (error) {
-            console.error('推薦更新エラー:', error);
-        }
-    }
-    
-    // メッセージを履歴に追加する関数（改修）
-function addMessageToHistory(role, message) {
-    // チャット履歴に追加
-    chatHistory.push({ role: role, content: message });
-    
-    // チャット履歴が20件を超えたら古いものを削除
-    if (chatHistory.length > 20) {
-        chatHistory.shift();
-    }
-    
-    // UIに表示
-    const chatHistoryElement = document.getElementById("chatHistory");
-    const messageElement = document.createElement('div');
-    messageElement.className = `chat-message ${role}-message`;
-    messageElement.textContent = message;
-    chatHistoryElement.appendChild(messageElement);
-    
-    // スクロールを一番下に
-    chatHistoryElement.scrollTop = chatHistoryElement.scrollHeight;
-    
-    // チャット履歴を表示状態に
-    chatHistoryElement.style.display = "block";
-}
-    
-    // AIメッセージを更新する関数
-    function updateAIMessage(messageId, text) {
-        const messageElement = document.getElementById(messageId);
-        if (messageElement) {
-            messageElement.innerHTML = escapeHtml(text);
-        }
-    }
-    
-    // チャットメッセージを送信する関数（改修）
-async function sendChatMessage() {
-    const chatInput = document.getElementById("chatInput");
-    const message = chatInput.value.trim();
-    
-    if (!message) return;
-    
-    // 入力欄をクリア
-    chatInput.value = "";
-    
-    // ユーザーメッセージを履歴に追加
-    addMessageToHistory("user", message);
-    
-    // AIの「考え中」メッセージを表示
-    const aiThinkingMessage = document.createElement('div');
-    aiThinkingMessage.className = 'chat-message ai-message thinking-animation';
-    aiThinkingMessage.id = 'aiThinkingMessage';
-    document.getElementById("chatHistory").appendChild(aiThinkingMessage);
-    document.getElementById("chatHistory").scrollTop = document.getElementById("chatHistory").scrollHeight;
-    
-    try {
-        // AI応答を取得
-        const response = await getAIResponse(message);
-        
-        // 考え中メッセージを削除
-        const thinkingMessage = document.getElementById('aiThinkingMessage');
-        if (thinkingMessage) {
-            thinkingMessage.remove();
-        }
-        
-        // AI応答を履歴に追加
-        addMessageToHistory("assistant", response);
-        
-        // チャット内容からAI推薦も更新
-        updateRecommendationsFromChatAI(message);
-        
-    } catch (error) {
-        console.error('チャット処理エラー:', error);
-        // 考え中メッセージを削除
-        const thinkingMessage = document.getElementById('aiThinkingMessage');
-        if (thinkingMessage) {
-            thinkingMessage.remove();
-        }
-        
-        // エラーメッセージを表示
-        addMessageToHistory("assistant", "申し訳ありません、エラーが発生しました。もう一度お試しください。");
-    }
+  } catch (error) {
+    console.error('推薦更新エラー:', error);
+    // ローカルデータでフォールバック
+    const matchingWhiskies = findMatchingWhiskies();
+    displayLocalRecommendations(matchingWhiskies);
+  } finally {
+    hideProgress();
+  }
 }
     
     // プログレスバーの表示関数
