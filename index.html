@@ -3505,6 +3505,113 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 </script>
+<script>
+// 「別の提案を受ける」ボタン機能の修正パッチ - 正確なIDを使用
+(function() {
+  // DOMが完全に読み込まれたことを確認
+  function initializeCustomButton() {
+    // 正確なIDでボタンを取得
+    const refreshButton = document.getElementById('getAnotherRecommendation');
+    
+    if (refreshButton) {
+      console.log('「別の提案を受ける」ボタンを正確なIDで発見しました');
+      
+      // 既存のすべてのイベントリスナーを削除してクローン
+      const newButton = refreshButton.cloneNode(true);
+      refreshButton.parentNode.replaceChild(newButton, refreshButton);
+      
+      // 新しいボタンに同じIDを設定（重要）
+      newButton.id = 'getAnotherRecommendation';
+      
+      // 完全に新しいイベントリスナーを設定
+      newButton.addEventListener('click', function(e) {
+        // デフォルトの動作とイベント伝播を停止
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
+        
+        console.log('完全ランダム選択の「別の提案を受ける」処理を実行');
+        
+        // 現在の価格設定を取得
+        const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+        const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
+        
+        // 価格でフィルタリング
+        const priceFiltered = whiskyData.filter(whisky => {
+          try {
+            const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
+            return numericPrice >= minPrice && numericPrice <= maxPrice;
+          } catch (err) {
+            return false;
+          }
+        });
+        
+        if (priceFiltered.length < 3) {
+          alert('条件に合うウィスキーが足りません。価格範囲を広げてください。');
+          return false;
+        }
+        
+        // 現在表示中のウィスキー名を取得して除外
+        const currentlyShown = [];
+        document.querySelectorAll('.whisky-card h3').forEach(h3 => {
+          if (h3.textContent) currentlyShown.push(h3.textContent.trim());
+        });
+        
+        // 現在表示されていないウィスキーのみをフィルタリング
+        const notCurrentlyShown = priceFiltered.filter(w => 
+          !currentlyShown.includes(w.name)
+        );
+        
+        // 候補が十分にあるかチェック
+        const sourceArray = notCurrentlyShown.length >= 3 ? notCurrentlyShown : priceFiltered;
+        
+        // 完全にランダム化して選択
+        const randomWhiskies = [];
+        const shuffled = [...sourceArray].sort(() => 0.5 - Math.random());
+        
+        // 最大3つ選択
+        for (let i = 0; i < Math.min(3, shuffled.length); i++) {
+          randomWhiskies.push(shuffled[i]);
+        }
+        
+        console.log('ランダムに選択したウィスキー:', randomWhiskies.map(w => w.name));
+        
+        // 表示関数を呼び出し
+        if (typeof displayLocalRecommendations === 'function') {
+          try {
+            displayLocalRecommendations(randomWhiskies);
+            if (randomWhiskies.length > 0 && typeof selectWhisky === 'function') {
+              selectWhisky(randomWhiskies[0]);
+            }
+          } catch (error) {
+            console.error('表示処理中にエラーが発生:', error);
+          }
+        } else {
+          console.error('displayLocalRecommendations関数が見つかりません');
+        }
+        
+        return false;
+      });
+      
+      console.log('「別の提案を受ける」ボタンの処理を完全に上書きしました');
+    } else {
+      console.error('ID「getAnotherRecommendation」のボタンが見つかりません');
+    }
+  }
+
+  // 既存の処理が完了した後に実行されるようタイミングを調整
+  if (document.readyState === 'complete') {
+    // ページが既に完全に読み込まれている場合
+    setTimeout(initializeCustomButton, 1500);
+  } else {
+    // まだページ読み込み中の場合はloadイベントを待つ
+    window.addEventListener('load', function() {
+      setTimeout(initializeCustomButton, 1500);
+    });
+  }
+})();
+</script>
 
 
     <script id="html_badge_script1">
