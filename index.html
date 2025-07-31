@@ -195,7 +195,7 @@ padding: 100px 20px 20px;
 @media (max-width: 768px) {
   /* ヘッダーを大幅にコンパクト化 */
   .header-container {
-    padding: 5px 0 30px; /* さらに小さく：上5px、下20px */
+    padding: 5px 0 20px; /* さらに小さく：上5px、下20px */
     flex-wrap: wrap;
     min-height: auto; /* 最小高さを自動に */
   }
@@ -299,6 +299,58 @@ font-size: 18px;
 font-weight: bold;
 margin-bottom: 20px;
 color: #4ecdc4;
+}
+
+/* マトリクスの軸ラベルスタイル（基本） */
+.absolute.-top-6, .absolute.-bottom-6, .absolute.-left-12, .absolute.-right-12 {
+  white-space: nowrap; /* テキストを折り返さない */
+}
+
+/* スマホ表示時に左右の軸ラベルを縦書きに */
+@media (max-width: 768px) {
+  /* 右側のラベル（「ヘビー」と「熟成」）を縦書きに */
+  .absolute.-right-12 {
+    writing-mode: vertical-rl; /* 縦書き（右から左） */
+    text-orientation: upright; /* 文字を正立（回転なし）に */
+    right: -25px; /* 位置調整 */
+    height: auto; /* 高さを自動に */
+    transform: translateY(-50%); /* 縦中央揃え */
+  }
+  
+  /* 左側のラベル（「ライト」と「若い」）も縦書きに */
+  .absolute.-left-12 {
+    writing-mode: vertical-rl; /* 縦書き（右から左） */
+    text-orientation: upright; /* 文字を正立に */
+    left: -25px; /* 位置調整 */
+    height: auto;
+    transform: translateY(-50%); /* 縦中央揃え */
+  }
+  
+  /* 上下のラベル位置も調整 */
+  .absolute.-top-6 {
+    top: -20px; /* 少し上に */
+  }
+  
+  .absolute.-bottom-6 {
+    bottom: -20px; /* 少し下に */
+  }
+}
+
+/* さらに小さい画面用の調整 */
+@media (max-width: 360px) {
+  .absolute.-right-12 {
+    right: -22px; /* さらに位置調整 */
+    font-size: 10px; /* フォントサイズを小さく */
+  }
+  
+  .absolute.-left-12 {
+    left: -22px; /* 左側も同様に調整 */
+    font-size: 10px;
+  }
+  
+  .absolute.-top-6, .absolute.-bottom-6 {
+    font-size: 10px;
+  }
 }
 
 /* スマホ表示の修正 */
