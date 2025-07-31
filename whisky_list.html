@@ -27,221 +27,183 @@
     
     <style>
         body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Noto Sans JP', sans-serif;
-        }
-        .header-container {
-            background: rgba(0, 0, 0, 0.9);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px 0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .logo {
-            width: 90px;
-            height: 90px;
-            object-fit: contain;
-            border-radius: 8px;
-            background: rgba(78, 205, 197, 0);
-            border: 2px solid #4ecdc500;
-            padding: 5px;
-        }
-        
-        /* タイトルのスタイルを変更 */
-        .header-title {
-            color: #fff;
-            font-size: 28px;
-            font-weight: bold;
-            text-align: center;
-            margin: 0;
-            text-shadow: 0 0 10px rgba(78, 205, 196, 0.7);
-            letter-spacing: 2px;
-            background: linear-gradient(45deg, #ffffff, #4ecdc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            position: relative;
-        }
-        .header-title:after {
-            content: "";
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 70%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.7), transparent);
-        }
+    background-color: #000;
+    color: #fff;
+    font-family: 'Noto Sans JP', sans-serif;
+}
 
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 5px rgba(78, 205, 196, 0.5);
-            }
-            to {
-                text-shadow: 0 0 15px rgba(78, 205, 196, 0.8), 0 0 20px rgba(255, 107, 107, 0.5);
-            }
-        }
-
-        /* レスポンシブ対応 - スマホ画面で重なり回避 */
-@media (max-width: 768px) {
-  /* ヘッダーをさらにコンパクト化 */
-  .header-container {
-    padding: 5px 0 30px; /* 下部のパディングを増やす */
-    flex-wrap: wrap;
-    min-height: auto;
-    flex-direction: column; /* 縦方向に配置 */
-    height: auto; /* 高さを自動に */
-  }
-  
-  /* ロゴをさらに小さく */
-  .logo {
-    width: 50px;
-    height: 50px;
-  }
-  
-  /* ロゴの位置調整 - 左上に */
-  .header-container a[target="_blank"] {
-    position: absolute;
-    left: 5px;
-    top: 0px;
-  }
-  
-  /* タイトルの調整 - 位置をロゴに干渉しないよう調整 */
-  .header-title {
-    font-size: 18px;
-    margin: 0 auto 15px; /* 下マージンを増やしてナビゲーションとの間隔を確保 */
-    width: 100%;
-    text-align: center;
-    padding-top: 10px; /* ロゴの高さに合わせる */
-    padding-left: 50px; /* ロゴと重ならないよう左側にパディング */
-    padding-right: 50px; /* バランスのため右側にも */
-  }
-  
-  /* ナビゲーションの調整 - タイトルとの間隔を確保 */
-  .nav-links {
-    position: static; /* absoluteからstaticに変更 */
-    width: 100%;
+.header-container {
+    background: rgba(0, 0, 0, 0.9);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 15px 0;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
     justify-content: center;
-    flex-wrap: wrap;
-    gap: 10px; /* リンク間の間隔を少し増やす */
-    margin-top: 5px; /* タイトルとの間に余白を追加 */
-    padding-bottom: 5px; /* 下部に余白を追加 */
-  }
-  
-  /* リンクのスタイル調整 */
-  .nav-link {
-    font-size: 12px; /* 少し大きくして読みやすく */
-    padding: 3px 8px;
-    line-height: 1.5; /* 行の高さを確保 */
-    display: inline-block; /* ブロックレベル表示に */
-  }
+}
 
-  /* コンテンツのパディング調整 */
-  .container-custom {
-    padding-top: 110px; /* ヘッダー高さの変更に合わせて調整 */
-  }
+.logo {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    border-radius: 8px;
+    background: rgba(78, 205, 197, 0);
+    border: 2px solid #4ecdc500;
+    padding: 5px;
+}
+
+/* タイトルのスタイルを変更 */
+.header-title {
+    color: #fff;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(78, 205, 196, 0.7);
+    letter-spacing: 2px;
+    background: linear-gradient(45deg, #ffffff, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    position: relative;
+}
+
+.header-title:after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 70%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.7), transparent);
+}
+
+@keyframes glow {
+    from {
+        text-shadow: 0 0 5px rgba(78, 205, 196, 0.5);
+    }
+    to {
+        text-shadow: 0 0 15px rgba(78, 205, 196, 0.8), 0 0 20px rgba(255, 107, 107, 0.5);
+    }
+}
+
+/* ヘッダーナビゲーションのスタイル修正 - 右端に配置 */
+.nav-links {
+    position: absolute;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+}
+
+.nav-link {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    padding: 5px 10px;
+    border-radius: 5px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-link:hover {
+    color: #fff;
+    background: rgba(78, 205, 196, 0.2);
+}
+
+.nav-link.active {
+    color: #fff;
+    background: rgba(78, 205, 196, 0.3);
+    border-bottom: 2px solid #4ecdc4;
+}
+
+.container-custom {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 100px 20px 20px;
+}
+
+/* レスポンシブ対応 - スマホ画面で重なり回避 */
+@media (max-width: 768px) {
+    /* ヘッダー構造を修正 */
+    .header-container {
+        padding: 5px 0 50px; /* 下部のパディングを十分に確保 */
+        flex-direction: column; /* 縦に並べる */
+        align-items: center;
+        height: auto;
+    }
+    
+    /* ロゴの配置と大きさ */
+    .logo {
+        width: 50px;
+        height: 50px;
+    }
+    
+    /* ロゴを左上に配置 */
+    .header-container a[target="_blank"] {
+        position: absolute;
+        left: 5px;
+        top: 5px;
+    }
+    
+    /* タイトルを調整 - 中央配置でロゴと重ならないように */
+    .header-title {
+        font-size: 18px;
+        margin: 5px auto 25px; /* 上部と下部に十分な余白 */
+        padding-top: 15px; /* ロゴの高さに合わせて下げる */
+        width: 80%;
+        padding-left: 50px; /* ロゴのスペースを確保 */
+    }
+    
+    /* ナビゲーションをタイトル下に完全に分離 */
+    .nav-links {
+        position: absolute; /* 絶対位置で */
+        top: auto; /* 上部配置ではなく */
+        bottom: 10px; /* ヘッダー下部に配置 */
+        left: 0;
+        right: 0;
+        width: 100%;
+        justify-content: center;
+        gap: 10px;
+    }
+    
+    /* リンクスタイルの調整 */
+    .nav-link {
+        font-size: 12px;
+        padding: 3px 8px;
+        line-height: 1.5;
+    }
+    
+    /* コンテンツ開始位置の調整 */
+    .container-custom {
+        padding-top: 120px; /* ヘッダーの高さに合わせる */
+    }
 }
 
 /* さらに小さい画面用の調整 */
 @media (max-width: 360px) {
-  .container-custom {
-    padding-top: 120px; /* さらに余裕をもたせる */
-  }
-  
-  .header-container {
-    padding-bottom: 35px; /* より下部パディングを増やす */
-  }
-  
-  /* ナビゲーションをよりコンパクトに */
-  .nav-links {
-    gap: 8px;
-  }
-  
-  .nav-link {
-    font-size: 11px;
-    padding: 2px 6px;
-  }
+    .header-container {
+        padding-bottom: 55px; /* さらに余裕を持たせる */
+    }
+    
+    .container-custom {
+        padding-top: 130px; /* さらに余裕を持たせる */
+    }
+    
+    .nav-links {
+        gap: 5px;
+        bottom: 8px;
+    }
+    
+    .nav-link {
+        font-size: 11px;
+        padding: 2px 6px;
+    }
 }
-
-  /* コンテンツのパディング調整 */
-  .container-custom {
-    padding-top: 90px; /* ヘッダー高さに合わせて調整 */
-  }
-
-/* さらに小さい画面用の調整 */
-@media (max-width: 360px) {
-  .container-custom {
-    padding-top: 100px; /* さらに小さい画面では少し余裕を持たせる */
-  }
-  
-  /* ナビゲーションをよりコンパクトに */
-  .nav-links {
-    gap: 5px;
-  }
-  
-  .nav-link {
-    font-size: 10px;
-    padding: 2px 5px;
-  }
-}
-
-  /* コンテンツのパディング調整 */
-  .container-custom {
-    padding-top: 90px; /* ヘッダー高さに合わせて調整 */
-  }
-
-/* さらに小さい画面用の調整 */
-@media (max-width: 360px) {
-  .container-custom {
-    padding-top: 100px; /* さらに小さい画面では少し余裕を持たせる */
-  }
-  
-  /* ナビゲーションをよりコンパクトに */
-  .nav-links {
-    gap: 5px;
-  }
-  
-  .nav-link {
-    font-size: 10px;
-    padding: 2px 5px;
-  }
-}
-
-        /* ヘッダーナビゲーションのスタイル修正 - 右端に配置 */
-        .nav-links {
-            position: absolute;
-            right: 20px;
-            display: flex;
-            gap: 15px;
-        }
-        
-        .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            padding: 5px 10px;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-        
-        .nav-link:hover {
-            color: #fff;
-            background: rgba(78, 205, 196, 0.2);
-        }
-        
-        .nav-link.active {
-            color: #fff;
-            background: rgba(78, 205, 196, 0.3);
-            border-bottom: 2px solid #4ecdc4;
-        }
 
         .container-custom {
             max-width: 1200px;
