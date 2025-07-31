@@ -1369,118 +1369,183 @@
     };
     
     // 初期化関数
-    document.addEventListener('DOMContentLoaded', function() {
-        // デフォルトのウィスキーデータをロード
-        whiskyData = getDefaultWhiskyData();
-        
-        // 推薦ボタンのイベントリスナー
-        document.getElementById("getRecommendationBtn").addEventListener("click", getRecommendation);
-        
-        // 価格スライダーのイベントリスナー
-        document.getElementById("minPrice").addEventListener("input", updateMinPriceDisplay);
-        document.getElementById("maxPrice").addEventListener("input", updateMaxPriceDisplay);
-        
-        // チャット送信ボタンのイベントリスナー
-        document.getElementById("sendChatBtn").addEventListener("click", sendChatMessage);
-        
-        // チャットインプットのキーボードイベント
-        document.getElementById("chatInput").addEventListener("keypress", function(e) {
-            if (e.key === "Enter") {
+document.addEventListener('DOMContentLoaded', function() {
+    // デフォルトのウィスキーデータをロード
+    whiskyData = getDefaultWhiskyData();
+    
+    // 推薦ボタンのイベントリスナー
+    const getRecommendationBtn = document.getElementById("getRecommendationBtn");
+    if (getRecommendationBtn) {
+        getRecommendationBtn.addEventListener("click", getRecommendation);
+    }
+    
+    // 価格スライダーのイベントリスナー
+    const minPriceSlider = document.getElementById("minPrice");
+    if (minPriceSlider) {
+        minPriceSlider.addEventListener("input", updateMinPriceDisplay);
+    }
+    
+    const maxPriceSlider = document.getElementById("maxPrice");
+    if (maxPriceSlider) {
+        maxPriceSlider.addEventListener("input", updateMaxPriceDisplay);
+    }
+    
+    // チャット機能の初期化
+    initializeChat();
+    
+    // 音声入力ボタンの設定（対応ブラウザのみ）
+    const voiceInputBtn = document.getElementById("voiceInputBtn");
+    if (voiceInputBtn && 'webkitSpeechRecognition' in window) {
+        setupVoiceInput();
+    }
+    
+    // 味覚マトリックスの初期化
+    initializeTasteMatrix();
+    
+    // 統計情報の更新
+    try {
+        if (typeof whiskyData !== 'undefined' && Array.isArray(whiskyData)) {
+            updateStatistics(whiskyData.length);
+        } else {
+            console.warn("ウィスキーデータが未定義か配列ではありません。統計情報を更新できません。");
+            // デフォルト値で更新（仮データとして）
+            updateStatistics(0);
+        }
+    } catch (error) {
+        console.error("統計情報の更新中にエラーが発生しました:", error);
+        // エラー時のフォールバック
+        updateStatistics(0);
+    }
+});
+
+// チャット機能を初期化する関数
+function initializeChat() {
+    // チャット履歴表示を有効化
+    const chatHistoryElement = document.getElementById("chatHistory");
+    if (chatHistoryElement) {
+        chatHistoryElement.style.display = "block";
+    }
+
+    // 質問例クリックイベントを設定
+    document.querySelectorAll('.question-example').forEach(question => {
+        question.addEventListener('click', function() {
+            const chatInput = document.getElementById("chatInput");
+            if (chatInput) {
+                chatInput.value = this.textContent.trim();
+                // 自動送信する場合はコメントを解除
+                // sendChatMessage();
+            }
+        });
+    });
+
+    // チャット送信ボタンのイベントリスナー
+    // 注: ID "sendChatBtn" と "sendChatButton" の両方に対応
+    const sendButton = document.getElementById("sendChatButton") || document.getElementById("sendChatBtn");
+    if (sendButton) {
+        sendButton.addEventListener('click', sendChatMessage);
+    }
+
+    // Enterキーでの送信
+    const chatInput = document.getElementById("chatInput");
+    if (chatInput) {
+        chatInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 sendChatMessage();
             }
         });
+    }
+}
+
+// 味覚マトリックスの初期化
+function initializeTasteMatrix() {
+    const tasteMatrix1 = document.getElementById("tasteMatrix1");
+    const tasteDot1 = document.getElementById("tasteDot1");
+    
+    const tasteMatrix2 = document.getElementById("tasteMatrix2");
+    const tasteDot2 = document.getElementById("tasteDot2");
+    
+    if (tasteMatrix1 && tasteDot1) {
+        // マトリックス1のイベントリスナー
+        tasteMatrix1.addEventListener("click", function(e) {
+            const rect = tasteMatrix1.getBoundingClientRect();
+            x1 = (e.clientX - rect.left) / rect.width;
+            y1 = (e.clientY - rect.top) / rect.height;
+            
+            tasteDot1.style.left = (x1 * 100) + "%";
+            tasteDot1.style.top = (y1 * 100) + "%";
+            
+            const tasteCoordinates1 = document.getElementById("tasteCoordinates1");
+            if (tasteCoordinates1) {
+                tasteCoordinates1.textContent = `座標: X: ${x1.toFixed(2)}, Y: ${y1.toFixed(2)}`;
+            }
+        });
+    }
+    
+    if (tasteMatrix2 && tasteDot2) {
+        // マトリックス2のイベントリスナー
+        tasteMatrix2.addEventListener("click", function(e) {
+            const rect = tasteMatrix2.getBoundingClientRect();
+            x2 = (e.clientX - rect.left) / rect.width;
+            y2 = (e.clientY - rect.top) / rect.height;
+            
+            tasteDot2.style.left = (x2 * 100) + "%";
+            tasteDot2.style.top = (y2 * 100) + "%";
+            
+            const tasteCoordinates2 = document.getElementById("tasteCoordinates2");
+            if (tasteCoordinates2) {
+                tasteCoordinates2.textContent = `座標: X: ${x2.toFixed(2)}, Y: ${y2.toFixed(2)}`;
+            }
+        });
+    }
+}
+
+// 統計情報更新関数
+function updateStatistics(count) {
+    try {
+        // ウィスキー数の更新
+        const totalWhiskiesElement = document.getElementById("totalWhiskies");
+        const whiskyCountElement = document.getElementById("whiskyCount");
         
-        // 質問例のイベントリスナー
-        document.querySelectorAll(".question-example").forEach(example => {
-            example.addEventListener("click", function() {
-                document.getElementById("chatInput").value = this.textContent;
-                sendChatMessage();
-            });
-        });
-
-         // チャット履歴表示を有効化
-        const chatHistoryElement = document.getElementById("chatHistory");
-        if (chatHistoryElement) {
-            chatHistoryElement.style.display = "block";
+        if (totalWhiskiesElement) {
+            totalWhiskiesElement.textContent = count;
         }
-
-        // 質問例クリックイベントを設定
-        document.querySelectorAll('.question-example').forEach(question => {
-            question.addEventListener('click', function() {
-                document.getElementById("chatInput").value = this.textContent.trim();
-            });
-        });
-
-        // チャット送信ボタンのイベントリスナー
-        const sendButton = document.getElementById("sendChatButton");
-        if (sendButton) {
-            sendButton.addEventListener('click', () => sendChatMessage());
+        
+        if (whiskyCountElement) {
+            whiskyCountElement.textContent = count;
         }
-
-        // Enterキーでの送信
-        const chatInput = document.getElementById("chatInput");
-        if (chatInput) {
-            chatInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    sendChatMessage();
+        
+        // 産地数の更新（ユニークな産地をカウント）
+        const uniqueRegionsElement = document.getElementById("uniqueRegions");
+        if (uniqueRegionsElement && typeof whiskyData !== 'undefined' && Array.isArray(whiskyData)) {
+            const regions = new Set();
+            whiskyData.forEach(whisky => {
+                if (whisky.region) {
+                    regions.add(whisky.region);
                 }
             });
-        }
-    });
-        
-        // 音声入力ボタンの設定（対応ブラウザのみ）
-        const voiceInputBtn = document.getElementById("voiceInputBtn");
-        if (voiceInputBtn && 'webkitSpeechRecognition' in window) {
-            setupVoiceInput();
+            uniqueRegionsElement.textContent = regions.size;
+        } else if (uniqueRegionsElement) {
+            uniqueRegionsElement.textContent = "0";
         }
         
-        // 味覚マトリックスの初期化
-        initializeTasteMatrix();
-        
-        // 統計情報の更新
-        updateStatistics(whiskyData.length);
-    });
-    
-    // 味覚マトリックスの初期化
-    function initializeTasteMatrix() {
-        const tasteMatrix1 = document.getElementById("tasteMatrix1");
-        const tasteDot1 = document.getElementById("tasteDot1");
-        
-        const tasteMatrix2 = document.getElementById("tasteMatrix2");
-        const tasteDot2 = document.getElementById("tasteDot2");
-        
-        if (tasteMatrix1 && tasteDot1) {
-            // マトリックス1のイベントリスナー
-            tasteMatrix1.addEventListener("click", function(e) {
-                const rect = tasteMatrix1.getBoundingClientRect();
-                x1 = (e.clientX - rect.left) / rect.width;
-                y1 = (e.clientY - rect.top) / rect.height;
-                
-                tasteDot1.style.left = (x1 * 100) + "%";
-                tasteDot1.style.top = (y1 * 100) + "%";
-                
-                document.getElementById("tasteCoordinates1").textContent = 
-                    `座標: X: ${x1.toFixed(2)}, Y: ${y1.toFixed(2)}`;
+        // 蒸溜所の数を更新
+        const distilleryCountElement = document.getElementById("distilleryCount");
+        if (distilleryCountElement && typeof whiskyData !== 'undefined' && Array.isArray(whiskyData)) {
+            const distilleries = new Set();
+            whiskyData.forEach(whisky => {
+                if (whisky.distillery_info && whisky.distillery_info.name) {
+                    distilleries.add(whisky.distillery_info.name);
+                }
             });
+            distilleryCountElement.textContent = distilleries.size;
+        } else if (distilleryCountElement) {
+            distilleryCountElement.textContent = "0";
         }
-        
-        if (tasteMatrix2 && tasteDot2) {
-            // マトリックス2のイベントリスナー
-            tasteMatrix2.addEventListener("click", function(e) {
-                const rect = tasteMatrix2.getBoundingClientRect();
-                x2 = (e.clientX - rect.left) / rect.width;
-                y2 = (e.clientY - rect.top) / rect.height;
-                
-                tasteDot2.style.left = (x2 * 100) + "%";
-                tasteDot2.style.top = (y2 * 100) + "%";
-                
-                document.getElementById("tasteCoordinates2").textContent = 
-                    `座標: X: ${x2.toFixed(2)}, Y: ${y2.toFixed(2)}`;
-            });
-        }
+    } catch (error) {
+        console.error("統計情報の更新中にエラーが発生しました:", error);
     }
+}
     
     // 価格表示の更新関数
     function updateMinPriceDisplay() {
@@ -1634,11 +1699,22 @@
         ];
     }
     
-    // AI推薦を取得する関数（改修）
+    // AI推薦を取得する関数（強化版）
 async function getRecommendation() {
     // プログレスバーの表示
     showProgress();
     try {
+        // 直近のチャットメッセージを取得（存在する場合）
+        let latestUserMessage = "";
+        if (chatHistory.length > 0) {
+            for (let i = chatHistory.length - 1; i >= 0; i--) {
+                if (chatHistory[i].role === "user") {
+                    latestUserMessage = chatHistory[i].content;
+                    break;
+                }
+            }
+        }
+        
         // ユーザー設定を取得
         const userPreferences = {
             minPrice: parseFloat(document.getElementById("minPrice").value) * 1000,
@@ -1647,7 +1723,7 @@ async function getRecommendation() {
             tasteY: y1,
             complexityX: x2,
             complexityY: y2,
-            additionalPreferences: savedUserPreferences || "",
+            additionalPreferences: latestUserMessage || savedUserPreferences || "",
             chatHistory: chatHistory // チャット履歴全体を送信
         };
         
@@ -1676,7 +1752,13 @@ async function getRecommendation() {
             if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
                 const jsonString = responseText.substring(jsonStartIndex, jsonEndIndex);
                 try {
-                    const apiResponse = JSON.parse(jsonString);
+                    let apiResponse = JSON.parse(jsonString);
+                    
+                    // チャットキーワードで推薦リストを強化（新機能）
+                    if (latestUserMessage) {
+                        apiResponse = emphasizeKeywordsInRecommendation(latestUserMessage, apiResponse);
+                    }
+                    
                     // 推薦結果の表示
                     displayApiRecommendations(apiResponse);
                     
@@ -1780,6 +1862,70 @@ function displayApiRecommendations(apiResponse) {
     
     // レコメンドセクションを表示
     document.querySelector(".recommendations-panel").style.display = "block";
+}
+
+// チャットキーワードを推薦に強調するための関数（新規）
+function emphasizeKeywordsInRecommendation(message, apiResponse) {
+    // チャットから重要キーワード（銘柄名など）を抽出
+    const keywords = extractKeywords(message);
+    
+    if (keywords.length === 0) return apiResponse;
+    
+    // レスポンスの複製を作成
+    const enhancedResponse = JSON.parse(JSON.stringify(apiResponse));
+    
+    // 既存の推薦リストから、キーワードに一致する銘柄があればそれを優先順位1位に
+    const matchingRecommendations = [];
+    const otherRecommendations = [];
+    
+    enhancedResponse.recommendations.forEach(whisky => {
+        let isMatching = false;
+        keywords.forEach(keyword => {
+            if (whisky.name.toLowerCase().includes(keyword.toLowerCase())) {
+                matchingRecommendations.push(whisky);
+                isMatching = true;
+            }
+        });
+        
+        if (!isMatching) {
+            otherRecommendations.push(whisky);
+        }
+    });
+    
+    // キーワード一致があれば、それを先頭に持ってくる
+    if (matchingRecommendations.length > 0) {
+        enhancedResponse.recommendations = [
+            ...matchingRecommendations,
+            ...otherRecommendations
+        ].slice(0, 3); // 最大3つに制限
+        
+        // サマリーも更新
+        enhancedResponse.summary = `お探しの「${keywords.join('」「')}」を含む最適なウィスキーをピックアップしました。` + 
+                                  (enhancedResponse.summary || '');
+    }
+    
+    return enhancedResponse;
+}
+
+// チャットメッセージから重要キーワードを抽出する関数
+function extractKeywords(message) {
+    // 日本語の銘柄名リスト（代表的なものを追加）
+    const knownBrands = [
+        'ボウモア', 'bowmore', 'マッカラン', 'グレンフィディック', 'アードベッグ',
+        'タリスカー', 'ラフロイグ', 'ハイランドパーク', 'グレンリベット', '山崎',
+        '白州', '響', '軽井沢', '余市', 'ニッカ', '竹鶴', 'カネマラ'
+    ];
+    
+    const keywords = [];
+    
+    // 既知の銘柄名があるか確認
+    knownBrands.forEach(brand => {
+        if (message.toLowerCase().includes(brand.toLowerCase())) {
+            keywords.push(brand);
+        }
+    });
+    
+    return keywords;
 }
     
     // ローカルデータからの推薦結果を表示する関数（APIフォールバック用）
@@ -2087,7 +2233,7 @@ async function getAIResponse(message) {
     }
 }
 
-// チャット内容からAI提案を更新する関数（新規）
+// チャット内容からAI提案を更新する関数（強化版）
 async function updateRecommendationsFromChatAI(message) {
     try {
         showProgress();
@@ -2128,7 +2274,11 @@ async function updateRecommendationsFromChatAI(message) {
             if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
                 const jsonString = responseText.substring(jsonStartIndex, jsonEndIndex);
                 try {
-                    const apiResponse = JSON.parse(jsonString);
+                    let apiResponse = JSON.parse(jsonString);
+                    
+                    // チャットキーワードで推薦リストを強化（新機能）
+                    apiResponse = emphasizeKeywordsInRecommendation(message, apiResponse);
+                    
                     displayApiRecommendations(apiResponse);
                 } catch (error) {
                     console.error('JSON解析エラー:', error);
