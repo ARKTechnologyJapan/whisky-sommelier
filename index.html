@@ -196,14 +196,54 @@ padding: 100px 20px 20px;
 /* スマホ表示時の調整 */
 @media (max-width: 768px) {
   .container-custom {
-    padding-top: 160px; /* スマホ表示時はヘッダーとの間隔を広げる */
+    padding-top: 130px; /* ヘッダーが小さくなったので調整 */
   }
   
-  /* ロゴを左寄せ */
+  /* ヘッダーの高さを調整 - パディングを減らしてコンパクトに */
+  .header-container {
+    padding: 10px 0 40px; /* 元は15px 0 55px - 上下のパディングを減らす */
+    flex-wrap: wrap;
+  }
+  
+  /* タイトルをより小さく、マージンも小さく */
+  .header-title {
+    font-size: 22px; /* 元は24px */
+    margin: 0 auto 5px; /* 元は0 auto 10px - 下マージンを減らす */
+  }
+  
+  /* ナビゲーションの位置も上に */
+  .nav-links {
+    position: relative;
+    top: 5px; /* 元は10px - 上に移動 */
+    right: 0;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  /* リンクをよりコンパクトに */
+  .nav-link {
+    font-size: 12px; /* 元は13px */
+    padding: 3px 7px; /* 元は4px 8px - パディングを小さく */
+  }
+
+  /* 言語リンクのマージンも縮小 */
+  .language-links {
+    margin-top: 5px; /* 元は10px */
+    width: 100%;
+    justify-content: center;
+  }
+  
+  /* ロゴを左寄せ＆小さく */
   .header-container a[target="_blank"] {
     position: absolute;
-    left: 10px; /* より左に調整 */
-    top: 10px;
+    left: 20px;
+    top: 5px; /* 少し上に */
+  }
+  
+  .logo {
+    width: 60px; /* 元は70px */
+    height: 60px; /* 元は70px */
   }
 }
 
