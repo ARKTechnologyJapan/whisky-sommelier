@@ -145,7 +145,7 @@ border-bottom: 2px solid #4ecdc4;
 @media (max-width: 768px) {
   /* ヘッダーの高さを増やして余裕を持たせる */
   .header-container {
-    padding: 15px 0 10px; /* 下部に余白を追加 */
+    padding: 15px 0 20px; /* 下部に余白を追加 */
     flex-wrap: wrap;      /* 折り返しを許可 */
   }
   
@@ -790,6 +790,36 @@ border-color: #4ecdc4;
 box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
 }
 
+/* スマホ表示時のチャット入力エリア修正 */
+@media (max-width: 768px) {
+  .chat-input-container {
+    flex-direction: column; /* 縦並びに変更 */
+    gap: 10px; /* ボタン間の余白 */
+  }
+  
+  .chat-input {
+    width: 100%; /* 入力欄を全幅に */
+    margin-bottom: 10px; /* 入力欄の下に余白 */
+  }
+  
+  /* ボタンエリアを横並びに */
+  .chat-buttons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .voice-input-btn {
+    flex: 0 0 auto; /* サイズ固定 */
+    min-width: 50px; /* 最小幅を確保 */
+  }
+  
+  .btn-primary {
+    flex: 1; /* 残りのスペースを使用 */
+    min-width: 0; /* 最小幅制限を解除 */
+  }
+}
+
 .chat-history {
 max-height: 400px;
 overflow-y: auto;
@@ -1255,11 +1285,11 @@ AI技術で分析・提案いたします
 </div>
 
 <div class="chat-input-container">
-<input type="text" id="chatInput" class="chat-input" placeholder="質問を入力してください...">
-<button id="voiceInputBtn" class="voice-input-btn">
-🎙️
-</button>
-<button id="sendChatBtn" class="btn-primary">💬 質問する</button>
+  <input type="text" id="chatInput" class="chat-input" placeholder="質問を入力してください...">
+  <div class="chat-buttons">
+    <button id="voiceInputBtn" class="voice-input-btn">🎙️</button>
+    <button id="sendChatBtn" class="btn-primary">💬 質問する</button>
+  </div>
 </div>
 
 <div id="chatHistory" class="chat-history" style="display: none;"></div>
