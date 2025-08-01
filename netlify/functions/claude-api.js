@@ -26,15 +26,10 @@ exports.handler = async (event, context) => {
     const requestData = JSON.parse(event.body);
     console.log('Parsed request data:', requestData);
 
-    const apiKey = process.env.CLAUDE_API_KEY;
-    if (!apiKey) {
-      console.error('CLAUDE_API_KEY not found');
-      return {
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({ error: 'API key not configured' })
-      };
-    }
+    // カスタムAPI設定
+    const apiKey = "KLmy1EtC4jRcrlXSK2xPgesG5Hgc533A";
+    const baseUrl = "http://Bedroc-Proxy-wEBSZeIAE9sX-1369774611.us-east-1.elb.amazonaws.com/api/v1";
+    const model = "us.anthropic.claude-3-7-sonnet-20250219-v1:0";
 
     // メッセージ構築
     const messages = [];
@@ -72,50 +67,78 @@ exports.handler = async (event, context) => {
 4. 200-300文字で簡潔に回答`
     });
 
-    // ✅ 修正されたAPIリクエスト
-    const claudeRequestBody = {
-      model: 'claude-3-sonnet-20240229',  // 正しいモデル名
+    // APIリクエストボディ（OpenAI ChatCompletion形式）
+    const requestBody = {
+      model: model,
+      messages: messages,
       max_tokens: 1000,
-      temperature: 0.7,
-      messages: messages  // 修正：messagesは一つだけ
+      temperature: 0.7
     };
 
-    console.log('Sending request to Claude API...');
+    console.log('Sending request to Custom API...');
+    console.log('Endpoint:', `${baseUrl}/chat/completions`);
 
-    // ✅ 正しいAPIエンドポイントとヘッダー
-    const claudeResponse = await fetch('https://api.anthropic.com/v1/messages', {
+    // カスタムAPIエンドポイントに送信
+    const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'x-api-key': apiKey,  // 修正：Authorizationではなくx-api-key
-        'anthropic-version': '2023-06-01'
+        'Authorization': `Bearer ${apiKey}`
       },
-      body: JSON.stringify(claudeRequestBody)
+      body: JSON.stringify(requestBody)
     });
 
-    console.log('Response status:', claudeResponse.status);
+    console.log('Response status:', response.status);
 
-    if (!claudeResponse.ok) {
-      const errorText = await claudeResponse.text();
-      console.error('Claude API Error:', errorText);
-      throw new Error(`Claude API error: ${claudeResponse.status} - ${errorText}`);
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('API Error:', errorText);
+      throw new Error(`API error: ${response.status} - ${errorText}`);
     }
 
-    const claudeData = await claudeResponse.json();
-    console.log('Claude API Success Response:', claudeData);
+    const responseData = await response.json();
+    console.log('API Success Response:', JSON.stringify(responseData, null, 2));
+
+    // レスポンス形式を統一（OpenAI形式をClaude形式にマッピング）
+    let formattedResponse;
+    if (responseData.choices && responseData.choices[0] && responseData.choices[0].message) {
+      // OpenAI形式のレスポンス
+      formattedResponse = {
+        success: true,
+        data: {
+          choices: [{
+            message: {
+              content: responseData.choices[0].message.content
+            }
+          }]
+        }
+      };
+    } else if (responseData.content && responseData.content[0]) {
+      // Claude形式のレスポンス
+      formattedResponse = {
+        success: true,
+        data: {
+          content: responseData.content
+        }
+      };
+    } else {
+      // その他の形式への対応
+      formattedResponse = {
+        success: true,
+        data: responseData
+      };
+    }
 
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify({
-        success: true,
-        data: claudeData
-      })
+      body: JSON.stringify(formattedResponse)
     };
 
   } catch (error) {
     console.error('=== Error Details ===');
     console.error('Error message:', error.message);
+    console.error('Error stack:', error.stack);
 
     return {
       statusCode: 500,
