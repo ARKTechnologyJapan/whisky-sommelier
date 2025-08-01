@@ -1,5 +1,5 @@
 exports.handler = async (event, context) => {
-  console.log('=== 🔥 UPDATED カスタムプロキシ版 関数実行中 🔥 ===');
+  console.log('=== 🔥 環境変数版 カスタムプロキシ関数実行中 🔥 ===');
   console.log('HTTP Method:', event.httpMethod);
 
   const headers = {
@@ -23,15 +23,16 @@ exports.handler = async (event, context) => {
 
   try {
     const requestData = JSON.parse(event.body);
-    console.log('📊 リクエストデータ受信:', requestData);
+    console.log('📊 リクエストデータ受信');
 
-    // カスタムプロキシ設定
-    const apiKey = "KLmy1EtC4jRcrlXSK2xPgesG5Hgc533A";
-    const baseUrl = "http://Bedroc-Proxy-wEBSZeIAE9sX-1369774611.us-east-1.elb.amazonaws.com/api/v1";
-    const model = "us.anthropic.claude-3-7-sonnet-20250219-v1:0";
+    // ✅ 環境変数から取得（セキュア）
+    const apiKey = process.env.CUSTOM_API_KEY || "KLmy1EtC4jRcrlXSK2xPgesG5Hgc533A";
+    const baseUrl = process.env.CUSTOM_BASE_URL || "http://Bedroc-Proxy-wEBSZeIAE9sX-1369774611.us-east-1.elb.amazonaws.com/api/v1";
+    const model = process.env.CUSTOM_MODEL || "us.anthropic.claude-3-7-sonnet-20250219-v1:0";
 
     console.log('🎯 カスタムプロキシAPI使用:', baseUrl);
     console.log('🤖 モデル:', model);
+    console.log('🔑 API Key設定済み:', !!apiKey);
 
     // メッセージ構築
     const messages = [];
@@ -83,7 +84,7 @@ exports.handler = async (event, context) => {
     console.log('📥 レスポンスステータス:', response.status);
 
     const responseText = await response.text();
-    console.log('📜 レスポンス内容（最初の300文字）:', responseText.substring(0, 300));
+    console.log('📜 レスポンス内容（最初の200文字）:', responseText.substring(0, 200));
 
     if (!response.ok) {
       throw new Error(`カスタムプロキシエラー: ${response.status} - ${responseText}`);
@@ -127,7 +128,6 @@ exports.handler = async (event, context) => {
 
   } catch (error) {
     console.error('❌ カスタムプロキシエラー:', error.message);
-    console.error('Stack trace:', error.stack);
 
     return {
       statusCode: 500,
