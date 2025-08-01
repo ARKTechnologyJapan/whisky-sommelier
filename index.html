@@ -1,2478 +1,4060 @@
 <!DOCTYPE html>
-<!-- saved from url=(0137)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_8raz3gxLTPWNkjSWmao19Q/whisky_sommelier_fixed_script.html -->
+<!-- saved from url=(0130)https://gensparkpublicblob.blob.core.windows.net/user-upload-image/page/tooluse_LBd2w0vdTtOf_OswSt8juA/whisky_sommelier_final.html -->
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    
-    <!-- HTMLのheadタグ内にGoogle Fontsのリンクを追加 -->
-    <link rel="preconnect" href="https://fonts.googleapis.com/">
-    <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin="">
-    <link href="./昼の月。AIソムリエ_files/css2" rel="stylesheet">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>昼の月。AIソムリエ</title>
-    <link href="./昼の月。AIソムリエ_files/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="./昼の月。AIソムリエ_files/all.min.css">
-    <script src="./昼の月。AIソムリエ_files/chart.js.ダウンロード"></script>
-    <!-- Leaflet.js地図ライブラリ -->
-    <link rel="stylesheet" href="./昼の月。AIソムリエ_files/leaflet.css" crossorigin="">
-    <script src="./昼の月。AIソムリエ_files/leaflet.js.ダウンロード" crossorigin=""></script>
-
-    <style>
-        body {
-            background-color: #000;
-            color: #fff;
-            font-family: 'Noto Sans JP', sans-serif;
-        }
-
-        .header-container {
-            background: rgba(0, 0, 0, 0.9);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px 0;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .logo {
-            width: 90px;
-            height: 90px;
-            object-fit: contain;
-            border-radius: 8px;
-            background: rgba(78, 205, 197, 0);
-            border: 2px solid #4ecdc500;
-            padding: 5px;
-        }
-
-        /* タイトルのスタイルを変更 */
-        .header-title {
-            color: #fff;
-            font-size: 28px;
-            font-weight: bold;
-            text-align: center;
-            margin: 0;
-            text-shadow: 0 0 10px rgba(78, 205, 196, 0.7);
-            letter-spacing: 2px;
-            background: linear-gradient(45deg, #ffffff, #4ecdc4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            position: relative;
-        }
-
-        .header-title:after {
-            content: "";
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 70%;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.7), transparent);
-        }
-
-        @keyframes glow {
-            from {
-                text-shadow: 0 0 5px rgba(78, 205, 196, 0.5);
-            }
-            to {
-                text-shadow: 0 0 15px rgba(78, 205, 196, 0.8), 0 0 20px rgba(255, 107, 107, 0.5);
-            }
-        }
-
-        /* 翻訳ボタンのスタイル */
-        .translate-link {
-            display: flex;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 4px;
-            padding: 5px 10px;
-            margin-left: 10px;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        .translate-link:hover {
-            background: rgba(78, 205, 196, 0.2);
-            transform: translateY(-2px);
-        }
-
-        .translate-icon {
-            margin-right: 6px;
-        }
-
-        /* ヘッダーナビゲーションのスタイル修正 - 右端に配置 */
-        .nav-links {
-            position: absolute;
-            right: 20px;
-            display: flex;
-            gap: 15px;
-        }
-
-        .nav-link {
-            color: rgba(255, 255, 255, 0.8);
-            text-decoration: none;
-            font-size: 15px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            padding: 5px 10px;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.05);
-        }
-
-        .nav-link:hover {
-            color: #fff;
-            background: rgba(78, 205, 196, 0.2);
-        }
-
-        .nav-link.active {
-            color: #fff;
-            background: rgba(78, 205, 196, 0.3);
-            border-bottom: 2px solid #4ecdc4;
-        }
-
-        /* レスポンシブ対応 */
-        @media (max-width: 768px) {
-            .header-container {
-                padding: 5px 0 20px;
-                flex-wrap: wrap;
-                min-height: auto;
-            }
-            
-            .logo {
-                width: 70px;
-                height: 70px;
-            }
-            
-            .header-container a[target="_blank"] {
-                position: absolute;
-                left: -10px;
-                top: 0px;
-            }
-            
-            .header-title {
-                font-size: 18px;
-                margin: 0 auto 3px;
-                width: 100%;
-                text-align: center;
-            }
-            
-            .nav-links {
-                position: relative;
-                top: 20px;
-                right: 0;
-                width: 100%;
-                justify-content: center;
-                flex-wrap: wrap;
-                gap: 8px;
-            }
-            
-            .nav-link {
-                font-size: 11px;
-                padding: 2px 6px;
-            }
-        }
-
-        .container-custom {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 120px 20px 20px;
-        }
-
-        @media (max-width: 768px) {
-            .container-custom {
-                padding-top: 100px;
-            }
-        }
-
-        /* 味覚マトリックスのスタイル */
-        .taste-matrix {
-            width: 300px;
-            height: 300px;
-            border: 2px solid #fff;
-            position: relative;
-            background: linear-gradient(to right, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%), 
-                        linear-gradient(to top, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%);
-        }
-
-        .taste-dot {
-            width: 24px;
-            height: 24px;
-            background-color: #ff6b6b;
-            border-radius: 50%;
-            position: absolute;
-            transform: translate(-50%, -50%);
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
-        }
-
-        .dual-matrix-container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-top: 20px;
-        }
-
-        .matrix-wrapper {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .matrix-title {
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 20px;
-            color: #4ecdc4;
-        }
-
-        @media (max-width: 1024px) {
-            .dual-matrix-container {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .taste-matrix {
-                width: 250px;
-                height: 250px;
-            }
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            border: none;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 8px 16px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
-        }
-
-        .card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 30px;
-            margin-bottom: 24px;
-            backdrop-filter: blur(10px);
-        }
-
-        .whisky-card {
-            background: rgba(255, 255, 255, 0.08);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .whisky-card:hover {
-            background: rgba(255, 255, 255, 0.12);
-            border-color: #4ecdc4;
-            transform: translateY(-2px);
-        }
-
-        .whisky-card.selected {
-            background: rgba(78, 205, 196, 0.15);
-            border-color: #4ecdc4;
-            box-shadow: 0 0 15px rgba(78, 205, 196, 0.3);
-        }
-
-        .whisky-card.featured {
-            background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 215, 0, 0.10));
-            border: 2px solid #FFA500;
-            box-shadow: 0 0 20px rgba(255, 165, 0, 0.4);
-            animation: pulse-orange 2s infinite;
-        }
-
-        @keyframes pulse-orange {
-            0% { box-shadow: 0 0 20px rgba(255, 165, 0, 0.4); }
-            50% { box-shadow: 0 0 30px rgba(255, 165, 0, 0.6); }
-            100% { box-shadow: 0 0 20px rgba(255, 165, 0, 0.4); }
-        }
-
-        .featured-label {
-            position: absolute;
-            top: -10px;
-            right: 10px;
-            background: linear-gradient(45deg, #FFA500, #FFD700);
-            color: #000;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            color: #4ecdc4;
-        }
-
-        .progress-container {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        .progress-text {
-            color: #4ecdc4;
-            font-size: 14px;
-            margin-bottom: 5px;
-        }
-
-        .progress-percentage {
-            color: #fff;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .error {
-            color: #ff6b6b;
-            background: rgba(255, 107, 107, 0.1);
-            border: 1px solid rgba(255, 107, 107, 0.3);
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 12px;
-        }
-
-        .success {
-            color: #4ecdc4;
-            background: rgba(78, 205, 196, 0.1);
-            border: 1px solid rgba(78, 205, 196, 0.3);
-            padding: 12px;
-            border-radius: 8px;
-            margin-top: 12px;
-        }
-
-        .price-slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 8px;
-            border-radius: 5px;
-            background: rgba(255, 255, 255, 0.2);
-            outline: none;
-            margin: 10px 0;
-        }
-
-        .price-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4ecdc4;
-            cursor: pointer;
-        }
-
-        .split-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            align-items: start;
-            margin-bottom: 30px;
-        }
-
-        .recommendations-panel {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 24px;
-            backdrop-filter: blur(10px);
-            max-height: 85vh;
-            overflow-y: auto;
-            margin-bottom: 30px;
-        }
-
-        .chart-panel {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 30px 20px;
-            backdrop-filter: blur(10px);
-            position: sticky;
-            top: 130px;
-            max-height: 85vh;
-            overflow-y: auto;
-            margin-bottom: 20px;
-        }
-
-        .chart-container {
-            height: 380px;
-            width: 100%;
-            position: relative;
-            margin-bottom: 30px;
-        }
-
-        .chart-container h3 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #4ecdc4;
-            font-size: 16px;
-            padding-top: 10px;
-        }
-
-        .chart-canvas {
-            height: 350px !important;
-            width: 100% !important;
-            margin-top: 15px;
-        }
-
-        #combinedProfileChart {
-            height: 350px !important;
-            width: 100% !important;
-            margin-top: 20px;
-            margin-bottom: 20px;
-        }
-
-        .recommendation-summary {
-            background: rgba(78, 205, 196, 0.1);
-            border: 1px solid rgba(78, 205, 196, 0.3);
-            border-radius: 8px;
-            padding: 16px;
-            margin-bottom: 20px;
-            color: #4ecdc4;
-        }
-
-        .whisky-overview {
-            background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(255, 107, 107, 0.1));
-            border: 2px solid rgba(78, 205, 196, 0.3);
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 30px;
-            text-align: center;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .whisky-overview::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: shimmer 3s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .whisky-overview h2 {
-            font-size: 2.5rem;
-            font-weight: bold;
-            background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .whisky-overview .subtitle {
-            font-size: 1.2rem;
-            color: #4ecdc4;
-            margin-bottom: 15px;
-            font-weight: 600;
-            position: relative;
-            z-index: 1;
-        }
-
-        .whisky-overview .description {
-            font-size: 1.1rem;
-            line-height: 1.6;
-            color: rgba(255, 255, 255, 0.9);
-            position: relative;
-            z-index: 1;
-        }
-
-        .whisky-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-top: 25px;
-            margin-bottom: 24px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 2rem;
-            font-weight: bold;
-            color: #ff6b6b;
-            display: block;
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: rgba(255, 255, 255, 0.7);
-            margin-top: 5px;
-        }
-
-        /* チャットボットポップアップのスタイル */
-        .chat-popup-button {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 60px;
-            height: 60px;
-            background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-            box-shadow: 0 4px 20px rgba(78, 205, 196, 0.4);
-            transition: all 0.3s ease;
-            z-index: 10000;
-        }
-
-        .chat-popup-button:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 25px rgba(78, 205, 196, 0.6);
-        }
-
-        .chat-popup-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 10001;
-        }
-
-        .chat-popup-container {
-            background: rgba(0, 0, 0, 0.95);
-            border: 2px solid #4ecdc4;
-            border-radius: 20px;
-            width: 90%;
-            max-width: 600px;
-            max-height: 80vh;
-            padding: 30px;
-            position: relative;
-            backdrop-filter: blur(10px);
-            overflow-y: auto;
-        }
-
-        .chat-popup-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px solid rgba(78, 205, 196, 0.3);
-        }
-
-        .chat-popup-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #4ecdc4;
-        }
-
-        .chat-popup-close {
-            background: none;
-            border: none;
-            color: #ff6b6b;
-            font-size: 24px;
-            cursor: pointer;
-            padding: 0;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: all 0.3s ease;
-        }
-
-        .chat-popup-close:hover {
-            background: rgba(255, 107, 107, 0.2);
-        }
-
-        .chat-examples {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 10px;
-            background: rgba(78, 205, 196, 0.05);
-            border: 1px solid rgba(78, 205, 196, 0.2);
-            border-radius: 8px;
-            padding: 15px;
-            margin-bottom: 15px;
-        }
-
-        .question-example {
-            background: rgba(78, 205, 196, 0.1);
-            border: 1px solid rgba(78, 205, 196, 0.3);
-            border-radius: 6px;
-            padding: 12px;
-            color: #4ecdc4;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
-            font-size: 14px;
-        }
-
-        .question-example:hover {
-            background: rgba(78, 205, 196, 0.2);
-            transform: translateY(-1px);
-        }
-
-        .chat-input-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .chat-input {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            padding: 12px;
-            color: #fff;
-            font-size: 14px;
-        }
-
-        .chat-input:focus {
-            outline: none;
-            border-color: #4ecdc4;
-            box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
-        }
-
-        .voice-input-btn {
-            background: rgba(78, 205, 196, 0.2);
-            border: 1px solid #4ecdc4;
-            color: #4ecdc4;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 18px;
-        }
-
-        .voice-input-btn:hover {
-            background: rgba(78, 205, 196, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .voice-input-btn.recording {
-            background: rgba(255, 107, 107, 0.3);
-            border-color: #ff6b6b;
-            color: #ff6b6b;
-            animation: pulse-recording 1.5s infinite;
-        }
-
-        @keyframes pulse-recording {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        .chat-history {
-            max-height: 300px;
-            overflow-y: auto;
-            padding: 15px;
-            background: rgba(0, 0, 0, 0.3);
-            border-radius: 8px;
-            margin-bottom: 15px;
-            display: none;
-        }
-
-        .chat-message {
-            margin-bottom: 15px;
-            padding: 12px;
-            border-radius: 8px;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-            line-height: 1.6;
-            font-size: 14px;
-            text-align: left;
-        }
-
-        .ai-message {
-            background: rgba(78, 205, 196, 0.15);
-            border-left: 3px solid #4ecdc4;
-            color: #fff;
-        }
-
-        .user-message {
-            background: rgba(255, 107, 107, 0.15);
-            border-left: 3px solid #ff6b6b;
-            color: #fff;
-        }
-
-        .thinking-animation {
-            position: relative;
-        }
-
-        .thinking-animation::after {
-            content: "考えています";
-            animation: thinking 1.5s infinite;
-        }
-
-        @keyframes thinking {
-            0% { content: "考えています"; }
-            25% { content: "考えています."; }
-            50% { content: "考えています.."; }
-            75% { content: "考えています..."; }
-            100% { content: "考えています...."; }
-        }
-
-        /* 蒸留所マップと情報パネル */
-        .distillery-section {
-            margin-top: 20px;
-            opacity: 0;
-            height: 0;
-            overflow: hidden;
-            transition: opacity 0.8s ease, height 0.8s ease;
-        }
-
-        .distillery-section.active {
-            opacity: 1;
-            height: auto;
-        }
-
-        .distillery-container {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .map-container {
-            height: 300px;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 2px solid rgba(78, 205, 196, 0.3);
-            background-color: #1a1a1a;
-        }
-
-        #distilleryMap {
-            height: 100%;
-            width: 100%;
-            background-color: #242424;
-        }
-
-        .distillery-info {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(78, 205, 196, 0.3);
-            border-radius: 12px;
-            padding: 16px;
-            color: #fff;
-        }
-
-        .distillery-info h3 {
-            color: #4ecdc4;
-            font-size: 18px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            border-bottom: 1px solid rgba(78, 205, 196, 0.3);
-            padding-bottom: 8px;
-        }
-
-        .distillery-info-grid {
-            display: grid;
-            grid-template-columns: auto 1fr;
-            gap: 8px 16px;
-            margin-top: 15px;
-        }
-
-        .info-label {
-            color: rgba(255, 255, 255, 0.7);
-            font-weight: 600;
-        }
-
-        .info-value {
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .distillery-description {
-            margin-top: 15px;
-            line-height: 1.6;
-            text-align: left;
-        }
-
-        .status-active {
-            color: #4ecdc4;
-            font-weight: bold;
-        }
-
-        .status-closed {
-            color: #ff6b6b;
-            font-weight: bold;
-        }
-
-        .status-unknown {
-            color: #ffb347;
-            font-weight: bold;
-        }
-
-        /* レスポンシブ対応 */
-        @media (max-width: 1024px) {
-            .split-layout {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-
-            .chart-panel {
-                position: static;
-                margin-top: 30px;
-                padding: 30px;
-            }
-
-            .whisky-overview h2 {
-                font-size: 2rem;
-            }
-
-            .whisky-stats {
-                flex-direction: column;
-                gap: 15px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .whisky-overview h2 {
-                font-size: 1.8rem;
-            }
-
-            .whisky-overview .subtitle {
-                font-size: 1rem;
-            }
-
-            .whisky-overview .description {
-                font-size: 1rem;
-            }
-
-            .chat-popup-container {
-                width: 95%;
-                padding: 20px;
-            }
-
-            .chat-popup-button {
-                bottom: 20px;
-                right: 20px;
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
-            }
-        }
-
-        /* カスタムフッター */
-        .custom-footer {
-            display: none;
-            text-align: center;
-            padding: 20px;
-            color: rgba(255, 255, 255, 0.6);
-            font-size: 12px;
-            margin-top: 40px;
-        }
-
-        @media (max-width: 768px) {
-            .custom-footer {
-                display: block;
-            }
-        }
-    </style>
+<!-- HTMLのheadタグ内にGoogle Fontsのリンクを追加 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>昼の月。AIソムリエ</title>
+<link href="./index_files/tailwind.min.css" rel="stylesheet">
+<link rel="stylesheet" href="./index_files/all.min.css">
+<script src="./index_files/chart.js.ダウンロード"></script>
+<!-- Leaflet.js地図ライブラリ -->
+<link rel="stylesheet" href="./index_files/leaflet.css" crossorigin="">
+<script src="./index_files/leaflet.js.ダウンロード" crossorigin=""></script>
 <style>
-    .genspark-notice-dialog {
-      display: flex;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.5);
-      z-index: 10001;
-      align-items: center;
-      justify-content: center;
-    }
+body {
+background-color: #000;
+color: #fff;
+font-family: 'Noto Sans JP', sans-serif;
+}
+.header-container {
+background: rgba(0, 0, 0, 0.9);
+border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+padding: 15px 0;
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+z-index: 1000;
+display: flex;
+align-items: center;
+justify-content: center;
+}
+.logo {
+width: 90px;
+height: 90px;
+object-fit: contain;
+border-radius: 8px;
+background: rgba(78, 205, 197, 0);
+border: 2px solid #4ecdc500;
+padding: 5px;
+}
 
-    .genspark-notice-content {
-      background-color: white;
-      border-radius: 8px;
-      max-width: 600px;
-      width: 90%;
-      box-sizing: border-box;
-      padding: 10px 30px 30px 30px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-      font-size: 16px;
-    }
+/* タイトルのスタイルを変更 */
+.header-title {
+color: #fff;
+font-size: 28px;
+font-weight: bold;
+text-align: center;
+margin: 0;
+text-shadow: 0 0 10px rgba(78, 205, 196, 0.7);
+letter-spacing: 2px;
+background: linear-gradient(45deg, #ffffff, #4ecdc4);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+position: relative;
+}
 
-    .genspark-notice-title {
-      color: #000;
-      font-family: Arial;
-      font-size: 20px;
-      font-style: normal;
-      font-weight: 700;
-      line-height: 150%; 
-    }
+.header-title:after {
+content: "";
+position: absolute;
+bottom: -5px;
+left: 50%;
+transform: translateX(-50%);
+width: 70%;
+height: 1px;
+background: linear-gradient(90deg, transparent, rgba(78, 205, 196, 0.7), transparent);
+}
 
-    .genspark-notice-list {
-      margin: 24px 0;
-      
-      color: #606366;
-      font-family: Arial;
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: 150%;
-      padding-left: 12px;
-    }
+@keyframes glow {
+from {
+text-shadow: 0 0 5px rgba(78, 205, 196, 0.5);
+}
+to {
+text-shadow: 0 0 15px rgba(78, 205, 196, 0.8), 0 0 20px rgba(255, 107, 107, 0.5);
+}
+}
 
-    .genspark-notice-list li {
-      margin-bottom: 12px;
-      list-style-type: disc;
-    }
+/* 翻訳ボタンのスタイル */
+.translate-link {
+display: flex;
+align-items: center;
+background: rgba(255, 255, 255, 0.1);
+border: 1px solid rgba(255, 255, 255, 0.2);
+border-radius: 4px;
+padding: 5px 10px;
+margin-left: 10px;
+transition: all 0.3s ease;
+}
 
-    .genspark-notice-list li a {
-      color: #606366;
-      text-decoration: underline;
-    }
+.translate-link:hover {
+background: rgba(78, 205, 196, 0.2);
+transform: translateY(-2px);
+}
 
-    .genspark-notice-checkbox {
-      display: flex;
-      align-items: center;
-      margin-top: 20px;
-      gap: 10px;
+.translate-icon {
+margin-right: 6px;
+}
 
-      color: #232425;
+/* 言語リンクのスタイル */
+.language-links {
+display: flex;
+margin-left: 15px;
+}
 
-      font-family: Arial;
-      font-size: 14px;
-      font-style: normal;
-      font-weight: 400;
-      line-height: normal;
-    }
+.language-links .nav-link {
+margin-left: 10px;
+font-size: 14px;
+padding: 5px 8px;
+}
 
-    .genspark-notice-actions {
-      display: flex;
-      justify-content: center;
-      margin-top: 20px;
-    }
-      
-    .genspark-notice-ok {
-      color: #232425;
+/* ヘッダーナビゲーションのスタイル修正 - 右端に配置 */
+.nav-links {
+position: absolute;
+right: 20px;
+display: flex;
+gap: 15px;
+}
 
-      text-align: center;
-      font-family: Arial;
-      font-size: 16px;
-      font-style: normal;
-      font-weight: 700;
-      line-height: 150%; 
+.nav-link {
+color: rgba(255, 255, 255, 0.8);
+text-decoration: none;
+font-size: 15px;
+font-weight: 600;
+transition: all 0.2s ease;
+padding: 5px 10px;
+border-radius: 5px;
+background: rgba(255, 255, 255, 0.05);
+}
 
-      cursor: pointer;
-      display: flex;
-      height: 40px;
-      padding: 6px 14px;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      align-self: stretch;
-      border-radius: 8px;
-      border: 1px solid #000;
-      box-sizing: border-box;
-      width: 100%;
-    }
-  </style></head>
+.nav-link:hover {
+color: #fff;
+background: rgba(78, 205, 196, 0.2);
+}
 
+.nav-link.active {
+color: #fff;
+background: rgba(78, 205, 196, 0.3);
+border-bottom: 2px solid #4ecdc4;
+}
+
+/* レスポンシブ対応 - スマホ画面で重なり回避 */
+@media (max-width: 768px) {
+  /* ヘッダーの高さを増やして余裕を持たせる */
+  .header-container {
+    padding: 15px 0 30px; /* 下部に余白を追加 */
+    flex-wrap: wrap;      /* 折り返しを許可 */
+  }
+  
+  /* ロゴサイズ調整 */
+  .logo {
+    width: 90px;
+    height: 90px;
+  }
+  
+  /* タイトルを調整 */
+  .header-title {
+    font-size: 24px;
+    margin: 0 auto 10px;
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* ナビゲーションをヘッダー下部に移動して中央揃え */
+  .nav-links {
+    position: relative;
+    top: 10px;
+    right: 0;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .nav-link {
+    font-size: 13px;
+    padding: 4px 8px;
+  }
+
+  .language-links {
+    margin-top: 10px;
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+.container-custom {
+max-width: 1200px;
+margin: 0 auto;
+padding: 100px 20px 20px;
+}
+
+/* レスポンシブ対応 - スマホ画面で重なり回避 */
+@media (max-width: 768px) {
+  /* ヘッダーを大幅にコンパクト化 */
+  .header-container {
+    padding: 5px 0 20px; /* さらに小さく：上5px、下20px */
+    flex-wrap: wrap;
+    min-height: auto; /* 最小高さを自動に */
+  }
+  
+  /* ロゴをさらに小さく */
+  .logo {
+    width: 70px; /* さらに小さく */
+    height: 70px;
+  }
+  
+/* ロゴの位置調整 - 最も左上に */
+.header-container a[target="_blank"] {
+  position: absolute;
+  left: -10px;   /* さらに左に */
+  top: 0px;    /* 最上部に */
+}
+  
+  /* タイトルをさらに小さく */
+  .header-title {
+    font-size: 18px; /* さらに小さく */
+    margin: 0 auto 3px; /* マージンを最小に */
+    width: 100%;
+    text-align: center;
+  }
+  
+  /* ナビゲーションをさらに上に */
+  .nav-links {
+    position: relative;
+    top: 20px; /* 上の余白をなくす */
+    right: 0;
+    width: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px; /* 間隔を狭く */
+  }
+  
+  /* リンクをさらにコンパクトに */
+  .nav-link {
+    font-size: 11px; /* さらに小さく */
+    padding: 2px 6px; /* パディングを最小に */
+  }
+
+  /* 言語リンクの余白を最小に */
+  .language-links {
+    margin-top: 2px; /* 最小のマージン */
+    width: 100%;
+    justify-content: center;
+  }
+}
+
+/* スマホ表示時の調整 */
+@media (max-width: 768px) {
+  .container-custom {
+    padding-top: 90px; /* ヘッダーがさらに小さくなったので大幅に削減 */
+  }
+}
+
+/* さらに小さい画面サイズ向け */
+@media (max-width: 360px) {
+  .container-custom {
+    padding-top: 180px; /* さらに小さい画面ではより大きなパディング */
+  }
+}
+
+/* 味覚マトリックスのスタイル */
+.taste-matrix {
+width: 300px; /* PC表示時のサイズ */
+height: 300px;
+border: 2px solid #fff;
+position: relative;
+background: linear-gradient(to right, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%), 
+linear-gradient(to top, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.1) 100%);
+}
+
+.taste-dot {
+width: 24px;
+height: 24px;
+background-color: #ff6b6b;
+border-radius: 50%;
+position: absolute;
+transform: translate(-50%, -50%);
+cursor: pointer;
+box-shadow: 0 0 10px rgba(255, 107, 107, 0.5);
+}
+
+.dual-matrix-container {
+display: grid;
+grid-template-columns: 1fr 1fr;
+gap: 40px;
+margin-top: 20px;
+}
+
+.matrix-wrapper {
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+
+.matrix-title {
+font-size: 18px;
+font-weight: bold;
+margin-bottom: 20px;
+color: #4ecdc4;
+}
+
+/* マトリクスの軸ラベルスタイル（基本） */
+.absolute.-top-6, .absolute.-bottom-6, .absolute.-left-12, .absolute.-right-12 {
+  white-space: nowrap; /* テキストを折り返さない */
+}
+
+/* スマホ表示時に左右の軸ラベルを縦書きに */
+@media (max-width: 768px) {
+  /* 右側のラベル（「ヘビー」と「熟成」）を縦書きに */
+  .absolute.-right-12 {
+    writing-mode: vertical-rl; /* 縦書き（右から左） */
+    text-orientation: upright; /* 文字を正立（回転なし）に */
+    right: -25px; /* 位置調整 */
+    height: auto; /* 高さを自動に */
+    transform: translateY(-50%); /* 縦中央揃え */
+  }
+  
+  /* 左側のラベル（「ライト」と「若い」）も縦書きに */
+  .absolute.-left-12 {
+    writing-mode: vertical-rl; /* 縦書き（右から左） */
+    text-orientation: upright; /* 文字を正立に */
+    left: -25px; /* 位置調整 */
+    height: auto;
+    transform: translateY(-50%); /* 縦中央揃え */
+  }
+  
+  /* 上下のラベル位置も調整 */
+  .absolute.-top-6 {
+    top: -20px; /* 少し上に */
+  }
+  
+  .absolute.-bottom-6 {
+    bottom: -20px; /* 少し下に */
+  }
+}
+
+/* さらに小さい画面用の調整 */
+@media (max-width: 360px) {
+  .absolute.-right-12 {
+    right: -22px; /* さらに位置調整 */
+    font-size: 10px; /* フォントサイズを小さく */
+  }
+  
+  .absolute.-left-12 {
+    left: -22px; /* 左側も同様に調整 */
+    font-size: 10px;
+  }
+  
+  .absolute.-top-6, .absolute.-bottom-6 {
+    font-size: 10px;
+  }
+}
+
+/* スマホ表示の修正 */
+@media (max-width: 1024px) {
+  .dual-matrix-container {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+}
+
+/* スマホサイズでマトリックスをスクリーンに収める */
+@media (max-width: 768px) {
+  .taste-matrix {
+    width: 250px; /* スマホ表示時は幅を縮小 */
+    height: 250px;
+  }
+  
+  .matrix-wrapper {
+    max-width: 100%;
+  }
+  
+  /* 余白調整 */
+  .absolute.left-1\/2 {
+    width: 100%;
+  }
+}
+
+/* さらに小さいスマホ画面の対応 */
+@media (max-width: 360px) {
+  .taste-matrix {
+    width: 220px; /* より小さいスマホ表示時はさらに縮小 */
+    height: 220px;
+  }
+  
+  /* 軸ラベルの位置調整 */
+  .absolute.-left-12 {
+    left: -10px;
+  }
+  
+  .absolute.-right-12 {
+    right: -10px;
+  }
+}
+
+.btn-primary {
+background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+border: none;
+color: white;
+padding: 12px 24px;
+border-radius: 8px;
+font-weight: bold;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+.btn-primary:hover {
+transform: translateY(-2px);
+box-shadow: 0 8px 25px rgba(255, 107, 107, 0.3);
+}
+.btn-primary:disabled {
+opacity: 0.5;
+cursor: not-allowed;
+transform: none;
+}
+.btn-secondary {
+background: rgba(255, 255, 255, 0.1);
+border: 1px solid rgba(255, 255, 255, 0.3);
+color: white;
+padding: 8px 16px;
+border-radius: 6px;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+.btn-secondary:hover {
+background: rgba(255, 255, 255, 0.2);
+}
+.card {
+background: rgba(255, 255, 255, 0.05);
+border: 1px solid rgba(255, 255, 255, 0.1);
+border-radius: 12px;
+padding: 30px;
+margin-bottom: 24px;
+backdrop-filter: blur(10px);
+}
+
+/* 見出しの余白を調整するカスタムスタイル */
+.card h2 {
+padding-top: 0px;      /* 上部の余白を追加 */
+padding-bottom: 15px;   /* 下部の余白を追加 */
+line-height: 0.8;       /* 行の高さを調整 */
+margin-bottom: 20px;    /* 下のマージンを設定（mb-4を上書き） */
+}
+
+/* split-layoutの調整 - パネル間の間隔を広げる */
+.split-layout {
+gap: 400px;               /* パネル間の間隔をより広く */
+}
+
+.whisky-card {
+background: rgba(255, 255, 255, 0.08);
+border: 1px solid rgba(255, 255, 255, 0.15);
+border-radius: 8px;
+padding: 16px;
+margin-bottom: 16px;
+cursor: pointer;
+transition: all 0.3s ease;
+position: relative;
+}
+.whisky-card:hover {
+background: rgba(255, 255, 255, 0.12);
+border-color: #4ecdc4;
+transform: translateY(-2px);
+}
+.whisky-card.selected {
+background: rgba(78, 205, 196, 0.15);
+border-color: #4ecdc4;
+box-shadow: 0 0 15px rgba(78, 205, 196, 0.3);
+}
+.whisky-card.featured {
+background: linear-gradient(135deg, rgba(255, 165, 0, 0.15), rgba(255, 215, 0, 0.10));
+border: 2px solid #FFA500;
+box-shadow: 0 0 20px rgba(255, 165, 0, 0.4);
+animation: pulse-orange 2s infinite;
+}
+@keyframes pulse-orange {
+0% { box-shadow: 0 0 20px rgba(255, 165, 0, 0.4); }
+50% { box-shadow: 0 0 30px rgba(255, 165, 0, 0.6); }
+100% { box-shadow: 0 0 20px rgba(255, 165, 0, 0.4); }
+}
+.featured-label {
+position: absolute;
+top: -10px;
+right: 10px;
+background: linear-gradient(45deg, #FFA500, #FFD700);
+color: #000;
+padding: 4px 8px;
+border-radius: 4px;
+font-size: 12px;
+font-weight: bold;
+}
+.loading {
+display: none;
+text-align: center;
+color: #4ecdc4;
+}
+.progress-container {
+display: none;
+margin-top: 20px;
+}
+.progress-bar {
+width: 100%;
+height: 20px;
+background: rgba(255, 255, 255, 0.1);
+border-radius: 10px;
+overflow: hidden;
+margin-bottom: 10px;
+}
+.progress-fill {
+height: 100%;
+background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+width: 0%;
+transition: width 0.3s ease;
+}
+.progress-text {
+color: #4ecdc4;
+font-size: 14px;
+margin-bottom: 5px;
+}
+.progress-percentage {
+color: #fff;
+font-size: 16px;
+font-weight: bold;
+}
+.error {
+color: #ff6b6b;
+background: rgba(255, 107, 107, 0.1);
+border: 1px solid rgba(255, 107, 107, 0.3);
+padding: 12px;
+border-radius: 8px;
+margin-top: 12px;
+}
+.success {
+color: #4ecdc4;
+background: rgba(78, 205, 196, 0.1);
+border: 1px solid rgba(78, 205, 196, 0.3);
+padding: 12px;
+border-radius: 8px;
+margin-top: 12px;
+}
+.price-slider {
+-webkit-appearance: none;
+width: 100%;
+height: 8px;
+border-radius: 5px;
+background: rgba(255, 255, 255, 0.2);
+outline: none;
+margin: 10px 0;
+}
+.price-slider::-webkit-slider-thumb {
+-webkit-appearance: none;
+appearance: none;
+width: 20px;
+height: 20px;
+border-radius: 50%;
+background: #4ecdc4;
+cursor: pointer;
+}
+.price-slider::-moz-range-thumb {
+width: 20px;
+height: 20px;
+border-radius: 50%;
+background: #4ecdc4;
+cursor: pointer;
+border: none;
+}
+.voice-input-btn {
+background: rgba(78, 205, 196, 0.2);
+border: 1px solid #4ecdc4;
+color: #4ecdc4;
+padding: 8px 12px;
+border-radius: 6px;
+cursor: pointer;
+transition: all 0.3s ease;
+}
+.voice-input-btn:hover {
+background: rgba(78, 205, 196, 0.3);
+}
+.voice-input-btn.recording {
+background: rgba(255, 107, 107, 0.3);
+border-color: #ff6b6b;
+color: #ff6b6b;
+}
+
+/* split-layoutの修正 - 余白を増やす */
+.split-layout {
+display: grid;
+grid-template-columns: 1fr 1fr; /* 均等に分割 */
+gap: 30px; /* 間隔を広げる（元は20px） */
+align-items: start;
+margin-bottom: 30px; /* 下部に余白を追加 */
+}
+
+/* レコメンデーションパネルの修正 */
+.recommendations-panel {
+background: rgba(255, 255, 255, 0.05);
+border: 1px solid rgba(255, 255, 255, 0.1);
+border-radius: 12px;
+padding: 24px;
+backdrop-filter: blur(10px);
+max-height: 85vh; /* 少し高さを増やす */
+overflow-y: auto;
+margin-bottom: 30px; /* 下部の余白を追加 */
+}
+
+/* チャートパネルの修正 - 重要な修正部分 */
+.chart-panel {
+background: rgba(255, 255, 255, 0.05);
+border: 1px solid rgba(255, 255, 255, 0.1);
+border-radius: 12px;
+padding: 30px 20px; /* 上下のパディングを増やす */
+backdrop-filter: blur(10px);
+position: sticky;
+top: 130px; /* 少し下げる */
+max-height: 85vh; /* 少し高さを増やす */
+overflow-y: auto;
+scrollbar-width: thin;
+scrollbar-color: rgba(78, 205, 196, 0.5) rgba(255, 255, 255, 0.1);
+margin-bottom: 20px; /* 下部の余白を追加 */
+}
+
+.chart-panel::-webkit-scrollbar {
+width: 8px;
+}
+
+.chart-panel::-webkit-scrollbar-track {
+background: rgba(255, 255, 255, 0.1);
+border-radius: 4px;
+}
+
+.chart-panel::-webkit-scrollbar-thumb {
+background: rgba(78, 205, 196, 0.5);
+border-radius: 4px;
+}
+
+/* チャートコンテナの修正 */
+.chart-container {
+height: 380px; /* 高さを増やす（元は350px） */
+width: 100%;
+position: relative;
+margin-bottom: 30px; /* 下部の余白を追加 */
+}
+/* チャートコンテナの見出し修正 */
+.chart-container h3 {
+text-align: center;
+margin-bottom: 25px; /* 余白を増やす */
+color: #4ecdc4;
+font-size: 16px;
+padding-top: 10px; /* 上部の余白を追加 */
+}
+/* チャートキャンバスの修正 */
+.chart-canvas {
+height: 350px !important;
+width: 100% !important;
+margin-top: 15px; /* 上部の余白を追加 */
+}
+
+#combinedProfileChart {
+height: 350px !important; /* 高さを増やす（元は320px） */
+width: 100% !important;
+margin-top: 20px; /* 上部の余白を追加 */
+margin-bottom: 20px; /* 下部の余白を追加 */
+}
+.recommendation-summary {
+background: rgba(78, 205, 196, 0.1);
+border: 1px solid rgba(78, 205, 196, 0.3);
+border-radius: 8px;
+padding: 16px;
+margin-bottom: 20px;
+color: #4ecdc4;
+}
+
+.custom-footer {
+display: none;
+text-align: center;
+padding: 20px;
+color: rgba(255, 255, 255, 0.6);
+font-size: 12px;
+margin-top: 40px;
+}
+
+.whisky-overview {
+background: linear-gradient(135deg, rgba(78, 205, 196, 0.1), rgba(255, 107, 107, 0.1));
+border: 2px solid rgba(78, 205, 196, 0.3);
+border-radius: 16px;
+padding: 30px;
+margin-bottom: 30px;
+text-align: center;
+position: relative;
+overflow: hidden;
+}
+
+.whisky-overview::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+bottom: 0;
+background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+0% { transform: translateX(-100%); }
+100% { transform: translateX(100%); }
+}
+
+.whisky-overview h2 {
+font-size: 2.5rem;
+font-weight: bold;
+background: linear-gradient(45deg, #4ecdc4, #ff6b6b);
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+margin-bottom: 20px;
+position: relative;
+z-index: 1;
+}
+
+.whisky-overview .subtitle {
+font-size: 1.2rem;
+color: #4ecdc4;
+margin-bottom: 15px;
+font-weight: 600;
+position: relative;
+z-index: 1;
+}
+
+.whisky-overview .description {
+font-size: 1.1rem;
+line-height: 1.6;
+color: rgba(255, 255, 255, 0.9);
+position: relative;
+z-index: 1;
+}
+
+.whisky-stats {
+display: flex;
+justify-content: space-around;
+margin-top: 25px;
+margin-bottom: 24px;  /* 下マージンを増やす（数値は調整可能） */
+position: relative;
+z-index: 1;
+}
+
+.stat-item {
+text-align: center;
+}
+
+.stat-number {
+font-size: 2rem;
+font-weight: bold;
+color: #ff6b6b;
+display: block;
+}
+
+.stat-label {
+font-size: 0.9rem;
+color: rgba(255, 255, 255, 0.7);
+margin-top: 5px;
+}
+
+.taste-icon {
+width: 24px;
+height: 24px;
+margin-right: 8px;
+fill: #4ecdc4;
+}
+
+.chat-section {
+margin-top: 30px;
+}
+
+.chat-examples {
+display: grid;
+grid-template-columns: 1fr 1fr;  /* 2列に設定 */
+grid-template-rows: auto auto;   /* 2行に設定 */
+gap: 10px;
+background: rgba(78, 205, 196, 0.05);
+border: 1px solid rgba(78, 205, 196, 0.2);
+border-radius: 8px;
+padding: 15px;
+margin-bottom: 15px;
+}
+
+/* 質問例タイトルを全幅に */
+.chat-examples .mb-3 {
+grid-column: 1 / -1;  /* 1列目から最後の列まで広げる */
+}
+
+.question-example {
+/* レイアウト */
+display: flex;
+align-items: center;
+justify-content: center;  /* 横方向も中央揃え */
+height: 100%;
+margin-bottom: 0;
+padding: 8px 12px;
+
+/* スタイル */
+background: rgba(78, 205, 196, 0.1);
+border: 1px solid rgba(78, 205, 196, 0.3);
+border-radius: 6px;
+color: #4ecdc4;
+
+/* インタラクション */
+cursor: pointer;
+transition: all 0.3s ease;
+}
+
+/* ホバー効果は維持 */
+.question-example:hover {
+background: rgba(78, 205, 196, 0.2);
+transform: translateY(-1px);
+}
+
+.question-example:hover {
+background: rgba(78, 205, 196, 0.2);
+transform: translateY(-1px);
+}
+
+.chat-input-container {
+display: flex;
+gap: 10px;
+margin-bottom: 20px;
+}
+
+.chat-input {
+flex: 1;
+background: rgba(255, 255, 255, 0.1);
+border: 1px solid rgba(255, 255, 255, 0.3);
+border-radius: 8px;
+padding: 12px;
+color: #fff;
+font-size: 14px;
+}
+
+.chat-input:focus {
+outline: none;
+border-color: #4ecdc4;
+box-shadow: 0 0 0 2px rgba(78, 205, 196, 0.2);
+}
+
+/* スマホ表示時のチャット入力エリア修正 */
+@media (max-width: 768px) {
+  .chat-input-container {
+    flex-direction: column; /* 縦並びに変更 */
+    gap: 10px; /* ボタン間の余白 */
+  }
+  
+  .chat-input {
+    width: 100%; /* 入力欄を全幅に */
+    margin-bottom: 10px; /* 入力欄の下に余白 */
+  }
+  
+  /* ボタンエリアを横並びに */
+  .chat-buttons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+  }
+  
+  .voice-input-btn {
+    flex: 0 0 auto; /* サイズ固定 */
+    min-width: 50px; /* 最小幅を確保 */
+  }
+  
+  .btn-primary {
+    flex: 1; /* 残りのスペースを使用 */
+    min-width: 0; /* 最小幅制限を解除 */
+  }
+}
+
+.chat-history {
+max-height: 400px;
+overflow-y: auto;
+padding: 15px;
+background: rgba(0, 0, 0, 0.3);
+border-radius: 8px;
+margin-bottom: 15px;
+display: none;
+}
+
+.chat-message {
+margin-bottom: 15px;
+padding: 12px;
+border-radius: 8px;
+word-wrap: break-word;
+white-space: pre-wrap;
+line-height: 1.6;
+font-size: 14px;
+}
+
+/* AIメッセージのスタイル修正 */
+.ai-message {
+text-align: left;  /* 左寄せに設定 */
+background: rgba(78, 205, 196, 0.15);
+border-left: 3px solid #4ecdc4;
+color: #fff;
+}
+
+/* 必要に応じて通常のチャットメッセージも左寄せに */
+.chat-message {
+text-align: left;  /* 左寄せに設定 */
+/* その他の既存スタイル */
+}
+
+.user-message {
+background: rgba(255, 107, 107, 0.15);
+border-left: 3px solid #ff6b6b;
+color: #fff;
+}
+
+.chat-history::-webkit-scrollbar {
+width: 6px;
+}
+
+.chat-history::-webkit-scrollbar-track {
+background: rgba(255, 255, 255, 0.1);
+border-radius: 3px;
+}
+
+.chat-history::-webkit-scrollbar-thumb {
+background: rgba(78, 205, 196, 0.5);
+border-radius: 3px;
+}
+
+/* レスポンシブ対応の修正 */
+@media (max-width: 1024px) {
+.split-layout {
+grid-template-columns: 1fr;
+gap: 30px; /* 間隔を広げる */
+}
+
+.chart-panel {
+position: static;
+margin-top: 30px; /* 上部の余白を追加 */
+padding: 30px; /* パディングを均等に */
+}
+
+.whisky-overview h2 {
+font-size: 2rem;
+}
+
+.whisky-stats {
+flex-direction: column;
+gap: 15px;
+}
+
+.dual-matrix-container {
+grid-template-columns: 1fr;
+gap: 30px;
+}
+}
+
+@media (max-width: 768px) {
+.custom-footer {
+display: block;
+}
+
+.whisky-overview h2 {
+font-size: 1.8rem;
+}
+
+.whisky-overview .subtitle {
+font-size: 1rem;
+}
+
+.whisky-overview .description {
+font-size: 1rem;
+}
+}
+
+.recommendations-panel::-webkit-scrollbar {
+width: 8px;
+}
+
+.recommendations-panel::-webkit-scrollbar-track {
+background: rgba(255, 255, 255, 0.1);
+border-radius: 4px;
+}
+
+.recommendations-panel::-webkit-scrollbar-thumb {
+background: rgba(78, 205, 196, 0.5);
+border-radius: 4px;
+}
+
+.recommendations-panel::-webkit-scrollbar-thumb:hover {
+background: rgba(78, 205, 196, 0.7);
+}
+
+/* 蒸留所マップと情報パネル */
+.distillery-section {
+margin-top: 20px;
+opacity: 0;
+height: 0;
+overflow: hidden;
+transition: opacity 0.8s ease, height 0.8s ease;
+}
+
+.distillery-section.active {
+opacity: 1;
+height: auto;
+}
+
+.distillery-container {
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
+
+.map-container {
+height: 300px;
+border-radius: 12px;
+overflow: hidden;
+border: 2px solid rgba(78, 205, 196, 0.3);
+background-color: #1a1a1a;
+}
+
+#distilleryMap {
+height: 100%;
+width: 100%;
+background-color: #242424;
+}
+
+.distillery-info {
+background: rgba(255, 255, 255, 0.05);
+border: 1px solid rgba(78, 205, 196, 0.3);
+border-radius: 12px;
+padding: 16px;
+color: #fff;
+}
+
+.distillery-info h3 {
+color: #4ecdc4;
+font-size: 18px;
+font-weight: bold;
+margin-bottom: 10px;
+border-bottom: 1px solid rgba(78, 205, 196, 0.3);
+padding-bottom: 8px;
+}
+
+.distillery-info-grid {
+display: grid;
+grid-template-columns: auto 1fr;
+gap: 8px 16px;
+margin-top: 15px;
+}
+
+.info-label {
+color: rgba(255, 255, 255, 0.7);
+font-weight: 600;
+}
+
+.info-value {
+color: rgba(255, 255, 255, 0.9);
+}
+
+/* distilleryDescriptionを左寄せにするCSS修正 */
+.distillery-description {
+margin-top: 15px;
+line-height: 1.6;
+text-align: left; /* 左寄せを明示的に指定 */
+}
+.status-active {
+color: #4ecdc4;
+font-weight: bold;
+}
+
+.status-closed {
+color: #ff6b6b;
+font-weight: bold;
+}
+
+.status-unknown {
+color: #ffb347;
+font-weight: bold;
+}
+
+/* Leafletマップスタイルのカスタマイズ */
+.leaflet-container {
+background-color: #242424 !important;
+}
+.leaflet-tile-pane {
+opacity: 0.9;
+}
+.leaflet-popup-content-wrapper {
+background-color: rgba(40, 44, 52, 0.95) !important;
+color: #fff !important;
+border: 1px solid rgba(78, 205, 196, 0.5);
+}
+.leaflet-popup-tip {
+background-color: rgba(40, 44, 52, 0.95) !important;
+}
+.leaflet-control-zoom a {
+background-color: rgba(40, 44, 52, 0.8) !important;
+color: #fff !important;
+border-color: rgba(78, 205, 196, 0.3) !important;
+}
+.leaflet-control-zoom a:hover {
+background-color: rgba(78, 205, 196, 0.3) !important;
+}
+
+/* 音声入力ボタンのスタイル */
+.voice-input-btn {
+background: rgba(78, 205, 196, 0.2);
+border: 1px solid #4ecdc4;
+color: #4ecdc4;
+padding: 8px 12px;
+border-radius: 6px;
+cursor: pointer;
+transition: all 0.3s ease;
+font-size: 18px;
+}
+
+.voice-input-btn:hover {
+background: rgba(78, 205, 196, 0.3);
+transform: translateY(-2px);
+}
+
+.voice-input-btn.recording {
+background: rgba(255, 107, 107, 0.3);
+border-color: #ff6b6b;
+color: #ff6b6b;
+animation: pulse-recording 1.5s infinite;
+}
+
+@keyframes pulse-recording {
+0% { transform: scale(1); }
+50% { transform: scale(1.1); }
+100% { transform: scale(1); }
+}
+
+.error-notification {
+position: fixed;
+top: 20px;
+right: 20px;
+z-index: 9999;
+max-width: 400px;
+animation: slide-in 0.5s ease-out;
+}
+
+.notification-content {
+background-color: rgba(255, 107, 107, 0.9);
+color: white;
+border-radius: 8px;
+padding: 15px;
+box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+display: flex;
+align-items: center;
+}
+
+.notification-icon {
+font-size: 24px;
+margin-right: 15px;
+}
+
+.notification-message {
+flex-grow: 1;
+}
+
+.notification-close {
+background: none;
+border: none;
+color: white;
+font-size: 20px;
+cursor: pointer;
+padding: 0;
+margin-left: 10px;
+}
+
+@keyframes slide-in {
+from {
+transform: translateX(100%);
+opacity: 0;
+}
+to {
+transform: translateX(0);
+opacity: 1;
+}
+}
+
+/* AI提案メッセージの修正 */
+.ai-recommendation-message {
+background: rgba(78, 205, 196, 0.15);
+border-left: 3px solid #4ecdc4;
+color: #fff;
+padding: 20px; /* パディングを増やす */
+border-radius: 8px;
+margin-bottom: 25px; /* 下部の余白を増やす */
+line-height: 1.8; /* 行間を広げる */
+}
+
+@keyframes thinking {
+0% { content: "考えています"; }
+25% { content: "考えています."; }
+50% { content: "考えています.."; }
+75% { content: "考えています..."; }
+100% { content: "考えています...."; }
+}
+
+.thinking-animation {
+position: relative;
+}
+
+.thinking-animation::after {
+content: "考えています";
+animation: thinking 1.5s infinite;
+}
+
+/* 蒸溜所マーカーのツールチップ */
+.distillery-tooltip {
+background-color: rgba(40, 44, 52, 0.95);
+color: #fff;
+border: 1px solid rgba(78, 205, 196, 0.5);
+border-radius: 4px;
+padding: 5px 8px;
+font-size: 12px;
+font-weight: bold;
+box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+
+</style></head>
 <body>
-    <!-- ヘッダー -->
-    <div class="header-container">
-        <a href="https://www.hirunotsuki.com/" target="_blank" style="position: absolute; left: 20px; width: 90px; height: 90px; display: block;">
-            <div class="logo" style="background: rgba(78, 205, 196, 0.2); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #4ecdc4;">LOGO</div>
-        </a>
-        <h1 class="header-title">昼の月。AIソムリエ</h1>
-        <div class="nav-links">
-            <a href="whisky_sommelier_fixed_script.html#" class="nav-link" id="listLink">メニューリスト一覧</a>
-            <a href="whisky_sommelier_fixed_script.html#" onclick="openGoogleTranslate(); return false;" class="nav-link translate-link">
-                <span class="translate-icon">🌐</span> 翻訳
-            </a>
-        </div>
-    </div>
-
-    <!-- メインコンテンツ -->
-    <div class="container-custom">
-        <!-- ウィスキー概要セクション -->
-        <div class="whisky-overview">
-            <h2>🍷 プレミアムウィスキーコレクション</h2>
-            <div class="subtitle">本日は厳選された<span id="whiskyCount">6</span>本のウィスキーから</div>
-            <div class="description">
-                <strong>あなたの味覚に完璧にマッチする</strong>最高の一本を<br>
-                AI技術で分析・提案いたします
-            </div>
-            <div class="whisky-stats">
-                <div class="stat-item">
-                    <span class="stat-number" id="totalWhiskies">6</span>
-                    <div class="stat-label">厳選銘柄</div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="uniqueRegions">2</span>
-                    <div class="stat-label">産地</div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="distilleryCount">5</span>
-                    <div class="stat-label">蒸溜所の数</div>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number" id="aiTechnology">AI</span>
-                    <div class="stat-label">分析技術</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- 価格帯設定 -->
-        <div class="card">
-            <h2 class="text-2xl font-bold mb-4">💎 価格帯設定</h2>
-            <div class="grid grid-cols-2 gap-4">
-                <div>
-                    <label class="block mb-2">下限価格: <span id="minPriceDisplay">¥5,000</span></label>
-                    <input type="range" id="minPrice" class="price-slider" min="1" max="80" value="5" step="1">
-                </div>
-                <div>
-                    <label class="block mb-2">上限価格: <span id="maxPriceDisplay">¥50,000</span></label>
-                    <input type="range" id="maxPrice" class="price-slider" min="1" max="80" value="50" step="1">
-                </div>
-            </div>
-        </div>
-
-        <!-- 味覚プロファイル設定 -->
-        <div class="card">
-            <h2 class="text-xl font-bold mb-3 text-center" style="margin-top: 10px; margin-bottom: 10px; padding-bottom: 15px; line-height: 2;">
-                🌟 味覚プロファイル設定
-            </h2>
-            <p class="mb-6">2つの四角内をクリックして、それぞれの好みの位置を選択してください</p>
-
-            <div class="dual-matrix-container">
-                <div class="matrix-wrapper">
-                    <div class="matrix-title">基本的な味の傾向</div>
-                    <div class="relative">
-                        <div class="taste-matrix" id="tasteMatrix1">
-                            <div class="taste-dot" id="tasteDot1" style="left: 50%; top: 50%;"></div>
-                        </div>
-                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm">フルーティー</div>
-                        <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm">スモーキー</div>
-                        <div class="absolute -left-12 top-1/2 transform -translate-y-1/2 text-sm">ライト</div>
-                        <div class="absolute -right-12 top-1/2 transform -translate-y-1/2 text-sm">ヘビー</div>
-                    </div>
-                    <div class="text-center mt-4">
-                        <span id="coordinates1" class="text-xs text-gray-400">座標: X: 0.50, Y: 0.50</span>
-                    </div>
-                </div>
-
-                <div class="matrix-wrapper">
-                    <div class="matrix-title">複雑さの好み</div>
-                    <div class="relative">
-                        <div class="taste-matrix" id="tasteMatrix2">
-                            <div class="taste-dot" id="tasteDot2" style="left: 50%; top: 50%;"></div>
-                        </div>
-                        <div class="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm">まろやか</div>
-                        <div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm">強烈</div>
-                        <div class="absolute -left-12 top-1/2 transform -translate-y-1/2 text-sm">若い</div>
-                        <div class="absolute -right-12 top-1/2 transform -translate-y-1/2 text-sm">熟成</div>
-                    </div>
-                    <div class="text-center mt-4">
-                        <span id="coordinates2" class="text-xs text-gray-400">座標: X: 0.50, Y: 0.50</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- AI提案ボタン -->
-        <div class="text-center mb-8">
-            <button id="getRecommendation" class="btn-primary text-lg mr-4">🎯 AI提案を開始</button>
-            <button id="refreshRecommendation" class="btn-secondary text-lg">🔄 リフレッシュして再提案</button>
-        </div>
-
-        <!-- ローディングインジケーター -->
-        <div id="loadingIndicator" class="loading" style="display: none;">
-            <div class="animate-spin text-4xl mb-4">🍷</div>
-            <p class="mt-2">AIが最適なウィスキーを分析中...</p>
-        </div>
-
-        <!-- プログレスバー -->
-        <div id="progressContainer" class="progress-container" style="display: none;">
-            <div id="progressText" class="progress-text">結果を生成中...</div>
-            <div class="progress-bar">
-                <div id="progressFill" class="progress-fill" style="width: 0%;"></div>
-            </div>
-            <div id="progressPercentage" class="progress-percentage">0%</div>
-        </div>
-
-        <!-- 分割レイアウト -->
-        <div id="splitLayoutContainer" class="split-layout" style="display: none;">
-            <!-- 推奨パネル -->
-            <div id="recommendationsPanel" class="recommendations-panel">
-                <h2 class="text-2xl font-bold mb-4" style="margin-top: 0px; margin-bottom: 10px; padding-bottom: 15px; line-height: 2;">
-                    🌙 AI提案結果
-                </h2>
-                <div id="preferencesSummary" class="recommendation-summary" style="display: block;">
-                    <h3 class="text-lg font-bold mb-3">🎯 あなたの好みの傾向</h3>
-                    <div class="space-y-2 text-sm">
-                        <div><strong>基本的な味の傾向:</strong> <span id="tasteDescription">バランスの取れた</span></div>
-                        <div><strong>複雑さの好み:</strong> <span id="complexityDescription">バランスの良い複雑さを好む</span></div>
-                        <div><strong>価格帯:</strong> <span id="priceRange">¥8,500〜¥80,400</span></div>
-                        <div class="mt-3 pt-2 border-t border-gray-600">
-                            AIが総合的にプロファイルに基づいて、最適な3銘柄を厳選しました。
-                        </div>
-                    </div>
-                </div>
-                <div id="recommendationContent"></div>
-                <div class="text-center mt-6">
-                    <button id="getAnotherRecommendation" class="btn-secondary">🔄 別の提案を受ける</button>
-                </div>
-            </div>
-
-            <!-- チャートパネル -->
-            <div id="chartPanel" class="chart-panel">
-                <h2 class="text-2xl font-bold mb-4" style="margin-top: 0px; margin-bottom: 10px; padding-bottom: 15px; line-height: 2;">
-                    🕸️ 味覚プロファイル比較
-                </h2>
-                <div class="chart-container">
-                    <h3 id="chartTitle">あなたの好み</h3>
-                    <canvas id="combinedProfileChart" class="chart-canvas"></canvas>
-                </div>
-
-                <!-- 蒸留所マップと情報セクション -->
-                <div id="distillerySection" class="distillery-section">
-                    <h2 class="text-xl font-bold mb-3 text-center" style="margin-top: 0px; margin-bottom: 10px; padding-bottom: 15px; line-height: 2;">
-                        🗾 蒸溜所情報
-                    </h2>
-                    <div class="distillery-container">
-                        <div class="map-container">
-                            <div id="distilleryMap"></div>
-                        </div>
-                        <div class="distillery-info" id="distilleryInfo">
-                            <h3 id="distilleryName">蒸留所名</h3>
-                            <div class="distillery-info-grid" id="distilleryDetails">
-                                <div class="info-label">所在地:</div>
-                                <div class="info-value" id="distilleryRegion">-</div>
-                                <div class="info-label">創業年:</div>
-                                <div class="info-value" id="distilleryFounded">-</div>
-                                <div class="info-label">現在の状況:</div>
-                                <div class="info-value" id="distilleryStatus">-</div>
-                            </div>
-                            <div class="distillery-description" id="distilleryDescription">
-                                現在情報登録されていません。
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- カスタムフッター -->
-        <div class="custom-footer">
-            Powered by Genspark AI Technology
-        </div>
-    </div>
-
-    <!-- チャットボットポップアップボタン -->
-    <button class="chat-popup-button" id="chatPopupButton">
-        💬
-    </button>
-
-    <!-- チャットボットポップアップ -->
-    <div class="chat-popup-overlay" id="chatPopupOverlay">
-        <div class="chat-popup-container">
-            <div class="chat-popup-header">
-                <div class="chat-popup-title">🤖 AIソムリエアシスタント</div>
-                <button class="chat-popup-close" id="chatPopupClose">×</button>
-            </div>
-
-            <div class="chat-examples">
-                <div class="mb-3 text-sm text-gray-300">質問例（クリックで入力）：</div>
-                <div class="question-example" data-question="タリスカー44年（最高額80,400円）について詳しく教えて">💎 タリスカー44年（最高額80,400円）について詳しく教えて</div>
-                <div class="question-example" data-question="3000円以下でスモーキーなアイラ島のウィスキーはある？">🌊 3000円以下でスモーキーなアイラ島のウィスキーはある？</div>
-                <div class="question-example" data-question="日本の軽井沢や長濱などフルーティーなウィスキーを比較して">🍯 日本の軽井沢や長濱などフルーティーなウィスキーを比較して</div>
-                <div class="question-example" data-question="5000円前後で複雑な味わいのウィスキーのおすすめは？">⭐ 5000円前後で複雑な味わいのウィスキーのおすすめは？</div>
-            </div>
-
-            <div class="chat-input-container">
-                <input type="text" id="chatInput" class="chat-input" placeholder="質問を入力してください...">
-                <div class="chat-buttons" style="display: flex; gap: 10px;">
-                    <button id="voiceInputBtn" class="voice-input-btn">🎙️</button>
-                    <button id="sendChatBtn" class="btn-primary" style="padding: 8px 16px;">💬 質問する</button>
-                </div>
-            </div>
-
-            <div id="chatHistory" class="chat-history" style="display: none;"></div>
-        </div>
-    </div>
-
-    <!-- JavaScript -->
-    <script>
-        // グローバル変数
-        let whiskyData = [];
-        let distilleryDatabase = {};
-        let distilleryMarkers = {};
-        let distilleryMap = null;
-        let profileChartInstance = null;
-        let brandToDistilleryMapping = {};
-
-        // ユーザー好みを保存するグローバル変数
-        let savedUserPreferences = {
-            minPrice: null,
-            maxPrice: null,
-            tasteX: null,
-            tasteY: null,
-            complexityX: null,
-            complexityY: null,
-            region: null
-        };
-
-        // カウントアップアニメーション関数
-        function animateCounter(elementId, targetValue) {
-            const element = document.getElementById(elementId);
-            if (!element) return;
-
-            let currentValue = 0;
-            const duration = 1000;
-            const steps = 60;
-            const stepTime = duration / steps;
-            const increment = targetValue / steps;
-
-            function updateCounter(currentStep) {
-                if (currentStep <= steps) {
-                    currentValue = Math.min(Math.ceil(increment * currentStep), targetValue);
-                    
-                    if (elementId === 'aiTechnology') {
-                        element.textContent = 'AI';
-                    } else {
-                        element.textContent = currentValue.toString();
-                    }
-                    
-                    setTimeout(() => updateCounter(currentStep + 1), stepTime);
-                }
-            }
-
-            updateCounter(1);
-        }
-
-        // DOMContentLoaded イベント
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('DOM fully loaded');
-
-            // ページがロードされたときに履歴をクリア
-            clearChatHistory();
-            resetTasteMatrices();
-
-            // 変数の初期化を確実に行う
-            if (typeof whiskyData === 'undefined') {
-                whiskyData = [];
-            }
-
-            if (typeof distilleryDatabase === 'undefined') {
-                distilleryDatabase = {};
-            }
-
-            if (typeof distilleryMarkers === 'undefined') {
-                distilleryMarkers = {};
-            }
-
-            // ナビゲーションリンクのアクティブ状態を設定
-            setActiveNavLinks();
-
-            // 四象限マトリックスの初期化
-            initializeTasteMatrix();
-
-            // チャットポップアップの初期化
-            initializeChatPopup();
-
-            // 統合データ読み込み - 非同期処理
-            loadUnifiedWhiskyData().then(data => {
-                // データ読み込み成功後のコールバック
-                console.log('統合データ読み込み完了');
-
-                // イベントリスナーの設定
-                setupEventListeners();
-
-                // 統計情報を更新
-                updateStatistics();
-
-            }).catch(err => {
-                console.error('データ読み込みエラー:', err);
-            });
-        });
-
-        // チャットポップアップの初期化
-        function initializeChatPopup() {
-            const chatButton = document.getElementById('chatPopupButton');
-            const chatOverlay = document.getElementById('chatPopupOverlay');
-            const chatClose = document.getElementById('chatPopupClose');
-
-            // ポップアップ開く
-            chatButton.addEventListener('click', function() {
-                chatOverlay.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            });
-
-            // ポップアップ閉じる
-            chatClose.addEventListener('click', function() {
-                chatOverlay.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            });
-
-            // オーバーレイクリックで閉じる
-            chatOverlay.addEventListener('click', function(e) {
-                if (e.target === chatOverlay) {
-                    chatOverlay.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
-            });
-
-            // ESCキーで閉じる
-            document.addEventListener('keydown', function(e) {
-                if (e.key === 'Escape' && chatOverlay.style.display === 'flex') {
-                    chatOverlay.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
-            });
-        }
-
-        // ナビゲーションリンクのアクティブ状態を設定
-        function setActiveNavLinks() {
-            const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-            const links = document.querySelectorAll('.nav-links a');
-
-            links.forEach(link => {
-                const href = link.getAttribute('href').split('/').pop();
-                if (currentPage === href) {
-                    link.classList.add('active');
-                } else {
-                    link.classList.remove('active');
-                }
-            });
-        }
-
-        // 統合ウィスキーデータ読み込み
-        async function loadUnifiedWhiskyData() {
-            console.log('統合ウィスキーデータ読み込み開始...');
-
-            try {
-                // デフォルトデータを使用
-                console.warn('デフォルトデータを使用します');
-                const defaultData = getDefaultWhiskyData();
-                whiskyData = defaultData;
-                return defaultData;
-            } catch (error) {
-                console.error('統合ウィスキーデータの読み込みに失敗しました:', error);
-                whiskyData = [];
-                distilleryDatabase = {};
-                brandToDistilleryMapping = {};
-
-                // エラー時はデフォルトデータを使用
-                const defaultData = getDefaultWhiskyData();
-                whiskyData = defaultData;
-                return defaultData;
-            }
-        }
-
-        // デフォルトウィスキーデータ
-        function getDefaultWhiskyData() {
-            return [
-                {
-                    id: "1",
-                    name: "タリスカー 44年 オフィシャルボトル",
-                    price: "¥80,400",
-                    region: "Scotland, Isle of Skye",
-                    subcategory: "Single Malt Scotch Whisky",
-                    abv: 45.8,
-                    tastingNote_ja: "この非常に希少なタリスカー44年は、強い海岸の塩気を持つ複雑な海洋性の特徴を提供します。豊かなドライフルーツ、ダークチョコレート、アンティークレザーの層がタリスカー特有のピリッとしたスモークと調和しています。長期熟成により、トロピカルフルーツ、ミツロウ、繊細な樽のスパイスのノートを持つ驚くべき深みが生まれ、非常に長く温かみのある余韻へと続きます。",
-                    taste_profile: {
-                        fruity: 3,
-                        spicy: 4,
-                        body: 5,
-                        smoky: 4,
-                        sweetness: 2,
-                        complexity: 5
-                    }
-                },
-                {
-                    id: "2",
-                    name: "ポートエレン 25年 one of only bottles",
-                    price: "¥20,400",
-                    region: "Scotland, Islay",
-                    subcategory: "Single Malt Scotch Whisky",
-                    abv: 40,
-                    tastingNote_ja: "ポートエレン25年は希少で高く評価されるアイラウイスキーで、強い海洋性の特徴を持ちます。複雑な泥炭の煙、海塩、ヨードの層が柑橘類の皮、バニラ、微妙なトロピカルフルーツとバランスよく調和しています。長い余韻には、オークタンニン、白胡椒、そして長く続く甘い煙が現れます。",
-                    taste_profile: {
-                        fruity: 2,
-                        spicy: 3,
-                        body: 4,
-                        smoky: 5,
-                        sweetness: 2,
-                        complexity: 5
-                    }
-                },
-                {
-                    id: "3",
-                    name: "マッカラン 1990年 SAMAROLI",
-                    price: "¥12,200",
-                    region: "Scotland",
-                    subcategory: "Single Malt Scotch Whisky - Speyside",
-                    abv: 40,
-                    tastingNote_ja: "有名な独立系ボトラー、サマローリによってボトリングされた希少なマッカラン1990年。豊かなシェリーの影響があり、ドライフルーツ、オレンジピール、クリスマスケーキの風味が特徴。複雑な樽のスパイスが蜂蜜、トフィー、ダークチョコレートと調和しています。フィニッシュは長く、革、タバコ、そして余韻の残るドライフルーツの甘さが感じられます。",
-                    taste_profile: {
-                        fruity: 4,
-                        spicy: 3,
-                        body: 5,
-                        smoky: 1,
-                        sweetness: 4,
-                        complexity: 5
-                    }
-                },
-                {
-                    id: "4",
-                    name: "山崎 18年",
-                    price: "¥35,000",
-                    region: "Japan",
-                    subcategory: "Japanese Single Malt Whisky",
-                    abv: 43,
-                    tastingNote_ja: "日本を代表する山崎18年は、ミズナラ樽による独特の香りが特徴的です。熟した果実の甘さとスパイシーな樽香のバランスが絶妙で、長期熟成による深い複雑さを持ちます。フィニッシュは非常に長く、ほのかなスモークと共に余韻が続きます。",
-                    taste_profile: {
-                        fruity: 4,
-                        spicy: 3,
-                        body: 4,
-                        smoky: 2,
-                        sweetness: 4,
-                        complexity: 5
-                    }
-                },
-                {
-                    id: "5",
-                    name: "アードベッグ 10年",
-                    price: "¥8,500",
-                    region: "Scotland, Islay",
-                    subcategory: "Single Malt Scotch Whisky",
-                    abv: 46,
-                    tastingNote_ja: "アイラ島を代表するピーティなシングルモルト。強烈なスモーキーさとピート香に加え、柑橘系の爽やかさとミントの清涼感が絶妙に調和。海風のようなミネラル感と、長く続くスモーキーなフィニッシュが印象的です。",
-                    taste_profile: {
-                        fruity: 2,
-                        spicy: 4,
-                        body: 4,
-                        smoky: 5,
-                        sweetness: 1,
-                        complexity: 4
-                    }
-                },
-                {
-                    id: "6",
-                    name: "グレンリベット 21年",
-                    price: "¥15,800",
-                    region: "Scotland, Speyside",
-                    subcategory: "Single Malt Scotch Whisky",
-                    abv: 43,
-                    tastingNote_ja: "スペイサイドの優雅さを体現するグレンリベット21年。洋梨とりんごのフルーティーな香りに、バニラとハチミツの甘さが調和。長期熟成による滑らかな口当たりと、優雅で上品なフィニッシュが特徴的です。",
-                    taste_profile: {
-                        fruity: 5,
-                        spicy: 2,
-                        body: 3,
-                        smoky: 1,
-                        sweetness: 4,
-                        complexity: 4
-                    }
-                }
-            ];
-        }
-
-        // 四象限マトリックスの初期化
-        function initializeTasteMatrix() {
-            const matrix1 = document.getElementById('tasteMatrix1');
-            const dot1 = document.getElementById('tasteDot1');
-            const coords1 = document.getElementById('coordinates1');
-
-            const matrix2 = document.getElementById('tasteMatrix2');
-            const dot2 = document.getElementById('tasteDot2');
-            const coords2 = document.getElementById('coordinates2');
-
-            // 中央位置に初期化
-            resetTasteMatrices();
-
-            // マトリックス1のイベント
-            matrix1.addEventListener('click', function(e) {
-                updateDotPosition(e, matrix1, dot1, coords1, 1);
-            });
-
-            matrix1.addEventListener('mousemove', function(e) {
-                if (e.buttons === 1) { // 左クリック押下中
-                    updateDotPosition(e, matrix1, dot1, coords1, 1);
-                }
-            });
-
-            // マトリックス2のイベント
-            matrix2.addEventListener('click', function(e) {
-                updateDotPosition(e, matrix2, dot2, coords2, 2);
-            });
-
-            matrix2.addEventListener('mousemove', function(e) {
-                if (e.buttons === 1) { // 左クリック押下中
-                    updateDotPosition(e, matrix2, dot2, coords2, 2);
-                }
-            });
-        }
-
-        // ドットの位置を更新
-        function updateDotPosition(event, matrix, dot, coords, matrixNum) {
-            const rect = matrix.getBoundingClientRect();
-            let x = event.clientX - rect.left;
-            let y = event.clientY - rect.top;
-
-            // 境界チェック
-            x = Math.max(0, Math.min(x, rect.width));
-            y = Math.max(0, Math.min(y, rect.height));
-
-            // パーセンテージに変換
-            const xPercent = (x / rect.width) * 100;
-            const yPercent = (y / rect.height) * 100;
-
-            // ドットの位置を更新
-            dot.style.left = `${xPercent}%`;
-            dot.style.top = `${yPercent}%`;
-
-            // 座標表示を更新（小数点2桁まで）
-            const xCoord = (x / rect.width).toFixed(2);
-            const yCoord = (y / rect.height).toFixed(2);
-            coords.textContent = `座標: X: ${xCoord}, Y: ${yCoord}`;
-        }
-
-        // 四象限をリセットして中央に配置
-        function resetTasteMatrices() {
-            // 四象限1（基本的な味の傾向）
-            const dot1 = document.getElementById('tasteDot1');
-            dot1.style.left = '50%';
-            dot1.style.top = '50%';
-            document.getElementById('coordinates1').textContent = '座標: X: 0.50, Y: 0.50';
-
-            // 四象限2（複雑さの好み）
-            const dot2 = document.getElementById('tasteDot2');
-            dot2.style.left = '50%';
-            dot2.style.top = '50%';
-            document.getElementById('coordinates2').textContent = '座標: X: 0.50, Y: 0.50';
-        }
-
-        // イベントリスナーの設定
-        function setupEventListeners() {
-            // 価格スライダーイベント - 連動機能追加
-            document.getElementById('minPrice').addEventListener('input', function() {
-                const minVal = parseInt(this.value);
-                const maxVal = parseInt(document.getElementById('maxPrice').value);
-
-                // 下限が上限を超えないように制限
-                if (minVal > maxVal) {
-                    this.value = maxVal;
-                    document.getElementById('minPriceDisplay').textContent = `¥${formatPrice(maxVal * 1000)}`;
-                } else {
-                    document.getElementById('minPriceDisplay').textContent = `¥${formatPrice(minVal * 1000)}`;
-                }
-            });
-
-            document.getElementById('maxPrice').addEventListener('input', function() {
-                const maxVal = parseInt(this.value);
-                const minVal = parseInt(document.getElementById('minPrice').value);
-
-                // 上限が下限を下回らないように制限
-                if (maxVal < minVal) {
-                    this.value = minVal;
-                    document.getElementById('maxPriceDisplay').textContent = `¥${formatPrice(minVal * 1000)}`;
-                } else {
-                    document.getElementById('maxPriceDisplay').textContent = `¥${formatPrice(maxVal * 1000)}`;
-                }
-            });
-
-            // ボタンイベント
-            document.getElementById('getRecommendation').addEventListener('click', function() {
-                getRecommendation();
-
-                // 提案結果エリアにスクロール
-                setTimeout(() => {
-                    const recommendationsPanel = document.getElementById('recommendationsPanel');
-                    if (recommendationsPanel) {
-                        recommendationsPanel.scrollIntoView({ behavior: 'smooth' });
-                    }
-                }, 500);
-            });
-
-            document.getElementById('refreshRecommendation').addEventListener('click', function() {
-                // 四象限のリセットと履歴クリア
-                resetTasteMatrices();
-                clearChatHistory();
-
-                // 提案パネルを非表示
-                document.getElementById('splitLayoutContainer').style.display = 'none';
-
-                // チャート初期化
-                if (profileChartInstance) {
-                    profileChartInstance.destroy();
-                    profileChartInstance = null;
-                }
-
-                // 蒸留所セクション初期化
-                document.getElementById('distillerySection').classList.remove('active');
-            });
-
-            document.getElementById('getAnotherRecommendation').addEventListener('click', getRecommendation);
-
-            // チャット関連イベント
-            document.getElementById('sendChatBtn').addEventListener('click', function() {
-                const input = document.getElementById('chatInput').value.trim();
-                if (input) {
-                    sendChatMessage();
-                }
-            });
-
-            document.getElementById('chatInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    const input = document.getElementById('chatInput').value.trim();
-                    if (input) {
-                        sendChatMessage();
-                    }
-                }
-            });
-
-            // 質問例クリック
-            document.querySelectorAll('.question-example').forEach(function(elem) {
-                elem.addEventListener('click', function() {
-                    document.getElementById('chatInput').value = this.getAttribute('data-question');
-                    sendChatMessage();
-                });
-            });
-
-            // マイク入力設定
-            setupVoiceInput();
-        }
-
-        // マイク入力の処理
-        function setupVoiceInput() {
-            const voiceButton = document.getElementById('voiceInputBtn');
-            const chatInput = document.getElementById('chatInput');
-
-            // SpeechRecognition APIの確認
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-            if (!SpeechRecognition) {
-                console.warn('Speech recognition not supported');
-                voiceButton.style.display = 'none';
-                return;
-            }
-
-            const recognition = new SpeechRecognition();
-            recognition.lang = 'ja-JP';
-            recognition.interimResults = true;
-            recognition.continuous = false;
-
-            let isRecording = false;
-
-            voiceButton.addEventListener('click', () => {
-                if (!isRecording) {
-                    // 録音開始
-                    recognition.start();
-                    voiceButton.classList.add('recording');
-                    voiceButton.textContent = '🔴';
-                    isRecording = true;
-                } else {
-                    // 録音終了
-                    recognition.stop();
-                    voiceButton.classList.remove('recording');
-                    voiceButton.textContent = '🎙️';
-                    isRecording = false;
-                }
-            });
-
-            // 音声認識結果
-            recognition.onresult = (event) => {
-                const transcript = Array.from(event.results)
-                    .map(result => result[0])
-                    .map(result => result.transcript)
-                    .join('');
-
-                chatInput.value = transcript;
-            };
-
-            // エラー処理
-            recognition.onerror = (event) => {
-                console.error('Speech recognition error', event.error);
-                voiceButton.classList.remove('recording');
-                voiceButton.textContent = '🎙️';
-                isRecording = false;
-
-                if (event.error === 'not-allowed') {
-                    showNotification('マイクへのアクセスが許可されていません。ブラウザの設定を確認してください。');
-                }
-            };
-
-            // 終了処理
-            recognition.onend = () => {
-                voiceButton.classList.remove('recording');
-                voiceButton.textContent = '🎙️';
-                isRecording = false;
-            };
-        }
-
-        // チャットメッセージ送信
-        function sendChatMessage() {
-            const input = document.getElementById('chatInput');
-            const message = input.value.trim();
-            if (!message) return;
-
-            // チャット履歴を表示
-            const chatHistory = document.getElementById('chatHistory');
-            chatHistory.style.display = 'block';
-
-            // ユーザーメッセージを追加
-            const userMessage = document.createElement('div');
-            userMessage.className = 'chat-message user-message';
-            userMessage.textContent = message;
-            chatHistory.appendChild(userMessage);
-
-            // 入力フィールドをクリア
-            input.value = '';
-
-            // スクロールを最下部に
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-
-            // AIの応答を生成
-            getAIResponse(message);
-        }
-
-        // AI応答の取得（モック版）
-        async function getAIResponse(message) {
-            // AIの応答を生成中であることを表示
-            const chatHistory = document.getElementById('chatHistory');
-            const aiMessage = document.createElement('div');
-            aiMessage.className = 'chat-message ai-message thinking-animation';
-            aiMessage.textContent = '';
-            chatHistory.appendChild(aiMessage);
-
-            // スクロールを最下部に
-            chatHistory.scrollTop = chatHistory.scrollHeight;
-
-            try {
-                // 少し待機
-                await new Promise(resolve => setTimeout(resolve, 2000));
-
-                let aiResponseText;
-
-                // 質問に基づいてモック応答を生成
-                if (message.includes('タリスカー44年')) {
-                    aiResponseText = '🍷 タリスカー44年オフィシャルボトルは、スコットランドのスカイ島で製造された非常に希少なウイスキーです。44年という長期熟成により、複雑で深みのある味わいを持ち、海岸の塩気と豊かなドライフルーツの風味が特徴的です。価格は80,400円と高額ですが、その価値に見合う究極の一本と言えるでしょう。';
-                } else if (message.includes('3000円以下') && message.includes('スモーキー') && message.includes('アイラ')) {
-                    aiResponseText = '🌊 申し訳ございませんが、3000円以下でアイラ島のスモーキーなウイスキーは現在のラインナップにはございません。アイラ島のウィスキーは希少性が高く、最もリーズナブルなアードベッグ10年でも8,500円となっております。予算を少し上げていただければ、本格的なアイラ島のピーティなウイスキーをご提案できます。';
-                } else if (message.includes('日本') && (message.includes('軽井沢') || message.includes('長濱'))) {
-                    aiResponseText = '🍯 日本のウイスキーでは、山崎18年（35,000円）をお勧めします。ミズナラ樽による独特の香りと、熟した果実の甘さが特徴的です。軽井沢は現在廃蒸留所のため入手困難ですが、山崎は日本を代表する銘柄として安定した品質を誇ります。フルーティーで複雑な味わいをお楽しみいただけます。';
-                } else if (message.includes('5000円前後') && message.includes('複雑')) {
-                    aiResponseText = '⭐ 5000円前後で複雑な味わいのウィスキーをお探しでしたら、現在のラインナップでは少し予算を上げていただく必要があります。アードベッグ10年（8,500円）は、強烈なスモーキーさと複雑な層を持つアイラ島の代表的な銘柄です。予算内でご希望に近いものをお探しの場合は、価格帯を調整いたしましょうか？';
-                } else {
-                    aiResponseText = 'ご質問ありがとうございます。ウイスキーに関するご質問にお答えします。具体的な銘柄名、価格帯、味の好み（スモーキー、フルーティーなど）をお教えいただければ、より詳しくご案内できます。メイン画面の「AI提案を開始」ボタンで、あなたの好みに合わせたウイスキーを自動選択することも可能です。';
-                }
-
-                aiMessage.textContent = aiResponseText;
-                aiMessage.classList.remove('thinking-animation');
-
-            } catch (error) {
-                console.error('Chat error:', error);
-                aiMessage.textContent = '申し訳ありません、現在AIチャット機能が使えません。味覚プロファイルからあなたに最適なウィスキーを提案します。「AI提案を開始」ボタンをお試しください。';
-                aiMessage.classList.remove('thinking-animation');
-            } finally {
-                // スクロールを最下部に
-                chatHistory.scrollTop = chatHistory.scrollHeight;
-            }
-        }
-
-        // チャット履歴をクリア
-        function clearChatHistory() {
-            const chatHistory = document.getElementById('chatHistory');
-            chatHistory.innerHTML = '';
-            chatHistory.style.display = 'none';
-            document.getElementById('chatInput').value = '';
-        }
-
-        // 統計情報を更新
-        function updateStatistics() {
-            if (!whiskyData || !whiskyData.length) return;
-
-            // ウィスキーの総数
-            document.getElementById('whiskyCount').textContent = whiskyData.length;
-            animateCounter('totalWhiskies', whiskyData.length);
-
-            // ユニークな産地数
-            const uniqueRegions = new Set();
-            whiskyData.forEach(whisky => {
-                if (whisky.region) {
-                    uniqueRegions.add(whisky.region.split(',')[0].trim());
-                }
-            });
-            animateCounter('uniqueRegions', uniqueRegions.size);
-
-            // 蒸溜所数のカウント（推定）
-            animateCounter('distilleryCount', Math.ceil(whiskyData.length * 0.8));
-
-            // 価格帯
-            let minPrice = Infinity;
-            let maxPrice = 0;
-
-            whiskyData.forEach(whisky => {
-                const price = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
-                if (price > 0) {
-                    minPrice = Math.min(minPrice, price);
-                    maxPrice = Math.max(maxPrice, price);
-                }
-            });
-
-            if (minPrice !== Infinity && maxPrice !== 0) {
-                document.getElementById('priceRange').textContent = `¥${formatPrice(minPrice)}〜¥${formatPrice(maxPrice)}`;
-            }
-        }
-
-        // 価格をフォーマット
-        function formatPrice(price) {
-            return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-        }
-
-        // AI推薦を取得
-        async function getRecommendation() {
-            // ローディング表示
-            document.getElementById('loadingIndicator').style.display = 'block';
-
-            try {
-                // 味覚座標の取得
-                const dot1 = document.getElementById('tasteDot1');
-                const dot2 = document.getElementById('tasteDot2');
-                const tasteX = parseFloat(dot1.style.left) / 100;
-                const tasteY = parseFloat(dot1.style.top) / 100;
-                const complexityX = parseFloat(dot2.style.left) / 100;
-                const complexityY = parseFloat(dot2.style.top) / 100;
-
-                // 価格帯の取得
-                const minPrice = document.getElementById('minPrice').value * 1000;
-                const maxPrice = document.getElementById('maxPrice').value * 1000;
-
-                // プログレスバーの表示
-                document.getElementById('loadingIndicator').style.display = 'none';
-                document.getElementById('progressContainer').style.display = 'block';
-
-                // プログレスバーを進行
-                let progress = 0;
-                const progressInterval = setInterval(() => {
-                    progress += 5;
-                    if (progress > 100) {
-                        clearInterval(progressInterval);
-                        document.getElementById('progressContainer').style.display = 'none';
-
-                        // 提案結果を表示
-                        showRecommendationResult(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice);
-                        return;
-                    }
-
-                    document.getElementById('progressFill').style.width = `${progress}%`;
-                    document.getElementById('progressPercentage').textContent = `${progress}%`;
-
-                    if (progress === 30) {
-                        document.getElementById('progressText').textContent = 'ウィスキープロファイルを分析中...';
-                    } else if (progress === 60) {
-                        document.getElementById('progressText').textContent = '最適なマッチングを計算中...';
-                    } else if (progress === 90) {
-                        document.getElementById('progressText').textContent = '結果をまとめています...';
-                    }
-                }, 50);
-
-                // 味の傾向の説明を更新
-                updateTasteDescription(tasteX, tasteY, complexityX, complexityY);
-
-                // 価格帯の表示を更新
-                document.getElementById('priceRange').textContent = 
-                    `¥${formatPrice(minPrice)} - ¥${formatPrice(maxPrice)}`;
-
-            } catch (error) {
-                console.error('Error getting recommendations:', error);
-                document.getElementById('loadingIndicator').style.display = 'none';
-                document.getElementById('progressContainer').style.display = 'none';
-                alert('提案の取得中にエラーが発生しました。もう一度お試しください。');
-            }
-        }
-
-        // 味の傾向の説明を更新
-        function updateTasteDescription(tasteX, tasteY, complexityX, complexityY) {
-            let tasteDesc = '';
-            let complexityDesc = '';
-
-            // 基本的な味の傾向の説明
-            if (tasteX < 0.33) {
-                if (tasteY < 0.33) {
-                    tasteDesc = 'ライトでフルーティー';
-                } else if (tasteY > 0.66) {
-                    tasteDesc = 'ライトでスモーキー';
-                } else {
-                    tasteDesc = 'ライトでバランスの良い';
-                }
-            } else if (tasteX > 0.66) {
-                if (tasteY < 0.33) {
-                    tasteDesc = 'ヘビーでフルーティー';
-                } else if (tasteY > 0.66) {
-                    tasteDesc = 'ヘビーでスモーキー';
-                } else {
-                    tasteDesc = 'ヘビーでバランスの良い';
-                }
-            } else {
-                if (tasteY < 0.33) {
-                    tasteDesc = 'バランスの良いフルーティー';
-                } else if (tasteY > 0.66) {
-                    tasteDesc = 'バランスの良いスモーキー';
-                } else {
-                    tasteDesc = 'バランスの取れた';
-                }
-            }
-
-            // 複雑さの好みの説明
-            if (complexityX < 0.33) {
-                if (complexityY < 0.33) {
-                    complexityDesc = '若くてまろやか';
-                } else if (complexityY > 0.66) {
-                    complexityDesc = '若くて強烈な複雑さを好む';
-                } else {
-                    complexityDesc = '若くてバランスの良い複雑さを好む';
-                }
-            } else if (complexityX > 0.66) {
-                if (complexityY < 0.33) {
-                    complexityDesc = '熟成されたまろやか';
-                } else if (complexityY > 0.66) {
-                    complexityDesc = '熟成された強烈な複雑さを好む';
-                } else {
-                    complexityDesc = '熟成されたバランスの良い複雑さを好む';
-                }
-            } else {
-                if (complexityY < 0.33) {
-                    complexityDesc = 'バランスの良いまろやか';
-                } else if (complexityY > 0.66) {
-                    complexityDesc = 'バランスの良い強烈な複雑さを好む';
-                } else {
-                    complexityDesc = 'バランスの良い複雑さを好む';
-                }
-            }
-
-            // 説明文を更新
-            document.getElementById('tasteDescription').textContent = tasteDesc;
-            document.getElementById('complexityDescription').textContent = complexityDesc;
-        }
-
-        // 推薦結果を表示
-        function showRecommendationResult(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice) {
-            console.log('showRecommendationResult 開始:', { tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice });
-
-            try {
-                // 表示コンテナを表示
-                document.getElementById('splitLayoutContainer').style.display = 'grid';
-
-                // ローカルデータからのマッチング
-                const recommendedWhiskies = findMatchingWhiskies(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice);
-
-                // 推奨ウィスキーの表示
-                if (!recommendedWhiskies || recommendedWhiskies.length === 0) {
-                    displayDefaultRecommendations();
-                    return;
-                }
-
-                displayLocalRecommendations(recommendedWhiskies);
-
-                // 最初のウィスキーを選択
-                if (recommendedWhiskies.length > 0) {
-                    selectWhisky(recommendedWhiskies[0]);
-                }
-            } catch (error) {
-                console.error('showRecommendationResult エラー:', error);
-                displayDefaultRecommendations();
-            }
-        }
-
-        // マッチするウィスキーを見つける
-        function findMatchingWhiskies(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice) {
-            if (!whiskyData || whiskyData.length === 0) {
-                console.error('ウィスキーデータがありません');
-                return [];
-            }
-
-            try {
-                // 価格を数値に変換
-                const whiskiesWithNumericPrice = whiskyData.map(whisky => {
-                    try {
-                        const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
-                        return { ...whisky, numericPrice };
-                    } catch (err) {
-                        return { ...whisky, numericPrice: 0 };
-                    }
-                });
-
-                // 価格帯でフィルタリング
-                const priceFiltered = whiskiesWithNumericPrice.filter(
-                    whisky => whisky.numericPrice >= minPrice && whisky.numericPrice <= maxPrice
-                );
-
-                if (priceFiltered.length === 0) {
-                    // 価格帯に合うものがない場合は全てから選択
-                    return whiskiesWithNumericPrice.slice(0, 3);
-                }
-
-                // 味覚プロファイルの基準
-                const targetFruity = tasteY < 0.5 ? 4 : 2;
-                const targetSmoky = tasteY > 0.5 ? 4 : 2;
-                const targetBody = tasteX > 0.5 ? 4 : 3;
-                const targetComplexity = complexityX > 0.5 ? 4 : 3;
-
-                // スコアリング関数
-                function scoreWhisky(whisky) {
-                    try {
-                        if (!whisky.taste_profile) {
-                            return 0;
-                        }
-
-                        const fruityScore = 5 - Math.abs((whisky.taste_profile.fruity || 0) - targetFruity);
-                        const smokyScore = 5 - Math.abs((whisky.taste_profile.smoky || 0) - targetSmoky);
-                        const bodyScore = 5 - Math.abs((whisky.taste_profile.body || 0) - targetBody);
-                        const complexityScore = 5 - Math.abs((whisky.taste_profile.complexity || 0) - targetComplexity);
-
-                        return fruityScore + smokyScore + bodyScore + complexityScore;
-                    } catch (err) {
-                        return 0;
-                    }
-                }
-
-                // スコアでソート
-                const scored = priceFiltered.map(whisky => ({
-                    whisky: whisky,
-                    score: scoreWhisky(whisky)
-                })).sort((a, b) => b.score - a.score);
-
-                // 上位3つを返す
-                return scored.slice(0, 3).map(item => item.whisky);
-            } catch (error) {
-                console.error('findMatchingWhiskies エラー:', error);
-                return [];
-            }
-        }
-
-        // ローカルデータからの提案を表示
-        function displayLocalRecommendations(whiskies) {
-            const recommendationContent = document.getElementById('recommendationContent');
-            recommendationContent.innerHTML = '';
-
-            if (!whiskies || whiskies.length === 0) {
-                displayDefaultRecommendations();
-                return;
-            }
-
-            whiskies.forEach((whisky, index) => {
-                const whiskeyCard = document.createElement('div');
-                whiskeyCard.className = 'whisky-card';
-                if (index === 0) {
-                    whiskeyCard.classList.add('featured', 'selected');
-                }
-
-                // HTMLエスケープ関数
-                function escapeHtml(text) {
-                    if (text === undefined || text === null) return '';
-                    return String(text)
-                        .replace(/&/g, '&amp;')
-                        .replace(/</g, '&lt;')
-                        .replace(/>/g, '&gt;')
-                        .replace(/"/g, '&quot;')
-                        .replace(/'/g, '&#039;');
-                }
-
-                whiskeyCard.innerHTML = `
-                    ${index === 0 ? '<div class="featured-label">おすすめ</div>' : ''}
-                    <div class="flex justify-between mb-2">
-                        <h3 class="text-lg font-bold text-cyan-400">${escapeHtml(whisky.name)}</h3>
-                        <span class="text-pink-500 font-bold">${escapeHtml(whisky.price)}</span>
-                    </div>
-                    <div class="mb-2">
-                        <span class="text-gray-400 text-sm">
-                            ${escapeHtml(whisky.region || 'N/A')} | ${escapeHtml(whisky.subcategory || 'Whisky')}
-                            ${whisky.abv ? ` | ${whisky.abv}% ABV` : ''}
-                        </span>
-                    </div>
-                    <p class="text-sm mb-3 text-left">${escapeHtml(whisky.tastingNote_ja || '情報がありません。')}</p>
-                    <div class="grid grid-cols-3 gap-2 text-center text-xs">
-                        <div>
-                            <span class="block text-yellow-400">フルーティー</span>
-                            <span class="block">${'★'.repeat((whisky.taste_profile?.fruity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.fruity || 0))}</span>
-                        </div>
-                        <div>
-                            <span class="block text-yellow-400">スモーキー</span>
-                            <span class="block">${'★'.repeat((whisky.taste_profile?.smoky || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.smoky || 0))}</span>
-                        </div>
-                        <div>
-                            <span class="block text-yellow-400">複雑さ</span>
-                            <span class="block">${'★'.repeat((whisky.taste_profile?.complexity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.complexity || 0))}</span>
-                        </div>
-                    </div>
-                `;
-
-                // クリックで選択
-                whiskeyCard.addEventListener('click', function() {
-                    document.querySelectorAll('.whisky-card').forEach(card => {
-                        card.classList.remove('selected');
-                    });
-                    whiskeyCard.classList.add('selected');
-                    selectWhisky(whisky);
-                });
-
-                recommendationContent.appendChild(whiskeyCard);
-            });
-        }
-
-        // デフォルトの提案を表示
-        function displayDefaultRecommendations() {
-            const recommendationContent = document.getElementById('recommendationContent');
-            recommendationContent.innerHTML = `
-                <div class="text-center p-4">
-                    <p class="mb-4">申し訳ありませんが、現在提案を生成できません。</p>
-                    <p>別の味覚プロファイルをお試しいただくか、チャットでお好みをお知らせください。</p>
-                </div>
-            `;
-        }
-
-        // ユーザーの好みのプロファイルを取得
-        function getUserProfile() {
-            // 味覚座標の取得
-            const dot1 = document.getElementById('tasteDot1');
-            const dot2 = document.getElementById('tasteDot2');
-            const tasteX = parseFloat(dot1.style.left) / 100;
-            const tasteY = parseFloat(dot1.style.top) / 100;
-            const complexityX = parseFloat(dot2.style.left) / 100;
-            const complexityY = parseFloat(dot2.style.top) / 100;
-
-            // 座標から各指標の値（0-5）を計算
-            const fruity = Math.round(5 * (1 - tasteY));
-            const smoky = Math.round(5 * tasteY);
-            const body = Math.round(5 * tasteX);
-            const spicy = Math.round(2.5 * (tasteX + tasteY));
-            const sweetness = Math.round(2.5 * (2 - tasteX - tasteY));
-            const complexity = Math.round(5 * complexityX);
-
-            return {
-                fruity,
-                spicy,
-                body,
-                smoky,
-                sweetness,
-                complexity
-            };
-        }
-
-        // ウィスキー選択時の処理
-        function selectWhisky(whisky) {
-            // レーダーチャートを更新
-            updateProfileChart(whisky.taste_profile, whisky.name);
-
-            // 蒸留所セクションを簡易表示（マップなし）
-            showSimpleDistilleryInfo(whisky);
-
-            // チャートパネルのスクロール処理
-            const chartPanel = document.getElementById('chartPanel');
-            if (chartPanel) {
-                chartPanel.scrollTop = 0;
-                
-                if (window.innerWidth <= 1024) {
-                    chartPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                } else {
-                    chartPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
-            }
-        }
-
-        // 簡易蒸留所情報表示
-        function showSimpleDistilleryInfo(whisky) {
-            try {
-                // 蒸留所セクションを表示
-                const distillerySection = document.getElementById('distillerySection');
-                if (distillerySection) {
-                    distillerySection.classList.add('active');
-                }
-
-                // マップを非表示
-                const mapContainer = document.querySelector('.map-container');
-                if (mapContainer) {
-                    mapContainer.style.display = 'none';
-                }
-
-                // 蒸留所名の推測
-                let distilleryName = "情報なし";
-                if (whisky.name && whisky.name.includes('山崎')) {
-                    distilleryName = "山崎蒸溜所";
-                } else if (whisky.name && whisky.name.includes('タリスカー')) {
-                    distilleryName = "タリスカー蒸溜所";
-                } else if (whisky.name && whisky.name.includes('マッカラン')) {
-                    distilleryName = "マッカラン蒸溜所";
-                } else if (whisky.region && whisky.region.includes('Japan')) {
-                    distilleryName = "日本の蒸溜所";
-                } else if (whisky.region && whisky.region.includes('Islay')) {
-                    distilleryName = "アイラ島の蒸溜所";
-                } else if (whisky.region && whisky.region.includes('Speyside')) {
-                    distilleryName = "スペイサイドの蒸溜所";
-                } else if (whisky.region) {
-                    distilleryName = `${whisky.region}の蒸溜所`;
-                }
-
-                // 蒸留所情報の表示
-                const distilleryNameElement = document.getElementById('distilleryName');
-                if (distilleryNameElement) {
-                    distilleryNameElement.textContent = distilleryName;
-                }
-
-                const distilleryRegionElement = document.getElementById('distilleryRegion');
-                if (distilleryRegionElement) {
-                    distilleryRegionElement.textContent = whisky.region || '情報なし';
-                }
-
-                const distilleryFoundedElement = document.getElementById('distilleryFounded');
-                if (distilleryFoundedElement) {
-                    distilleryFoundedElement.textContent = '情報なし';
-                }
-
-                const statusElement = document.getElementById('distilleryStatus');
-                if (statusElement) {
-                    statusElement.textContent = '情報なし';
-                    statusElement.className = 'status-unknown';
-                }
-
-                // 蒸留所の説明
-                const distilleryDescriptionElement = document.getElementById('distilleryDescription');
-                if (distilleryDescriptionElement) {
-                    distilleryDescriptionElement.textContent = 
-                        `${whisky.name}の蒸留所情報は現在利用できません。このウィスキーは${whisky.region || '不明な地域'}で製造されています。`;
-                }
-
-            } catch (err) {
-                console.error('簡易蒸留所情報表示エラー:', err);
-            }
-        }
-
-        // レーダーチャート更新（ユーザーの好みと選択ウィスキーを重ねて表示）
-        function updateProfileChart(profile, name) {
-            if (!profile) return;
-
-            const ctx = document.getElementById('combinedProfileChart');
-            if (!ctx) return;
-
-            const chartTitle = document.getElementById('chartTitle');
-            chartTitle.textContent = name ? `あなたの好み vs ${name}` : 'あなたの好み';
-
-            // ユーザーの好みプロファイルを取得
-            const userProfile = getUserProfile();
-
-            // Chart.jsの設定
-            const chartOptions = {
-                plugins: {
-                    legend: {
-                        display: true,
-                        position: 'bottom',
-                        labels: {
-                            color: 'rgba(255, 255, 255, 0.8)',
-                            font: {
-                                size: 14
-                            }
-                        }
-                    },
-                    tooltip: {
-                        enabled: true
-                    }
-                },
-                scales: {
-                    r: {
-                        angleLines: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        grid: {
-                            color: 'rgba(255, 255, 255, 0.1)'
-                        },
-                        pointLabels: {
-                            font: {
-                                size: 16
-                            },
-                            color: 'rgba(255, 255, 255, 0.9)'
-                        },
-                        ticks: {
-                            display: false,
-                            backdropColor: 'transparent'
-                        },
-                        beginAtZero: true,
-                        min: 0,
-                        max: 5
-                    }
-                },
-                maintainAspectRatio: false,
-                responsive: true
-            };
-
-            // データセットの準備（2つのデータセットで表示）
-            const datasets = [
-                {
-                    label: 'あなたの好み',
-                    data: [
-                        userProfile.fruity, 
-                        userProfile.spicy, 
-                        userProfile.body, 
-                        userProfile.smoky, 
-                        userProfile.sweetness, 
-                        userProfile.complexity
-                    ],
-                    backgroundColor: 'rgba(78, 205, 196, 0.2)',
-                    borderColor: '#4ecdc4',
-                    pointBackgroundColor: '#4ecdc4',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: '#4ecdc4',
-                    fill: true
-                }
-            ];
-
-            // 選択したウィスキーのデータがあれば追加
-            if (name) {
-                datasets.push({
-                    label: name,
-                    data: [
-                        profile.fruity || 0,
-                        profile.spicy || 0,
-                        profile.body || 0,
-                        profile.smoky || 0,
-                        profile.sweetness || 0,
-                        profile.complexity || 0
-                    ],
-                    backgroundColor: 'rgba(255, 107, 107, 0.2)',
-                    borderColor: '#ff6b6b',
-                    pointBackgroundColor: '#ff6b6b',
-                    pointBorderColor: '#fff',
-                    pointHoverBackgroundColor: '#fff',
-                    pointHoverBorderColor: '#ff6b6b',
-                    fill: true
-                });
-            }
-
-            // Chart.jsの更新または作成
-            if (profileChartInstance) {
-                // 既存のチャートを破棄してから再作成
-                profileChartInstance.destroy();
-            }
-
-            // 新しいチャートを作成
-            profileChartInstance = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: ['フルーティー', 'スパイシー', 'ボディ', 'スモーキー', '甘さ', '複雑さ'],
-                    datasets: datasets
-                },
-                options: chartOptions
-            });
-
-            console.log('Radar chart updated with new data');
-        }
-
-        // 通知を表示
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: rgba(255, 107, 107, 0.9);
-                color: white;
-                padding: 15px;
-                border-radius: 8px;
-                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-                z-index: 10002;
-                max-width: 400px;
-            `;
-
-            notification.innerHTML = `
-                <div style="display: flex; align-items: center;">
-                    <div style="margin-right: 15px;">⚠️</div>
-                    <div style="flex-grow: 1;">${message}</div>
-                    <button onclick="this.parentNode.parentNode.remove()" style="background: none; border: none; color: white; font-size: 20px; cursor: pointer; padding: 0; margin-left: 10px;">×</button>
-                </div>
-            `;
-
-            document.body.appendChild(notification);
-
-            // 5秒後に自動で閉じる
-            setTimeout(function() {
-                if (notification.parentNode) {
-                    notification.remove();
-                }
-            }, 5000);
-        }
-
-        // Google翻訳を開く
-        function openGoogleTranslate() {
-            const currentUrl = window.location.href;
-            const translateUrl = `https://translate.google.com/translate?sl=auto&u=${encodeURIComponent(currentUrl)}`;
-            window.open(translateUrl, '_blank');
-        }
-    </script>
-
-
-    <script id="html_badge_script1">
-        window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
-            "remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDkY2lTIvQeBzfJfxCA75TmO9SyHm4D9KLjrQmk6ww7hahBnZgz52%2BoHzZBmilyUJz4MuSK8ubtv0ftweY7GvZRTCE4Sf61ZFDROEJ7041Xc1xohDeaDZQ1vmODZYlwMHcVlY8oitxSUv3COM7cuM2olhqvNnAUWC4jBN1wK1c1rdL9POqv0gqo3vI4JgxuymR8FMCV7WTekwNt6%2F%2F0jzKYchwZc%2FudPsOrwZ1XM0ctOa7rRLTcrnZgPgjkhKeNB0VIOynKsl1Iew3G8gEsJEEEueQJ6WwheZHYF05HFBNBe7nl1sWzFTO6bZZbUnwKhKMGv3scUHdWb%2BCu3RA%2ByaHcaaysu12KMjcJDVZ5vaWTwvcQKIY0jzAG%2F4%2BpOhKlNjzewuh910J%2FbSbH%2F4klq%2FNuJ6lgZV2ZanYv3wIvZJRL2Mh0fp6pY1TJcpFmtUTs9W%2FkF%2FrBaya2lb6sCYlFCLoBhvpHl5CN6DJTszvP5uT25anzq1SWrMcInqWItSLqqjBfb1JaWKw2gdChlYXoUYwtc%3D";
-        window.__genspark_locale = "ja-JP";
-        window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDkY2lTIvQeBzfJfxCA75TmO9SyHm4D9KLjrQmk6ww7hahBnZgz52+oHzZBmilyUJz4MuSK8ubtv0ftweY7GvZRTCE4Sf61ZFDROEJ7041Xc1xohDeaDZQ1vmODZYlwMHcVlY8oitxSUv3COM7cuM2olhqvNnAUWC4jBN1wK1c1rdL9POqv0gqo3vI4JgxuymR8FMCV7WTekwNt6//0jzKYchwZc/udPsOrwZ1XM0ctOa7rRLTcrnZgPgjkhKeNB0VIOynKsl1Iew3G8gEsJEEEueQJ6WwheZHYF05HFBNBe7nl1sWzFTO6bZZbUnwKhKMGv3scUHdWb+Cu3RA+yaHcaaysu12KMjcJDVZ5vaWTwvcQKIY0jzAG/4+pOhKlNjzewuh910J/bSbH/4klq/NuJ6lgZV2ZanYv3wIvZJRL2Mh0fp6pY1TJcpFmtUTs9W/kF/rBaya2lb6sCYlFCLoBhvpHl5CN6DJTszvP5uT25anzq1SWrMcInqWItSLqqjBfb1JaWKw2gdChlYXoUYwtc=";
-    </script>
+<div class="header-container">
+<a href="https://www.hirunotsuki.com/" target="_blank" style="position: absolute; left: 20px; width: 90px; height: 90px; display: block;">
+<img class="logo" src="./NH_bar_logo_fin_white.png" alt="昼の月バーロゴ">
+</a>
+<h1 class="header-title">昼の月。AIソムリエ</h1>
+<div class="nav-links">
+<a href="whisky_list.html" class="nav-link" id="listLink">メニューリスト一覧</a>
+
+<!-- 1つの翻訳ボタンに統合 -->
+<a href="#" onclick="openGoogleTranslate(); return false;" class="nav-link translate-link">
+<span class="translate-icon">🌐</span> 翻訳
+</a>
+</div>
+</div>
+
+<div class="container-custom">
+<div class="whisky-overview">
+<h2>🍷 プレミアムウィスキーコレクション</h2>
+<div class="subtitle">本日は厳選された<span id="whiskyCount">0</span>本のウィスキーから</div>
+<div class="description">
+<strong>あなたの味覚に完璧にマッチする</strong>最高の一本を<br>
+AI技術で分析・提案いたします
+</div>
+<div class="whisky-stats">
+<div class="stat-item">
+<span class="stat-number" id="totalWhiskies">0</span>
+<div class="stat-label">厳選銘柄</div>
+</div>
+<div class="stat-item">
+<span class="stat-number" id="uniqueRegions">0</span>
+<div class="stat-label">産地</div>
+</div>
+<div class="stat-item">
+<span class="stat-number" id="distilleryCount">0</span>
+<div class="stat-label">蒸溜所の数</div>
+</div>
+<div class="stat-item">
+<span class="stat-number" id="aiTechnology">AI</span>
+<div class="stat-label">分析技術</div>
+</div>
+</div>
+
+<div class="card">
+<h2 class="text-2xl font-bold mb-4">
+💎 価格帯設定
+</h2>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block mb-2">下限価格: <span id="minPriceDisplay">¥5,000</span></label>
+<input type="range" id="minPrice" class="price-slider" min="1" max="80" value="5" step="1">
+</div>
+<div>
+<label class="block mb-2">上限価格: <span id="maxPriceDisplay">¥50,000</span></label>
+<input type="range" id="maxPrice" class="price-slider" min="1" max="80" value="50" step="1">
+</div>
+</div>
+</div>
+
+<div class="card">
+<h2 class="text-xl font-bold mb-3 text-center" style="margin-top: 10px; margin-bottom: 10px; padding-bottom: 15px; line-height: 2;">
+🌟 味覚プロファイル設定
+</h2>
+<p class="mb-6">2つの四角内をクリックして、それぞれの好みの位置を選択してください</p>
+
+<div class="dual-matrix-container">
+<div class="matrix-wrapper">
+<div class="matrix-title">基本的な味の傾向</div>
+<div class="relative">
+<div class="taste-matrix" id="tasteMatrix1">
+<div class="taste-dot" id="tasteDot1" style="left: 50%; top: 50%;"></div>
+</div>
+<div class="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm">フルーティー</div>
+<div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm">スモーキー</div>
+<div class="absolute -left-12 top-1/2 transform -translate-y-1/2 text-sm">ライト</div>
+<div class="absolute -right-12 top-1/2 transform -translate-y-1/2 text-sm">ヘビー</div>
+</div>
+<div class="text-center mt-4">
+<span id="coordinates1" class="text-xs text-gray-400">座標: X: 0.50, Y: 0.50</span>
+</div>
+</div>
+
+<div class="matrix-wrapper">
+<div class="matrix-title">複雑さの好み</div>
+<div class="relative">
+<div class="taste-matrix" id="tasteMatrix2">
+<div class="taste-dot" id="tasteDot2" style="left: 50%; top: 50%;"></div>
+</div>
+<div class="absolute -top-6 left-1/2 transform -translate-x-1/2 text-sm">まろやか</div>
+<div class="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-sm">強烈</div>
+<div class="absolute -left-12 top-1/2 transform -translate-y-1/2 text-sm">若い</div>
+<div class="absolute -right-12 top-1/2 transform -translate-y-1/2 text-sm">熟成</div>
+</div>
+<div class="text-center mt-4">
+<span id="coordinates2" class="text-xs text-gray-400">座標: X: 0.50, Y: 0.50</span>
+</div>
+</div>
+</div>
+</div>
+
+<div class="card chat-section">
+<h2 class="text-xl font-bold mb-3 text-center" style="margin-top: 10px; margin-bottom: 10px; padding-bottom: 15px; line-height: 2;">
+🗨️ AIソムリエとチャット
+</h2>
+
+<div class="chat-examples">
+<div class="mb-3 text-sm text-gray-300">質問例（クリックで入力）：</div>
+<div class="question-example" data-question="タリスカー44年（最高額80,400円）について詳しく教えて">💎 タリスカー44年（最高額80,400円）について詳しく教えて</div>
+<div class="question-example" data-question="3000円以下でスモーキーなアイラ島のウィスキーはある？">🌊 3000円以下でスモーキーなアイラ島のウィスキーはある？</div>
+<div class="question-example" data-question="日本の軽井沢や長濱などフルーティーなウィスキーを比較して">🍯 日本の軽井沢や長濱などフルーティーなウィスキーを比較して</div>
+<div class="question-example" data-question="5000円前後で複雑な味わいのウィスキーのおすすめは？">⭐ 5000円前後で複雑な味わいのウィスキーのおすすめは？</div>
+</div>
+
+<div class="chat-input-container">
+  <input type="text" id="chatInput" class="chat-input" placeholder="質問を入力してください...">
+  <div class="chat-buttons">
+    <button id="voiceInputBtn" class="voice-input-btn">🎙️</button>
+    <button id="sendChatBtn" class="btn-primary">💬 質問する</button>
+  </div>
+</div>
+
+<div id="chatHistory" class="chat-history" style="display: none;"></div>
+</div>
+
+<div class="text-center mb-8">
+<button id="getRecommendation" class="btn-primary text-lg mr-4">🎯 AI提案を開始</button>
+<button id="refreshRecommendation" class="btn-secondary text-lg">
+🔄 リフレッシュして再提案
+</button>
+</div>
+
+<div id="loadingIndicator" class="loading" style="display: none;">
+<div class="animate-spin text-4xl mb-4">🍷</div>
+<p class="mt-2">AIが最適なウィスキーを分析中...</p>
+</div>
+
+<div id="progressContainer" class="progress-container" style="display: none;">
+<div id="progressText" class="progress-text">結果を生成中...</div>
+<div class="progress-bar">
+<div id="progressFill" class="progress-fill" style="width: 0%;"></div>
+</div>
+<div id="progressPercentage" class="progress-percentage">0%</div>
+</div>
+
+<div id="splitLayoutContainer" class="split-layout" style="display: none;">
+<div id="recommendationsPanel" class="recommendations-panel">
+<h2 class="text-2xl font-bold mb-4" style="margin-top: 0px; margin-bottom: 10px; padding-bottom: 15px; line-height: 2;">
+🌙 AI提案結果
+</h2>
+<div id="preferencesSummary" class="recommendation-summary" style="display: block;">
+<h3 class="text-lg font-bold mb-3">🎯 あなたの好みの傾向</h3>
+<div class="space-y-2 text-sm">
+<div><strong>基本的な味の傾向:</strong> <span id="tasteDescription">バランスの取れた</span></div>
+<div><strong>複雑さの好み:</strong> <span id="complexityDescription">バランスの良い複雑さを好む</span></div>
+<div><strong>価格帯:</strong> <span id="priceRange">¥5,000 - ¥50,000</span></div>
+
+<div class="mt-3 pt-2 border-t border-gray-600">
+AIが総合的にプロファイルに基づいて、最適な3銘柄を厳選しました。
+</div>
+</div>
+</div>
+<div id="recommendationContent"></div>
+<div class="text-center mt-6">
+<button id="getAnotherRecommendation" class="btn-secondary">
+🔄 別の提案を受ける
+</button>
+</div>
+</div>
+
+<div id="chartPanel" class="chart-panel">
+<h2 class="text-2xl font-bold mb-4" style="margin-top: 0px; margin-bottom: 10px; padding-bottom: 15px; line-height: 2;">
+🕸️ 味覚プロファイル比較
+</h2>
+<div class="chart-container">
+<h3 id="chartTitle">あなたの好み</h3>
+<canvas id="combinedProfileChart" class="chart-canvas"></canvas>
+</div>
+
+<!-- 蒸留所マップと情報セクション -->
+<div id="distillerySection" class="distillery-section">
+<h2 class="text-xl font-bold mb-3 text-center" style="margin-top: 0px; margin-bottom: 10px; padding-bottom: 15px; line-height: 2;">
+🗾 蒸溜所情報
+</h2>
+<div class="distillery-container">
+<div class="map-container">
+<div id="distilleryMap"></div>
+</div>
+
+<div class="distillery-info" id="distilleryInfo">
+<h3 id="distilleryName">蒸留所名</h3>
+<div class="distillery-info-grid" id="distilleryDetails">
+<div class="info-label">所在地:</div>
+<div class="info-value" id="distilleryRegion">-</div>
+
+<div class="info-label">創業年:</div>
+<div class="info-value" id="distilleryFounded">-</div>
+
+<div class="info-label">現在の状況:</div>
+<div class="info-value" id="distilleryStatus">-</div>
+</div>
+
+<div class="distillery-description" id="distilleryDescription">
+現在情報登録されていません。
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="custom-footer">
+Powered by Nebula Hirozon Technology
+</div>
+</div>
+
+<script>
+// グローバル変数
+let whiskyData = [];
+let distilleryDatabase = {};
+let distilleryMarkers = {};
+let distilleryMap = null;
+let profileChartInstance = null;
+let brandToDistilleryMapping = {};
+
+// ユーザー好みを保存するグローバル変数
+let savedUserPreferences = {
+minPrice: null,
+maxPrice: null,
+tasteX: null,
+tasteY: null,
+complexityX: null,
+complexityY: null,
+region: null
+};
+
+// カウントアップアニメーション関数
+function animateCounter(elementId, targetValue) {
+const element = document.getElementById(elementId);
+if (!element) return;
+
+// 現在の値を取得（数値でない場合は0を設定）
+let currentValue = 0;
+
+// アニメーションのタイムステップ
+const duration = 1000; // 1000ms = 1秒
+const steps = 60;
+const stepTime = duration / steps;
+
+// ステップごとの増加量
+const increment = targetValue / steps;
+
+// カウントアップ関数
+function updateCounter(currentStep) {
+if (currentStep <= steps) {
+// 現在の値を計算
+currentValue = Math.min(Math.ceil(increment * currentStep), targetValue);
+
+// 表示を更新（AIの場合は文字列のまま）
+if (elementId === 'aiTechnology') {
+element.textContent = 'AI';
+} else {
+element.textContent = currentValue.toString();
+}
+
+// 次のステップを予約
+setTimeout(() => updateCounter(currentStep + 1), stepTime);
+}
+}
+
+// カウントアップ開始
+updateCounter(1);
+}
+
+// DOMContentLoaded イベント
+document.addEventListener('DOMContentLoaded', function() {
+console.log('DOM fully loaded');
+
+// ページがロードされたときに履歴をクリア
+clearChatHistory();
+resetTasteMatrices();
+
+// 変数の初期化を確実に行う
+if (typeof whiskyData === 'undefined') {
+whiskyData = [];
+}
+
+if (typeof distilleryDatabase === 'undefined') {
+distilleryDatabase = {};
+}
+
+if (typeof distilleryMarkers === 'undefined') {
+distilleryMarkers = {};
+}
+
+// ナビゲーションリンクのアクティブ状態を設定
+setActiveNavLinks();
+
+// 四象限マトリックスの初期化
+initializeTasteMatrix();
+
+// 統合データ読み込み - 非同期処理
+loadUnifiedWhiskyData().then(data => {
+// データ読み込み成功後のコールバック
+console.log('統合データ読み込み完了');
+
+// イベントリスナーの設定
+setupEventListeners();
+
+// 統計情報を更新
+updateStatistics();
+
+}).catch(err => {
+console.error('データ読み込みエラー:', err);
+});
+});
+
+// ナビゲーションリンクのアクティブ状態を設定
+function setActiveNavLinks() {
+const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+const links = document.querySelectorAll('.nav-links a');
+
+links.forEach(link => {
+const href = link.getAttribute('href').split('/').pop();
+if (currentPage === href) {
+link.classList.add('active');
+} else {
+link.classList.remove('active');
+}
+});
+}
+
+// 統合ウィスキーデータ読み込み
+async function loadUnifiedWhiskyData() {
+console.log('統合ウィスキーデータ読み込み開始...');
+
+try {
+const response = await fetch('unified_whisky_data.json');
+const data = await response.json();
+
+// JSONの構造に合わせてデータを取得
+whiskyData = data.whiskies || [];
+distilleryDatabase = data.distilleries || {};
+brandToDistilleryMapping = data.brandToDistillery || {};
+
+console.log('統合データを正常に読み込みました:', whiskyData.length, '銘柄');
+console.log('蒸溜所データベース:', Object.keys(distilleryDatabase).length, '蒸溜所');
+console.log('ブランドマッピング:', Object.keys(brandToDistilleryMapping).length, '件');
+
+return whiskyData;
+} catch (error) {
+console.error('統合ウィスキーデータの読み込みに失敗しました:', error);
+whiskyData = [];
+distilleryDatabase = {};
+brandToDistilleryMapping = {};
+
+// エラー時はデフォルトデータを使用
+console.warn('デフォルトデータを使用します');
+const defaultData = getDefaultWhiskyData();
+whiskyData = defaultData;
+return defaultData;
+}
+}
+
+// ウィスキーから蒸溜所を取得する関数（統合JSON対応）
+function getDistilleryForWhisky(whisky) {
+// 1. brandToDistilleryMappingから直接取得を試す
+if (brandToDistilleryMapping[whisky.name]) {
+const distilleryKey = brandToDistilleryMapping[whisky.name];
+if (distilleryDatabase[distilleryKey]) {
+console.log(`ブランドマッピングで発見: ${whisky.name} -> ${distilleryKey}`);
+return distilleryDatabase[distilleryKey];
+}
+}
+
+// 2. 部分一致で検索
+const whiskyNameLower = whisky.name.toLowerCase();
+for (const distilleryKey in distilleryDatabase) {
+const distilleryNameLower = distilleryKey.toLowerCase().replace(/蒸溜所/g, '');
+if (whiskyNameLower.includes(distilleryNameLower)) {
+console.log(`部分一致で発見: ${whisky.name} -> ${distilleryKey}`);
+return distilleryDatabase[distilleryKey];
+}
+}
+
+console.log(`蒸溜所が見つかりません: ${whisky.name}`);
+return null;
+}
+
+// デフォルトウィスキーデータ
+function getDefaultWhiskyData() {
+return [
+{
+id: "1",
+name: "タリスカー 44年 オフィシャルボトル",
+price: "¥80,400",
+region: "Scotland, Isle of Skye",
+subcategory: "Single Malt Scotch Whisky",
+abv: 45.8,
+tastingNote_ja: "この非常に希少なタリスカー44年は、強い海岸の塩気を持つ複雑な海洋性の特徴を提供します。豊かなドライフルーツ、ダークチョコレート、アンティークレザーの層がタリスカー特有のピリッとしたスモークと調和しています。長期熟成により、トロピカルフルーツ、ミツロウ、繊細な樽のスパイスのノートを持つ驚くべき深みが生まれ、非常に長く温かみのある余韻へと続きます。",
+taste_profile: {
+fruity: 3,
+spicy: 4,
+body: 5,
+smoky: 4,
+sweetness: 2,
+complexity: 5
+}
+},
+{
+id: "2",
+name: "ポートエレン 25年 one of only bottles",
+price: "¥20,400",
+region: "Scotland, Islay",
+subcategory: "Single Malt Scotch Whisky",
+abv: 40,
+tastingNote_ja: "ポートエレン25年は希少で高く評価されるアイラウイスキーで、強い海洋性の特徴を持ちます。複雑な泥炭の煙、海塩、ヨードの層が柑橘類の皮、バニラ、微妙なトロピカルフルーツとバランスよく調和しています。長い余韻には、オークタンニン、白胡椒、そして長く続く甘い煙が現れます。",
+taste_profile: {
+fruity: 2,
+spicy: 3,
+body: 4,
+smoky: 5,
+sweetness: 2,
+complexity: 5
+}
+},
+{
+id: "3",
+name: "マッカラン 1990年 SAMAROLI",
+price: "¥12,200",
+region: "Scotland",
+subcategory: "Single Malt Scotch Whisky - Speyside",
+abv: 40,
+tastingNote_ja: "有名な独立系ボトラー、サマローリによってボトリングされた希少なマッカラン1990年。豊かなシェリーの影響があり、ドライフルーツ、オレンジピール、クリスマスケーキの風味が特徴。複雑な樽のスパイスが蜂蜜、トフィー、ダークチョコレートと調和しています。フィニッシュは長く、革、タバコ、そして余韻の残るドライフルーツの甘さが感じられます。",
+taste_profile: {
+fruity: 4,
+spicy: 3,
+body: 5,
+smoky: 1,
+sweetness: 4,
+complexity: 5
+}
+}
+];
+}
+
+// 四象限マトリックスの初期化
+function initializeTasteMatrix() {
+const matrix1 = document.getElementById('tasteMatrix1');
+const dot1 = document.getElementById('tasteDot1');
+const coords1 = document.getElementById('coordinates1');
+
+const matrix2 = document.getElementById('tasteMatrix2');
+const dot2 = document.getElementById('tasteDot2');
+const coords2 = document.getElementById('coordinates2');
+
+// 中央位置に初期化
+resetTasteMatrices();
+
+// マトリックス1のイベント
+matrix1.addEventListener('click', function(e) {
+updateDotPosition(e, matrix1, dot1, coords1, 1);
+});
+
+matrix1.addEventListener('mousemove', function(e) {
+if (e.buttons === 1) { // 左クリック押下中
+updateDotPosition(e, matrix1, dot1, coords1, 1);
+}
+});
+
+// マトリックス2のイベント
+matrix2.addEventListener('click', function(e) {
+updateDotPosition(e, matrix2, dot2, coords2, 2);
+});
+
+matrix2.addEventListener('mousemove', function(e) {
+if (e.buttons === 1) { // 左クリック押下中
+updateDotPosition(e, matrix2, dot2, coords2, 2);
+}
+});
+}
+
+// ドットの位置を更新
+function updateDotPosition(event, matrix, dot, coords, matrixNum) {
+const rect = matrix.getBoundingClientRect();
+let x = event.clientX - rect.left;
+let y = event.clientY - rect.top;
+
+// 境界チェック
+x = Math.max(0, Math.min(x, rect.width));
+y = Math.max(0, Math.min(y, rect.height));
+
+// パーセンテージに変換
+const xPercent = (x / rect.width) * 100;
+const yPercent = (y / rect.height) * 100;
+
+// ドットの位置を更新
+dot.style.left = `${xPercent}%`;
+dot.style.top = `${yPercent}%`;
+
+// 座標表示を更新（小数点2桁まで）
+const xCoord = (x / rect.width).toFixed(2);
+const yCoord = (y / rect.height).toFixed(2);
+coords.textContent = `座標: X: ${xCoord}, Y: ${yCoord}`;
+}
+
+// 四象限をリセットして中央に配置
+function resetTasteMatrices() {
+// 四象限1（基本的な味の傾向）
+const dot1 = document.getElementById('tasteDot1');
+dot1.style.left = '50%';
+dot1.style.top = '50%';
+document.getElementById('coordinates1').textContent = '座標: X: 0.50, Y: 0.50';
+
+// 四象限2（複雑さの好み）
+const dot2 = document.getElementById('tasteDot2');
+dot2.style.left = '50%';
+dot2.style.top = '50%';
+document.getElementById('coordinates2').textContent = '座標: X: 0.50, Y: 0.50';
+}
+
+// イベントリスナーの設定
+function setupEventListeners() {
+// 価格スライダーイベント - 連動機能追加
+document.getElementById('minPrice').addEventListener('input', function() {
+const minVal = parseInt(this.value);
+const maxVal = parseInt(document.getElementById('maxPrice').value);
+
+// 下限が上限を超えないように制限
+if (minVal > maxVal) {
+this.value = maxVal;
+document.getElementById('minPriceDisplay').textContent = `¥${formatPrice(maxVal * 1000)}`;
+} else {
+document.getElementById('minPriceDisplay').textContent = `¥${formatPrice(minVal * 1000)}`;
+}
+});
+
+document.getElementById('maxPrice').addEventListener('input', function() {
+const maxVal = parseInt(this.value);
+const minVal = parseInt(document.getElementById('minPrice').value);
+
+// 上限が下限を下回らないように制限
+if (maxVal < minVal) {
+this.value = minVal;
+document.getElementById('maxPriceDisplay').textContent = `¥${formatPrice(minVal * 1000)}`;
+} else {
+document.getElementById('maxPriceDisplay').textContent = `¥${formatPrice(maxVal * 1000)}`;
+}
+});
+
+// ボタンイベント
+document.getElementById('getRecommendation').addEventListener('click', function() {
+getRecommendation();
+
+// 提案結果エリアにスクロール
+setTimeout(() => {
+const recommendationsPanel = document.getElementById('recommendationsPanel');
+if (recommendationsPanel) {
+recommendationsPanel.scrollIntoView({ behavior: 'smooth' });
+}
+}, 500);
+});
+
+document.getElementById('refreshRecommendation').addEventListener('click', function() {
+// 四象限のリセットと履歴クリア
+resetTasteMatrices();
+clearChatHistory();
+
+// 提案パネルを非表示
+document.getElementById('splitLayoutContainer').style.display = 'none';
+
+// チャート初期化
+if (profileChartInstance) {
+profileChartInstance.destroy();
+profileChartInstance = null;
+}
+
+// 蒸留所セクション初期化
+document.getElementById('distillerySection').classList.remove('active');
+});
+
+document.getElementById('getAnotherRecommendation').addEventListener('click', getRecommendation);
+
+// チャット関連イベント
+document.getElementById('sendChatBtn').addEventListener('click', function() {
+const input = document.getElementById('chatInput').value.trim();
+if (input) {
+sendChatMessage();
+}
+});
+
+document.getElementById('chatInput').addEventListener('keypress', function(e) {
+if (e.key === 'Enter') {
+const input = document.getElementById('chatInput').value.trim();
+if (input) {
+sendChatMessage();
+}
+}
+});
+
+// 質問例クリック
+document.querySelectorAll('.question-example').forEach(function(elem) {
+elem.addEventListener('click', function() {
+document.getElementById('chatInput').value = this.getAttribute('data-question');
+sendChatMessage();
+});
+});
+
+// マイク入力設定
+setupVoiceInput();
+}
+
+// マイク入力の処理
+function setupVoiceInput() {
+const voiceButton = document.getElementById('voiceInputBtn');
+const chatInput = document.getElementById('chatInput');
+
+// SpeechRecognition APIの確認
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (!SpeechRecognition) {
+console.warn('Speech recognition not supported');
+voiceButton.style.display = 'none';
+return;
+}
+
+const recognition = new SpeechRecognition();
+recognition.lang = 'ja-JP';
+recognition.interimResults = true;
+recognition.continuous = false;
+
+let isRecording = false;
+
+voiceButton.addEventListener('click', () => {
+if (!isRecording) {
+// 録音開始
+recognition.start();
+voiceButton.classList.add('recording');
+voiceButton.textContent = '🔴';
+isRecording = true;
+} else {
+// 録音終了
+recognition.stop();
+voiceButton.classList.remove('recording');
+voiceButton.textContent = '🎙️';
+isRecording = false;
+}
+});
+
+// 音声認識結果
+recognition.onresult = (event) => {
+const transcript = Array.from(event.results)
+.map(result => result[0])
+.map(result => result.transcript)
+.join('');
+
+chatInput.value = transcript;
+};
+
+// エラー処理
+recognition.onerror = (event) => {
+console.error('Speech recognition error', event.error);
+voiceButton.classList.remove('recording');
+voiceButton.textContent = '🎙️';
+isRecording = false;
+
+if (event.error === 'not-allowed') {
+showNotification('マイクへのアクセスが許可されていません。ブラウザの設定を確認してください。');
+}
+};
+
+// 終了処理
+recognition.onend = () => {
+voiceButton.classList.remove('recording');
+voiceButton.textContent = '🎙️';
+isRecording = false;
+};
+}
+
+// チャットメッセージ送信（修正版）
+function sendChatMessage() {
+const input = document.getElementById('chatInput');
+const message = input.value.trim();
+if (!message) return;
+
+// チャット履歴を表示
+const chatHistory = document.getElementById('chatHistory');
+chatHistory.style.display = 'block';
+
+// ユーザーメッセージを追加
+const userMessage = document.createElement('div');
+userMessage.className = 'chat-message user-message';
+userMessage.textContent = message;
+chatHistory.appendChild(userMessage);
+
+// 入力フィールドをクリア
+input.value = '';
+
+// スクロールを最下部に
+chatHistory.scrollTop = chatHistory.scrollHeight;
+
+// 新しく追加: メッセージから好みを抽出
+try {
+const prefs = extractPreferencesFromMessage(message);
+
+// 抽出した好みを保存
+if (prefs && Object.keys(prefs).length > 0) {
+Object.assign(savedUserPreferences, prefs);
+
+// UI要素を更新
+updateUIWithPreferences(prefs);
+}
+} catch (error) {
+console.error('好み抽出エラー:', error);
+}
+
+// AIの応答を生成
+getAIResponse(message);
+}
+
+// AI応答の取得（修正版）
+async function getAIResponse(message) {
+// AIの応答を生成中であることを表示
+const chatHistory = document.getElementById('chatHistory');
+const aiMessage = document.createElement('div');
+aiMessage.className = 'chat-message ai-message thinking-animation';
+aiMessage.textContent = ''; // テキストは空に、アニメーションがコンテンツを表示します
+chatHistory.appendChild(aiMessage);
+
+// スクロールを最下部に
+chatHistory.scrollTop = chatHistory.scrollHeight;
+
+try {
+// 新しく追加: 好み通知メッセージの作成
+let prefsMessage = '';
+const prefs = extractPreferencesFromMessage(message);
+
+if (prefs && Object.keys(prefs).length > 0) {
+prefsMessage = 'あなたの好みを理解しました：\n';
+
+if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
+if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
+if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
+if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
+prefsMessage += '\n提案システムに反映しました。「AI提案を開始」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
+}
+
+// 味覚座標の取得
+const dot1 = document.getElementById('tasteDot1');
+const dot2 = document.getElementById('tasteDot2');
+const tasteX = parseFloat(dot1.style.left) / 100;
+const tasteY = parseFloat(dot1.style.top) / 100;
+
+// 価格帯の取得
+const minPrice = document.getElementById('minPrice').value * 1000;
+const maxPrice = document.getElementById('maxPrice').value * 1000;
+
+// チャット履歴を収集
+const chatHistoryData = collectChatHistory();
+
+// API呼び出し
+const response = await fetch('/.netlify/functions/claude-api', {
+method: 'POST',
+headers: {
+'Content-Type': 'application/json'
+},
+body: JSON.stringify({
+minPrice: minPrice,
+maxPrice: maxPrice,
+tasteX: tasteX.toFixed(2),
+tasteY: tasteY.toFixed(2),
+additionalPreferences: message,
+chatHistory: chatHistoryData // チャット履歴を追加
+})
+});
+
+if (!response.ok) {
+throw new Error(`API error: ${response.status}`);
+}
+
+const data = await response.json();
+
+// API応答を表示
+let aiResponseText = '';
+if (data.success && data.data) {
+if (data.data.choices && data.data.choices[0] && data.data.choices[0].message) {
+// 新しい構造: data.data.choices[0].message.content
+aiResponseText = data.data.choices[0].message.content;
+} else if (data.data.content && data.data.content.length > 0) {
+// 古い構造: data.data.content[0].text
+aiResponseText = data.data.content[0].text;
+} else {
+throw new Error('Invalid API response structure');
+}
+} else {
+throw new Error('API response missing success or data field');
+}
+
+// 新しく追加: 好み通知を先頭に追加
+if (prefsMessage) {
+aiResponseText = prefsMessage + aiResponseText;
+}
+
+aiMessage.textContent = aiResponseText;
+aiMessage.classList.remove('thinking-animation'); // この行を追加
+updateRecommendationsFromChat(aiResponseText); // この行を追加
+
+} catch (error) {
+console.error('Chat error:', error);
+
+// エラーの場合、既存のモックレスポンスを使用
+let aiResponseText;
+
+// 質問に基づいてモック応答を生成（既存のコード）
+if (message.includes('タリスカー44年')) {
+aiResponseText = '🍷 タリスカー44年オフィシャルボトルは...';
+} else if (message.includes('3000円以下') && message.includes('スモーキー') && message.includes('アイラ')) {
+aiResponseText = '🌊 キルホーマン2013-2021信濃屋（¥2,000）が...';
+} else if (message.includes('日本') && (message.includes('軽井沢') || message.includes('長濱'))) {
+aiResponseText = '🍯 軽井沢25年（¥25,000）は日本を代表する銘柄で...';
+} else if (message.includes('5000円前後') && message.includes('complexity5点')) {
+aiResponseText = '⭐ 5000円前後でcomplexity5点を持つおすすめは...';
+} else {
+aiResponseText = '申し訳ありません、現在AIチャット機能が使えません。味覚プロファイルからあなたに最適なウィスキーを提案します。';
+}
+
+// 新しく追加: 好みを抽出できていれば通知を追加
+const prefs = extractPreferencesFromMessage(message);
+if (prefs && Object.keys(prefs).length > 0) {
+let prefsMessage = 'あなたの好みを理解しました：\n';
+
+if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
+if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
+if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
+if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
+prefsMessage += '\n提案システムに反映しました。「AI提案を開始」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
+
+aiResponseText = prefsMessage + aiResponseText;
+}
+
+aiMessage.textContent = aiResponseText;
+aiMessage.classList.remove('thinking-animation'); // この行を追加
+updateRecommendationsFromChat(aiResponseText); // この行を追加
+} finally {
+// スクロールを最下部に
+chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+}
+
+// チャット履歴を収集する関数
+function collectChatHistory() {
+const chatHistory = document.getElementById('chatHistory');
+if (!chatHistory) return [];
+
+const messages = chatHistory.querySelectorAll('.chat-message');
+const history = [];
+
+messages.forEach(message => {
+const isAI = message.classList.contains('ai-message');
+// thinking-animationクラスを持つメッセージは除外
+if (!message.classList.contains('thinking-animation')) {
+history.push({
+role: isAI ? 'assistant' : 'user',
+content: message.textContent
+});
+}
+});
+
+return history;
+}
+
+// チャット応答からウィスキー名を抽出し、推奨リストに反映する関数
+function updateRecommendationsFromChat(chatResponseText) {
+if (!chatResponseText || !whiskyData || whiskyData.length === 0) return;
+
+console.log('チャット応答からウィスキー銘柄を抽出中...');
+
+// ウィスキー名を抽出するパターン
+const patterns = [
+/「([^」]+)」/g,  // 「」で囲まれた部分
+/『([^』]+)』/g,  // 『』で囲まれた部分
+/(\S+\s?\d+年[^\s、。,\.]+)/g,  // "〇〇 XX年" パターン
+/((?:DAILUAINE|タリスカー|ポートエレン|マッカラン|軽井沢|山崎|白州|響|長濱|キルホーマン|ABERFELDY|GLENLIVET|SPRINGBANK|GLENGLASSAUGH|ARDBEG|MORTLACH|CAOL ILA|KILCHOMAN)[^\s、。,\.]*\s?\d*年?[^\s、。,\.]*)/g  // 特定の銘柄名
+];
+
+// 抽出されたウィスキー名を保存する配列
+let extractedNames = [];
+
+// 各パターンで抽出を試みる
+patterns.forEach(pattern => {
+let match;
+while ((match = pattern.exec(chatResponseText)) !== null) {
+if (match[1]) {
+extractedNames.push(match[1].trim());
+} else if (match[0]) {
+extractedNames.push(match[0].trim());
+}
+}
+});
+
+// 重複を削除
+extractedNames = [...new Set(extractedNames)];
+
+console.log('抽出されたウィスキー銘柄:', extractedNames);
+
+if (extractedNames.length === 0) {
+console.log('ウィスキー銘柄を抽出できませんでした');
+return;
+}
+
+// 抽出した銘柄名に最も近いウィスキーを探す
+const recommendedWhiskies = [];
+
+extractedNames.forEach(name => {
+// 完全一致または部分一致を探す
+const matchingWhisky = whiskyData.find(w => 
+w.name === name || 
+w.name.includes(name) || 
+name.includes(w.name)
+);
+
+if (matchingWhisky) {
+console.log(`マッチしたウィスキー: ${name} → ${matchingWhisky.name}`);
+recommendedWhiskies.push(matchingWhisky);
+}
+});
+
+// マッチしたウィスキーがあれば表示
+if (recommendedWhiskies.length > 0) {
+console.log(`${recommendedWhiskies.length}個のウィスキーをチャットから抽出して表示します`);
+displayLocalRecommendations(recommendedWhiskies);
+
+// 最初のウィスキーを選択
+if (recommendedWhiskies.length > 0) {
+selectWhisky(recommendedWhiskies[0]);
+}
+
+// 推奨パネルを表示
+document.getElementById('splitLayoutContainer').style.display = 'grid';
+}
+}
+
+// チャットメッセージから好みを抽出する関数
+function extractPreferencesFromMessage(message) {
+if (!message) return {};
+
+message = message.toLowerCase();
+const preferences = {};
+
+// 価格条件の抽出
+const maxPriceRegex = /([\d,]+)円?(以下|まで|未満|より安い)/;
+const minPriceRegex = /([\d,]+)円?(以上|から|より高い)/;
+const priceRangeRegex = /([\d,]+)円?[〜～-]+([\d,]+)円?/;
+
+// 価格範囲の抽出
+const priceRangeMatch = message.match(priceRangeRegex);
+if (priceRangeMatch) {
+const minPrice = parseInt(priceRangeMatch[1].replace(/,/g, ''));
+const maxPrice = parseInt(priceRangeMatch[2].replace(/,/g, ''));
+preferences.minPrice = minPrice;
+preferences.maxPrice = maxPrice;
+} else {
+// 最低価格の抽出
+const minPriceMatch = message.match(minPriceRegex);
+if (minPriceMatch) {
+preferences.minPrice = parseInt(minPriceMatch[1].replace(/,/g, ''));
+}
+
+// 最高価格の抽出
+const maxPriceMatch = message.match(maxPriceRegex);
+if (maxPriceMatch) {
+preferences.maxPrice = parseInt(maxPriceMatch[1].replace(/,/g, ''));
+}
+}
+
+// 地域の抽出（修正版）
+if (message.includes('アイラ') || message.includes('islay')) {
+preferences.region = 'Islay';
+} else if (message.includes('スペイサイド') || message.includes('speyside')) {
+preferences.region = 'Speyside';
+} else if (message.includes('ハイランド') || message.includes('highland')) {
+preferences.region = 'Highland';
+} else if (message.includes('日本') || message.includes('ジャパン') || message.includes('ジャパニーズ') || 
+message.includes('japan') || message.includes('japanese')) {
+preferences.region = 'Japan';  // 「Japan」または「Japanese」を含む場合
+}
+
+// 味の傾向の抽出
+if (message.includes('スモーキー') || message.includes('ピート') || message.includes('smoke')) {
+preferences.tasteY = 0.8; // スモーキー方向
+} else if (message.includes('フルーティー') || message.includes('fruity') || message.includes('果実')) {
+preferences.tasteY = 0.2; // フルーティー方向
+}
+
+if (message.includes('ヘビー') || message.includes('heavy') || message.includes('重い')) {
+preferences.tasteX = 0.8; // ヘビー方向
+} else if (message.includes('ライト') || message.includes('light') || message.includes('軽い')) {
+preferences.tasteX = 0.2; // ライト方向
+}
+
+return preferences;
+}
+
+// 抽出した好みに基づいてUI要素を更新する関数
+function updateUIWithPreferences(preferences) {
+try {
+// 価格スライダーの更新
+if (preferences.minPrice) {
+const minSlider = document.getElementById('minPrice');
+if (minSlider) {
+const value = Math.max(1, Math.min(80, Math.floor(preferences.minPrice / 1000)));
+minSlider.value = value;
+const minPriceDisplay = document.getElementById('minPriceDisplay');
+if (minPriceDisplay) {
+minPriceDisplay.textContent = `¥${value},000`;
+}
+}
+}
+
+if (preferences.maxPrice) {
+const maxSlider = document.getElementById('maxPrice');
+if (maxSlider) {
+const value = Math.max(1, Math.min(80, Math.floor(preferences.maxPrice / 1000)));
+maxSlider.value = value;
+const maxPriceDisplay = document.getElementById('maxPriceDisplay');
+if (maxPriceDisplay) {
+maxPriceDisplay.textContent = `¥${value},000`;
+}
+}
+}
+
+// 味覚マトリクスの更新
+const dot1 = document.getElementById('tasteDot1');
+const dot2 = document.getElementById('tasteDot2');
+
+if (preferences.tasteX !== undefined && dot1) {
+dot1.style.left = `${preferences.tasteX * 100}%`;
+}
+
+if (preferences.tasteY !== undefined && dot1) {
+dot1.style.top = `${preferences.tasteY * 100}%`;
+}
+
+if (preferences.complexityX !== undefined && dot2) {
+dot2.style.left = `${preferences.complexityX * 100}%`;
+}
+
+if (preferences.complexityY !== undefined && dot2) {
+dot2.style.top = `${preferences.complexityY * 100}%`;
+}
+
+// 座標表示の更新（安全に呼び出す）
+try {
+if (typeof updateCoordinatesDisplay === 'function') {
+updateCoordinatesDisplay();
+} else {
+console.warn('updateCoordinatesDisplay関数が存在しないため、座標表示は更新されません');
+// 代替の座標表示更新処理
+const coords1 = document.getElementById('coordinates1');
+const coords2 = document.getElementById('coordinates2');
+
+if (dot1 && coords1) {
+const xCoord = (parseFloat(dot1.style.left) / 100).toFixed(2);
+const yCoord = (parseFloat(dot1.style.top) / 100).toFixed(2);
+coords1.textContent = `座標: X: ${xCoord}, Y: ${yCoord}`;
+}
+
+if (dot2 && coords2) {
+const xCoord = (parseFloat(dot2.style.left) / 100).toFixed(2);
+const yCoord = (parseFloat(dot2.style.top) / 100).toFixed(2);
+coords2.textContent = `座標: X: ${xCoord}, Y: ${yCoord}`;
+}
+}
+} catch (coordsErr) {
+console.warn('座標表示更新スキップ:', coordsErr);
+}
+} catch (error) {
+console.error('UI更新エラー:', error);
+}
+}
+
+// 座標表示を更新する関数
+function updateCoordinatesDisplay() {
+try {
+// 四象限1の座標更新
+const dot1 = document.getElementById('tasteDot1');
+const coords1 = document.getElementById('coordinates1');
+if (dot1 && coords1) {
+const xCoord = (parseFloat(dot1.style.left) / 100).toFixed(2);
+const yCoord = (parseFloat(dot1.style.top) / 100).toFixed(2);
+coords1.textContent = `座標: X: ${xCoord}, Y: ${yCoord}`;
+}
+
+// 四象限2の座標更新
+const dot2 = document.getElementById('tasteDot2');
+const coords2 = document.getElementById('coordinates2');
+if (dot2 && coords2) {
+const xCoord = (parseFloat(dot2.style.left) / 100).toFixed(2);
+const yCoord = (parseFloat(dot2.style.top) / 100).toFixed(2);
+coords2.textContent = `座標: X: ${xCoord}, Y: ${yCoord}`;
+}
+} catch (error) {
+console.error('座標表示更新エラー:', error);
+}
+}
+
+// チャット履歴をクリア
+function clearChatHistory() {
+const chatHistory = document.getElementById('chatHistory');
+chatHistory.innerHTML = '';
+chatHistory.style.display = 'none';
+document.getElementById('chatInput').value = '';
+}
+
+// ウィスキーの蒸留所情報を更新（統合JSON対応）
+function updateDistilleryInfo(whisky) {
+try {
+// 統合JSONから蒸溜所を取得
+const distillery = getDistilleryForWhisky(whisky);
+
+// 蒸留所セクションを表示
+const distillerySection = document.getElementById('distillerySection');
+distillerySection.classList.add('active');
+
+if (distillery) {
+console.log(`蒸留所情報が見つかりました:`, distillery.name);
+
+// マップの初期化を試みる（Leaflet.jsが利用可能な場合のみ）
+let mapInitialized = false;
+if (typeof L !== 'undefined') {
+if (!distilleryMap) {
+mapInitialized = initializeCommonMap();
+} else {
+mapInitialized = true;
+}
+
+// マップが初期化できた場合はマーカーを更新
+if (mapInitialized && distillery.location) {
+try {
+showDistilleryOnMap(distillery);
+} catch (e) {
+console.warn('マーカー更新エラー:', e);
+}
+}
+}
+
+// 蒸留所情報を表示
+showDistilleryInfo(distillery);
+} else {
+// 蒸留所情報が見つからない場合
+console.log('蒸留所情報が見つかりません');
+
+// マップを非表示に
+const mapContainer = document.querySelector('.map-container');
+if (mapContainer) {
+mapContainer.style.display = 'none';
+}
+
+// 簡易情報を表示
+document.getElementById('distilleryName').textContent = whisky.name || '情報なし';
+document.getElementById('distilleryRegion').textContent = whisky.region || '情報なし';
+document.getElementById('distilleryFounded').textContent = '情報なし';
+
+const statusElement = document.getElementById('distilleryStatus');
+statusElement.textContent = '情報なし';
+statusElement.className = 'status-unknown';
+
+document.getElementById('distilleryDescription').textContent = 
+`${whisky.name}の蒸留所情報は利用できません。このウィスキーは${whisky.region || '不明な地域'}で製造されています。`;
+}
+} catch (error) {
+console.error('蒸留所情報更新エラー:', error);
+
+// エラー時はマップを非表示にする
+const mapContainer = document.querySelector('.map-container');
+if (mapContainer) {
+mapContainer.style.display = 'none';
+}
+}
+}
+
+// 蒸溜所をマップに表示（統合JSON対応）
+function showDistilleryOnMap(distillery) {
+if (!distilleryMap || !distillery.location) return;
+
+// マップの中心を更新
+distilleryMap.setView([distillery.location.lat, distillery.location.lng], distillery.zoomLevel || 10);
+
+// グローバル変数でアクティブマーカーとパルスマーカーを管理
+if (window.activeMarker) {
+distilleryMap.removeLayer(window.activeMarker);
+}
+if (window.pulseMarker) {
+distilleryMap.removeLayer(window.pulseMarker);
+clearInterval(window.pulseInterval);
+}
+
+// 既存のマーカーをクリア
+distilleryMap.eachLayer(function(layer) {
+if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
+distilleryMap.removeLayer(layer);
+}
+});
+
+// すべての蒸溜所をグリーンで表示
+Object.keys(distilleryDatabase).forEach(distilleryKey => {
+const dist = distilleryDatabase[distilleryKey];
+if (dist.location && dist.location.lat && dist.location.lng) {
+const marker = L.circleMarker([dist.location.lat, dist.location.lng], {
+radius: 6,
+fillColor: '#4ecdc4',  // グリーン
+color: '#4ecdc4',
+weight: 2,
+opacity: 1,
+fillOpacity: 0.7
+}).addTo(distilleryMap);
+
+// クリックイベントを追加
+marker.on('click', function() {
+// 現在の蒸留所情報を表示
+const clickedDistillery = {
+name: distilleryKey,
+...dist
+};
+
+// 蒸留所情報を表示（既存の関数を再利用）
+displayDistilleryInfo(clickedDistillery);
+
+// 既存のアクティブマーカーを削除
+if (window.activeMarker) {
+distilleryMap.removeLayer(window.activeMarker);
+}
+if (window.pulseMarker) {
+distilleryMap.removeLayer(window.pulseMarker);
+clearInterval(window.pulseInterval);
+}
+
+// 新しいアクティブマーカーを作成
+window.activeMarker = L.circleMarker([dist.location.lat, dist.location.lng], {
+radius: 10,
+fillColor: '#ff6b6b',  // 赤
+color: '#ff6b6b',
+weight: 3,
+opacity: 1,
+fillOpacity: 0.8
+}).addTo(distilleryMap);
+
+// パルスマーカーを作成
+window.pulseMarker = L.circleMarker([dist.location.lat, dist.location.lng], {
+radius: 15,
+fillColor: 'rgba(255, 107, 107, 0.3)',
+color: '#ff6b6b',
+weight: 1,
+opacity: 0.6,
+fillOpacity: 0.2
+}).addTo(distilleryMap);
+
+// パルスアニメーション
+let currentRadius = 15;
+let growing = true;
+window.pulseInterval = setInterval(() => {
+if (growing) {
+currentRadius += 0.5;
+if (currentRadius >= 25) growing = false;
+} else {
+currentRadius -= 0.5;
+if (currentRadius <= 12) growing = true;
+}
+window.pulseMarker.setRadius(currentRadius);
+}, 100);
+
+// マップの中心を更新
+distilleryMap.setView([dist.location.lat, dist.location.lng], 10);
+});
+
+// ホバー効果
+marker.on('mouseover', function() {
+marker.setStyle({
+radius: 8,
+fillOpacity: 0.9
+});
+
+// ツールチップ表示
+marker.bindTooltip(distilleryKey, {
+permanent: false,
+direction: 'top',
+className: 'distillery-tooltip'
+}).openTooltip();
+});
+
+marker.on('mouseout', function() {
+marker.setStyle({
+radius: 6,
+fillOpacity: 0.7
+});
+});
+}
+});
+
+// 選択された蒸溜所を赤いビーコンで表示
+window.activeMarker = L.circleMarker([distillery.location.lat, distillery.location.lng], {
+radius: 10,
+fillColor: '#ff6b6b',  // 赤
+color: '#ff6b6b',
+weight: 3,
+opacity: 1,
+fillOpacity: 0.8
+}).addTo(distilleryMap);
+
+// ビーコン効果（パルス）
+window.pulseMarker = L.circleMarker([distillery.location.lat, distillery.location.lng], {
+radius: 15,
+fillColor: 'rgba(255, 107, 107, 0.3)',
+color: '#ff6b6b',
+weight: 1,
+opacity: 0.6,
+fillOpacity: 0.2
+}).addTo(distilleryMap);
+
+// パルスアニメーション
+let currentRadius = 15;
+let growing = true;
+window.pulseInterval = setInterval(() => {
+if (growing) {
+currentRadius += 0.5;
+if (currentRadius >= 25) growing = false;
+} else {
+currentRadius -= 0.5;
+if (currentRadius <= 12) growing = true;
+}
+window.pulseMarker.setRadius(currentRadius);
+}, 100);
+
+// マップのサイズを調整
+setTimeout(function() {
+if (distilleryMap) {
+distilleryMap.invalidateSize();
+}
+}, 100);
+}
+
+// 蒸留所情報を表示
+function displayDistilleryInfo(distillery) {
+// 蒸留所名と地域を表示
+document.getElementById('distilleryName').textContent = distillery.name || '不明';
+document.getElementById('distilleryRegion').textContent = distillery.region || '不明';
+
+// 設立年
+if (distillery.foundedYear) {
+document.getElementById('distilleryFounded').textContent = distillery.foundedYear + '年';
+} else {
+document.getElementById('distilleryFounded').textContent = '不明';
+}
+
+// 状態（アクティブ、閉鎖など）
+const statusElement = document.getElementById('distilleryStatus');
+const status = distillery.status || '不明';
+statusElement.textContent = status;
+
+// 説明文
+document.getElementById('distilleryDescription').textContent = 
+distillery.description || '蒸留所の詳細情報は準備中です。';
+
+// 情報セクションを表示
+document.getElementById('distilleryInfoSection').style.display = 'block';
+}
+
+// 統計情報を更新
+function updateStatistics() {
+if (!whiskyData || !whiskyData.length) return;
+
+// ウィスキーの総数（アニメーションに変更）
+document.getElementById('whiskyCount').textContent = whiskyData.length; // 元のまま
+animateCounter('totalWhiskies', whiskyData.length); // アニメーションに変更
+
+// ユニークな産地数（アニメーションに変更）
+const uniqueRegions = new Set();
+whiskyData.forEach(whisky => {
+if (whisky.region) {
+uniqueRegions.add(whisky.region.split(',')[0].trim());
+}
+});
+animateCounter('uniqueRegions', uniqueRegions.size); // アニメーションに変更
+
+// 蒸溜所数のカウント
+if (distilleryDatabase && typeof distilleryDatabase === 'object') {
+const distilleryCount = Object.keys(distilleryDatabase).length;
+animateCounter('distilleryCount', distilleryCount);
+}
+
+// 価格帯
+let minPrice = Infinity;
+let maxPrice = 0;
+
+whiskyData.forEach(whisky => {
+const price = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
+if (price > 0) {
+minPrice = Math.min(minPrice, price);
+maxPrice = Math.max(maxPrice, price);
+}
+});
+
+if (minPrice !== Infinity && maxPrice !== 0) {
+document.getElementById('priceRange').textContent = `¥${formatPrice(minPrice)}〜¥${formatPrice(maxPrice)}`;
+}
+}
+
+// 価格をフォーマット
+function formatPrice(price) {
+return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+// AI推薦を取得（修正版）
+async function getRecommendation() {
+// ローディング表示
+document.getElementById('loadingIndicator').style.display = 'block';
+
+try {
+// 味覚座標の取得（既存コード）
+const dot1 = document.getElementById('tasteDot1');
+const dot2 = document.getElementById('tasteDot2');
+const tasteX = parseFloat(dot1.style.left) / 100;
+const tasteY = parseFloat(dot1.style.top) / 100;
+const complexityX = parseFloat(dot2.style.left) / 100;
+const complexityY = parseFloat(dot2.style.top) / 100;
+
+// 価格帯の取得（既存コード）
+const minPrice = document.getElementById('minPrice').value * 1000;
+const maxPrice = document.getElementById('maxPrice').value * 1000;
+
+// 新しく追加: チャットから抽出した好みと現在のUI値を統合
+const combinedPreferences = {
+tasteX: savedUserPreferences.tasteX !== null ? savedUserPreferences.tasteX : tasteX,
+tasteY: savedUserPreferences.tasteY !== null ? savedUserPreferences.tasteY : tasteY,
+complexityX: savedUserPreferences.complexityX !== null ? savedUserPreferences.complexityX : complexityX,
+complexityY: savedUserPreferences.complexityY !== null ? savedUserPreferences.complexityY : complexityY,
+minPrice: savedUserPreferences.minPrice !== null ? savedUserPreferences.minPrice : minPrice,
+maxPrice: savedUserPreferences.maxPrice !== null ? savedUserPreferences.maxPrice : maxPrice,
+region: savedUserPreferences.region
+};
+
+// ここに新しいデバッグログを追加
+console.log('検索開始 - 好み情報:', {
+savedPreferences: savedUserPreferences,
+combinedPreferences: combinedPreferences
+});
+
+// プログレスバーの表示（既存コード）
+document.getElementById('loadingIndicator').style.display = 'none';
+document.getElementById('progressContainer').style.display = 'block';
+
+// プログレスバーを進行（既存コード）
+let progress = 0;
+const progressInterval = setInterval(() => {
+progress += 5;
+if (progress > 100) {
+clearInterval(progressInterval);
+document.getElementById('progressContainer').style.display = 'none';
+
+// 提案結果を表示（修正: 統合した好みを使用）
+showRecommendationResult(
+combinedPreferences.tasteX, 
+combinedPreferences.tasteY, 
+combinedPreferences.complexityX, 
+combinedPreferences.complexityY, 
+combinedPreferences.minPrice, 
+combinedPreferences.maxPrice, 
+'', // chatPreferences
+combinedPreferences.region // 新たに地域パラメータを追加
+);
+return;
+}
+
+document.getElementById('progressFill').style.width = `${progress}%`;
+document.getElementById('progressPercentage').textContent = `${progress}%`;
+
+if (progress === 30) {
+document.getElementById('progressText').textContent = 'ウィスキープロファイルを分析中...';
+} else if (progress === 60) {
+document.getElementById('progressText').textContent = '最適なマッチングを計算中...';
+} else if (progress === 90) {
+document.getElementById('progressText').textContent = '結果をまとめています...';
+}
+}, 50);
+
+// 味の傾向の説明を更新（統合した好みを使用）
+updateTasteDescription(
+combinedPreferences.tasteX, 
+combinedPreferences.tasteY, 
+combinedPreferences.complexityX, 
+combinedPreferences.complexityY
+);
+
+// 価格帯の表示を更新
+document.getElementById('priceRange').textContent = 
+`¥${formatPrice(combinedPreferences.minPrice)} - ¥${formatPrice(combinedPreferences.maxPrice)}`;
+
+} catch (error) {
+console.error('Error getting recommendations:', error);
+document.getElementById('loadingIndicator').style.display = 'none';
+document.getElementById('progressContainer').style.display = 'none';
+alert('提案の取得中にエラーが発生しました。もう一度お試しください。');
+}
+}
+
+// 味の傾向の説明を更新
+function updateTasteDescription(tasteX, tasteY, complexityX, complexityY) {
+let tasteDesc = '';
+let complexityDesc = '';
+
+// 基本的な味の傾向の説明
+if (tasteX < 0.33) {
+if (tasteY < 0.33) {
+tasteDesc = 'ライトでフルーティー';
+} else if (tasteY > 0.66) {
+tasteDesc = 'ライトでスモーキー';
+} else {
+tasteDesc = 'ライトでバランスの良い';
+}
+} else if (tasteX > 0.66) {
+if (tasteY < 0.33) {
+tasteDesc = 'ヘビーでフルーティー';
+} else if (tasteY > 0.66) {
+tasteDesc = 'ヘビーでスモーキー';
+} else {
+tasteDesc = 'ヘビーでバランスの良い';
+}
+} else {
+if (tasteY < 0.33) {
+tasteDesc = 'バランスの良いフルーティー';
+} else if (tasteY > 0.66) {
+tasteDesc = 'バランスの良いスモーキー';
+} else {
+tasteDesc = 'バランスの取れた';
+}
+}
+
+// 複雑さの好みの説明
+if (complexityX < 0.33) {
+if (complexityY < 0.33) {
+complexityDesc = '若くてまろやか';
+} else if (complexityY > 0.66) {
+complexityDesc = '若くて強烈な複雑さを好む';
+} else {
+complexityDesc = '若くてバランスの良い複雑さを好む';
+}
+} else if (complexityX > 0.66) {
+if (complexityY < 0.33) {
+complexityDesc = '熟成されたまろやか';
+} else if (complexityY > 0.66) {
+complexityDesc = '熟成された強烈な複雑さを好む';
+} else {
+complexityDesc = '熟成されたバランスの良い複雑さを好む';
+}
+} else {
+if (complexityY < 0.33) {
+complexityDesc = 'バランスの良いまろやか';
+} else if (complexityY > 0.66) {
+complexityDesc = 'バランスの良い強烈な複雑さを好む';
+} else {
+complexityDesc = 'バランスの良い複雑さを好む';
+}
+}
+
+// 説明文を更新
+document.getElementById('tasteDescription').textContent = tasteDesc;
+document.getElementById('complexityDescription').textContent = complexityDesc;
+}
+
+// 推薦結果を表示（エラーチェック強化版）
+async function showRecommendationResult(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, chatPreferences, region = null) {
+console.log('showRecommendationResult 開始:', { tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region });
+
+try {
+// 表示コンテナを表示
+document.getElementById('splitLayoutContainer').style.display = 'grid';
+
+// ローカルデータからのマッチング
+console.log('findMatchingWhiskies 呼び出し前...');
+const recommendedWhiskies = findMatchingWhiskies(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region);
+console.log('findMatchingWhiskies 結果:', recommendedWhiskies);
+
+// 推奨ウィスキーの表示
+if (!recommendedWhiskies) {
+console.error('recommendedWhiskies が undefined です');
+displayDefaultRecommendations();
+return;
+}
+
+if (recommendedWhiskies.length === 0) {
+console.error('recommendedWhiskies が空の配列です');
+displayDefaultRecommendations();
+return;
+}
+
+console.log('displayLocalRecommendations 呼び出し前...');
+displayLocalRecommendations(recommendedWhiskies);
+
+// 最初のウィスキーを選択
+if (recommendedWhiskies.length > 0) {
+console.log('selectWhisky 呼び出し前:', recommendedWhiskies[0]);
+selectWhisky(recommendedWhiskies[0]);
+}
+} catch (error) {
+console.error('showRecommendationResult エラー:', error);
+console.error('スタックトレース:', error.stack);
+displayDefaultRecommendations();
+}
+}
+
+// マッチするウィスキーを見つける（デバッグ強化版）
+function findMatchingWhiskies(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region = null) {
+console.log('findMatchingWhiskies 開始:', { tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region });
+console.log('whiskyData の状態:', whiskyData ? `${whiskyData.length}件のデータあり` : 'データなし');
+
+if (!whiskyData || whiskyData.length === 0) {
+console.error('ウィスキーデータがありません');
+return [];
+}
+
+try {
+// 価格を数値に変換
+const whiskiesWithNumericPrice = whiskyData.map(whisky => {
+try {
+const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
+return { ...whisky, numericPrice };
+} catch (err) {
+console.error('価格変換エラー:', whisky, err);
+return { ...whisky, numericPrice: 0 };
+}
+});
+console.log('価格変換後:', `${whiskiesWithNumericPrice.length}件`);
+
+// 価格帯でフィルタリング
+const priceFiltered = whiskiesWithNumericPrice.filter(
+whisky => whisky.numericPrice >= minPrice && whisky.numericPrice <= maxPrice
+);
+console.log('価格フィルタ後:', `${priceFiltered.length}件`);
+
+// 地域でフィルタリング
+let regionFiltered = priceFiltered;
+if (region) {
+console.log(`地域フィルタリング: "${region}" を検索中...`);
+
+// サンプルデータの地域情報を表示
+console.log('サンプルデータ地域情報:');
+priceFiltered.slice(0, 5).forEach(w => console.log(`- ${w.name}: region=${w.region}, subcategory=${w.subcategory}`));
+
+// 地域フィルタリング
+regionFiltered = priceFiltered.filter(whisky => 
+(whisky.region && whisky.region.toLowerCase().includes(region.toLowerCase())) ||
+(whisky.subcategory && whisky.subcategory.toLowerCase().includes(region.toLowerCase())) ||
+(region.toLowerCase() === 'japan' && whisky.name && (
+whisky.name.toLowerCase().includes('japan') ||
+whisky.name.toLowerCase().includes('japanese') ||
+whisky.name.toLowerCase().includes('軽井沢') ||
+whisky.name.toLowerCase().includes('山崎') ||
+whisky.name.toLowerCase().includes('白州') ||
+whisky.name.toLowerCase().includes('響') ||
+whisky.name.toLowerCase().includes('長濱')
+))
+);
+console.log('地域フィルタ後:', `${regionFiltered.length}件`);
+
+// 結果がない場合は価格フィルタのみ適用
+if (regionFiltered.length === 0) {
+console.log('地域フィルタリングの結果が0件のため、価格フィルタのみを適用します');
+regionFiltered = priceFiltered;
+}
+}
+
+if (regionFiltered.length === 0) {
+// 価格帯に合うものがない場合は全てから選択
+console.log('フィルタリング結果が0件のため、全データから選択します');
+return whiskiesWithNumericPrice.slice(0, 3);
+}
+
+// 味覚プロファイルの基準
+console.log('味覚プロファイルの基準を設定...');
+const targetFruity = tasteY < 0.5 ? 4 : 2;
+const targetSmoky = tasteY > 0.5 ? 4 : 2;
+const targetBody = tasteX > 0.5 ? 4 : 3;
+const targetComplexity = complexityX > 0.5 ? 4 : 3;
+console.log('ターゲット値:', { targetFruity, targetSmoky, targetBody, targetComplexity });
+
+// スコアリング関数
+function scoreWhisky(whisky) {
+try {
+if (!whisky.taste_profile) {
+console.log(`${whisky.name}: taste_profileなし`);
+return 0;
+}
+
+const fruityScore = 5 - Math.abs((whisky.taste_profile.fruity || 0) - targetFruity);
+const smokyScore = 5 - Math.abs((whisky.taste_profile.smoky || 0) - targetSmoky);
+const bodyScore = 5 - Math.abs((whisky.taste_profile.body || 0) - targetBody);
+const complexityScore = 5 - Math.abs((whisky.taste_profile.complexity || 0) - targetComplexity);
+
+return fruityScore + smokyScore + bodyScore + complexityScore;
+} catch (err) {
+console.error('スコアリングエラー:', whisky, err);
+return 0;
+}
+}
+
+// スコアでソート
+console.log('スコアリング開始...');
+const scored = regionFiltered.map(whisky => {
+try {
+return {
+whisky: whisky,
+score: scoreWhisky(whisky)
+};
+} catch (err) {
+console.error('スコアマッピングエラー:', whisky, err);
+return { whisky: whisky, score: 0 };
+}
+}).sort((a, b) => b.score - a.score);
+
+console.log('スコアリング完了。上位スコア:');
+scored.slice(0, 5).forEach(item => console.log(`- ${item.whisky.name}: ${item.score}`));
+
+// 上位3つを返す
+const result = scored.slice(0, 3).map(item => item.whisky);
+console.log('最終結果:', result.map(w => w.name));
+return result;
+} catch (error) {
+console.error('findMatchingWhiskies エラー:', error);
+console.error('スタックトレース:', error.stack);
+return [];
+}
+}
+
+// ローカルデータからの提案を表示（エラーチェック強化版）
+function displayLocalRecommendations(whiskies) {
+console.log('displayLocalRecommendations 開始:', whiskies);
+
+try {
+const recommendationContent = document.getElementById('recommendationContent');
+if (!recommendationContent) {
+console.error('recommendationContent 要素が見つかりません');
+return;
+}
+
+recommendationContent.innerHTML = '';
+
+if (!whiskies || whiskies.length === 0) {
+console.error('表示するウィスキーがありません');
+displayDefaultRecommendations();
+return;
+}
+
+whiskies.forEach((whisky, index) => {
+try {
+console.log(`ウィスキーカード作成 ${index}:`, whisky.name);
+
+const whiskeyCard = document.createElement('div');
+whiskeyCard.className = 'whisky-card';
+if (index === 0) {
+whiskeyCard.classList.add('featured', 'selected');
+}
+
+// HTMLエスケープ関数
+function escapeHtml(text) {
+if (text === undefined || text === null) return '';
+return String(text)
+.replace(/&/g, '&amp;')
+.replace(/</g, '&lt;')
+.replace(/>/g, '&gt;')
+.replace(/"/g, '&quot;')
+.replace(/'/g, '&#039;');
+}
+
+// 安全なHTMLの作成
+whiskeyCard.innerHTML = `
+                       ${index === 0 ? '<div class="featured-label">おすすめ</div>' : ''}
+                       <div class="flex justify-between mb-2">
+                           <h3 class="text-lg font-bold text-cyan-400">${escapeHtml(whisky.name)}</h3>
+                           <span class="text-pink-500 font-bold">${escapeHtml(whisky.price)}</span>
+                       </div>
+                       <div class="mb-2">
+                           <span class="text-gray-400 text-sm">
+                               ${escapeHtml(whisky.region || 'N/A')} | ${escapeHtml(whisky.subcategory || 'Whisky')}
+                               ${whisky.abv ? ` | ${whisky.abv}% ABV` : ''}
+                           </span>
+                       </div>
+                       <p class="text-sm mb-3 text-left">${escapeHtml(whisky.tastingNote_ja || '情報がありません。')}</p>
+                       <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                           <div>
+                               <span class="block text-yellow-400">フルーティー</span>
+                               <span class="block">${'★'.repeat((whisky.taste_profile?.fruity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.fruity || 0))}</span>
+                           </div>
+                           <div>
+                               <span class="block text-yellow-400">スモーキー</span>
+                               <span class="block">${'★'.repeat((whisky.taste_profile?.smoky || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.smoky || 0))}</span>
+                           </div>
+                           <div>
+                               <span class="block text-yellow-400">複雑さ</span>
+                               <span class="block">${'★'.repeat((whisky.taste_profile?.complexity || 0))}${'☆'.repeat(5 - (whisky.taste_profile?.complexity || 0))}</span>
+                           </div>
+                       </div>
+                   `;
+
+// クリックで選択
+whiskeyCard.addEventListener('click', function() {
+document.querySelectorAll('.whisky-card').forEach(card => {
+card.classList.remove('selected');
+});
+whiskeyCard.classList.add('selected');
+selectWhisky(whisky);
+});
+
+recommendationContent.appendChild(whiskeyCard);
+} catch (err) {
+console.error(`ウィスキーカード ${index} の作成中にエラーが発生:`, err);
+}
+});
+} catch (error) {
+console.error('displayLocalRecommendations エラー:', error);
+// エラー時のフォールバック表示
+displayDefaultRecommendations();
+}
+}
+
+// デフォルトの提案を表示
+function displayDefaultRecommendations() {
+const recommendationContent = document.getElementById('recommendationContent');
+recommendationContent.innerHTML = `
+               <div class="text-center p-4">
+                   <p class="mb-4">申し訳ありませんが、現在提案を生成できません。</p>
+                   <p>別の味覚プロファイルをお試しいただくか、チャットでお好みをお知らせください。</p>
+               </div>
+           `;
+}
+
+// ユーザーの好みのプロファイルを取得
+function getUserProfile() {
+// 味覚座標の取得
+const dot1 = document.getElementById('tasteDot1');
+const dot2 = document.getElementById('tasteDot2');
+const tasteX = parseFloat(dot1.style.left) / 100;
+const tasteY = parseFloat(dot1.style.top) / 100;
+const complexityX = parseFloat(dot2.style.left) / 100;
+const complexityY = parseFloat(dot2.style.top) / 100;
+
+// 座標から各指標の値（0-5）を計算
+const fruity = Math.round(5 * (1 - tasteY));
+const smoky = Math.round(5 * tasteY);
+const body = Math.round(5 * tasteX);
+const spicy = Math.round(2.5 * (tasteX + tasteY));
+const sweetness = Math.round(2.5 * (2 - tasteX - tasteY));
+const complexity = Math.round(5 * complexityX);
+
+return {
+fruity,
+spicy,
+body,
+smoky,
+sweetness,
+complexity
+};
+}
+
+// ウィスキー選択時の処理（マップエラー対応版）
+function selectWhisky(whisky) {
+// レーダーチャートを更新
+updateProfileChart(whisky.taste_profile, whisky.name);
+
+try {
+// 蒸留所情報を表示（マップ関連の処理をエラーハンドリング）
+if (typeof updateDistilleryInfo === 'function') {
+updateDistilleryInfo(whisky);
+} else {
+console.warn('updateDistilleryInfo関数が存在しないため、蒸留所情報は表示されません');
+// 代替の処理（簡易的な蒸留所情報表示）
+showSimpleDistilleryInfo(whisky);
+}
+} catch (err) {
+console.error('蒸留所情報表示エラー:', err);
+// マップが表示できない場合のフォールバック処理
+showSimpleDistilleryInfo(whisky);
+}
+
+// チャートパネルのスクロール処理を改善
+const chartPanel = document.getElementById('chartPanel');
+if (chartPanel) {
+// 1. パネル内のスクロール位置を最上部に設定
+chartPanel.scrollTop = 0;
+
+// 2. モバイルなど小さい画面サイズでは、パネル自体も視界に入れる
+if (window.innerWidth <= 1024) {
+chartPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+} else {
+// PCサイズの場合は、パネルが画面に表示されるようスクロール
+// しかし、急激なスクロールではなくスムーズに
+chartPanel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+}
+}
+
+// 蒸留所情報表示関数（左寄せに修正）
+function showSimpleDistilleryInfo(whisky) {
+try {
+// 蒸留所セクションを表示
+const distillerySection = document.getElementById('distillerySection');
+if (distillerySection) {
+distillerySection.classList.add('active');
+}
+
+// 蒸留所名の推測
+let distilleryName = "情報なし";
+if (whisky.name && whisky.name.includes('軽井沢')) {
+distilleryName = "軽井沢蒸溜所";
+} else if (whisky.name && whisky.name.includes('山崎')) {
+distilleryName = "山崎蒸溜所";
+} else if (whisky.name && whisky.name.includes('白州')) {
+distilleryName = "白州蒸溜所";
+} else if (whisky.region && whisky.region.includes('Japan')) {
+distilleryName = "日本の蒸溜所";
+} else if (whisky.region && whisky.region.includes('Islay')) {
+distilleryName = "アイラ島の蒸溜所";
+} else if (whisky.region && whisky.region.includes('Speyside')) {
+distilleryName = "スペイサイドの蒸溜所";
+} else if (whisky.region) {
+distilleryName = `${whisky.region}の蒸溜所`;
+}
+
+// 蒸留所情報の表示（左寄せに修正）
+const distilleryNameElement = document.getElementById('distilleryName');
+if (distilleryNameElement) {
+distilleryNameElement.textContent = distilleryName;
+distilleryNameElement.style.textAlign = 'left'; // 左寄せに変更
+}
+
+const distilleryRegionElement = document.getElementById('distilleryRegion');
+if (distilleryRegionElement) {
+distilleryRegionElement.textContent = whisky.region || '情報なし';
+distilleryRegionElement.style.textAlign = 'left'; // 左寄せに変更
+}
+
+const distilleryFoundedElement = document.getElementById('distilleryFounded');
+if (distilleryFoundedElement) {
+distilleryFoundedElement.textContent = '情報なし';
+distilleryFoundedElement.style.textAlign = 'left'; // 左寄せに変更
+}
+
+const statusElement = document.getElementById('distilleryStatus');
+if (statusElement) {
+statusElement.textContent = '情報なし';
+statusElement.className = 'status-unknown';
+statusElement.style.textAlign = 'left'; // 左寄せに変更
+}
+
+// 蒸留所の説明（左寄せに修正）
+const distilleryDescriptionElement = document.getElementById('distilleryDescription');
+if (distilleryDescriptionElement) {
+distilleryDescriptionElement.textContent = 
+`${whisky.name}の蒸留所情報は現在利用できません。このウィスキーは${whisky.region || '不明な地域'}で製造されています。`;
+distilleryDescriptionElement.style.textAlign = 'left'; // 左寄せに変更
+}
+
+// 情報グリッド全体も左寄せに
+const distilleryInfoGrid = document.querySelector('.distillery-info-grid');
+if (distilleryInfoGrid) {
+distilleryInfoGrid.style.textAlign = 'left'; // 左寄せに変更
+}
+
+} catch (err) {
+console.error('簡易蒸留所情報表示エラー:', err);
+}
+}
+
+// マップ初期化
+function initializeCommonMap() {
+const mapElement = document.getElementById('distilleryMap');
+if (!mapElement) return;
+
+console.log('Initializing map with dark theme...');
+
+// 既存のマップインスタンスがあれば削除
+if (distilleryMap) {
+distilleryMap.remove();
+}
+
+// 新しいマップインスタンスを作成（暗いテーマ）
+distilleryMap = L.map('distilleryMap', {
+center: [55.0, -3.0],  // スコットランド中心
+zoom: 5,
+zoomControl: false
+});
+
+// 暗いスタイルのタイルレイヤー
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+subdomains: 'abcd',
+maxZoom: 19
+}).addTo(distilleryMap);
+
+// ズームコントロールを右下に
+L.control.zoom({
+position: 'bottomright'
+}).addTo(distilleryMap);
+
+// サイズを更新
+setTimeout(() => {
+distilleryMap.invalidateSize();
+}, 100);
+
+console.log('Map initialized with dark theme.');
+return true;
+}
+
+// 蒸留所情報を表示（安全版）
+function showDistilleryInfo(distillery) {
+if (!distillery) return;
+
+try {
+// 地図が利用可能か確認
+if (distilleryMap && typeof distilleryMap.setView === 'function' && 
+distillery.location && distillery.location.lat && distillery.location.lng) {
+// 地図をズームして該当蒸留所の位置を中心に
+const zoomLevel = distillery.zoomLevel || 8;
+distilleryMap.setView([distillery.location.lat, distillery.location.lng], zoomLevel);
+
+// マップを表示
+const mapContainer = document.querySelector('.map-container');
+if (mapContainer) {
+mapContainer.style.display = 'block';
+}
+} else {
+// マップが使用不可の場合は非表示に
+console.warn('マップが初期化されていないか、蒸留所の位置情報がありません');
+const mapContainer = document.querySelector('.map-container');
+if (mapContainer) {
+mapContainer.style.display = 'none';
+}
+}
+
+// 蒸留所情報の表示を更新
+document.getElementById('distilleryName').textContent = distillery.name || '情報なし';
+document.getElementById('distilleryRegion').textContent = distillery.region || '情報なし';
+document.getElementById('distilleryFounded').textContent = distillery.foundedYear ? distillery.foundedYear + '年' : '情報なし';
+
+// ステータス表示の設定
+const statusElement = document.getElementById('distilleryStatus');
+statusElement.textContent = distillery.status || '情報なし';
+statusElement.className = '';  // クラスをリセット
+
+if (distillery.status) {
+if (distillery.status.includes('アクティブ') || distillery.status.includes('稼働中')) {
+statusElement.classList.add('status-active');
+} else if (distillery.status.includes('閉鎖')) {
+statusElement.classList.add('status-closed');
+} else {
+statusElement.classList.add('status-unknown');
+}
+}
+
+// 蒸留所の説明を更新
+document.getElementById('distilleryDescription').textContent = distillery.description || '詳細情報がありません。';
+} catch (error) {
+console.error('蒸留所情報表示エラー:', error);
+
+// エラー時はマップを非表示にする
+const mapContainer = document.querySelector('.map-container');
+if (mapContainer) {
+mapContainer.style.display = 'none';
+}
+}
+}
+
+// レーダーチャート更新（ユーザーの好みと選択ウィスキーを重ねて表示）
+function updateProfileChart(profile, name) {
+if (!profile) return;
+
+const ctx = document.getElementById('combinedProfileChart');
+if (!ctx) return;
+
+const chartTitle = document.getElementById('chartTitle');
+chartTitle.textContent = name ? `あなたの好み vs ${name}` : 'あなたの好み';
+
+// ユーザーの好みプロファイルを取得
+const userProfile = getUserProfile();
+
+// Canvasサイズを明示的に設定
+ctx.style.width = '100%';
+ctx.style.height = '320px';
+ctx.width = ctx.offsetWidth;
+ctx.height = 320;
+
+// Chart.jsの設定
+const chartOptions = {
+plugins: {
+legend: {
+display: true,
+position: 'bottom',
+labels: {
+color: 'rgba(255, 255, 255, 0.8)',
+font: {
+size: 14
+}
+}
+},
+tooltip: {
+enabled: true
+}
+},
+scales: {
+r: {
+angleLines: {
+color: 'rgba(255, 255, 255, 0.1)'
+},
+grid: {
+color: 'rgba(255, 255, 255, 0.1)'
+},
+pointLabels: {
+font: {
+size: 16
+},
+color: 'rgba(255, 255, 255, 0.9)'
+},
+ticks: {
+display: false,
+backdropColor: 'transparent'
+},
+beginAtZero: true,
+min: 0,
+max: 5
+}
+},
+maintainAspectRatio: false,
+responsive: true
+};
+
+// データセットの準備（2つのデータセットで表示）
+const datasets = [
+{
+label: 'あなたの好み',
+data: [
+userProfile.fruity, 
+userProfile.spicy, 
+userProfile.body, 
+userProfile.smoky, 
+userProfile.sweetness, 
+userProfile.complexity
+],
+backgroundColor: 'rgba(78, 205, 196, 0.2)',
+borderColor: '#4ecdc4',
+pointBackgroundColor: '#4ecdc4',
+pointBorderColor: '#fff',
+pointHoverBackgroundColor: '#fff',
+pointHoverBorderColor: '#4ecdc4',
+fill: true
+}
+];
+
+// 選択したウィスキーのデータがあれば追加
+if (name) {
+datasets.push({
+label: name,
+data: [
+profile.fruity || 0,
+profile.spicy || 0,
+profile.body || 0,
+profile.smoky || 0,
+profile.sweetness || 0,
+profile.complexity || 0
+],
+backgroundColor: 'rgba(255, 107, 107, 0.2)',
+borderColor: '#ff6b6b',
+pointBackgroundColor: '#ff6b6b',
+pointBorderColor: '#fff',
+pointHoverBackgroundColor: '#fff',
+pointHoverBorderColor: '#ff6b6b',
+fill: true
+});
+}
+
+// Chart.jsの更新または作成
+if (profileChartInstance) {
+// 既存のチャートを破棄してから再作成
+profileChartInstance.destroy();
+}
+
+// 新しいチャートを作成
+profileChartInstance = new Chart(ctx, {
+type: 'radar',
+data: {
+labels: ['フルーティー', 'スパイシー', 'ボディ', 'スモーキー', '甘さ', '複雑さ'],
+datasets: datasets
+},
+options: chartOptions
+});
+
+console.log('Radar chart updated with new data');
+}
+
+// 通知を表示
+function showNotification(message) {
+const notification = document.createElement('div');
+notification.className = 'error-notification';
+
+notification.innerHTML = `
+               <div class="notification-content">
+                   <div class="notification-icon">
+                       <i class="fas fa-exclamation-circle"></i>
+                   </div>
+                   <div class="notification-message">
+                       ${message}
+                   </div>
+                   <button class="notification-close">&times;</button>
+               </div>
+           `;
+
+document.body.appendChild(notification);
+
+// 閉じるボタン
+notification.querySelector('.notification-close').addEventListener('click', function() {
+notification.remove();
+});
+
+// 5秒後に自動で閉じる
+setTimeout(function() {
+if (notification.parentNode) {
+notification.remove();
+}
+}, 5000);
+}
+
+// 別の提案を受けるボタンの機能強化 - 重複なしのランダム選択
+document.addEventListener('DOMContentLoaded', function() {
+// ページ読み込み完了後に実行
+setTimeout(function() {
+// ボタンの参照を取得（ID、テキスト内容、または属性で検索）
+const refreshButton = document.querySelector('button:contains("別の提案")') || 
+document.getElementById('getAnotherRecommendation') ||
+document.querySelector('[id*="refresh"][id*="recommendation"]');
+
+// querySelectorの:containsがサポートされていない場合の代替手段
+if (!refreshButton) {
+const allButtons = Array.from(document.querySelectorAll('button'));
+const targetButton = allButtons.find(btn => 
+btn.textContent.includes('別の提案') || 
+btn.innerHTML.includes('別の提案')
+);
+
+if (targetButton) {
+setupRefreshButtonHandler(targetButton);
+} else {
+console.error('「別の提案を受ける」ボタンが見つかりませんでした');
+}
+} else {
+setupRefreshButtonHandler(refreshButton);
+}
+}, 1000); // DOMContentLoaded後に少し待つ
+
+// 以前に表示したウィスキーを記録する配列
+window.previouslyShownWhiskies = window.previouslyShownWhiskies || [];
+
+// ボタンのイベントハンドラを設定する関数
+function setupRefreshButtonHandler(button) {
+console.log('「別の提案を受ける」ボタンが見つかりました:', button);
+
+// 既存のイベントリスナーをクリア（二重登録防止）
+const newButton = button.cloneNode(true);
+button.parentNode.replaceChild(newButton, button);
+
+// 新しいイベントリスナーを追加
+newButton.addEventListener('click', function() {
+console.log('「別の提案を受ける」ボタンがクリックされました - 新しいウィスキーを選択します');
+
+// 現在表示中のウィスキー名を取得
+const currentlyShownNames = [];
+document.querySelectorAll('.whisky-card h3').forEach(h3 => {
+if (h3.textContent && h3.textContent.trim()) {
+currentlyShownNames.push(h3.textContent.trim());
+}
+});
+
+console.log('現在表示中のウィスキー:', currentlyShownNames);
+
+// 以前表示したウィスキー名リストを更新
+window.previouslyShownWhiskies = [
+...window.previouslyShownWhiskies,
+...currentlyShownNames
+];
+
+// 重複を排除
+window.previouslyShownWhiskies = [...new Set(window.previouslyShownWhiskies)];
+
+// リストが長すぎる場合は古いものから削除（最大50件）
+if (window.previouslyShownWhiskies.length > 50) {
+window.previouslyShownWhiskies = window.previouslyShownWhiskies.slice(-50);
+}
+
+console.log('表示履歴:', window.previouslyShownWhiskies);
+
+// 現在の価格設定を取得
+const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
+
+// 価格でフィルタリング
+const priceFiltered = whiskyData.filter(whisky => {
+try {
+const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
+return numericPrice >= minPrice && numericPrice <= maxPrice;
+} catch (err) {
+console.warn('価格解析エラー:', err);
+return false;
+}
+});
+
+console.log(`価格フィルター後: ${priceFiltered.length}件のウィスキー`);
+
+if (priceFiltered.length === 0) {
+alert('価格条件に合うウィスキーがありません。価格範囲を広げてください。');
+return;
+}
+
+// 以前表示したウィスキーを除外
+const newCandidates = priceFiltered.filter(whisky => 
+!window.previouslyShownWhiskies.includes(whisky.name)
+);
+
+console.log(`新しい候補: ${newCandidates.length}件`);
+
+// 候補が少ない場合は全体から選択（履歴をリセット）
+let sourceArray;
+if (newCandidates.length < 3) {
+console.log('候補が少ないため全体から選択します。履歴をリセットします。');
+window.previouslyShownWhiskies = [...currentlyShownNames]; // 現在表示中のもののみ履歴に残す
+sourceArray = priceFiltered.filter(w => !currentlyShownNames.includes(w.name));
+} else {
+sourceArray = newCandidates;
+}
+
+// ランダムに3つ選ぶ
+const selected = [];
+const usedIndices = new Set();
+
+// 最大100回のランダム選択を試みる
+let attempts = 0;
+while (selected.length < 3 && attempts < 100 && usedIndices.size < sourceArray.length) {
+attempts++;
+const randomIndex = Math.floor(Math.random() * sourceArray.length);
+
+// 既に選択済みのインデックスはスキップ
+if (usedIndices.has(randomIndex)) continue;
+
+usedIndices.add(randomIndex);
+selected.push(sourceArray[randomIndex]);
+}
+
+console.log('新しく選択されたウィスキー:', selected.map(w => w.name));
+
+// 選択が十分でない場合の対処
+if (selected.length < 3) {
+console.warn(`選択されたウィスキーが${selected.length}件しかありません。ランダム補完します。`);
+
+// ランダムに追加選択（現在表示中のものは除外）
+const remainingOptions = priceFiltered.filter(w => 
+!selected.map(s => s.name).includes(w.name) && 
+!currentlyShownNames.includes(w.name)
+);
+
+if (remainingOptions.length > 0) {
+while (selected.length < 3 && remainingOptions.length > 0) {
+const randomIndex = Math.floor(Math.random() * remainingOptions.length);
+selected.push(remainingOptions[randomIndex]);
+remainingOptions.splice(randomIndex, 1);
+}
+}
+
+// それでも足りない場合は全体から選択
+if (selected.length < 3) {
+const allRemaining = priceFiltered.filter(w => 
+!selected.map(s => s.name).includes(w.name)
+);
+
+while (selected.length < 3 && allRemaining.length > 0) {
+const randomIndex = Math.floor(Math.random() * allRemaining.length);
+selected.push(allRemaining[randomIndex]);
+allRemaining.splice(randomIndex, 1);
+}
+}
+
+console.log('最終的に選択されたウィスキー:', selected.map(w => w.name));
+}
+
+if (selected.length === 0) {
+console.error('ウィスキーの選択に失敗しました');
+return;
+}
+
+try {
+// 選択したウィスキーを表示
+displayLocalRecommendations(selected);
+
+// 最初のウィスキーを選択
+selectWhisky(selected[0]);
+
+console.log('ウィスキーの表示を更新しました');
+} catch (err) {
+console.error('ウィスキー表示中にエラー:', err);
+}
+});
+
+console.log('「別の提案を受ける」ボタンにランダム選択機能を追加しました');
+}
+});
+
+</script>
+<script>
+// 「別の提案を受ける」ボタン機能の修正パッチ - 正確なIDを使用
+(function() {
+// DOMが完全に読み込まれたことを確認
+function initializeCustomButton() {
+// 正確なIDでボタンを取得
+const refreshButton = document.getElementById('getAnotherRecommendation');
+
+if (refreshButton) {
+console.log('「別の提案を受ける」ボタンを正確なIDで発見しました');
+
+// 既存のすべてのイベントリスナーを削除してクローン
+const newButton = refreshButton.cloneNode(true);
+refreshButton.parentNode.replaceChild(newButton, refreshButton);
+
+// 新しいボタンに同じIDを設定（重要）
+newButton.id = 'getAnotherRecommendation';
+
+// 完全に新しいイベントリスナーを設定
+newButton.addEventListener('click', function(e) {
+// デフォルトの動作とイベント伝播を停止
+if (e) {
+e.preventDefault();
+e.stopPropagation();
+}
+
+console.log('完全ランダム選択の「別の提案を受ける」処理を実行');
+
+// 現在の価格設定を取得
+const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
+
+// 価格でフィルタリング
+const priceFiltered = whiskyData.filter(whisky => {
+try {
+const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
+return numericPrice >= minPrice && numericPrice <= maxPrice;
+} catch (err) {
+return false;
+}
+});
+
+if (priceFiltered.length < 3) {
+alert('条件に合うウィスキーが足りません。価格範囲を広げてください。');
+return false;
+}
+
+// 現在表示中のウィスキー名を取得して除外
+const currentlyShown = [];
+document.querySelectorAll('.whisky-card h3').forEach(h3 => {
+if (h3.textContent) currentlyShown.push(h3.textContent.trim());
+});
+
+// 現在表示されていないウィスキーのみをフィルタリング
+const notCurrentlyShown = priceFiltered.filter(w => 
+!currentlyShown.includes(w.name)
+);
+
+// 候補が十分にあるかチェック
+const sourceArray = notCurrentlyShown.length >= 3 ? notCurrentlyShown : priceFiltered;
+
+// 完全にランダム化して選択
+const randomWhiskies = [];
+const shuffled = [...sourceArray].sort(() => 0.5 - Math.random());
+
+// 最大3つ選択
+for (let i = 0; i < Math.min(3, shuffled.length); i++) {
+randomWhiskies.push(shuffled[i]);
+}
+
+console.log('ランダムに選択したウィスキー:', randomWhiskies.map(w => w.name));
+
+// 表示関数を呼び出し
+if (typeof displayLocalRecommendations === 'function') {
+try {
+displayLocalRecommendations(randomWhiskies);
+if (randomWhiskies.length > 0 && typeof selectWhisky === 'function') {
+selectWhisky(randomWhiskies[0]);
+}
+} catch (error) {
+console.error('表示処理中にエラーが発生:', error);
+}
+} else {
+console.error('displayLocalRecommendations関数が見つかりません');
+}
+
+return false;
+});
+
+console.log('「別の提案を受ける」ボタンの処理を完全に上書きしました');
+} else {
+console.error('ID「getAnotherRecommendation」のボタンが見つかりません');
+}
+}
+
+// 既存の処理が完了した後に実行されるようタイミングを調整
+if (document.readyState === 'complete') {
+// ページが既に完全に読み込まれている場合
+setTimeout(initializeCustomButton, 1500);
+} else {
+// まだページ読み込み中の場合はloadイベントを待つ
+window.addEventListener('load', function() {
+setTimeout(initializeCustomButton, 1500);
+});
+}
+})();
+</script>
+<script>
+// AIチャットからの銘柄抽出と推奨リストの連携を改善（類似度マッチング版）
+(function() {
+  // AIの応答を処理する関数を改善する
+  function enhanceAIResponseProcessing() {
+    // 元のgetAIResponse関数をバックアップ
+    const originalGetAIResponse = window.getAIResponse;
     
-    <script id="html_notice_dialog_script" src="./昼の月。AIソムリエ_files/notice_dialog.js.ダウンロード"></script>
-    </body></html>
+    // もし元の関数が存在しなければ終了
+    if (typeof originalGetAIResponse !== 'function') {
+      console.error('元のgetAIResponse関数が見つかりません');
+      return;
+    }
+    
+    // 拡張版のgetAIResponse関数
+    window.getAIResponse = async function(message) {
+      // まず銘柄名を探索
+      const mentionedWhiskies = findWhiskiesInText(message);
+      console.log('チャットメッセージから抽出した銘柄:', mentionedWhiskies);
+      
+      // 元の関数を呼び出して応答を取得
+      const result = await originalGetAIResponse.apply(this, arguments);
+      
+      // メッセージ内で言及された銘柄を表示リストに含める
+      if (mentionedWhiskies.length > 0) {
+        setTimeout(() => {
+          updateRecommendationsWithMentioned(mentionedWhiskies);
+        }, 1000); // AIの応答が表示された後に実行
+      }
+      
+      return result;
+    };
+    
+    console.log('getAIResponse関数を拡張しました - チャット内の銘柄名抽出と表示を連携');
+  }
+  
+  // テキスト内で言及されている銘柄を検出する関数（類似度を使用）
+  function findWhiskiesInText(text) {
+    if (!text || typeof text !== 'string') return [];
+    if (!window.whiskyData || !Array.isArray(window.whiskyData)) return [];
+    
+    // 結果を格納する配列
+    const result = [];
+    
+    // テキストを前処理（小文字化、空白の正規化）
+    const normalizedText = text.toLowerCase().replace(/\s+/g, ' ');
+    
+    // 特徴的なキーワード（主要銘柄名）
+    const commonWhiskyNames = [
+      '山崎', '白州', '響', '軽井沢', '長濱', 'タリスカー', 'マッカラン', 'アードベッグ', 
+      'ポートエレン', 'NAGAHAMA', 'DAILUAINE', 'キルホーマン', 'GLENLIVET', 'ABERFELDY', 
+      'SPRINGBANK', 'MORTLACH', 'CAOL ILA', 'KILCHOMAN', '秩父'
+    ];
+    
+    // 直接的な銘柄名の検索（完全一致または主要部分が一致）
+    const matches = [];
+    window.whiskyData.forEach(whisky => {
+      // 銘柄名を正規化
+      const whiskyName = whisky.name.toLowerCase();
+      
+      // 完全一致または部分一致
+      if (normalizedText.includes(whiskyName) || 
+          whiskyName.includes(normalizedText) || 
+          textSimilarity(normalizedText, whiskyName) > 0.7) {
+        matches.push({
+          whisky: whisky,
+          score: 1.0,
+          matchType: 'direct'
+        });
+        return;
+      }
+      
+      // 主要キーワードのチェック
+      for (const keyword of commonWhiskyNames) {
+        const normalizedKeyword = keyword.toLowerCase();
+        if ((whiskyName.includes(normalizedKeyword) || 
+             normalizedKeyword.includes(whiskyName)) && 
+            normalizedText.includes(normalizedKeyword)) {
+          matches.push({
+            whisky: whisky,
+            score: 0.9,
+            matchType: 'keyword'
+          });
+          return;
+        }
+      }
+      
+      // トークンベースの部分一致チェック
+      const whiskyTokens = whiskyName.split(/[\s\d]+/);
+      const textTokens = normalizedText.split(/[\s\d]+/);
+      
+      for (const whiskyToken of whiskyTokens) {
+        if (whiskyToken.length < 2) continue; // 短すぎるトークンは無視
+        
+        for (const textToken of textTokens) {
+          if (textToken.length < 2) continue; // 短すぎるトークンは無視
+          
+          if (whiskyToken === textToken || 
+              whiskyToken.includes(textToken) || 
+              textToken.includes(whiskyToken)) {
+            matches.push({
+              whisky: whisky,
+              score: 0.8,
+              matchType: 'token',
+              token: whiskyToken
+            });
+            return;
+          }
+        }
+      }
+    });
+    
+    // スコアでソート
+    matches.sort((a, b) => b.score - a.score);
+    
+    // 結果の抽出
+    return matches.map(match => match.whisky);
+  }
+  
+  // テキストの類似度を計算する関数
+  function textSimilarity(text1, text2) {
+    // 簡易的な類似度計算（Levenshtein距離の正規化版）
+    function levenshteinDistance(a, b) {
+      const matrix = [];
+      
+      // 初期化
+      for (let i = 0; i <= b.length; i++) {
+        matrix[i] = [i];
+      }
+      for (let j = 0; j <= a.length; j++) {
+        matrix[0][j] = j;
+      }
+      
+      // 計算
+      for (let i = 1; i <= b.length; i++) {
+        for (let j = 1; j <= a.length; j++) {
+          if (b.charAt(i-1) === a.charAt(j-1)) {
+            matrix[i][j] = matrix[i-1][j-1];
+          } else {
+            matrix[i][j] = Math.min(
+              matrix[i-1][j-1] + 1, // 置換
+              Math.min(
+                matrix[i][j-1] + 1, // 挿入
+                matrix[i-1][j] + 1  // 削除
+              )
+            );
+          }
+        }
+      }
+      
+      return matrix[b.length][a.length];
+    }
+    
+    // 最大の長さ
+    const maxLength = Math.max(text1.length, text2.length);
+    if (maxLength === 0) return 1.0; // 両方が空文字列
+    
+    // 距離を計算
+    const distance = levenshteinDistance(text1, text2);
+    
+    // 正規化（0-1の範囲に）
+    return 1.0 - (distance / maxLength);
+  }
+  
+  // AIの応答から銘柄名を抽出する関数
+  function extractWhiskyNamesFromAIResponse(response) {
+    if (!response || typeof response !== 'string') return [];
+    if (!window.whiskyData || !Array.isArray(window.whiskyData)) return [];
+    
+    // 結果を格納する配列
+    const result = [];
+    
+    // 「」や『』で囲まれた部分を抽出
+    const quotedMatches = response.match(/[「『]([^」』]+)[」』]/g) || [];
+    for (const match of quotedMatches) {
+      const extractedName = match.replace(/[「『」』]/g, '');
+      // データベース内で類似する銘柄を検索
+      const similarWhisky = findSimilarWhisky(extractedName);
+      if (similarWhisky && !result.includes(similarWhisky)) {
+        result.push(similarWhisky);
+      }
+    }
+    
+    // 年数を含む特徴的なパターンを抽出（例：タリスカー44年）
+    const ageMatches = response.match(/(\S+\s?\d+年[^\s、。,.]+)/g) || [];
+    for (const match of ageMatches) {
+      const similarWhisky = findSimilarWhisky(match);
+      if (similarWhisky && !result.includes(similarWhisky)) {
+        result.push(similarWhisky);
+      }
+    }
+    
+    return result;
+  }
+  
+  // テキストに最も類似した銘柄を見つける関数
+  function findSimilarWhisky(text) {
+    if (!text || !window.whiskyData) return null;
+    
+    let bestMatch = null;
+    let highestScore = 0;
+    
+    for (const whisky of window.whiskyData) {
+      const similarityScore = textSimilarity(
+        text.toLowerCase(), 
+        whisky.name.toLowerCase()
+      );
+      
+      if (similarityScore > highestScore && similarityScore > 0.6) {
+        highestScore = similarityScore;
+        bestMatch = whisky;
+      }
+    }
+    
+    return bestMatch;
+  }
+  
+  // 言及された銘柄を推奨リストに含める
+  function updateRecommendationsWithMentioned(mentionedWhiskies) {
+    if (!mentionedWhiskies || mentionedWhiskies.length === 0) return;
+    
+    console.log('銘柄推奨リストに含める:', mentionedWhiskies.map(w => w.name));
+    
+    // 現在の価格設定を取得
+    const minPrice = parseInt(document.getElementById('minPrice').value) * 1000 || 0;
+    const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000 || 100000;
+    
+    // 価格範囲内の言及銘柄をフィルタリング
+    const filteredWhiskies = mentionedWhiskies.filter(whisky => {
+      try {
+        const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
+        return numericPrice >= minPrice && numericPrice <= maxPrice;
+      } catch (err) {
+        return true; // 価格解析エラーの場合は含める
+      }
+    });
+    
+    if (filteredWhiskies.length === 0) {
+      console.log('言及された銘柄が価格範囲外です');
+      return;
+    }
+    
+    // 足りない場合はランダムに追加
+    const finalSelection = [...filteredWhiskies];
+    if (finalSelection.length < 3) {
+      // 現在のウィスキーと言及されたものを除外してランダム選択
+      const currentNames = finalSelection.map(w => w.name);
+      const additionalCandidates = window.whiskyData.filter(w => {
+        try {
+          const numericPrice = parseInt(w.price.replace(/[^\d]/g, '')) || 0;
+          return numericPrice >= minPrice && numericPrice <= maxPrice && !currentNames.includes(w.name);
+        } catch (err) {
+          return false;
+        }
+      });
+      
+      // ランダムに並べ替えて必要な数だけ追加
+      const shuffled = additionalCandidates.sort(() => 0.5 - Math.random());
+      while (finalSelection.length < 3 && shuffled.length > 0) {
+        finalSelection.push(shuffled.pop());
+      }
+    }
+    
+    // 最終的な選択結果が得られた場合、表示を更新
+    if (finalSelection.length > 0) {
+      console.log('最終的に選択された銘柄:', finalSelection.map(w => w.name));
+      
+      try {
+        // 推奨パネルを表示
+        document.getElementById('splitLayoutContainer').style.display = 'grid';
+        
+        // 銘柄を表示
+        if (typeof displayLocalRecommendations === 'function') {
+          displayLocalRecommendations(finalSelection);
+          
+          // 最初の銘柄を選択（言及された銘柄を優先）
+          if (filteredWhiskies.length > 0 && typeof selectWhisky === 'function') {
+            selectWhisky(filteredWhiskies[0]);
+          } else if (finalSelection.length > 0 && typeof selectWhisky === 'function') {
+            selectWhisky(finalSelection[0]);
+          }
+        }
+      } catch (err) {
+        console.error('表示更新中にエラー:', err);
+      }
+    }
+  }
+  
+  // 実行タイミングの調整
+  if (document.readyState === 'complete') {
+    setTimeout(enhanceAIResponseProcessing, 2000);
+  } else {
+    window.addEventListener('load', function() {
+      setTimeout(enhanceAIResponseProcessing, 2000);
+    });
+  }
+})();
+</script>
+
+
+<script id="html_badge_script1">
+window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
+"remove_badge?token=To%2FBnjzloZ3UfQdcSaYfDq9sMzTBnkK7N3vAQixbZKInGo3%2FDuBA6s%2F4VsjkLQIldQG1vBDFOom35B3TYhS0C5loF0WIDf5yE%2FG0eL9qcC2PHM%2FfezhPsC8fofhN40jlExJ4Z2GrQNhHhSoa3luU4%2B0Sapq4VdJCyDpWhuLcSfgUGnT4f2WU37rDhgQFXxI2c%2BiEGpY7DMnGKNiptaLE9nF%2BYMDq7mzCYwQVUHEYGSiRB8xTGxpQV49PdUwIeNLp7WlAkvXWOi1eVTnGF7FqxOP%2Fhc2Wel1QtoQ08mJNhlTFLw%2F66U%2FBoCwUnkc4BJONTAnlqJyoHGYYwfAZXH6DfcXlQqu805Zulsk8hrnasqAF172mArQLBFkPWCW5mpdZrPJMSVbIvTbRYimqBuvdaT02pMiNWDG4uiDaUgDMR0rhm2%2Bu5cehH427wZ75S6ebV0t3T6Dl7JtDzvcjVPiLrSk%2F1wH1q4ZTwkNlRY8dqxyz7gY5bliH4OYy0wSaqHyncNa3jAHYAsiE0nsbiNUB0g%3D%3D";
+window.__genspark_locale = "ja-JP";
+window.__genspark_token = "To/BnjzloZ3UfQdcSaYfDq9sMzTBnkK7N3vAQixbZKInGo3/DuBA6s/4VsjkLQIldQG1vBDFOom35B3TYhS0C5loF0WIDf5yE/G0eL9qcC2PHM/fezhPsC8fofhN40jlExJ4Z2GrQNhHhSoa3luU4+0Sapq4VdJCyDpWhuLcSfgUGnT4f2WU37rDhgQFXxI2c+iEGpY7DMnGKNiptaLE9nF+YMDq7mzCYwQVUHEYGSiRB8xTGxpQV49PdUwIeNLp7WlAkvXWOi1eVTnGF7FqxOP/hc2Wel1QtoQ08mJNhlTFLw/66U/BoCwUnkc4BJONTAnlqJyoHGYYwfAZXH6DfcXlQqu805Zulsk8hrnasqAF172mArQLBFkPWCW5mpdZrPJMSVbIvTbRYimqBuvdaT02pMiNWDG4uiDaUgDMR0rhm2+u5cehH427wZ75S6ebV0t3T6Dl7JtDzvcjVPiLrSk/1wH1q4ZTwkNlRY8dqxyz7gY5bliH4OYy0wSaqHyncNa3jAHYAsiE0nsbiNUB0g==";
+</script>
+
+<script id="html_notice_dialog_script" src="./index_files/notice_dialog.js.ダウンロード"></script>
+<!-- ページ末尾に追加 -->
+<script type="text/javascript">
+function openGoogleTranslate() {
+const currentUrl = window.location.href;
+const translateUrl = `https://translate.google.com/translate?sl=auto&u=${encodeURIComponent(currentUrl)}`;
+window.open(translateUrl, '_blank');
+}
+</script>
+<script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
