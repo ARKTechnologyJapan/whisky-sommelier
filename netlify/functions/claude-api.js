@@ -1,5 +1,5 @@
 exports.handler = async (event, context) => {
-  console.log('=== Claude API Function 開始 ===');
+  console.log('=== カスタムプロキシ版 Claude API Function 開始 ===');
   console.log('HTTP Method:', event.httpMethod);
   console.log('Body:', event.body);
 
@@ -26,10 +26,13 @@ exports.handler = async (event, context) => {
     const requestData = JSON.parse(event.body);
     console.log('Parsed request data:', requestData);
 
-    // カスタムAPI設定
+    // ✅ カスタムAPI設定
     const apiKey = "KLmy1EtC4jRcrlXSK2xPgesG5Hgc533A";
     const baseUrl = "http://Bedroc-Proxy-wEBSZeIAE9sX-1369774611.us-east-1.elb.amazonaws.com/api/v1";
     const model = "us.anthropic.claude-3-7-sonnet-20250219-v1:0";
+
+    console.log('Using Custom Proxy API:', baseUrl);
+    console.log('Using Model:', model);
 
     // メッセージ構築
     const messages = [];
@@ -64,10 +67,10 @@ exports.handler = async (event, context) => {
 1. 顧客の価格帯と味覚座標に最適な銘柄を1-2本推薦
 2. 具体的な銘柄名と価格を明記
 3. なぜその銘柄がおすすめかの理由を説明
-4. 200-300文字で簡潔に回答`
+4. 200-300文字で簡潔に回答してください。`
     });
 
-    // APIリクエストボディ（OpenAI ChatCompletion形式）
+    // ✅ カスタムプロキシ向けAPIリクエストボディ
     const requestBody = {
       model: model,
       messages: messages,
@@ -75,10 +78,10 @@ exports.handler = async (event, context) => {
       temperature: 0.7
     };
 
-    console.log('Sending request to Custom API...');
-    console.log('Endpoint:', `${baseUrl}/chat/completions`);
+    console.log('Sending request to Custom Proxy API...');
+    console.log('Full endpoint:', `${baseUrl}/chat/completions`);
 
-    // カスタムAPIエンドポイントに送信
+    // ✅ カスタムプロキシエンドポイントに送信
     const response = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
@@ -88,18 +91,27 @@ exports.handler = async (event, context) => {
       body: JSON.stringify(requestBody)
     });
 
-    console.log('Response status:', response.status);
+    console.log('Custom Proxy response status:', response.status);
+
+    const responseText = await response.text();
+    console.log('Custom Proxy response (first 500 chars):', responseText.substring(0, 500));
 
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error('API Error:', errorText);
-      throw new Error(`API error: ${response.status} - ${errorText}`);
+      console.error('Custom Proxy API Error:', responseText);
+      throw new Error(`Custom Proxy API error: ${response.status} - ${responseText}`);
     }
 
-    const responseData = await response.json();
-    console.log('API Success Response:', JSON.stringify(responseData, null, 2));
+    let responseData;
+    try {
+      responseData = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Failed to parse JSON response:', parseError);
+      throw new Error('Invalid JSON response from API');
+    }
 
-    // レスポンス形式を統一（OpenAI形式をClaude形式にマッピング）
+    console.log('Custom Proxy API Success!');
+
+    // ✅ レスポンス形式の統一化
     let formattedResponse;
     if (responseData.choices && responseData.choices[0] && responseData.choices[0].message) {
       // OpenAI形式のレスポンス
@@ -122,7 +134,7 @@ exports.handler = async (event, context) => {
         }
       };
     } else {
-      // その他の形式への対応
+      // フォールバック
       formattedResponse = {
         success: true,
         data: responseData
@@ -136,7 +148,8 @@ exports.handler = async (event, context) => {
     };
 
   } catch (error) {
-    console.error('=== Error Details ===');
+    console.error('=== カスタムプロキシ Error Details ===');
+    console.error('Error name:', error.name);
     console.error('Error message:', error.message);
     console.error('Error stack:', error.stack);
 
@@ -144,8 +157,9 @@ exports.handler = async (event, context) => {
       statusCode: 500,
       headers,
       body: JSON.stringify({ 
-        error: 'サーバーエラーが発生しました',
-        details: error.message
+        error: 'カスタムプロキシAPIエラーが発生しました',
+        details: error.message,
+        timestamp: new Date().toISOString()
       })
     };
   }
