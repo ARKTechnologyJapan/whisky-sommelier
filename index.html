@@ -1708,10 +1708,6 @@ function generateAIRecommendations() {
     let filteredWhiskies = [...whiskyData];
     let recommendationReason = '';
     
-    // 価格フィルタリング
-    const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
-    const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
-    
     filteredWhiskies = filteredWhiskies.filter(whisky => {
         const price = parseInt(whisky.price.replace(/[¥,]/g, ''));
         return price >= minPrice && price <= maxPrice;
@@ -3069,8 +3065,10 @@ function formatPrice(price) {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-// AI推薦を取得（完全版・統一版）
+// AI推薦を取得（最終修正版）
 async function getRecommendation() {
+    console.log('getRecommendation関数が呼ばれました');
+    
     try {
         // ローディング表示
         const loadingIndicator = document.getElementById('loadingIndicator');
@@ -3094,24 +3092,40 @@ async function getRecommendation() {
             complexityY = parseFloat(dot2.style.top) / 100;
         }
 
-        // 価格帯の取得（安全版）
+        // 価格帯の取得（完全安全版）
         const minPriceElement = document.getElementById('minPrice');
         const maxPriceElement = document.getElementById('maxPrice');
-        const minPrice = minPriceElement ? parseInt(minPriceElement.value) * 1000 : 0;
-        const maxPrice = maxPriceElement ? parseInt(maxPriceElement.value) * 1000 : 999999;
+        
+        console.log('価格要素チェック:', {
+            minPriceElement: minPriceElement ? 'あり' : 'なし',
+            maxPriceElement: maxPriceElement ? 'あり' : 'なし'
+        });
+        
+        const minPrice = minPriceElement && minPriceElement.value ? 
+            parseInt(minPriceElement.value) * 1000 : 0;
+        const maxPrice = maxPriceElement && maxPriceElement.value ? 
+            parseInt(maxPriceElement.value) * 1000 : 999999;
 
-        console.log('パラメータ取得完了:', { tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice });
+        console.log('パラメータ取得完了:', { 
+            tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice 
+        });
         console.log('現在の除外リスト:', excludedWhiskies);
 
         // チャットから抽出した好みと現在のUI値を統合
         const combinedPreferences = {
-            tasteX: savedUserPreferences.tasteX !== null ? savedUserPreferences.tasteX : tasteX,
-            tasteY: savedUserPreferences.tasteY !== null ? savedUserPreferences.tasteY : tasteY,
-            complexityX: savedUserPreferences.complexityX !== null ? savedUserPreferences.complexityX : complexityX,
-            complexityY: savedUserPreferences.complexityY !== null ? savedUserPreferences.complexityY : complexityY,
-            minPrice: savedUserPreferences.minPrice !== null ? savedUserPreferences.minPrice : minPrice,
-            maxPrice: savedUserPreferences.maxPrice !== null ? savedUserPreferences.maxPrice : maxPrice,
-            region: savedUserPreferences.region
+            tasteX: savedUserPreferences && savedUserPreferences.tasteX !== null ? 
+                savedUserPreferences.tasteX : tasteX,
+            tasteY: savedUserPreferences && savedUserPreferences.tasteY !== null ? 
+                savedUserPreferences.tasteY : tasteY,
+            complexityX: savedUserPreferences && savedUserPreferences.complexityX !== null ? 
+                savedUserPreferences.complexityX : complexityX,
+            complexityY: savedUserPreferences && savedUserPreferences.complexityY !== null ? 
+                savedUserPreferences.complexityY : complexityY,
+            minPrice: savedUserPreferences && savedUserPreferences.minPrice !== null ? 
+                savedUserPreferences.minPrice : minPrice,
+            maxPrice: savedUserPreferences && savedUserPreferences.maxPrice !== null ? 
+                savedUserPreferences.maxPrice : maxPrice,
+            region: savedUserPreferences ? savedUserPreferences.region : null
         };
 
         console.log('検索開始 - 好み情報:', {
@@ -3173,16 +3187,18 @@ async function getRecommendation() {
         }, 50);
 
         // 味の傾向の説明を更新
-        updateTasteDescription(
-            combinedPreferences.tasteX, 
-            combinedPreferences.tasteY, 
-            combinedPreferences.complexityX, 
-            combinedPreferences.complexityY
-        );
+        if (typeof updateTasteDescription === 'function') {
+            updateTasteDescription(
+                combinedPreferences.tasteX, 
+                combinedPreferences.tasteY, 
+                combinedPreferences.complexityX, 
+                combinedPreferences.complexityY
+            );
+        }
 
         // 価格帯の表示を更新
         const priceRangeElement = document.getElementById('priceRange');
-        if (priceRangeElement) {
+        if (priceRangeElement && typeof formatPrice === 'function') {
             priceRangeElement.textContent = 
                 `¥${formatPrice(combinedPreferences.minPrice)} - ¥${formatPrice(combinedPreferences.maxPrice)}`;
         }
@@ -3195,7 +3211,7 @@ async function getRecommendation() {
         if (loadingIndicator) loadingIndicator.style.display = 'none';
         if (progressContainer) progressContainer.style.display = 'none';
         
-        alert('提案の取得中にエラーが発生しました。もう一度お試しください。');
+        alert('提案の取得中にエラーが発生しました: ' + error.message);
     }
 }
 
