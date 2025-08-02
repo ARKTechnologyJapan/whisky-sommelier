@@ -2055,7 +2055,7 @@ dot2.style.top = '50%';
 document.getElementById('coordinates2').textContent = '座標: X: 0.50, Y: 0.50';
 }
 
-// イベントリスナーの設定
+// イベントリスナーの設定（完全版）
 function setupEventListeners() {
     // 推薦取得ボタン
     const getRecommendationBtn = document.getElementById('getRecommendation');
@@ -2073,32 +2073,44 @@ function setupEventListeners() {
         });
     }
     
-    // 【修正1：別の提案を受けるボタン】
-const anotherRecommendationBtn = document.getElementById('anotherRecommendation');
-if (anotherRecommendationBtn) {
-    anotherRecommendationBtn.addEventListener('click', function() {
-        console.log('別の提案ボタンがクリックされました');
-        
-        // 前回推薦したウィスキーを除外リストに追加
-        if (lastRecommendedWhisky) {
-            if (!excludedWhiskies.includes(lastRecommendedWhisky.name)) {
-                excludedWhiskies.push(lastRecommendedWhisky.name);
-                console.log('除外リストに追加:', lastRecommendedWhisky.name);
+    // 別の提案を受けるボタン（anotherRecommendation）
+    const anotherRecommendationBtn = document.getElementById('anotherRecommendation');
+    if (anotherRecommendationBtn) {
+        anotherRecommendationBtn.addEventListener('click', function() {
+            console.log('anotherRecommendationボタンがクリックされました');
+            
+            // 前回推薦したウィスキーを除外リストに追加
+            if (lastRecommendedWhisky) {
+                if (!excludedWhiskies.includes(lastRecommendedWhisky.name)) {
+                    excludedWhiskies.push(lastRecommendedWhisky.name);
+                    console.log('除外リストに追加:', lastRecommendedWhisky.name);
+                }
             }
-        }
-        
-        // **既存の推薦ロジックを再実行**
-        getRecommendation();
-    });
-}
+            
+            // 新しい推薦を実行
+            getRecommendation();
+        });
+    }
     
     // getAnotherRecommendationボタン（既存）
     const getAnotherRecommendationBtn = document.getElementById('getAnotherRecommendation');
     if (getAnotherRecommendationBtn) {
-        getAnotherRecommendationBtn.addEventListener('click', getRecommendation);
+        getAnotherRecommendationBtn.addEventListener('click', function() {
+            console.log('getAnotherRecommendationボタンがクリックされました');
+            
+            // 前回推薦したウィスキーを除外リストに追加
+            if (lastRecommendedWhisky) {
+                if (!excludedWhiskies.includes(lastRecommendedWhisky.name)) {
+                    excludedWhiskies.push(lastRecommendedWhisky.name);
+                    console.log('除外リストに追加:', lastRecommendedWhisky.name);
+                }
+            }
+            
+            getRecommendation();
+        });
     }
     
-    // 【修正3：チャットメッセージ送信】
+    // チャットメッセージ送信ボタン
     const sendMessageBtn = document.getElementById('sendMessage');
     const chatInput = document.getElementById('chatInput');
     
@@ -2138,6 +2150,29 @@ if (anotherRecommendationBtn) {
         });
     }
     
+    // チャット入力のEnterキー（sendChatBtn用）
+    if (chatInput) {
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const input = this.value.trim();
+                if (input) {
+                    sendChatMessage();
+                }
+            }
+        });
+    }
+    
+    // 質問例クリック
+    document.querySelectorAll('.question-example').forEach(function(elem) {
+        elem.addEventListener('click', function() {
+            const question = this.getAttribute('data-question');
+            if (chatInput) {
+                chatInput.value = question;
+                sendChatMessage();
+            }
+        });
+    });
+    
     // 価格スライダーイベント - 連動機能追加
     const minPriceSlider = document.getElementById('minPrice');
     const maxPriceSlider = document.getElementById('maxPrice');
@@ -2145,14 +2180,21 @@ if (anotherRecommendationBtn) {
     if (minPriceSlider) {
         minPriceSlider.addEventListener('input', function() {
             const minVal = parseInt(this.value);
-            const maxVal = parseInt(document.getElementById('maxPrice').value);
+            const maxPriceElement = document.getElementById('maxPrice');
+            const maxVal = maxPriceElement ? parseInt(maxPriceElement.value) : 80;
             
             // 下限が上限を超えないように制限
             if (minVal > maxVal) {
                 this.value = maxVal;
-                document.getElementById('minPriceDisplay').textContent = `¥${formatPrice(maxVal * 1000)}`;
+                const minPriceDisplay = document.getElementById('minPriceDisplay');
+                if (minPriceDisplay) {
+                    minPriceDisplay.textContent = `¥${formatPrice(maxVal * 1000)}`;
+                }
             } else {
-                document.getElementById('minPriceDisplay').textContent = `¥${formatPrice(minVal * 1000)}`;
+                const minPriceDisplay = document.getElementById('minPriceDisplay');
+                if (minPriceDisplay) {
+                    minPriceDisplay.textContent = `¥${formatPrice(minVal * 1000)}`;
+                }
             }
         });
     }
@@ -2160,14 +2202,21 @@ if (anotherRecommendationBtn) {
     if (maxPriceSlider) {
         maxPriceSlider.addEventListener('input', function() {
             const maxVal = parseInt(this.value);
-            const minVal = parseInt(document.getElementById('minPrice').value);
+            const minPriceElement = document.getElementById('minPrice');
+            const minVal = minPriceElement ? parseInt(minPriceElement.value) : 1;
             
             // 上限が下限を下回らないように制限
             if (maxVal < minVal) {
                 this.value = minVal;
-                document.getElementById('maxPriceDisplay').textContent = `¥${formatPrice(minVal * 1000)}`;
+                const maxPriceDisplay = document.getElementById('maxPriceDisplay');
+                if (maxPriceDisplay) {
+                    maxPriceDisplay.textContent = `¥${formatPrice(minVal * 1000)}`;
+                }
             } else {
-                document.getElementById('maxPriceDisplay').textContent = `¥${formatPrice(maxVal * 1000)}`;
+                const maxPriceDisplay = document.getElementById('maxPriceDisplay');
+                if (maxPriceDisplay) {
+                    maxPriceDisplay.textContent = `¥${formatPrice(maxVal * 1000)}`;
+                }
             }
         });
     }
@@ -2180,8 +2229,15 @@ if (anotherRecommendationBtn) {
             resetTasteMatrices();
             clearChatHistory();
             
+            // 除外リストもクリア
+            excludedWhiskies.length = 0;
+            lastRecommendedWhisky = null;
+            
             // 提案パネルを非表示
-            document.getElementById('splitLayoutContainer').style.display = 'none';
+            const splitLayoutContainer = document.getElementById('splitLayoutContainer');
+            if (splitLayoutContainer) {
+                splitLayoutContainer.style.display = 'none';
+            }
             
             // チャート初期化
             if (profileChartInstance) {
@@ -2190,62 +2246,15 @@ if (anotherRecommendationBtn) {
             }
             
             // 蒸留所セクション初期化
-            document.getElementById('distillerySection').classList.remove('active');
-        });
-    }
-}
-document.getElementById('getAnotherRecommendation').addEventListener('click', getRecommendation);
-
-// 別の提案を受けるボタン
-    const anotherRecommendationBtn = document.getElementById('anotherRecommendation');
-    if (anotherRecommendationBtn) {
-        anotherRecommendationBtn.addEventListener('click', function() {
-            // 現在のフィルター条件を保持して再推薦
-            const currentFilters = {
-                priceRange: document.getElementById('priceRange').value,
-                region: document.getElementById('region').value,
-                keywords: extractKeywordsFromChat()
-            };
-            
-            // 前回推薦した銘柄を除外リストに追加
-            if (lastRecommendedWhisky) {
-                if (!excludedWhiskies.includes(lastRecommendedWhisky.name)) {
-                    excludedWhiskies.push(lastRecommendedWhisky.name);
-                }
+            const distillerySection = document.getElementById('distillerySection');
+            if (distillerySection) {
+                distillerySection.classList.remove('active');
             }
-            
-            getRecommendation();
         });
     }
-
-// チャット関連イベント
-document.getElementById('sendChatBtn').addEventListener('click', function() {
-const input = document.getElementById('chatInput').value.trim();
-if (input) {
-sendChatMessage();
-}
-});
-
-document.getElementById('chatInput').addEventListener('keypress', function(e) {
-if (e.key === 'Enter') {
-const input = document.getElementById('chatInput').value.trim();
-if (input) {
-sendChatMessage();
-}
-}
-});
-
-// 質問例クリック
-document.querySelectorAll('.question-example').forEach(function(elem) {
-elem.addEventListener('click', function() {
-document.getElementById('chatInput').value = this.getAttribute('data-question');
-sendChatMessage();
-});
-});
-
-// マイク入力設定
-setupVoiceInput();{
-
+    
+    // マイク入力設定
+    setupVoiceInput();
 }
 
 // マイク入力の処理
@@ -3053,7 +3062,7 @@ function formatPrice(price) {
 return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
-// AI推薦を取得（修正版）
+// AI推薦を取得（完全版・統一版）
 async function getRecommendation() {
     try {
         // ローディング表示
@@ -3085,8 +3094,9 @@ async function getRecommendation() {
         const maxPrice = maxPriceElement ? parseInt(maxPriceElement.value) * 1000 : 999999;
 
         console.log('パラメータ取得完了:', { tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice });
+        console.log('現在の除外リスト:', excludedWhiskies);
 
-        // 新しく追加: チャットから抽出した好みと現在のUI値を統合
+        // チャットから抽出した好みと現在のUI値を統合
         const combinedPreferences = {
             tasteX: savedUserPreferences.tasteX !== null ? savedUserPreferences.tasteX : tasteX,
             tasteY: savedUserPreferences.tasteY !== null ? savedUserPreferences.tasteY : tasteY,
@@ -3102,7 +3112,7 @@ async function getRecommendation() {
             combinedPreferences: combinedPreferences
         });
 
-        // プログレスバーの表示（安全版）
+        // プログレスバーの表示
         if (loadingIndicator) {
             loadingIndicator.style.display = 'none';
         }
@@ -3123,7 +3133,7 @@ async function getRecommendation() {
                     progressContainer.style.display = 'none';
                 }
 
-                // 提案結果を表示（修正: 統合した好みを使用）
+                // 提案結果を表示
                 showRecommendationResult(
                     combinedPreferences.tasteX, 
                     combinedPreferences.tasteY, 
@@ -3131,8 +3141,8 @@ async function getRecommendation() {
                     combinedPreferences.complexityY, 
                     combinedPreferences.minPrice, 
                     combinedPreferences.maxPrice, 
-                    '', // chatPreferences
-                    combinedPreferences.region // 新たに地域パラメータを追加
+                    '',
+                    combinedPreferences.region
                 );
                 return;
             }
@@ -3155,7 +3165,7 @@ async function getRecommendation() {
             }
         }, 50);
 
-        // 味の傾向の説明を更新（統合した好みを使用）
+        // 味の傾向の説明を更新
         updateTasteDescription(
             combinedPreferences.tasteX, 
             combinedPreferences.tasteY, 
@@ -3246,14 +3256,14 @@ document.getElementById('tasteDescription').textContent = tasteDesc;
 document.getElementById('complexityDescription').textContent = complexityDesc;
 }
 
-// 推薦結果を表示（エラーチェック強化版）
+// 推薦結果を表示（チャット連携強化版）
 async function showRecommendationResult(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, chatPreferences, region = null) {
     console.log('showRecommendationResult 開始:', { tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region });
 
     try {
         document.getElementById('splitLayoutContainer').style.display = 'grid';
 
-        // **新規追加：チャットで言及された銘柄を最優先で取得**
+        // チャットで言及された銘柄を最優先で取得
         const chatMentionedWhiskies = getChatMentionedWhiskies();
         console.log('チャットで言及された銘柄:', chatMentionedWhiskies.map(w => w.name));
 
@@ -3266,7 +3276,7 @@ async function showRecommendationResult(tasteX, tasteY, complexityX, complexityY
         );
         console.log('findMatchingWhiskies 結果:', matchedWhiskies);
 
-        // **修正：チャット言及銘柄を最優先で組み合わせ**
+        // チャット言及銘柄を最優先で組み合わせ
         const finalRecommendations = combineRecommendations(chatMentionedWhiskies, matchedWhiskies, minPrice, maxPrice);
         console.log('最終推薦リスト:', finalRecommendations.map(w => w.name));
 
@@ -3335,8 +3345,16 @@ function getChatMentionedWhiskies() {
             }
         }
         
-        // 特別なブランド名の処理
+        // 特別なブランド名の処理（日本語対応）
         if (allChatText.includes('マッカラン') && whiskyName.includes('macallan')) {
+            if (!mentionedWhiskies.find(w => w.name === whisky.name)) {
+                mentionedWhiskies.push(whisky);
+                console.log('特別キーワードで発見:', whisky.name);
+            }
+        }
+        
+        // その他の特別な対応
+        if (allChatText.includes('グレンフィディック') && whiskyName.includes('glenfiddich')) {
             if (!mentionedWhiskies.find(w => w.name === whisky.name)) {
                 mentionedWhiskies.push(whisky);
                 console.log('特別キーワードで発見:', whisky.name);
@@ -3347,11 +3365,13 @@ function getChatMentionedWhiskies() {
     return mentionedWhiskies;
 }
 
-// チャット言及銘柄と味覚マッチング銘柄を組み合わせる関数
+// チャット言及銘柄と味覚マッチング銘柄を組み合わせる関数（除外機能強化版）
 function combineRecommendations(chatMentioned, matchedWhiskies, minPrice, maxPrice) {
     const finalList = [];
     
-    // 1. チャットで言及された銘柄を最優先で追加（価格フィルター適用）
+    console.log('推薦組み合わせ開始 - 除外リスト:', excludedWhiskies);
+    
+    // 1. チャットで言及された銘柄を最優先で追加（除外チェック強化）
     const filteredChatMentioned = chatMentioned.filter(whisky => {
         // 除外リストにないかチェック
         if (excludedWhiskies.includes(whisky.name)) {
@@ -3369,7 +3389,7 @@ function combineRecommendations(chatMentioned, matchedWhiskies, minPrice, maxPri
             return inPriceRange;
         } catch (err) {
             console.error('価格チェックエラー:', whisky.name, err);
-            return true; // エラーの場合は含める
+            return true;
         }
     });
     
@@ -3381,12 +3401,21 @@ function combineRecommendations(chatMentioned, matchedWhiskies, minPrice, maxPri
         }
     });
     
-    // 2. 味覚マッチング銘柄で不足分を補完
+    // 2. 味覚マッチング銘柄で不足分を補完（除外チェック強化）
     if (finalList.length < 3) {
         const remainingSlots = 3 - finalList.length;
-        const additionalWhiskies = matchedWhiskies.filter(whisky => 
-            !finalList.find(w => w.name === whisky.name)
-        ).slice(0, remainingSlots);
+        const additionalWhiskies = matchedWhiskies.filter(whisky => {
+            // 既に含まれていないかチェック
+            if (finalList.find(w => w.name === whisky.name)) return false;
+            
+            // 除外リストにないかチェック
+            if (excludedWhiskies.includes(whisky.name)) {
+                console.log('味覚マッチング銘柄が除外リストに含まれています:', whisky.name);
+                return false;
+            }
+            
+            return true;
+        }).slice(0, remainingSlots);
         
         additionalWhiskies.forEach(whisky => {
             finalList.push(whisky);
@@ -3394,7 +3423,7 @@ function combineRecommendations(chatMentioned, matchedWhiskies, minPrice, maxPri
         });
     }
     
-    // 3. まだ足りない場合は、価格範囲内のウィスキーから追加
+    // 3. まだ足りない場合は、価格範囲内のウィスキーから追加（除外チェック強化）
     if (finalList.length < 3) {
         const remainingSlots = 3 - finalList.length;
         const additionalWhiskies = whiskyData.filter(whisky => {
@@ -3402,7 +3431,10 @@ function combineRecommendations(chatMentioned, matchedWhiskies, minPrice, maxPri
             if (finalList.find(w => w.name === whisky.name)) return false;
             
             // 除外リストにないかチェック
-            if (excludedWhiskies.includes(whisky.name)) return false;
+            if (excludedWhiskies.includes(whisky.name)) {
+                console.log('補完銘柄が除外リストに含まれています:', whisky.name);
+                return false;
+            }
             
             // 価格フィルター
             try {
@@ -3411,7 +3443,9 @@ function combineRecommendations(chatMentioned, matchedWhiskies, minPrice, maxPri
             } catch (err) {
                 return true;
             }
-        }).slice(0, remainingSlots);
+        })
+        .sort(() => 0.5 - Math.random()) // ランダムソート
+        .slice(0, remainingSlots);
         
         additionalWhiskies.forEach(whisky => {
             finalList.push(whisky);
@@ -3419,11 +3453,17 @@ function combineRecommendations(chatMentioned, matchedWhiskies, minPrice, maxPri
         });
     }
     
+    // 4. それでも足りない場合は除外リストをクリアして再試行
+    if (finalList.length === 0 && excludedWhiskies.length > 0) {
+        console.log('推薦銘柄が0件のため、除外リストをクリアします');
+        excludedWhiskies.length = 0; // 配列をクリア
+        return combineRecommendations(chatMentioned, matchedWhiskies, minPrice, maxPrice);
+    }
+    
     console.log('最終推薦構成:', finalList.map(w => w.name));
+    console.log('現在の除外リスト:', excludedWhiskies);
     return finalList;
 }
-
-
 
 // マッチするウィスキーを見つける（デバッグ強化版）
 function findMatchingWhiskies(tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice, region = null, excludedNames = []) {
@@ -3660,78 +3700,7 @@ function displayLocalRecommendations(whiskies) {
     }
 }
 
-function getRecommendation() {
-    // チャットからキーワードを抽出
-    const chatKeywords = extractKeywordsFromChat();
-    
-    // フィルター条件を取得
-    const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
-    const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
-    const selectedRegion = document.getElementById('region').value;
-    
-    console.log('除外リスト:', excludedWhiskies); // デバッグ用
-    
-    // ウィスキーをフィルタリング
-    let filteredWhiskies = whiskiesData.filter(whisky => {
-        // 除外リストにある銘柄をスキップ
-        if (excludedWhiskies.includes(whisky.name)) {
-            return false;
-        }
-        
-        // 価格フィルター
-        const price = parseInt(whisky.price.replace(/[¥,]/g, ''));
-        if (price < minPrice || price > maxPrice) {
-            return false;
-        }
-        
-        // 地域フィルター
-        if (selectedRegion !== 'all' && whisky.region !== selectedRegion) {
-            return false;
-        }
-        
-        // チャットキーワードフィルター
-        if (chatKeywords.length > 0) {
-            const whiskeyText = `${whisky.name} ${whisky.description} ${whisky.region}`.toLowerCase();
-            const hasKeyword = chatKeywords.some(keyword => 
-                whiskeyText.includes(keyword.toLowerCase())
-            );
-            if (!hasKeyword) {
-                return false;
-            }
-        }
-        
-        return true;
-    });
-    
-    console.log('フィルター後のウィスキー数:', filteredWhiskies.length); // デバッグ用
-    
-    if (filteredWhiskies.length === 0) {
-        // 除外リストをクリアして再試行
-        if (excludedWhiskies.length > 0) {
-            excludedWhiskies = [];
-            console.log('除外リストをクリアして再試行');
-            return getRecommendation();
-        }
-        
-        alert('条件に合うウィスキーが見つかりませんでした。条件を変更してお試しください。');
-        return;
-    }
-    
-    // ランダムに選択
-    const randomIndex = Math.floor(Math.random() * filteredWhiskies.length);
-    const selectedWhisky = filteredWhiskies[randomIndex];
-    
-    // 最後に推薦した銘柄を記録
-    lastRecommendedWhisky = selectedWhisky;
-    
-    console.log('選択されたウィスキー:', selectedWhisky.name); // デバッグ用
-    
-    // 推薦結果を表示
-    displayRecommendations([selectedWhisky]);
-    
-    // 分割レイアウトを表示
-    document.getElementById('splitLayoutContainer').style.display = 'block';
-}
+
 
 // デフォルトの提案を表示
 function displayDefaultRecommendations() {
