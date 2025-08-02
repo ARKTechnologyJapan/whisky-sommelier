@@ -2160,48 +2160,219 @@ function extractWhiskyKeywordsFromAI(aiMessage) {
   return keywords;
 }
 
-// キーワードから実際のウィスキーJSONデータを検索
+// D. JSON銘柄検索関数（実データ構造対応版）
 async function searchWhiskiesFromKeywords(keywords) {
+  console.log('🔍 JSON検索開始:', keywords);
+  
   const matchingWhiskies = [];
   
-  // グローバルのwhiskyDataが存在することを確認
-  if (!window.whiskyData || !Array.isArray(window.whiskyData)) {
+  // グローバルのウィスキーデータを確認
+  let whiskyDataArray = [];
+  
+  // 複数の可能性のあるデータ構造をチェック
+  if (window.whiskyData && Array.isArray(window.whiskyData)) {
+    whiskyDataArray = window.whiskyData;
+  } else if (window.whiskyData && window.whiskyData.whiskies && Array.isArray(window.whiskyData.whiskies)) {
+    whiskyDataArray = window.whiskyData.whiskies;
+  } else if (window.whiskies && Array.isArray(window.whiskies)) {
+    whiskyDataArray = window.whiskies;
+  } else {
     console.error('❌ ウィスキーデータが読み込まれていません');
+    console.log('🔍 利用可能なグローバル変数:', Object.keys(window).filter(key => key.includes('whisky') || key.includes('data')));
     return matchingWhiskies;
   }
 
-  console.log('🔍 検索対象データ数:', window.whiskyData.length);
+  console.log('📊 検索対象データ数:', whiskyDataArray.length);
+  console.log('🔍 データサンプル:', whiskyDataArray.slice(0, 2));
 
   // 各キーワードに対してウィスキーデータを検索
   keywords.forEach(keyword => {
-    console.log(`🔎 "${keyword}" で検索中...`);
+    console.log(`🔎 "${keyword}" で検索開始...`);
     
-    const keywordMatches = window.whiskyData.filter(whisky => {
-      const searchText = `${whisky.name || ''} ${whisky.brand || ''} ${whisky.region || ''} ${whisky.description || ''}`.toLowerCase();
+    const keywordMatches = whiskyDataArray.filter(whisky => {
+      // 実際のJSONフィールドに基づく検索対象テキスト
+      const searchFields = [
+        whisky.name || '',
+        whisky.region || '',
+        whisky.subcategory || '',
+        whisky.category || '',
+        whisky.tastingNote_ja || '',
+        // 価格から数値部分を抽出
+        String(whisky.price || '').replace(/[¥,]/g, ''),
+        String(whisky.abv || ''),
+        String(whisky.id || ''),
+      ];
+      
+      const searchText = searchFields.join(' ').toLowerCase();
       const keywordLower = keyword.toLowerCase();
       
-      // 部分一致検索
-      const isMatch = searchText.includes(keywordLower) ||
-                     keywordLower.includes(searchText.split(' ')[0]) ||
-                     // 特別なマッチングルール
-                     (keywordLower.includes('タリスカー') && searchText.includes('talisker')) ||
-                     (keywordLower.includes('マッカラン') && searchText.includes('macallan')) ||
-                     (keywordLower.includes('軽井沢') && searchText.includes('karuizawa')) ||
-                     (keywordLower.includes('グレンリベット') && searchText.includes('glenlivet')) ||
-                     (keywordLower.includes('アイラ') && searchText.includes('islay')) ||
-                     (keywordLower.includes('スペイサイド') && searchText.includes('speyside'));
+      console.log(`  🔍 "${whisky.name?.substring(0, 20)}..." の検索テキスト:`, searchText.substring(0, 100) + '...');
+      
+      // 実データに基づく多段階マッチング
+      const isMatch = 
+        // 1. 名前での直接マッチング
+        (whisky.name && whisky.name.toLowerCase().includes(keywordLower)) ||
+        
+        // 2. ブランド名の特別マッチング（実データに基づく）
+        (keywordLower.includes('マッカラン') && (
+          (whisky.name && whisky.name.includes('マッカラン')) ||
+          (whisky.name && whisky.name.toLowerCase().includes('macallan'))
+        )) ||
+        (keywordLower.includes('macallan') && (
+          (whisky.name && whisky.name.includes('マッカラン')) ||
+          (whisky.name && whisky.name.toLowerCase().includes('macallan'))
+        )) ||
+        
+        (keywordLower.includes('タリスカー') && (
+          (whisky.name && whisky.name.includes('タリスカー')) ||
+          (whisky.name && whisky.name.toLowerCase().includes('talisker'))
+        )) ||
+        (keywordLower.includes('talisker') && (
+          (whisky.name && whisky.name.includes('タリスカー')) ||
+          (whisky.name && whisky.name.toLowerCase().includes('talisker'))
+        )) ||
+        
+        (keywordLower.includes('キルホーマン') && (
+          (whisky.name && whisky.name.includes('キルホーマン')) ||
+          (whisky.name && whisky.name.toLowerCase().includes('kilchoman'))
+        )) ||
+        (keywordLower.includes('kilchoman') && (
+          (whisky.name && whisky.name.includes('キルホーマン')) ||
+          (whisky.name && whisky.name.toLowerCase().includes('kilchoman'))
+        )) ||
+        
+        (keywordLower.includes('スプリングバンク') && (
+          (whisky.name && whisky.name.includes('スプリングバンク')) ||
+          (whisky.name && whisky.name.toLowerCase().includes('springbank'))
+        )) ||
+        
+        (keywordLower.includes('長浜') && (
+          (whisky.name && whisky.name.includes('長濱')) ||
+          (whisky.name && whisky.name.includes('長浜'))
+        )) ||
+        
+        (keywordLower.includes('ポートエレン') && (
+          (whisky.name && whisky.name.includes('ポートエレン'))
+        )) ||
+        
+        // 3. 地域マッチング（実データの地域フィールドに基づく）
+        (keywordLower.includes('アイラ') && (
+          (whisky.region && whisky.region.toLowerCase().includes('islay')) ||
+          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('islay'))
+        )) ||
+        (keywordLower.includes('islay') && (
+          (whisky.region && whisky.region.toLowerCase().includes('islay')) ||
+          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('islay'))
+        )) ||
+        
+        (keywordLower.includes('スペイサイド') && (
+          (whisky.region && whisky.region.toLowerCase().includes('speyside')) ||
+          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('speyside'))
+        )) ||
+        (keywordLower.includes('speyside') && (
+          (whisky.region && whisky.region.toLowerCase().includes('speyside')) ||
+          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('speyside'))
+        )) ||
+        
+        (keywordLower.includes('ハイランド') && (
+          (whisky.region && whisky.region.toLowerCase().includes('highland')) ||
+          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('highland'))
+        )) ||
+        (keywordLower.includes('highland') && (
+          (whisky.region && whisky.region.toLowerCase().includes('highland')) ||
+          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('highland'))
+        )) ||
+        
+        (keywordLower.includes('日本') && (
+          (whisky.region && whisky.region.toLowerCase().includes('japan')) ||
+          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('japanese'))
+        )) ||
+        (keywordLower.includes('japanese') && (
+          (whisky.region && whisky.region.toLowerCase().includes('japan')) ||
+          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('japanese'))
+        )) ||
+        
+        // 4. 味覚特徴マッチング（taste_profileフィールドと説明文）
+        (keywordLower.includes('フルーティ') && (
+          (whisky.taste_profile && whisky.taste_profile.fruity >= 3) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('フルーツ')) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('果実'))
+        )) ||
+        (keywordLower.includes('fruity') && (
+          (whisky.taste_profile && whisky.taste_profile.fruity >= 3) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('フルーツ')) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('果実'))
+        )) ||
+        
+        (keywordLower.includes('スモーキ') && (
+          (whisky.taste_profile && whisky.taste_profile.smoky >= 3) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('煙')) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('ピート'))
+        )) ||
+        (keywordLower.includes('smoky') && (
+          (whisky.taste_profile && whisky.taste_profile.smoky >= 3) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('煙')) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('ピート'))
+        )) ||
+        
+        (keywordLower.includes('甘い') && (
+          (whisky.taste_profile && whisky.taste_profile.sweetness >= 3) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('蜂蜜')) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('甘'))
+        )) ||
+        (keywordLower.includes('sweet') && (
+          (whisky.taste_profile && whisky.taste_profile.sweetness >= 3) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('蜂蜜')) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('甘'))
+        )) ||
+        
+        (keywordLower.includes('スパイシ') && (
+          (whisky.taste_profile && whisky.taste_profile.spicy >= 3) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('スパイス')) ||
+          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('胡椒'))
+        )) ||
+        
+        // 5. カテゴリマッチング
+        (keywordLower.includes('シングルモルト') && (
+          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('single malt'))
+        )) ||
+        (keywordLower.includes('single malt') && (
+          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('single malt'))
+        )) ||
+        
+        // 6. 価格マッチング
+        (keyword === '価格重視' && whisky.price) ||
+        
+        // 7. 一般的な部分マッチ（2文字以上）
+        (keywordLower.length > 2 && searchText.includes(keywordLower));
+      
+      if (isMatch) {
+        console.log(`  ✅ マッチ: "${whisky.name}" - キーワード: "${keyword}"`);
+      }
       
       return isMatch;
     });
 
     console.log(`📊 "${keyword}" の検索結果: ${keywordMatches.length}件`);
     
+    if (keywordMatches.length > 0) {
+      console.log(`📝 "${keyword}" でマッチした銘柄:`, keywordMatches.map(w => w.name));
+    }
+    
     // マッチした銘柄を追加（重複除去）
     keywordMatches.forEach(whisky => {
-      if (!matchingWhiskies.find(existing => existing.name === whisky.name)) {
+      const existingIndex = matchingWhiskies.findIndex(existing => existing.id === whisky.id);
+      if (existingIndex === -1) {
         // スコアリング（関連度）を追加
-        whisky.relevanceScore = calculateRelevanceScore(whisky, keyword);
+        whisky.relevanceScore = calculateRelevanceScoreForRealData(whisky, keyword);
+        whisky.matchedKeywords = [keyword];
         matchingWhiskies.push(whisky);
+        console.log(`➕ 新規追加: "${whisky.name}" (スコア: ${whisky.relevanceScore})`);
+      } else {
+        // 既存の銘柄のスコアを加算
+        matchingWhiskies[existingIndex].relevanceScore += calculateRelevanceScoreForRealData(whisky, keyword);
+        matchingWhiskies[existingIndex].matchedKeywords.push(keyword);
+        console.log(`📈 スコア加算: "${whisky.name}" (新スコア: ${matchingWhiskies[existingIndex].relevanceScore})`);
       }
     });
   });
@@ -2211,10 +2382,82 @@ async function searchWhiskiesFromKeywords(keywords) {
     .sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0))
     .slice(0, 6); // 最大6銘柄
 
-  console.log('🏆 最終選択銘柄:', sortedMatches.map(w => ({ name: w.name, score: w.relevanceScore })));
+  console.log('🏆 最終選択銘柄:');
+  sortedMatches.forEach((whisky, index) => {
+    console.log(`  ${index + 1}. ${whisky.name} (スコア: ${whisky.relevanceScore}, キーワード: ${whisky.matchedKeywords?.join(', ')})`);
+  });
   
   return sortedMatches;
 }
+
+// 関連度スコア計算（実データ構造対応版）
+function calculateRelevanceScoreForRealData(whisky, keyword) {
+  let score = 0;
+  const keywordLower = keyword.toLowerCase();
+  
+  // 実際のJSONフィールドに基づくスコア計算
+  const nameText = (whisky.name || '').toLowerCase();
+  const regionText = (whisky.region || '').toLowerCase();
+  const subcategoryText = (whisky.subcategory || '').toLowerCase();
+  const tastingNoteText = (whisky.tastingNote_ja || '').toLowerCase();
+  
+  // 1. 名前での一致（最高優先度）
+  if (nameText.includes(keywordLower)) score += 20;
+  if (nameText.startsWith(keywordLower.substring(0, Math.min(3, keywordLower.length)))) score += 15;
+  
+  // 2. 地域での一致
+  if (regionText.includes(keywordLower)) score += 12;
+  if (subcategoryText.includes(keywordLower)) score += 10;
+  
+  // 3. テイスティングノートでの一致
+  if (tastingNoteText.includes(keywordLower)) score += 8;
+  
+  // 4. 味覚プロファイルでの一致
+  if (whisky.taste_profile) {
+    if (keywordLower.includes('フルーティ') || keywordLower.includes('fruity')) {
+      score += (whisky.taste_profile.fruity || 0) * 3;
+    }
+    if (keywordLower.includes('スモーキ') || keywordLower.includes('smoky')) {
+      score += (whisky.taste_profile.smoky || 0) * 3;
+    }
+    if (keywordLower.includes('甘い') || keywordLower.includes('sweet')) {
+      score += (whisky.taste_profile.sweetness || 0) * 3;
+    }
+    if (keywordLower.includes('スパイシ') || keywordLower.includes('spicy')) {
+      score += (whisky.taste_profile.spicy || 0) * 3;
+    }
+  }
+  
+  // 5. 特別ボーナス（実データに基づく）
+  // マッカラン特別処理
+  if ((keywordLower.includes('マッカラン') || keywordLower.includes('macallan')) && 
+      nameText.includes('マッカラン')) {
+    score += 25;
+    console.log(`🎯 マッカラン特別ボーナス: ${whisky.name} +25点`);
+  }
+  
+  // フルーティー特別処理（マッカランなどのシェリー系）
+  if ((keywordLower.includes('フルーティ') || keywordLower.includes('fruity')) && 
+      (nameText.includes('マッカラン') || tastingNoteText.includes('シェリー') || 
+       tastingNoteText.includes('ドライフルーツ') || tastingNoteText.includes('果実'))) {
+    score += 15;
+    console.log(`🍎 フルーティー特別ボーナス: ${whisky.name} +15点`);
+  }
+  
+  // 6. 価格マッチング
+  if (keyword === '価格重視' && whisky.price) {
+    score += 5;
+    // 価格帯による追加スコア
+    const priceNum = parseInt((whisky.price || '').replace(/[¥,]/g, ''));
+    if (priceNum < 5000) score += 3;
+    else if (priceNum < 10000) score += 2;
+  }
+  
+  console.log(`📊 スコア計算: ${whisky.name} - キーワード:"${keyword}" = ${score}点`);
+  return score;
+}
+
+
 
 // 関連度スコア計算
 function calculateRelevanceScore(whisky, keyword) {
@@ -2241,7 +2484,7 @@ function calculateRelevanceScore(whisky, keyword) {
   return score;
 }
 
-// AI推薦結果で提案パネルを更新
+// E. AI提案パネル更新関数（実データ対応版）
 function updateAIRecommendationPanel(matchingWhiskies, originalAIMessage, tasteAnalysis) {
   console.log('🔄 AI提案パネルを更新開始...');
   
@@ -2252,6 +2495,16 @@ function updateAIRecommendationPanel(matchingWhiskies, originalAIMessage, tasteA
     const rightPanel = document.querySelector('.chart-panel') || document.body;
     recommendationsPanel = document.createElement('div');
     recommendationsPanel.className = 'recommendations-panel';
+    recommendationsPanel.style.cssText = `
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      padding: 24px;
+      backdrop-filter: blur(10px);
+      max-height: 85vh;
+      overflow-y: auto;
+      margin-bottom: 30px;
+    `;
     rightPanel.parentNode.insertBefore(recommendationsPanel, rightPanel);
   }
 
@@ -2291,6 +2544,9 @@ function updateAIRecommendationPanel(matchingWhiskies, originalAIMessage, tasteA
       position: relative;
       cursor: pointer;
       transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 8px;
+      padding: 16px;
     `;
     
     // フィーチャードラベル
@@ -2311,6 +2567,10 @@ function updateAIRecommendationPanel(matchingWhiskies, originalAIMessage, tasteA
     featuredLabel.textContent = `チャット推薦 #${index + 1}`;
     whiskyCard.appendChild(featuredLabel);
 
+    // 価格から数値部分を抽出
+    const priceDisplay = whisky.price || '価格要相談';
+    const amountDisplay = whisky.amount || '';
+
     // メインコンテンツ
     const content = document.createElement('div');
     content.innerHTML = `
@@ -2320,24 +2580,43 @@ function updateAIRecommendationPanel(matchingWhiskies, originalAIMessage, tasteA
       
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
         <span style="color: #ff6b6b; font-weight: bold; font-size: 16px;">
-          ¥${whisky.price ? whisky.price.toLocaleString() : '価格要相談'}
+          ${priceDisplay}
         </span>
         <span style="color: rgba(255, 255, 255, 0.7); font-size: 14px;">
-          ${whisky.region || whisky.country || '産地不明'}
+          ${whisky.region || '産地不明'}
         </span>
       </div>
 
-      <div style="font-size: 14px; color: rgba(255, 255, 255, 0.9); line-height: 1.4; margin-bottom: 10px;">
-        ${whisky.description || whisky.flavor_profile || 'ソムリエにお尋ねください'}
+      <div style="font-size: 13px; color: rgba(255, 255, 255, 0.8); margin-bottom: 8px;">
+        ${whisky.subcategory || ''} ${whisky.abv ? `| ${whisky.abv}%` : ''}
       </div>
+
+      <div style="font-size: 14px; color: rgba(255, 255, 255, 0.9); line-height: 1.4; margin-bottom: 10px; max-height: 60px; overflow: hidden;">
+        ${(whisky.tastingNote_ja || 'ソムリエにお尋ねください').substring(0, 120)}${whisky.tastingNote_ja && whisky.tastingNote_ja.length > 120 ? '...' : ''}
+      </div>
+
+      ${whisky.taste_profile ? `
+        <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;">
+          <span class="taste-tag" style="background: rgba(255, 107, 107, 0.3);">
+            フルーティー: ${whisky.taste_profile.fruity}/5
+          </span>
+          <span class="taste-tag" style="background: rgba(78, 205, 196, 0.3);">
+            スモーキー: ${whisky.taste_profile.smoky}/5
+          </span>
+          <span class="taste-tag" style="background: rgba(255, 193, 7, 0.3);">
+            甘さ: ${whisky.taste_profile.sweetness}/5
+          </span>
+          <span class="taste-tag" style="background: rgba(156, 39, 176, 0.3);">
+            複雑性: ${whisky.taste_profile.complexity}/5
+          </span>
+        </div>
+      ` : ''}
 
       <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;">
-        ${whisky.category ? `<span class="whisky-tag">${whisky.category}</span>` : ''}
-        ${whisky.age_statement ? `<span class="whisky-tag">${whisky.age_statement}</span>` : ''}
-        ${whisky.alcohol_content ? `<span class="whisky-tag">${whisky.alcohol_content}%</span>` : ''}
-        <span class="whisky-tag" style="background: rgba(78, 205, 196, 0.3);">
+        <span class="whisky-tag" style="background: rgba(78, 205, 196, 0.3); color: #4ecdc4;">
           関連度: ${whisky.relevanceScore || 0}pt
         </span>
+        ${amountDisplay ? `<span class="whisky-tag">フルボトル: ${amountDisplay}</span>` : ''}
       </div>
 
       <div style="font-size: 12px; color: #4ecdc4; font-style: italic; border-top: 1px solid rgba(78, 205, 196, 0.3); padding-top: 8px;">
@@ -2345,10 +2624,10 @@ function updateAIRecommendationPanel(matchingWhiskies, originalAIMessage, tasteA
       </div>
     `;
     
-    // タグのスタイル定義
+    // スタイルの定義
     const style = document.createElement('style');
     style.textContent = `
-      .whisky-tag {
+      .whisky-tag, .taste-tag {
         background: rgba(255, 255, 255, 0.1);
         color: rgba(255, 255, 255, 0.8);
         padding: 2px 6px;
@@ -2374,12 +2653,15 @@ function updateAIRecommendationPanel(matchingWhiskies, originalAIMessage, tasteA
       // 新しい選択を追加
       whiskyCard.classList.add('selected');
       
-      // 詳細表示やその他のアクション
       console.log('🥃 ウィスキー選択:', whisky.name);
       
-      // 味覚マトリクスに座標があれば反映
-      if (whisky.taste_x && whisky.taste_y && typeof updateTasteCoordinates === 'function') {
-        updateTasteCoordinates(whisky.taste_x, whisky.taste_y);
+      // 味覚プロファイルがあれば味覚マトリクスに反映
+      if (whisky.taste_profile && typeof updateTasteCoordinates === 'function') {
+        // taste_profileの値を座標に変換（1-5の値を0-300にマッピング）
+        const x = (whisky.taste_profile.body || 3) * 60; // ボディの強さ
+        const y = (whisky.taste_profile.smoky || 3) * 60; // スモーキーさ
+        updateTasteCoordinates(x, y);
+        console.log(`🎯 味覚座標更新: ${whisky.name} -> (${x}, ${y})`);
       }
     });
 
@@ -2399,6 +2681,82 @@ function updateAIRecommendationPanel(matchingWhiskies, originalAIMessage, tasteA
 
   console.log('✅ AI提案パネル更新完了');
 }
+
+// デバッグ用：実際のウィスキーデータの内容を確認
+function debugWhiskyData() {
+  console.log('🔍 ウィスキーデータデバッグ（実データ構造版）');
+  
+  let whiskyDataArray = [];
+  
+  if (window.whiskyData && Array.isArray(window.whiskyData)) {
+    whiskyDataArray = window.whiskyData;
+    console.log('✅ window.whiskyData配列として検出');
+  } else if (window.whiskyData && window.whiskyData.whiskies && Array.isArray(window.whiskyData.whiskies)) {
+    whiskyDataArray = window.whiskyData.whiskies;
+    console.log('✅ window.whiskyData.whiskies配列として検出');
+  } else if (window.whiskies && Array.isArray(window.whiskies)) {
+    whiskyDataArray = window.whiskies;
+    console.log('✅ window.whiskies配列として検出');
+  } else {
+    console.log('❌ ウィスキーデータが見つかりません');
+    console.log('利用可能なグローバル変数:', Object.keys(window).filter(key => 
+      key.includes('whisky') || key.includes('data') || key.includes('whisk')
+    ));
+    return;
+  }
+  
+  console.log('データ数:', whiskyDataArray.length);
+  
+  if (whiskyDataArray.length > 0) {
+    console.log('最初の3件:');
+    whiskyDataArray.slice(0, 3).forEach((whisky, index) => {
+      console.log(`  ${index + 1}.`, {
+        id: whisky.id,
+        name: whisky.name,
+        price: whisky.price,
+        region: whisky.region,
+        subcategory: whisky.subcategory,
+        taste_profile: whisky.taste_profile,
+        description: whisky.tastingNote_ja?.substring(0, 50) + '...'
+      });
+    });
+    
+    // マッカランが含まれているかチェック
+    const macallanWhiskies = whiskyDataArray.filter(w => 
+      (w.name && w.name.includes('マッカラン')) ||
+      (w.name && w.name.toLowerCase().includes('macallan'))
+    );
+    
+    console.log('🔍 マッカラン関連銘柄:', macallanWhiskies.length, '件');
+    macallanWhiskies.forEach((whisky, index) => {
+      console.log(`  マッカラン${index + 1}:`, {
+        name: whisky.name, 
+        price: whisky.price,
+        taste_profile: whisky.taste_profile
+      });
+    });
+    
+    // フルーティー系のウィスキー
+    const fruityWhiskies = whiskyDataArray.filter(w => 
+      (w.taste_profile && w.taste_profile.fruity >= 3) ||
+      (w.tastingNote_ja && w.tastingNote_ja.includes('フルーツ'))
+    );
+    
+    console.log('🍎 フルーティー系銘柄:', fruityWhiskies.length, '件');
+    fruityWhiskies.slice(0, 5).forEach((whisky, index) => {
+      console.log(`  フルーティー${index + 1}:`, {
+        name: whisky.name,
+        fruity_score: whisky.taste_profile?.fruity,
+        price: whisky.price
+      });
+    });
+  }
+}
+
+// ページ読み込み完了後にデバッグ実行
+document.addEventListener('DOMContentLoaded', function() {
+  setTimeout(debugWhiskyData, 3000); // 3秒後にデバッグ実行
+});
 
 // 推薦結果を既存システムに統合
 function integrateRecommendationsToSystem(matchingWhiskies) {
