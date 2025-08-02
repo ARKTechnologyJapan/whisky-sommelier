@@ -1973,9 +1973,9 @@ function normalizeDistilleryName(name) {
         .toLowerCase()
         .replace(/\s+/g, '') // 全ての空白を除去
         .replace(/[　]/g, '') // 全角スペースを除去
-        .replace(/蒸溜所+/g, '') // 「蒸溜所」文字を除去
-        .replace(/蒸留所+/g, '') // 「蒸留所」文字を除去
-        .replace(/distillery+/gi, '') // 「distillery」を除去
+        .replace(/+/g, '') // 「蒸溜所」文字を除去
+        .replace(/+/g, '') // 「蒸留所」文字を除去
+        .replace(/+/gi, '') // 「distillery」を除去
         .replace(/[ザ・]/g, '') // 冠詞を除去
         .replace(/[()（）\[\]]/g, '') // 括弧類を除去
         .replace(/[－\-]/g, '') // ハイフンを除去
