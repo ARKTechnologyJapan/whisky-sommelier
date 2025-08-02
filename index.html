@@ -3036,102 +3036,131 @@ return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 // AI推薦を取得（修正版）
 async function getRecommendation() {
-async function getRecommendation() {
-// ローディング表示
-const loadingIndicator = document.getElementById('loadingIndicator');
-if (loadingIndicator) {
-    loadingIndicator.style.display = 'block';
-}
+    try {
+        // ローディング表示
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'block';
+        }
 
-try {
-    // 味覚座標の取得（安全版）
-    const dot1 = document.getElementById('tasteDot1');
-    const dot2 = document.getElementById('tasteDot2');
-    
-    const tasteX = dot1 && dot1.style.left ? parseFloat(dot1.style.left) / 100 : 0.5;
-    const tasteY = dot1 && dot1.style.top ? parseFloat(dot1.style.top) / 100 : 0.5;
-    const complexityX = dot2 && dot2.style.left ? parseFloat(dot2.style.left) / 100 : 0.5;
-    const complexityY = dot2 && dot2.style.top ? parseFloat(dot2.style.top) / 100 : 0.5;
+        // 味覚座標の取得（安全版）
+        const dot1 = document.getElementById('tasteDot1');
+        const dot2 = document.getElementById('tasteDot2');
+        
+        let tasteX = 0.5, tasteY = 0.5, complexityX = 0.5, complexityY = 0.5;
+        
+        if (dot1 && dot1.style.left && dot1.style.top) {
+            tasteX = parseFloat(dot1.style.left) / 100;
+            tasteY = parseFloat(dot1.style.top) / 100;
+        }
+        
+        if (dot2 && dot2.style.left && dot2.style.top) {
+            complexityX = parseFloat(dot2.style.left) / 100;
+            complexityY = parseFloat(dot2.style.top) / 100;
+        }
 
-    // 価格帯の取得（安全版）
-    const minPriceElement = document.getElementById('minPrice');
-    const maxPriceElement = document.getElementById('maxPrice');
-    const minPrice = minPriceElement ? parseInt(minPriceElement.value) * 1000 : 0;
-    const maxPrice = maxPriceElement ? parseInt(maxPriceElement.value) * 1000 : 999999;
+        // 価格帯の取得（安全版）
+        const minPriceElement = document.getElementById('minPrice');
+        const maxPriceElement = document.getElementById('maxPrice');
+        const minPrice = minPriceElement ? parseInt(minPriceElement.value) * 1000 : 0;
+        const maxPrice = maxPriceElement ? parseInt(maxPriceElement.value) * 1000 : 999999;
 
-    console.log('パラメータ取得完了:', { tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice });
+        console.log('パラメータ取得完了:', { tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice });
 
-    // 新しく追加: チャットから抽出した好みと現在のUI値を統合
-    const combinedPreferences = {
-        tasteX: savedUserPreferences.tasteX !== null ? savedUserPreferences.tasteX : tasteX,
-        tasteY: savedUserPreferences.tasteY !== null ? savedUserPreferences.tasteY : tasteY,
-        complexityX: savedUserPreferences.complexityX !== null ? savedUserPreferences.complexityX : complexityX,
-        complexityY: savedUserPreferences.complexityY !== null ? savedUserPreferences.complexityY : complexityY,
-        minPrice: savedUserPreferences.minPrice !== null ? savedUserPreferences.minPrice : minPrice,
-        maxPrice: savedUserPreferences.maxPrice !== null ? savedUserPreferences.maxPrice : maxPrice,
-        region: savedUserPreferences.region
-    };
+        // 新しく追加: チャットから抽出した好みと現在のUI値を統合
+        const combinedPreferences = {
+            tasteX: savedUserPreferences.tasteX !== null ? savedUserPreferences.tasteX : tasteX,
+            tasteY: savedUserPreferences.tasteY !== null ? savedUserPreferences.tasteY : tasteY,
+            complexityX: savedUserPreferences.complexityX !== null ? savedUserPreferences.complexityX : complexityX,
+            complexityY: savedUserPreferences.complexityY !== null ? savedUserPreferences.complexityY : complexityY,
+            minPrice: savedUserPreferences.minPrice !== null ? savedUserPreferences.minPrice : minPrice,
+            maxPrice: savedUserPreferences.maxPrice !== null ? savedUserPreferences.maxPrice : maxPrice,
+            region: savedUserPreferences.region
+        };
 
-    // 以下は既存のコードをそのまま続行...
-    console.log('検索開始 - 好み情報:', {
-        savedPreferences: savedUserPreferences,
-        combinedPreferences: combinedPreferences
-    });
+        console.log('検索開始 - 好み情報:', {
+            savedPreferences: savedUserPreferences,
+            combinedPreferences: combinedPreferences
+        });
 
-    // プログレスバーの表示（安全版）
-    if (loadingIndicator) {
-        loadingIndicator.style.display = 'none';
+        // プログレスバーの表示（安全版）
+        if (loadingIndicator) {
+            loadingIndicator.style.display = 'none';
+        }
+        
+        const progressContainer = document.getElementById('progressContainer');
+        if (progressContainer) {
+            progressContainer.style.display = 'block';
+        }
+
+        // プログレスバーを進行
+        let progress = 0;
+        const progressInterval = setInterval(() => {
+            progress += 5;
+            if (progress > 100) {
+                clearInterval(progressInterval);
+                const progressContainer = document.getElementById('progressContainer');
+                if (progressContainer) {
+                    progressContainer.style.display = 'none';
+                }
+
+                // 提案結果を表示（修正: 統合した好みを使用）
+                showRecommendationResult(
+                    combinedPreferences.tasteX, 
+                    combinedPreferences.tasteY, 
+                    combinedPreferences.complexityX, 
+                    combinedPreferences.complexityY, 
+                    combinedPreferences.minPrice, 
+                    combinedPreferences.maxPrice, 
+                    '', // chatPreferences
+                    combinedPreferences.region // 新たに地域パラメータを追加
+                );
+                return;
+            }
+
+            const progressFill = document.getElementById('progressFill');
+            const progressPercentage = document.getElementById('progressPercentage');
+            const progressText = document.getElementById('progressText');
+
+            if (progressFill) progressFill.style.width = `${progress}%`;
+            if (progressPercentage) progressPercentage.textContent = `${progress}%`;
+
+            if (progressText) {
+                if (progress === 30) {
+                    progressText.textContent = 'ウィスキープロファイルを分析中...';
+                } else if (progress === 60) {
+                    progressText.textContent = '最適なマッチングを計算中...';
+                } else if (progress === 90) {
+                    progressText.textContent = '結果をまとめています...';
+                }
+            }
+        }, 50);
+
+        // 味の傾向の説明を更新（統合した好みを使用）
+        updateTasteDescription(
+            combinedPreferences.tasteX, 
+            combinedPreferences.tasteY, 
+            combinedPreferences.complexityX, 
+            combinedPreferences.complexityY
+        );
+
+        // 価格帯の表示を更新
+        const priceRangeElement = document.getElementById('priceRange');
+        if (priceRangeElement) {
+            priceRangeElement.textContent = 
+                `¥${formatPrice(combinedPreferences.minPrice)} - ¥${formatPrice(combinedPreferences.maxPrice)}`;
+        }
+
+    } catch (error) {
+        console.error('Error getting recommendations:', error);
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const progressContainer = document.getElementById('progressContainer');
+        
+        if (loadingIndicator) loadingIndicator.style.display = 'none';
+        if (progressContainer) progressContainer.style.display = 'none';
+        
+        alert('提案の取得中にエラーが発生しました。もう一度お試しください。');
     }
-    
-    const progressContainer = document.getElementById('progressContainer');
-    if (progressContainer) {
-        progressContainer.style.display = 'block';
-    }
-
-// 提案結果を表示（修正: 統合した好みを使用）
-showRecommendationResult(
-combinedPreferences.tasteX, 
-combinedPreferences.tasteY, 
-combinedPreferences.complexityX, 
-combinedPreferences.complexityY, 
-combinedPreferences.minPrice, 
-combinedPreferences.maxPrice, 
-'', // chatPreferences
-combinedPreferences.region // 新たに地域パラメータを追加
-);
-return;
-}
-
-document.getElementById('progressFill').style.width = `${progress}%`;
-document.getElementById('progressPercentage').textContent = `${progress}%`;
-
-if (progress === 30) {
-document.getElementById('progressText').textContent = 'ウィスキープロファイルを分析中...';
-} else if (progress === 60) {
-document.getElementById('progressText').textContent = '最適なマッチングを計算中...';
-} else if (progress === 90) {
-document.getElementById('progressText').textContent = '結果をまとめています...';
-}
-}, 50);
-
-// 味の傾向の説明を更新（統合した好みを使用）
-updateTasteDescription(
-combinedPreferences.tasteX, 
-combinedPreferences.tasteY, 
-combinedPreferences.complexityX, 
-combinedPreferences.complexityY
-);
-
-// 価格帯の表示を更新
-document.getElementById('priceRange').textContent = 
-`¥${formatPrice(combinedPreferences.minPrice)} - ¥${formatPrice(combinedPreferences.maxPrice)}`;
-
-} catch (error) {
-console.error('Error getting recommendations:', error);
-document.getElementById('loadingIndicator').style.display = 'none';
-document.getElementById('progressContainer').style.display = 'none';
-alert('提案の取得中にエラーが発生しました。もう一度お試しください。');
-}
 }
 
 // 味の傾向の説明を更新
