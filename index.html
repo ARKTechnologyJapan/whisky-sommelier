@@ -1944,7 +1944,7 @@ function sendChatMessage() {
   getAIResponse(message);
 }
 
-// AI応答の取得（CORS対応版）
+// AI応答の取得（HP経由対応版）
 async function getAIResponse(message) {
   const chatHistory = document.getElementById('chatHistory');
   
@@ -1981,12 +1981,15 @@ async function getAIResponse(message) {
     };
 
     console.log('🚀 送信データ:', requestData);
-    console.log('🌐 送信先URL:', 'https://ai-whisky-sommelier.netlify.app/.netlify/functions/claude-api');
+    
+    // 🎯 絶対URLを使用（HP経由でも正常に動作）
+    const apiUrl = 'https://ai-whisky-sommelier.netlify.app/.netlify/functions/claude-api';
+    console.log('🌐 送信先URL:', apiUrl);
 
-    // CORS対応の強化されたfetch
-    const response = await fetch('https://ai-whisky-sommelier.netlify.app/.netlify/functions/claude-api', {
+    // CORS対応のfetch
+    const response = await fetch(apiUrl, {
       method: 'POST',
-      mode: 'cors', // CORS モードを明示的に指定
+      mode: 'cors',
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
@@ -2040,7 +2043,9 @@ async function getAIResponse(message) {
     console.error('エラー詳細:', {
       message: error.message,
       stack: error.stack,
-      name: error.name
+      name: error.name,
+      currentURL: window.location.href,
+      origin: window.location.origin
     });
     
     // エラーメッセージを表示
