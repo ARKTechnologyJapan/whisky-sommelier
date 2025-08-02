@@ -2061,6 +2061,25 @@ document.getElementById('maxPriceDisplay').textContent = `¥${formatPrice(maxVal
 }
 });
 
+ document.getElementById('sendMessage').addEventListener('click', function() {
+        const messageInput = document.getElementById('chatInput');
+        const message = messageInput.value.trim();
+        if (message) {
+            addChatMessage('user', message);
+            messageInput.value = '';
+            
+            // チャット履歴を更新
+            chatHistory.push({role: 'user', content: message});
+            
+            // AI応答（現在は簡単な応答、後でClaude API連携）
+            setTimeout(() => {
+                const response = "ありがとうございます。お客様の好みを理解しました。推薦機能をお試しください。";
+                addChatMessage('assistant', response);
+                chatHistory.push({role: 'assistant', content: response});
+            }, 1000);
+        }
+    });
+
 // ボタンイベント
 document.getElementById('getRecommendation').addEventListener('click', function() {
 getRecommendation();
@@ -2093,6 +2112,28 @@ document.getElementById('distillerySection').classList.remove('active');
 });
 
 document.getElementById('getAnotherRecommendation').addEventListener('click', getRecommendation);
+
+// 別の提案を受けるボタン
+    const anotherRecommendationBtn = document.getElementById('anotherRecommendation');
+    if (anotherRecommendationBtn) {
+        anotherRecommendationBtn.addEventListener('click', function() {
+            // 現在のフィルター条件を保持して再推薦
+            const currentFilters = {
+                priceRange: document.getElementById('priceRange').value,
+                region: document.getElementById('region').value,
+                keywords: extractKeywordsFromChat()
+            };
+            
+            // 前回推薦した銘柄を除外リストに追加
+            if (lastRecommendedWhisky) {
+                if (!excludedWhiskies.includes(lastRecommendedWhisky.name)) {
+                    excludedWhiskies.push(lastRecommendedWhisky.name);
+                }
+            }
+            
+            getRecommendation();
+        });
+    }
 
 // チャット関連イベント
 document.getElementById('sendChatBtn').addEventListener('click', function() {
@@ -2190,7 +2231,7 @@ isRecording = false;
 };
 }
 
-// sendChatMessage関数の改良版
+// sendChatMessage関数の完全版（API連携付き）
 async function sendChatMessage() {
     const input = document.getElementById('chatInput');
     const message = input.value.trim();
@@ -2219,40 +2260,258 @@ async function sendChatMessage() {
     // スクロールを最下部に
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
     
-    // AI応答を生成
+    // 現在の味覚座標をグローバル変数に保存
+    const dot1 = document.getElementById('tasteDot1');
+    const dot2 = document.getElementById('tasteDot2');
+    if (dot1 && dot2) {
+        window.currentX = parseFloat(dot1.style.left) || 150;
+        window.currentY = parseFloat(dot1.style.top) || 150;
+    }
+
+    // メッセージから好みを抽出
+    try {
+        const prefs = extractPreferencesFromMessage(message);
+        if (prefs && Object.keys(prefs).length > 0) {
+            Object.assign(savedUserPreferences, prefs);
+            updateUIWithPreferences(prefs);
+        }
+    } catch (error) {
+        console.error('好み抽出エラー:', error);
+    }
+
+    // AIの応答を生成（API連携版）
+    await getAIResponse(message);
+}
+
+// AI応答の取得（API連携版を復活）
+async function getAIResponse(message) {
+    const chatHistoryDiv = document.getElementById('chatHistory');
+    
+    // 考え中のメッセージを追加
     const thinkingMessage = document.createElement('div');
     thinkingMessage.className = 'chat-message ai-message thinking-animation';
     thinkingMessage.textContent = '考えています...';
     chatHistoryDiv.appendChild(thinkingMessage);
     chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
-    
-    // 少し待ってから推薦を更新
-    setTimeout(() => {
-        // 最後のAIメッセージを削除
+
+    try {
+        // 現在の設定値を取得
+        const minPriceValue = parseInt(document.getElementById('minPrice').value);
+        const maxPriceValue = parseInt(document.getElementById('maxPrice').value);
+        const minPrice = minPriceValue * 1000;
+        const maxPrice = maxPriceValue * 1000;
+
+        // 味覚座標を取得
+        const tasteX = window.currentX || 150;
+        const tasteY = window.currentY || 150;
+
+        // チャット履歴を収集
+        const chatHistoryData = collectChatHistoryForAPI();
+
+        // リクエストデータの構築
+        const requestData = {
+            minPrice: minPrice,
+            maxPrice: maxPrice,
+            tasteX: parseFloat(tasteX.toFixed(2)),
+            tasteY: parseFloat(tasteY.toFixed(2)),
+            additionalPreferences: message,
+            chatHistory: chatHistoryData,
+            timestamp: new Date().toISOString()
+        };
+
+        console.log('🚀 送信データ:', requestData);
+        
+        const apiUrl = 'https://ai-whisky-sommelier.netlify.app/.netlify/functions/claude-api';
+        
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest'
+            },
+            body: JSON.stringify(requestData)
+        });
+
+        if (!response.ok) {
+            const errorText = await response.text();
+            console.error('❌ HTTP Error:', response.status, errorText);
+            throw new Error(`HTTP Error: ${response.status} - ${errorText}`);
+        }
+
+        const result = await response.json();
+        console.log('✅ 成功レスポンス:', result);
+
+        // 考え中メッセージを削除
+        thinkingMessage.remove();
+
+        if (result.success) {
+            // レスポンスからAIメッセージを取得
+            const aiMessage = result.data.choices?.[0]?.message?.content || 
+                            result.data.content?.[0]?.text ||
+                            'すみません、応答を取得できませんでした。';
+            
+            // AIメッセージを表示
+            const responseMessage = document.createElement('div');
+            responseMessage.className = 'chat-message ai-message';
+            responseMessage.textContent = aiMessage;
+            chatHistoryDiv.appendChild(responseMessage);
+
+            // チャット履歴に追加
+            chatHistory.push({
+                type: 'ai',
+                message: aiMessage,
+                timestamp: new Date()
+            });
+
+            // チャット推薦から実際のJSON銘柄を検索してAI提案に反映
+            await processAIRecommendationFromChat(aiMessage);
+
+        } else {
+            throw new Error(result.error || 'API応答エラー');
+        }
+
+    } catch (error) {
+        console.error('❌ AI応答取得エラー:', error);
+        
+        // 考え中メッセージを削除
         if (thinkingMessage.parentNode) {
             thinkingMessage.remove();
         }
         
-        // 簡単なAI応答を生成
-        const aiResponse = generateSimpleAIResponse(message);
+        // フォールバック：簡単なAI応答を生成
+        const fallbackResponse = generateSimpleAIResponse(message);
         const responseMessage = document.createElement('div');
         responseMessage.className = 'chat-message ai-message';
-        responseMessage.textContent = aiResponse;
+        responseMessage.textContent = fallbackResponse;
         chatHistoryDiv.appendChild(responseMessage);
-        
+
         // チャット履歴に追加
         chatHistory.push({
             type: 'ai',
-            message: aiResponse,
+            message: fallbackResponse,
             timestamp: new Date()
         });
+    }
+
+    // 推薦を更新
+    generateAIRecommendations();
+    
+    // スクロールを最下部に
+    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+}
+
+// チャット推薦からウィスキー銘柄を抽出して表示に反映する関数
+async function processAIRecommendationFromChat(aiMessage) {
+    try {
+        console.log('🔍 AI推薦からウィスキー銘柄を抽出開始...');
         
-        // 推薦を更新
-        generateAIRecommendations();
+        // AIメッセージからウィスキー銘柄を抽出
+        const mentionedWhiskies = [];
         
-        // スクロールを最下部に
-        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
-    }, 1500);
+        // 現在のwhiskyDataから銘柄名を検索
+        whiskyData.forEach(whisky => {
+            const whiskyName = whisky.name.toLowerCase();
+            const aiMessageLower = aiMessage.toLowerCase();
+            
+            // 銘柄名の部分一致を確認
+            const nameParts = whiskyName.split(/[\s　年]/);
+            for (const part of nameParts) {
+                if (part.length > 2 && aiMessageLower.includes(part)) {
+                    if (!mentionedWhiskies.find(w => w.name === whisky.name)) {
+                        mentionedWhiskies.push(whisky);
+                    }
+                    break;
+                }
+            }
+        });
+        
+        console.log('🥃 抽出されたウィスキー:', mentionedWhiskies.map(w => w.name));
+        
+        if (mentionedWhiskies.length > 0) {
+            // 現在の価格範囲でフィルタリング
+            const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+            const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
+            
+            const filteredWhiskies = mentionedWhiskies.filter(whisky => {
+                try {
+                    const numericPrice = parseInt(whisky.price.replace(/[¥,]/g, '')) || 0;
+                    return numericPrice >= minPrice && numericPrice <= maxPrice;
+                } catch (err) {
+                    return true;
+                }
+            });
+            
+            if (filteredWhiskies.length > 0) {
+                // 足りない場合は他のウィスキーで補完
+                const finalSelection = [...filteredWhiskies];
+                if (finalSelection.length < 3) {
+                    const additionalWhiskies = whiskyData.filter(w => {
+                        try {
+                            const numericPrice = parseInt(w.price.replace(/[¥,]/g, '')) || 0;
+                            return numericPrice >= minPrice && 
+                                   numericPrice <= maxPrice && 
+                                   !finalSelection.find(selected => selected.name === w.name);
+                        } catch (err) {
+                            return false;
+                        }
+                    }).sort(() => 0.5 - Math.random());
+                    
+                    while (finalSelection.length < 3 && additionalWhiskies.length > 0) {
+                        finalSelection.push(additionalWhiskies.pop());
+                    }
+                }
+                
+                // 推薦パネルを表示して更新
+                document.getElementById('splitLayoutContainer').style.display = 'grid';
+                displayLocalRecommendations(finalSelection);
+                
+                if (finalSelection.length > 0) {
+                    selectWhisky(finalSelection[0]);
+                }
+                
+                console.log('✅ チャット推薦の統合が完了しました');
+            }
+        }
+        
+    } catch (error) {
+        console.error('❌ チャット推薦処理エラー:', error);
+    }
+}
+
+// API送信用のチャット履歴収集関数
+function collectChatHistoryForAPI() {
+    const chatHistoryDiv = document.getElementById('chatHistory');
+    if (!chatHistoryDiv) return [];
+
+    const messages = [];
+    const messageElements = chatHistoryDiv.querySelectorAll('.chat-message');
+
+    messageElements.forEach(element => {
+        // 考え中メッセージは除外
+        if (element.classList.contains('thinking-animation')) {
+            return;
+        }
+
+        const content = element.textContent.trim();
+        if (content && content !== '考えています...') {
+            if (element.classList.contains('user-message')) {
+                messages.push({
+                    role: 'user',
+                    content: content
+                });
+            } else if (element.classList.contains('ai-message')) {
+                messages.push({
+                    role: 'assistant',
+                    content: content
+                });
+            }
+        }
+    });
+
+    // 直近10メッセージに制限（APIの制限対応）
+    return messages.slice(-10);
 }
 
 // チャットメッセージから好みを抽出する関数
