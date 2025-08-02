@@ -1447,6 +1447,10 @@ let distilleryMap = null;
 let profileChartInstance = null;
 let brandToDistilleryMapping = {}; // ← これを brandToDistilleryData に統一
 
+// グローバル変数
+let excludedWhiskies = []; // 除外する銘柄のリスト
+let lastRecommendedWhisky = null; // 最後に推薦した銘柄
+
 // チャット履歴を保存する配列
 let chatHistory = [];
 let distilleryData = {}; // メイン使用
@@ -2051,24 +2055,23 @@ function setupEventListeners() {
     }
     
     // 【修正1：別の提案を受けるボタン】
-    const anotherRecommendationBtn = document.getElementById('anotherRecommendation');
-    if (anotherRecommendationBtn) {
-        anotherRecommendationBtn.addEventListener('click', function() {
-            const currentFilters = {
-                priceRange: document.getElementById('priceRange').value,
-                region: document.getElementById('region').value,
-                keywords: extractKeywordsFromChat()
-            };
-            
-            if (lastRecommendedWhisky) {
-                if (!excludedWhiskies.includes(lastRecommendedWhisky.name)) {
-                    excludedWhiskies.push(lastRecommendedWhisky.name);
-                }
+const anotherRecommendationBtn = document.getElementById('anotherRecommendation');
+if (anotherRecommendationBtn) {
+    anotherRecommendationBtn.addEventListener('click', function() {
+        console.log('別の提案ボタンがクリックされました'); // デバッグ用
+        
+        // 前回推薦した銘柄を除外リストに追加
+        if (lastRecommendedWhisky) {
+            if (!excludedWhiskies.includes(lastRecommendedWhisky.name)) {
+                excludedWhiskies.push(lastRecommendedWhisky.name);
+                console.log('除外リストに追加:', lastRecommendedWhisky.name); // デバッグ用
             }
-            
-            getRecommendation();
-        });
-    }
+        }
+        
+        // 新しい推薦を取得
+        getRecommendation();
+    });
+}
     
     // getAnotherRecommendationボタン（既存）
     const getAnotherRecommendationBtn = document.getElementById('getAnotherRecommendation');
@@ -2223,7 +2226,7 @@ sendChatMessage();
 
 // マイク入力設定
 setupVoiceInput();{
-  
+
 }
 
 // マイク入力の処理
@@ -3441,6 +3444,79 @@ console.error('displayLocalRecommendations エラー:', error);
 // エラー時のフォールバック表示
 displayDefaultRecommendations();
 }
+}
+
+function getRecommendation() {
+    // チャットからキーワードを抽出
+    const chatKeywords = extractKeywordsFromChat();
+    
+    // フィルター条件を取得
+    const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+    const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
+    const selectedRegion = document.getElementById('region').value;
+    
+    console.log('除外リスト:', excludedWhiskies); // デバッグ用
+    
+    // ウィスキーをフィルタリング
+    let filteredWhiskies = whiskiesData.filter(whisky => {
+        // 除外リストにある銘柄をスキップ
+        if (excludedWhiskies.includes(whisky.name)) {
+            return false;
+        }
+        
+        // 価格フィルター
+        const price = parseInt(whisky.price.replace(/[¥,]/g, ''));
+        if (price < minPrice || price > maxPrice) {
+            return false;
+        }
+        
+        // 地域フィルター
+        if (selectedRegion !== 'all' && whisky.region !== selectedRegion) {
+            return false;
+        }
+        
+        // チャットキーワードフィルター
+        if (chatKeywords.length > 0) {
+            const whiskeyText = `${whisky.name} ${whisky.description} ${whisky.region}`.toLowerCase();
+            const hasKeyword = chatKeywords.some(keyword => 
+                whiskeyText.includes(keyword.toLowerCase())
+            );
+            if (!hasKeyword) {
+                return false;
+            }
+        }
+        
+        return true;
+    });
+    
+    console.log('フィルター後のウィスキー数:', filteredWhiskies.length); // デバッグ用
+    
+    if (filteredWhiskies.length === 0) {
+        // 除外リストをクリアして再試行
+        if (excludedWhiskies.length > 0) {
+            excludedWhiskies = [];
+            console.log('除外リストをクリアして再試行');
+            return getRecommendation();
+        }
+        
+        alert('条件に合うウィスキーが見つかりませんでした。条件を変更してお試しください。');
+        return;
+    }
+    
+    // ランダムに選択
+    const randomIndex = Math.floor(Math.random() * filteredWhiskies.length);
+    const selectedWhisky = filteredWhiskies[randomIndex];
+    
+    // 最後に推薦した銘柄を記録
+    lastRecommendedWhisky = selectedWhisky;
+    
+    console.log('選択されたウィスキー:', selectedWhisky.name); // デバッグ用
+    
+    // 推薦結果を表示
+    displayRecommendations([selectedWhisky]);
+    
+    // 分割レイアウトを表示
+    document.getElementById('splitLayoutContainer').style.display = 'block';
 }
 
 // デフォルトの提案を表示
