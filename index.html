@@ -1447,6 +1447,11 @@ let distilleryMap = null;
 let profileChartInstance = null;
 let brandToDistilleryMapping = {};
 
+// チャット履歴を保存する配列
+let chatHistory = [];
+let distilleryData = {};
+let brandToDistilleryData = {};
+
 // ユーザー好みを保存するグローバル変数
 let savedUserPreferences = {
 minPrice: null,
@@ -1556,34 +1561,286 @@ link.classList.remove('active');
 
 // 統合ウィスキーデータ読み込み
 async function loadUnifiedWhiskyData() {
-console.log('統合ウィスキーデータ読み込み開始...');
-
-try {
-const response = await fetch('unified_whisky_data.json');
-const data = await response.json();
-
-// JSONの構造に合わせてデータを取得
-whiskyData = data.whiskies || [];
-distilleryDatabase = data.distilleries || {};
-brandToDistilleryMapping = data.brandToDistillery || {};
-
-console.log('統合データを正常に読み込みました:', whiskyData.length, '銘柄');
-console.log('蒸溜所データベース:', Object.keys(distilleryDatabase).length, '蒸溜所');
-console.log('ブランドマッピング:', Object.keys(brandToDistilleryMapping).length, '件');
-
-return whiskyData;
-} catch (error) {
-console.error('統合ウィスキーデータの読み込みに失敗しました:', error);
-whiskyData = [];
-distilleryDatabase = {};
-brandToDistilleryMapping = {};
-
-// エラー時はデフォルトデータを使用
-console.warn('デフォルトデータを使用します');
-const defaultData = getDefaultWhiskyData();
-whiskyData = defaultData;
-return defaultData;
+    console.log('統合ウィスキーデータ読み込み開始...');
+    
+    try {
+        // JSONファイルを読み込み
+        const response = await fetch('unified_whisky_data.json.txt');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('JSONデータ読み込み成功:', data);
+        
+        // データを各変数に格納
+        whiskyData = data.whiskies || [];
+        distilleryData = data.distilleries || {};
+        brandToDistilleryData = data.brandToDistillery || {};
+        
+        console.log('ウィスキーデータ:', whiskyData.length, '件');
+        console.log('蒸溜所データ:', Object.keys(distilleryData).length, '件');
+        console.log('ブランド-蒸溜所マッピング:', Object.keys(brandToDistilleryData).length, '件');
+        
+        // 統計情報を更新
+        updateStatistics();
+        
+        // 初期推薦を生成
+        generateAIRecommendations();
+        
+        console.log('統合ウィスキーデータ読み込み完了');
+        return true;
+        
+    } catch (error) {
+        console.error('統合データ読み込みエラー:', error);
+        showError('ウィスキーデータの読み込みに失敗しました: ' + error.message);
+        return false;
+    }
 }
+
+// チャット履歴からキーワードを抽出する関数
+function extractKeywordsFromChat() {
+    const keywords = {
+        brands: [],
+        tastes: [],
+        regions: [],
+        priceRange: null
+    };
+    
+    // チャット履歴からテキストを収集
+    const chatMessages = document.querySelectorAll('.chat-message.user-message');
+    const allChatText = Array.from(chatMessages).map(msg => msg.textContent.toLowerCase()).join(' ');
+    
+    if (!allChatText) return keywords;
+    
+    // ウィスキー銘柄名を検索
+    whiskyData.forEach(whisky => {
+        const whiskyName = whisky.name.toLowerCase();
+        const brandParts = whiskyName.split(/[\s　年]/);
+        
+        brandParts.forEach(part => {
+            if (part.length > 2 && allChatText.includes(part)) {
+                if (!keywords.brands.includes(whisky.name)) {
+                    keywords.brands.push(whisky.name);
+                }
+            }
+        });
+        
+        // 完全なブランド名の検索
+        if (allChatText.includes(whiskyName)) {
+            if (!keywords.brands.includes(whisky.name)) {
+                keywords.brands.push(whisky.name);
+            }
+        }
+    });
+    
+    // 味覚キーワードを検索
+    const tasteKeywords = {
+        'スモーキー': ['smoky', 'smoke', 'ピート'],
+        'フルーティー': ['fruity', 'fruit', '果実'],
+        'スパイシー': ['spicy', 'spice', 'スパイス'],
+        'スイート': ['sweet', 'sweetness', '甘い'],
+        'ヘビー': ['heavy', 'body', '重い'],
+        'コンプレックス': ['complex', 'complexity', '複雑']
+    };
+    
+    Object.entries(tasteKeywords).forEach(([japanese, englishWords]) => {
+        if (allChatText.includes(japanese.toLowerCase()) || 
+            englishWords.some(word => allChatText.includes(word))) {
+            keywords.tastes.push(japanese);
+        }
+    });
+    
+    // 地域キーワードを検索
+    const regionKeywords = [
+        'scotland', 'japan', 'ireland', 'america', 
+        'スコットランド', '日本', 'アイルランド', 'アメリカ',
+        'islay', 'speyside', 'highland', 'アイラ', 'スペイサイド', 'ハイランド'
+    ];
+    regionKeywords.forEach(region => {
+        if (allChatText.includes(region.toLowerCase())) {
+            keywords.regions.push(region);
+        }
+    });
+    
+    return keywords;
+}
+
+// AI推薦生成関数
+function generateAIRecommendations() {
+    const recommendations = document.getElementById('recommendations');
+    const summary = document.getElementById('recommendationSummary');
+    
+    if (!whiskyData || whiskyData.length === 0) {
+        if (recommendations) {
+            recommendations.innerHTML = '<p class="error">ウィスキーデータが読み込まれていません。</p>';
+        }
+        return;
+    }
+    
+    // チャット履歴からキーワードを抽出
+    const keywords = extractKeywordsFromChat();
+    let filteredWhiskies = [...whiskyData];
+    let recommendationReason = '';
+    
+    // 価格フィルタリング
+    const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
+    const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
+    
+    filteredWhiskies = filteredWhiskies.filter(whisky => {
+        const price = parseInt(whisky.price.replace(/[¥,]/g, ''));
+        return price >= minPrice && price <= maxPrice;
+    });
+    
+    // チャット履歴に基づく推薦
+    if (keywords.brands.length > 0) {
+        // 銘柄名が言及された場合、その銘柄を優先
+        const brandRecommendations = filteredWhiskies.filter(whisky =>
+            keywords.brands.some(brand => whisky.name === brand)
+        );
+        
+        if (brandRecommendations.length > 0) {
+            filteredWhiskies = brandRecommendations;
+            recommendationReason = `チャットで言及された「${keywords.brands.join('、')}」に基づく推薦`;
+        }
+    } else if (keywords.tastes.length > 0) {
+        // 味覚キーワードに基づく推薦
+        filteredWhiskies.sort((a, b) => {
+            let aScore = 0, bScore = 0;
+            
+            keywords.tastes.forEach(taste => {
+                switch(taste) {
+                    case 'スモーキー':
+                        aScore += a.taste_profile?.smoky || 0;
+                        bScore += b.taste_profile?.smoky || 0;
+                        break;
+                    case 'フルーティー':
+                        aScore += a.taste_profile?.fruity || 0;
+                        bScore += b.taste_profile?.fruity || 0;
+                        break;
+                    case 'スパイシー':
+                        aScore += a.taste_profile?.spicy || 0;
+                        bScore += b.taste_profile?.spicy || 0;
+                        break;
+                    case 'スイート':
+                        aScore += a.taste_profile?.sweetness || 0;
+                        bScore += b.taste_profile?.sweetness || 0;
+                        break;
+                    case 'ヘビー':
+                        aScore += a.taste_profile?.body || 0;
+                        bScore += b.taste_profile?.body || 0;
+                        break;
+                    case 'コンプレックス':
+                        aScore += a.taste_profile?.complexity || 0;
+                        bScore += b.taste_profile?.complexity || 0;
+                        break;
+                }
+            });
+            
+            return bScore - aScore;
+        });
+        
+        recommendationReason = `「${keywords.tastes.join('、')}」の特徴に基づく推薦`;
+    } else if (keywords.regions.length > 0) {
+        // 地域に基づく推薦
+        filteredWhiskies = filteredWhiskies.filter(whisky =>
+            keywords.regions.some(region => {
+                const whiskyRegion = whisky.region ? whisky.region.toLowerCase() : '';
+                const whiskySubcategory = whisky.subcategory ? whisky.subcategory.toLowerCase() : '';
+                const regionLower = region.toLowerCase();
+                
+                return whiskyRegion.includes(regionLower) ||
+                       whiskySubcategory.includes(regionLower) ||
+                       (regionLower.includes('スコットランド') && whiskyRegion.includes('scotland')) ||
+                       (regionLower.includes('scotland') && whiskyRegion.includes('scotland')) ||
+                       (regionLower.includes('日本') && whiskyRegion.includes('japan')) ||
+                       (regionLower.includes('japan') && whiskyRegion.includes('japan'));
+            })
+        );
+        
+        recommendationReason = `「${keywords.regions.join('、')}」地域に基づく推薦`;
+    } else {
+        // デフォルトの推薦（高評価順）
+        filteredWhiskies.sort((a, b) => {
+            const aScore = Object.values(a.taste_profile || {}).reduce((sum, val) => sum + val, 0);
+            const bScore = Object.values(b.taste_profile || {}).reduce((sum, val) => sum + val, 0);
+            return bScore - aScore;
+        });
+        
+        recommendationReason = '総合評価の高い銘柄';
+    }
+    
+    // 上位5件を選択
+    const topRecommendations = filteredWhiskies.slice(0, 5);
+    
+    // サマリーを更新
+    if (summary) {
+        summary.innerHTML = `
+            <div class="ai-recommendation-message">
+                🤖 <strong>AI推薦理由:</strong> ${recommendationReason}<br>
+                📊 ${topRecommendations.length}件の推薦銘柄を選出しました
+                ${keywords.brands.length > 0 ? `<br>🎯 特別推薦: ${keywords.brands.join('、')}` : ''}
+            </div>
+        `;
+    }
+    
+    // 推薦リストを表示
+    if (recommendations) {
+        recommendations.innerHTML = topRecommendations.map(whisky => `
+            <div class="whisky-card ${keywords.brands.includes(whisky.name) ? 'featured' : ''}" 
+                 onclick="selectWhisky('${whisky.id}')">
+                ${keywords.brands.includes(whisky.name) ? '<div class="featured-label">🎯 チャット推薦</div>' : ''}
+                <div class="flex items-center mb-3">
+                    <img src="${whisky.photoUrl}" alt="${whisky.name}" 
+                         class="w-16 h-20 object-cover rounded mr-4"
+                         onerror="this.src='placeholder-whisky.jpg'">
+                    <div class="flex-1">
+                        <h4 class="font-bold text-lg mb-1">${whisky.name}</h4>
+                        <p class="text-sm opacity-75 mb-1">${whisky.region} | ${whisky.subcategory}</p>
+                        <p class="text-lg font-bold text-yellow-400">${whisky.price}</p>
+                    </div>
+                </div>
+                <div class="taste-profile-mini grid grid-cols-3 gap-2 text-xs">
+                    <span>🍇 フルーティー: ${whisky.taste_profile?.fruity || 0}/5</span>
+                    <span>🌶️ スパイシー: ${whisky.taste_profile?.spicy || 0}/5</span>
+                    <span>💨 スモーキー: ${whisky.taste_profile?.smoky || 0}/5</span>
+                </div>
+            </div>
+        `).join('');
+    }
+}
+
+// 簡単なAI応答生成関数
+function generateSimpleAIResponse(userMessage) {
+    const lowerMessage = userMessage.toLowerCase();
+    
+    // ウィスキー銘柄の検索
+    const mentionedWhiskies = whiskyData.filter(whisky =>
+        whisky.name.split(/[\s　年]/).some(part => 
+            part.length > 2 && lowerMessage.includes(part.toLowerCase())
+        )
+    );
+    
+    if (mentionedWhiskies.length > 0) {
+        const whisky = mentionedWhiskies[0];
+        return `${whisky.name}についてお聞きですね！この銘柄は${whisky.region}の${whisky.subcategory}で、価格は${whisky.price}となっております。右側の推薦リストに表示いたします！`;
+    }
+    
+    // 味覚特徴の応答
+    if (lowerMessage.includes('スモーキー') || lowerMessage.includes('smoky')) {
+        return 'スモーキーな味わいがお好みですね！泥炭を使った独特な香りと味わいが特徴的なウィスキーをお探しいたします。';
+    }
+    
+    if (lowerMessage.includes('フルーティー') || lowerMessage.includes('fruity')) {
+        return 'フルーティーな味わいがお好みですね！果実の甘やかな香りと味わいが楽しめる銘柄をご提案いたします。';
+    }
+    
+    if (lowerMessage.includes('おすすめ') || lowerMessage.includes('推薦')) {
+        return 'あなたの好みに合わせて最適なウィスキーをお選びいたします。価格帯や味の好みをお聞かせください！';
+    }
+    
+    // デフォルト応答
+    return 'ありがとうございます。あなたのご質問を参考に、最適なウィスキーをお選びいたします。右側の推薦リストをご覧ください！';
 }
 
 // ウィスキーから蒸溜所を取得する関数（統合JSON対応）
@@ -1901,1047 +2158,69 @@ isRecording = false;
 };
 }
 
-// sendChatMessage関数の末尾に追加
-function sendChatMessage() {
-  const input = document.getElementById('chatInput');
-  const message = input.value.trim();
-  if (!message) return;
-
-  // チャット履歴を表示
-  const chatHistory = document.getElementById('chatHistory');
-  chatHistory.style.display = 'block';
-
-  // ユーザーメッセージを追加
-  const userMessage = document.createElement('div');
-  userMessage.className = 'chat-message user-message';
-  userMessage.textContent = message;
-  chatHistory.appendChild(userMessage);
-
-  // 入力フィールドをクリア
-  input.value = '';
-
-  // スクロールを最下部に
-  chatHistory.scrollTop = chatHistory.scrollHeight;
-
-  // 現在の味覚座標をグローバル変数に保存（統合分析用）
-  if (typeof currentX !== 'undefined' && typeof currentY !== 'undefined') {
-    window.currentX = currentX;
-    window.currentY = currentY;
-  }
-
-  // メッセージから好みを抽出
-  try {
-    const prefs = extractPreferencesFromMessage(message);
-    if (prefs && Object.keys(prefs).length > 0) {
-      Object.assign(savedUserPreferences, prefs);
-      updateUIWithPreferences(prefs);
-    }
-  } catch (error) {
-    console.error('好み抽出エラー:', error);
-  }
-
-  // AIの応答を生成（統合分析対応版）
-  getAIResponse(message);
-}
-
-// AI応答の取得（JSON検索統合版）
-async function getAIResponse(message) {
-  const chatHistory = document.getElementById('chatHistory');
-  
-  // 考え中のメッセージを追加
-  const thinkingMessage = document.createElement('div');
-  thinkingMessage.className = 'chat-message ai-message thinking-animation';
-  thinkingMessage.textContent = '考えています...';
-  chatHistory.appendChild(thinkingMessage);
-  chatHistory.scrollTop = chatHistory.scrollHeight;
-
-  try {
-    // 現在の設定値を取得
-    const minPriceValue = parseInt(document.getElementById('minPrice').value);
-    const maxPriceValue = parseInt(document.getElementById('maxPrice').value);
-    const minPrice = minPriceValue * 1000;
-    const maxPrice = maxPriceValue * 1000;
-
-    // 味覚座標を取得
-    const tasteX = window.currentX || 150;
-    const tasteY = window.currentY || 150;
-
-    // チャット履歴を収集
-    const chatHistoryData = collectChatHistoryForAPI();
-
-    // リクエストデータの構築
-    const requestData = {
-      minPrice: minPrice,
-      maxPrice: maxPrice,
-      tasteX: parseFloat(tasteX.toFixed(2)),
-      tasteY: parseFloat(tasteY.toFixed(2)),
-      additionalPreferences: message,
-      chatHistory: chatHistoryData,
-      timestamp: new Date().toISOString()
-    };
-
-    console.log('🚀 送信データ:', requestData);
+// sendChatMessage関数の改良版
+async function sendChatMessage() {
+    const input = document.getElementById('chatInput');
+    const message = input.value.trim();
     
-    const apiUrl = 'https://ai-whisky-sommelier.netlify.app/.netlify/functions/claude-api';
+    if (!message) return;
     
-    const response = await fetch(apiUrl, {
-      method: 'POST',
-      mode: 'cors',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'X-Requested-With': 'XMLHttpRequest'
-      },
-      body: JSON.stringify(requestData)
+    // チャット履歴に追加
+    chatHistory.push({
+        type: 'user',
+        message: message,
+        timestamp: new Date()
     });
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('❌ HTTP Error:', response.status, errorText);
-      throw new Error(`HTTP Error: ${response.status} - ${errorText}`);
-    }
-
-    const result = await response.json();
-    console.log('✅ 成功レスポンス:', result);
-
-    // 考え中メッセージを削除
-    thinkingMessage.remove();
-
-    if (result.success) {
-      // レスポンスからAIメッセージを取得
-      const aiMessage = result.data.choices?.[0]?.message?.content || 
-                       result.data.content?.[0]?.text ||
-                       'すみません、応答を取得できませんでした。';
-      
-      // AIメッセージを表示
-      const responseMessage = document.createElement('div');
-      responseMessage.className = 'chat-message ai-message';
-      responseMessage.textContent = aiMessage;
-      chatHistory.appendChild(responseMessage);
-
-      // 🎯 新機能：チャット推薦から実際のJSON銘柄を検索してAI提案に反映
-      await processAIRecommendationToPanel(aiMessage, result.tasteAnalysis);
-
-    } else {
-      throw new Error(result.error || 'API応答エラー');
-    }
-
-  } catch (error) {
-    console.error('❌ AI応答取得エラー:', error);
     
-    // エラーメッセージを表示
-    const errorMessage = document.createElement('div');
-    errorMessage.className = 'chat-message ai-message';
-    errorMessage.textContent = '申し訳ございません。一時的な問題が発生しました。しばらくしてから再度お試しください。';
-    chatHistory.appendChild(errorMessage);
+    // チャット履歴を表示
+    const chatHistoryDiv = document.getElementById('chatHistory');
+    chatHistoryDiv.style.display = 'block';
     
-    // 考え中メッセージがあれば削除
-    if (thinkingMessage.parentNode) {
-      thinkingMessage.remove();
-    }
-  }
-
-  // スクロールを最下部に
-  chatHistory.scrollTop = chatHistory.scrollHeight;
-}
-// チャット推薦から実際のJSON銘柄を検索してAI提案パネルに反映
-async function processAIRecommendationToPanel(aiMessage, tasteAnalysis) {
-  try {
-    console.log('🔍 AI推薦からキーワード抽出を開始...');
+    // ユーザーメッセージを追加
+    const userMessage = document.createElement('div');
+    userMessage.className = 'chat-message user-message';
+    userMessage.textContent = message;
+    chatHistoryDiv.appendChild(userMessage);
     
-    // 1. AIメッセージからウィスキーキーワードを抽出
-    const keywords = extractWhiskyKeywordsFromAI(aiMessage);
-    console.log('🏷️ 抽出されたキーワード:', keywords);
+    input.value = '';
     
-    if (keywords.length === 0) {
-      console.log('⚠️ キーワードが見つかりませんでした');
-      return;
-    }
-
-    // 2. グローバルのウィスキーデータから該当銘柄を検索
-    const matchingWhiskies = await searchWhiskiesFromKeywords(keywords);
-    console.log('🥃 検索結果:', matchingWhiskies);
+    // スクロールを最下部に
+    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
     
-    if (matchingWhiskies.length === 0) {
-      console.log('⚠️ 該当する銘柄が見つかりませんでした');
-      return;
-    }
-
-    // 3. AI提案パネルを更新
-    updateAIRecommendationPanel(matchingWhiskies, aiMessage, tasteAnalysis);
+    // AI応答を生成
+    const thinkingMessage = document.createElement('div');
+    thinkingMessage.className = 'chat-message ai-message thinking-animation';
+    thinkingMessage.textContent = '考えています...';
+    chatHistoryDiv.appendChild(thinkingMessage);
+    chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
     
-    // 4. 推薦を既存システムに統合
-    integrateRecommendationsToSystem(matchingWhiskies);
-    
-    console.log('✅ チャット推薦の統合が完了しました');
-    
-  } catch (error) {
-    console.error('❌ 推薦統合エラー:', error);
-  }
-}
-
-// AIメッセージからウィスキーキーワードを抽出
-function extractWhiskyKeywordsFromAI(aiMessage) {
-  const keywords = [];
-  
-  // よく使われるウィスキー名のパターンを定義
-  const whiskyPatterns = [
-    // 完全一致パターン
-    /タリスカー\d*年?/gi,
-    /マッカラン[\s\w\d年]*/gi,
-    /軽井沢\d*年?/gi,
-    /ポートエレン\d*年?/gi,
-    /キルホーマン[\s\w\d年]*/gi,
-    /グレンリベット\d*年?/gi,
-    /スプリングバンク\d*年?/gi,
-    /グレンフィディック\d*年?/gi,
-    /ラフロイグ\d*年?/gi,
-    /アードベッグ[\s\w]*/gi,
-    /ラガヴーリン\d*年?/gi,
-    /ボウモア\d*年?/gi,
-    /山崎\d*年?/gi,
-    /白州\d*年?/gi,
-    /余市\d*年?/gi,
-    /宮城峡\d*年?/gi,
-    /イチローズモルト[\s\w]*/gi,
-    /ジョニーウォーカー[\s\w]*/gi,
-    /シーバスリーガル\d*年?/gi,
-    /バランタイン\d*年?/gi,
-    /ロイヤルサルート\d*年?/gi,
-    
-    // 地域+一般名詞パターン
-    /アイラ[\s]*モルト/gi,
-    /スペイサイド[\s]*モルト/gi,
-    /ハイランド[\s]*モルト/gi,
-    /ローランド[\s]*モルト/gi,
-    /キャンベルタウン[\s]*モルト/gi,
-    /日本[\s]*ウィスキー/gi,
-    /ジャパニーズ[\s]*ウィスキー/gi,
-    /スコッチ[\s]*ウィスキー/gi,
-    
-    // 特徴的な表現
-    /シングルモルト/gi,
-    /ブレンデッド/gi,
-    /カスクストレングス/gi,
-    /ピーテッド/gi,
-    /シェリー樽/gi,
-    /バーボン樽/gi
-  ];
-
-  // パターンマッチングで抽出
-  whiskyPatterns.forEach(pattern => {
-    const matches = aiMessage.match(pattern);
-    if (matches) {
-      matches.forEach(match => {
-        const cleanedMatch = match.trim().replace(/[。、！？\s]+$/, '');
-        if (cleanedMatch.length > 2 && !keywords.includes(cleanedMatch)) {
-          keywords.push(cleanedMatch);
+    // 少し待ってから推薦を更新
+    setTimeout(() => {
+        // 最後のAIメッセージを削除
+        if (thinkingMessage.parentNode) {
+            thinkingMessage.remove();
         }
-      });
-    }
-  });
-
-  // 価格の言及があれば価格帯キーワードも追加
-  if (aiMessage.includes('¥') || aiMessage.includes('円')) {
-    const priceMatches = aiMessage.match(/[¥￥]?[\d,]+円?/g);
-    if (priceMatches) {
-      keywords.push('価格重視');
-    }
-  }
-
-  // 味覚特徴のキーワード
-  const tasteKeywords = ['スモーキー', 'フルーティー', 'スパイシー', '甘い', 'ピート', 'シェリー', 'バニラ', 'ハニー'];
-  tasteKeywords.forEach(taste => {
-    if (aiMessage.includes(taste)) {
-      keywords.push(taste);
-    }
-  });
-
-  return keywords;
-}
-
-// D. JSON銘柄検索関数（実データ構造対応版）
-async function searchWhiskiesFromKeywords(keywords) {
-  console.log('🔍 JSON検索開始:', keywords);
-  
-  const matchingWhiskies = [];
-  
-  // グローバルのウィスキーデータを確認
-  let whiskyDataArray = [];
-  
-  // 複数の可能性のあるデータ構造をチェック
-  if (window.whiskyData && Array.isArray(window.whiskyData)) {
-    whiskyDataArray = window.whiskyData;
-  } else if (window.whiskyData && window.whiskyData.whiskies && Array.isArray(window.whiskyData.whiskies)) {
-    whiskyDataArray = window.whiskyData.whiskies;
-  } else if (window.whiskies && Array.isArray(window.whiskies)) {
-    whiskyDataArray = window.whiskies;
-  } else {
-    console.error('❌ ウィスキーデータが読み込まれていません');
-    console.log('🔍 利用可能なグローバル変数:', Object.keys(window).filter(key => key.includes('whisky') || key.includes('data')));
-    return matchingWhiskies;
-  }
-
-  console.log('📊 検索対象データ数:', whiskyDataArray.length);
-  console.log('🔍 データサンプル:', whiskyDataArray.slice(0, 2));
-
-  // 各キーワードに対してウィスキーデータを検索
-  keywords.forEach(keyword => {
-    console.log(`🔎 "${keyword}" で検索開始...`);
-    
-    const keywordMatches = whiskyDataArray.filter(whisky => {
-      // 実際のJSONフィールドに基づく検索対象テキスト
-      const searchFields = [
-        whisky.name || '',
-        whisky.region || '',
-        whisky.subcategory || '',
-        whisky.category || '',
-        whisky.tastingNote_ja || '',
-        // 価格から数値部分を抽出
-        String(whisky.price || '').replace(/[¥,]/g, ''),
-        String(whisky.abv || ''),
-        String(whisky.id || ''),
-      ];
-      
-      const searchText = searchFields.join(' ').toLowerCase();
-      const keywordLower = keyword.toLowerCase();
-      
-      console.log(`  🔍 "${whisky.name?.substring(0, 20)}..." の検索テキスト:`, searchText.substring(0, 100) + '...');
-      
-      // 実データに基づく多段階マッチング
-      const isMatch = 
-        // 1. 名前での直接マッチング
-        (whisky.name && whisky.name.toLowerCase().includes(keywordLower)) ||
         
-        // 2. ブランド名の特別マッチング（実データに基づく）
-        (keywordLower.includes('マッカラン') && (
-          (whisky.name && whisky.name.includes('マッカラン')) ||
-          (whisky.name && whisky.name.toLowerCase().includes('macallan'))
-        )) ||
-        (keywordLower.includes('macallan') && (
-          (whisky.name && whisky.name.includes('マッカラン')) ||
-          (whisky.name && whisky.name.toLowerCase().includes('macallan'))
-        )) ||
+        // 簡単なAI応答を生成
+        const aiResponse = generateSimpleAIResponse(message);
+        const responseMessage = document.createElement('div');
+        responseMessage.className = 'chat-message ai-message';
+        responseMessage.textContent = aiResponse;
+        chatHistoryDiv.appendChild(responseMessage);
         
-        (keywordLower.includes('タリスカー') && (
-          (whisky.name && whisky.name.includes('タリスカー')) ||
-          (whisky.name && whisky.name.toLowerCase().includes('talisker'))
-        )) ||
-        (keywordLower.includes('talisker') && (
-          (whisky.name && whisky.name.includes('タリスカー')) ||
-          (whisky.name && whisky.name.toLowerCase().includes('talisker'))
-        )) ||
-        
-        (keywordLower.includes('キルホーマン') && (
-          (whisky.name && whisky.name.includes('キルホーマン')) ||
-          (whisky.name && whisky.name.toLowerCase().includes('kilchoman'))
-        )) ||
-        (keywordLower.includes('kilchoman') && (
-          (whisky.name && whisky.name.includes('キルホーマン')) ||
-          (whisky.name && whisky.name.toLowerCase().includes('kilchoman'))
-        )) ||
-        
-        (keywordLower.includes('スプリングバンク') && (
-          (whisky.name && whisky.name.includes('スプリングバンク')) ||
-          (whisky.name && whisky.name.toLowerCase().includes('springbank'))
-        )) ||
-        
-        (keywordLower.includes('長浜') && (
-          (whisky.name && whisky.name.includes('長濱')) ||
-          (whisky.name && whisky.name.includes('長浜'))
-        )) ||
-        
-        (keywordLower.includes('ポートエレン') && (
-          (whisky.name && whisky.name.includes('ポートエレン'))
-        )) ||
-        
-        // 3. 地域マッチング（実データの地域フィールドに基づく）
-        (keywordLower.includes('アイラ') && (
-          (whisky.region && whisky.region.toLowerCase().includes('islay')) ||
-          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('islay'))
-        )) ||
-        (keywordLower.includes('islay') && (
-          (whisky.region && whisky.region.toLowerCase().includes('islay')) ||
-          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('islay'))
-        )) ||
-        
-        (keywordLower.includes('スペイサイド') && (
-          (whisky.region && whisky.region.toLowerCase().includes('speyside')) ||
-          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('speyside'))
-        )) ||
-        (keywordLower.includes('speyside') && (
-          (whisky.region && whisky.region.toLowerCase().includes('speyside')) ||
-          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('speyside'))
-        )) ||
-        
-        (keywordLower.includes('ハイランド') && (
-          (whisky.region && whisky.region.toLowerCase().includes('highland')) ||
-          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('highland'))
-        )) ||
-        (keywordLower.includes('highland') && (
-          (whisky.region && whisky.region.toLowerCase().includes('highland')) ||
-          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('highland'))
-        )) ||
-        
-        (keywordLower.includes('日本') && (
-          (whisky.region && whisky.region.toLowerCase().includes('japan')) ||
-          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('japanese'))
-        )) ||
-        (keywordLower.includes('japanese') && (
-          (whisky.region && whisky.region.toLowerCase().includes('japan')) ||
-          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('japanese'))
-        )) ||
-        
-        // 4. 味覚特徴マッチング（taste_profileフィールドと説明文）
-        (keywordLower.includes('フルーティ') && (
-          (whisky.taste_profile && whisky.taste_profile.fruity >= 3) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('フルーツ')) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('果実'))
-        )) ||
-        (keywordLower.includes('fruity') && (
-          (whisky.taste_profile && whisky.taste_profile.fruity >= 3) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('フルーツ')) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('果実'))
-        )) ||
-        
-        (keywordLower.includes('スモーキ') && (
-          (whisky.taste_profile && whisky.taste_profile.smoky >= 3) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('煙')) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('ピート'))
-        )) ||
-        (keywordLower.includes('smoky') && (
-          (whisky.taste_profile && whisky.taste_profile.smoky >= 3) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('煙')) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('ピート'))
-        )) ||
-        
-        (keywordLower.includes('甘い') && (
-          (whisky.taste_profile && whisky.taste_profile.sweetness >= 3) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('蜂蜜')) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('甘'))
-        )) ||
-        (keywordLower.includes('sweet') && (
-          (whisky.taste_profile && whisky.taste_profile.sweetness >= 3) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('蜂蜜')) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('甘'))
-        )) ||
-        
-        (keywordLower.includes('スパイシ') && (
-          (whisky.taste_profile && whisky.taste_profile.spicy >= 3) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('スパイス')) ||
-          (whisky.tastingNote_ja && whisky.tastingNote_ja.includes('胡椒'))
-        )) ||
-        
-        // 5. カテゴリマッチング
-        (keywordLower.includes('シングルモルト') && (
-          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('single malt'))
-        )) ||
-        (keywordLower.includes('single malt') && (
-          (whisky.subcategory && whisky.subcategory.toLowerCase().includes('single malt'))
-        )) ||
-        
-        // 6. 価格マッチング
-        (keyword === '価格重視' && whisky.price) ||
-        
-        // 7. 一般的な部分マッチ（2文字以上）
-        (keywordLower.length > 2 && searchText.includes(keywordLower));
-      
-      if (isMatch) {
-        console.log(`  ✅ マッチ: "${whisky.name}" - キーワード: "${keyword}"`);
-      }
-      
-      return isMatch;
-    });
-
-    console.log(`📊 "${keyword}" の検索結果: ${keywordMatches.length}件`);
-    
-    if (keywordMatches.length > 0) {
-      console.log(`📝 "${keyword}" でマッチした銘柄:`, keywordMatches.map(w => w.name));
-    }
-    
-    // マッチした銘柄を追加（重複除去）
-    keywordMatches.forEach(whisky => {
-      const existingIndex = matchingWhiskies.findIndex(existing => existing.id === whisky.id);
-      if (existingIndex === -1) {
-        // スコアリング（関連度）を追加
-        whisky.relevanceScore = calculateRelevanceScoreForRealData(whisky, keyword);
-        whisky.matchedKeywords = [keyword];
-        matchingWhiskies.push(whisky);
-        console.log(`➕ 新規追加: "${whisky.name}" (スコア: ${whisky.relevanceScore})`);
-      } else {
-        // 既存の銘柄のスコアを加算
-        matchingWhiskies[existingIndex].relevanceScore += calculateRelevanceScoreForRealData(whisky, keyword);
-        matchingWhiskies[existingIndex].matchedKeywords.push(keyword);
-        console.log(`📈 スコア加算: "${whisky.name}" (新スコア: ${matchingWhiskies[existingIndex].relevanceScore})`);
-      }
-    });
-  });
-
-  // 関連度でソートして上位を返す
-  const sortedMatches = matchingWhiskies
-    .sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0))
-    .slice(0, 6); // 最大6銘柄
-
-  console.log('🏆 最終選択銘柄:');
-  sortedMatches.forEach((whisky, index) => {
-    console.log(`  ${index + 1}. ${whisky.name} (スコア: ${whisky.relevanceScore}, キーワード: ${whisky.matchedKeywords?.join(', ')})`);
-  });
-  
-  return sortedMatches;
-}
-
-// 関連度スコア計算（実データ構造対応版）
-function calculateRelevanceScoreForRealData(whisky, keyword) {
-  let score = 0;
-  const keywordLower = keyword.toLowerCase();
-  
-  // 実際のJSONフィールドに基づくスコア計算
-  const nameText = (whisky.name || '').toLowerCase();
-  const regionText = (whisky.region || '').toLowerCase();
-  const subcategoryText = (whisky.subcategory || '').toLowerCase();
-  const tastingNoteText = (whisky.tastingNote_ja || '').toLowerCase();
-  
-  // 1. 名前での一致（最高優先度）
-  if (nameText.includes(keywordLower)) score += 20;
-  if (nameText.startsWith(keywordLower.substring(0, Math.min(3, keywordLower.length)))) score += 15;
-  
-  // 2. 地域での一致
-  if (regionText.includes(keywordLower)) score += 12;
-  if (subcategoryText.includes(keywordLower)) score += 10;
-  
-  // 3. テイスティングノートでの一致
-  if (tastingNoteText.includes(keywordLower)) score += 8;
-  
-  // 4. 味覚プロファイルでの一致
-  if (whisky.taste_profile) {
-    if (keywordLower.includes('フルーティ') || keywordLower.includes('fruity')) {
-      score += (whisky.taste_profile.fruity || 0) * 3;
-    }
-    if (keywordLower.includes('スモーキ') || keywordLower.includes('smoky')) {
-      score += (whisky.taste_profile.smoky || 0) * 3;
-    }
-    if (keywordLower.includes('甘い') || keywordLower.includes('sweet')) {
-      score += (whisky.taste_profile.sweetness || 0) * 3;
-    }
-    if (keywordLower.includes('スパイシ') || keywordLower.includes('spicy')) {
-      score += (whisky.taste_profile.spicy || 0) * 3;
-    }
-  }
-  
-  // 5. 特別ボーナス（実データに基づく）
-  // マッカラン特別処理
-  if ((keywordLower.includes('マッカラン') || keywordLower.includes('macallan')) && 
-      nameText.includes('マッカラン')) {
-    score += 25;
-    console.log(`🎯 マッカラン特別ボーナス: ${whisky.name} +25点`);
-  }
-  
-  // フルーティー特別処理（マッカランなどのシェリー系）
-  if ((keywordLower.includes('フルーティ') || keywordLower.includes('fruity')) && 
-      (nameText.includes('マッカラン') || tastingNoteText.includes('シェリー') || 
-       tastingNoteText.includes('ドライフルーツ') || tastingNoteText.includes('果実'))) {
-    score += 15;
-    console.log(`🍎 フルーティー特別ボーナス: ${whisky.name} +15点`);
-  }
-  
-  // 6. 価格マッチング
-  if (keyword === '価格重視' && whisky.price) {
-    score += 5;
-    // 価格帯による追加スコア
-    const priceNum = parseInt((whisky.price || '').replace(/[¥,]/g, ''));
-    if (priceNum < 5000) score += 3;
-    else if (priceNum < 10000) score += 2;
-  }
-  
-  console.log(`📊 スコア計算: ${whisky.name} - キーワード:"${keyword}" = ${score}点`);
-  return score;
-}
-
-
-
-// 関連度スコア計算
-function calculateRelevanceScore(whisky, keyword) {
-  let score = 0;
-  const whiskyText = `${whisky.name || ''} ${whisky.brand || ''} ${whisky.region || ''}`.toLowerCase();
-  const keywordLower = keyword.toLowerCase();
-  
-  // 名前での完全一致
-  if (whiskyText.includes(keywordLower)) score += 10;
-  
-  // ブランドでの一致
-  if ((whisky.brand || '').toLowerCase().includes(keywordLower)) score += 8;
-  
-  // 地域での一致
-  if ((whisky.region || '').toLowerCase().includes(keywordLower)) score += 6;
-  
-  // 価格帯での一致
-  if (whisky.price && keyword === '価格重視') score += 5;
-  
-  // 味覚特徴での一致
-  const tasteFeatures = whisky.taste_profile || whisky.description || '';
-  if (tasteFeatures.toLowerCase().includes(keywordLower)) score += 7;
-  
-  return score;
-}
-
-// E. AI提案パネル更新関数（実データ対応版）
-function updateAIRecommendationPanel(matchingWhiskies, originalAIMessage, tasteAnalysis) {
-  console.log('🔄 AI提案パネルを更新開始...');
-  
-  // 既存の推薦パネルを取得または作成
-  let recommendationsPanel = document.querySelector('.recommendations-panel');
-  if (!recommendationsPanel) {
-    // パネルが存在しない場合は作成
-    const rightPanel = document.querySelector('.chart-panel') || document.body;
-    recommendationsPanel = document.createElement('div');
-    recommendationsPanel.className = 'recommendations-panel';
-    recommendationsPanel.style.cssText = `
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      border-radius: 12px;
-      padding: 24px;
-      backdrop-filter: blur(10px);
-      max-height: 85vh;
-      overflow-y: auto;
-      margin-bottom: 30px;
-    `;
-    rightPanel.parentNode.insertBefore(recommendationsPanel, rightPanel);
-  }
-
-  // AIチャット推薦セクションを追加/更新
-  let aiChatSection = recommendationsPanel.querySelector('.ai-chat-recommendations');
-  if (!aiChatSection) {
-    aiChatSection = document.createElement('div');
-    aiChatSection.className = 'ai-chat-recommendations';
-    recommendationsPanel.insertBefore(aiChatSection, recommendationsPanel.firstChild);
-  } else {
-    // 既存の内容をクリア
-    aiChatSection.innerHTML = '';
-  }
-
-  // セクションヘッダー
-  const header = document.createElement('div');
-  header.className = 'recommendation-summary';
-  header.innerHTML = `
-    <h3 style="color: #4ecdc4; margin-bottom: 10px; display: flex; align-items: center;">
-      <span style="margin-right: 8px;">🤖💬</span>
-      チャット推薦から選出
-    </h3>
-    <p style="font-size: 14px; color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">
-      AIの推薦内容から当店の在庫${matchingWhiskies.length}銘柄を選出しました
-    </p>
-  `;
-  aiChatSection.appendChild(header);
-
-  // 各ウィスキーカードを作成
-  matchingWhiskies.forEach((whisky, index) => {
-    const whiskyCard = document.createElement('div');
-    whiskyCard.className = 'whisky-card ai-recommended featured';
-    whiskyCard.style.cssText = `
-      border: 2px solid #4ecdc4;
-      box-shadow: 0 0 20px rgba(78, 205, 196, 0.4);
-      margin-bottom: 15px;
-      position: relative;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      background: rgba(255, 255, 255, 0.08);
-      border-radius: 8px;
-      padding: 16px;
-    `;
-    
-    // フィーチャードラベル
-    const featuredLabel = document.createElement('div');
-    featuredLabel.className = 'featured-label';
-    featuredLabel.style.cssText = `
-      position: absolute;
-      top: -8px;
-      right: 10px;
-      background: linear-gradient(45deg, #4ecdc4, #66d9e8);
-      color: #000;
-      padding: 4px 8px;
-      border-radius: 4px;
-      font-size: 11px;
-      font-weight: bold;
-      z-index: 2;
-    `;
-    featuredLabel.textContent = `チャット推薦 #${index + 1}`;
-    whiskyCard.appendChild(featuredLabel);
-
-    // 価格から数値部分を抽出
-    const priceDisplay = whisky.price || '価格要相談';
-    const amountDisplay = whisky.amount || '';
-
-    // メインコンテンツ
-    const content = document.createElement('div');
-    content.innerHTML = `
-      <h4 style="color: #4ecdc4; margin-bottom: 8px; font-size: 16px; line-height: 1.3;">
-        ${whisky.name || 'ウィスキー名不明'}
-      </h4>
-      
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-        <span style="color: #ff6b6b; font-weight: bold; font-size: 16px;">
-          ${priceDisplay}
-        </span>
-        <span style="color: rgba(255, 255, 255, 0.7); font-size: 14px;">
-          ${whisky.region || '産地不明'}
-        </span>
-      </div>
-
-      <div style="font-size: 13px; color: rgba(255, 255, 255, 0.8); margin-bottom: 8px;">
-        ${whisky.subcategory || ''} ${whisky.abv ? `| ${whisky.abv}%` : ''}
-      </div>
-
-      <div style="font-size: 14px; color: rgba(255, 255, 255, 0.9); line-height: 1.4; margin-bottom: 10px; max-height: 60px; overflow: hidden;">
-        ${(whisky.tastingNote_ja || 'ソムリエにお尋ねください').substring(0, 120)}${whisky.tastingNote_ja && whisky.tastingNote_ja.length > 120 ? '...' : ''}
-      </div>
-
-      ${whisky.taste_profile ? `
-        <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;">
-          <span class="taste-tag" style="background: rgba(255, 107, 107, 0.3);">
-            フルーティー: ${whisky.taste_profile.fruity}/5
-          </span>
-          <span class="taste-tag" style="background: rgba(78, 205, 196, 0.3);">
-            スモーキー: ${whisky.taste_profile.smoky}/5
-          </span>
-          <span class="taste-tag" style="background: rgba(255, 193, 7, 0.3);">
-            甘さ: ${whisky.taste_profile.sweetness}/5
-          </span>
-          <span class="taste-tag" style="background: rgba(156, 39, 176, 0.3);">
-            複雑性: ${whisky.taste_profile.complexity}/5
-          </span>
-        </div>
-      ` : ''}
-
-      <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;">
-        <span class="whisky-tag" style="background: rgba(78, 205, 196, 0.3); color: #4ecdc4;">
-          関連度: ${whisky.relevanceScore || 0}pt
-        </span>
-        ${amountDisplay ? `<span class="whisky-tag">フルボトル: ${amountDisplay}</span>` : ''}
-      </div>
-
-      <div style="font-size: 12px; color: #4ecdc4; font-style: italic; border-top: 1px solid rgba(78, 205, 196, 0.3); padding-top: 8px;">
-        💡 AIが分析した味覚プロファイルとマッチング
-      </div>
-    `;
-    
-    // スタイルの定義
-    const style = document.createElement('style');
-    style.textContent = `
-      .whisky-tag, .taste-tag {
-        background: rgba(255, 255, 255, 0.1);
-        color: rgba(255, 255, 255, 0.8);
-        padding: 2px 6px;
-        border-radius: 3px;
-        font-size: 11px;
-        display: inline-block;
-      }
-    `;
-    if (!document.head.querySelector('style[data-whisky-tags]')) {
-      style.setAttribute('data-whisky-tags', 'true');
-      document.head.appendChild(style);
-    }
-
-    whiskyCard.appendChild(content);
-
-    // クリックイベント
-    whiskyCard.addEventListener('click', () => {
-      // 既存の選択をクリア
-      document.querySelectorAll('.whisky-card.selected').forEach(card => {
-        card.classList.remove('selected');
-      });
-      
-      // 新しい選択を追加
-      whiskyCard.classList.add('selected');
-      
-      console.log('🥃 ウィスキー選択:', whisky.name);
-      
-      // 味覚プロファイルがあれば味覚マトリクスに反映
-      if (whisky.taste_profile && typeof updateTasteCoordinates === 'function') {
-        // taste_profileの値を座標に変換（1-5の値を0-300にマッピング）
-        const x = (whisky.taste_profile.body || 3) * 60; // ボディの強さ
-        const y = (whisky.taste_profile.smoky || 3) * 60; // スモーキーさ
-        updateTasteCoordinates(x, y);
-        console.log(`🎯 味覚座標更新: ${whisky.name} -> (${x}, ${y})`);
-      }
-    });
-
-    // ホバーエフェクト
-    whiskyCard.addEventListener('mouseenter', () => {
-      whiskyCard.style.transform = 'translateY(-3px)';
-      whiskyCard.style.boxShadow = '0 0 25px rgba(78, 205, 196, 0.6)';
-    });
-
-    whiskyCard.addEventListener('mouseleave', () => {
-      whiskyCard.style.transform = 'translateY(0)';
-      whiskyCard.style.boxShadow = '0 0 20px rgba(78, 205, 196, 0.4)';
-    });
-
-    aiChatSection.appendChild(whiskyCard);
-  });
-
-  console.log('✅ AI提案パネル更新完了');
-}
-
-// デバッグ用：実際のウィスキーデータの内容を確認
-function debugWhiskyData() {
-  console.log('🔍 ウィスキーデータデバッグ（実データ構造版）');
-  
-  let whiskyDataArray = [];
-  
-  if (window.whiskyData && Array.isArray(window.whiskyData)) {
-    whiskyDataArray = window.whiskyData;
-    console.log('✅ window.whiskyData配列として検出');
-  } else if (window.whiskyData && window.whiskyData.whiskies && Array.isArray(window.whiskyData.whiskies)) {
-    whiskyDataArray = window.whiskyData.whiskies;
-    console.log('✅ window.whiskyData.whiskies配列として検出');
-  } else if (window.whiskies && Array.isArray(window.whiskies)) {
-    whiskyDataArray = window.whiskies;
-    console.log('✅ window.whiskies配列として検出');
-  } else {
-    console.log('❌ ウィスキーデータが見つかりません');
-    console.log('利用可能なグローバル変数:', Object.keys(window).filter(key => 
-      key.includes('whisky') || key.includes('data') || key.includes('whisk')
-    ));
-    return;
-  }
-  
-  console.log('データ数:', whiskyDataArray.length);
-  
-  if (whiskyDataArray.length > 0) {
-    console.log('最初の3件:');
-    whiskyDataArray.slice(0, 3).forEach((whisky, index) => {
-      console.log(`  ${index + 1}.`, {
-        id: whisky.id,
-        name: whisky.name,
-        price: whisky.price,
-        region: whisky.region,
-        subcategory: whisky.subcategory,
-        taste_profile: whisky.taste_profile,
-        description: whisky.tastingNote_ja?.substring(0, 50) + '...'
-      });
-    });
-    
-    // マッカランが含まれているかチェック
-    const macallanWhiskies = whiskyDataArray.filter(w => 
-      (w.name && w.name.includes('マッカラン')) ||
-      (w.name && w.name.toLowerCase().includes('macallan'))
-    );
-    
-    console.log('🔍 マッカラン関連銘柄:', macallanWhiskies.length, '件');
-    macallanWhiskies.forEach((whisky, index) => {
-      console.log(`  マッカラン${index + 1}:`, {
-        name: whisky.name, 
-        price: whisky.price,
-        taste_profile: whisky.taste_profile
-      });
-    });
-    
-    // フルーティー系のウィスキー
-    const fruityWhiskies = whiskyDataArray.filter(w => 
-      (w.taste_profile && w.taste_profile.fruity >= 3) ||
-      (w.tastingNote_ja && w.tastingNote_ja.includes('フルーツ'))
-    );
-    
-    console.log('🍎 フルーティー系銘柄:', fruityWhiskies.length, '件');
-    fruityWhiskies.slice(0, 5).forEach((whisky, index) => {
-      console.log(`  フルーティー${index + 1}:`, {
-        name: whisky.name,
-        fruity_score: whisky.taste_profile?.fruity,
-        price: whisky.price
-      });
-    });
-  }
-}
-
-// ページ読み込み完了後にデバッグ実行
-document.addEventListener('DOMContentLoaded', function() {
-  setTimeout(debugWhiskyData, 3000); // 3秒後にデバッグ実行
-});
-
-// 推薦結果を既存システムに統合
-function integrateRecommendationsToSystem(matchingWhiskies) {
-  try {
-    // グローバルな推薦状態を更新
-    if (!window.currentRecommendations) {
-      window.currentRecommendations = [];
-    }
-    
-    // AI推薦を既存推薦の最上位に配置
-    window.currentRecommendations = [
-      ...matchingWhiskies.map(whisky => ({ ...whisky, source: 'ai_chat' })),
-      ...window.currentRecommendations.filter(w => w.source !== 'ai_chat')
-    ].slice(0, 20); // 最大20銘柄に制限
-
-    // 統計更新
-    if (typeof updateRecommendationStats === 'function') {
-      updateRecommendationStats(matchingWhiskies.length);
-    }
-
-    // チャートやグラフがある場合は更新
-    if (typeof updateRecommendationChart === 'function') {
-      updateRecommendationChart(window.currentRecommendations);
-    }
-
-    console.log('🔄 システム統合完了:', window.currentRecommendations.length, '銘柄');
-    
-  } catch (error) {
-    console.error('❌ システム統合エラー:', error);
-  }
-}
-
-// API送信用のチャット履歴収集関数
-function collectChatHistoryForAPI() {
-  const chatHistory = document.getElementById('chatHistory');
-  if (!chatHistory) return [];
-
-  const messages = [];
-  const messageElements = chatHistory.querySelectorAll('.chat-message');
-
-  messageElements.forEach(element => {
-    // 考え中メッセージは除外
-    if (element.classList.contains('thinking-animation')) {
-      return;
-    }
-
-    const content = element.textContent.trim();
-    if (content && content !== '考えています...') {
-      if (element.classList.contains('user-message')) {
-        messages.push({
-          role: 'user',
-          content: content
+        // チャット履歴に追加
+        chatHistory.push({
+            type: 'ai',
+            message: aiResponse,
+            timestamp: new Date()
         });
-      } else if (element.classList.contains('ai-message')) {
-        messages.push({
-          role: 'assistant',
-          content: content
-        });
-      }
-    }
-  });
-
-  // 直近10メッセージに制限（APIの制限対応）
-  return messages.slice(-10);
-}
-
-// AI応答から好みを抽出する関数
-function extractPreferencesFromAIResponse(aiResponse) {
-  const preferences = {};
-  const content = aiResponse.toLowerCase();
-
-  // 推薦された銘柄から価格帯の推定
-  if (content.includes('タリスカー44年')) {
-    preferences.suggestedPriceRange = 'premium';
-  } else if (content.includes('マッカラン') || content.includes('軽井沢')) {
-    preferences.suggestedPriceRange = 'high';
-  } else if (content.includes('グレンリベット') || content.includes('スプリングバンク')) {
-    preferences.suggestedPriceRange = 'medium';
-  } else if (content.includes('キルホーマン')) {
-    preferences.suggestedPriceRange = 'affordable';
-  }
-
-  // 推薦理由からの味覚傾向抽出
-  if (content.includes('スモーキー') || content.includes('ピート')) {
-    preferences.tastePreference = 'smoky';
-  } else if (content.includes('フルーティー') || content.includes('果実')) {
-    preferences.tastePreference = 'fruity';
-  } else if (content.includes('スパイシー')) {
-    preferences.tastePreference = 'spicy';
-  }
-
-  return preferences;
-}
-
-// チャット履歴を収集する関数
-function collectChatHistory() {
-const chatHistory = document.getElementById('chatHistory');
-if (!chatHistory) return [];
-
-const messages = chatHistory.querySelectorAll('.chat-message');
-const history = [];
-
-messages.forEach(message => {
-const isAI = message.classList.contains('ai-message');
-// thinking-animationクラスを持つメッセージは除外
-if (!message.classList.contains('thinking-animation')) {
-history.push({
-role: isAI ? 'assistant' : 'user',
-content: message.textContent
-});
-}
-});
-
-return history;
-}
-
-// チャット応答からウィスキー名を抽出し、推奨リストに反映する関数
-function updateRecommendationsFromChat(chatResponseText) {
-if (!chatResponseText || !whiskyData || whiskyData.length === 0) return;
-
-console.log('チャット応答からウィスキー銘柄を抽出中...');
-
-// ウィスキー名を抽出するパターン
-const patterns = [
-/「([^」]+)」/g,  // 「」で囲まれた部分
-/『([^』]+)』/g,  // 『』で囲まれた部分
-/(\S+\s?\d+年[^\s、。,\.]+)/g,  // "〇〇 XX年" パターン
-/((?:DAILUAINE|タリスカー|ポートエレン|マッカラン|軽井沢|山崎|白州|響|長濱|キルホーマン|ABERFELDY|GLENLIVET|SPRINGBANK|GLENGLASSAUGH|ARDBEG|MORTLACH|CAOL ILA|KILCHOMAN)[^\s、。,\.]*\s?\d*年?[^\s、。,\.]*)/g  // 特定の銘柄名
-];
-
-// 抽出されたウィスキー名を保存する配列
-let extractedNames = [];
-
-// 各パターンで抽出を試みる
-patterns.forEach(pattern => {
-let match;
-while ((match = pattern.exec(chatResponseText)) !== null) {
-if (match[1]) {
-extractedNames.push(match[1].trim());
-} else if (match[0]) {
-extractedNames.push(match[0].trim());
-}
-}
-});
-
-// 重複を削除
-extractedNames = [...new Set(extractedNames)];
-
-console.log('抽出されたウィスキー銘柄:', extractedNames);
-
-if (extractedNames.length === 0) {
-console.log('ウィスキー銘柄を抽出できませんでした');
-return;
-}
-
-// 抽出した銘柄名に最も近いウィスキーを探す
-const recommendedWhiskies = [];
-
-extractedNames.forEach(name => {
-// 完全一致または部分一致を探す
-const matchingWhisky = whiskyData.find(w => 
-w.name === name || 
-w.name.includes(name) || 
-name.includes(w.name)
-);
-
-if (matchingWhisky) {
-console.log(`マッチしたウィスキー: ${name} → ${matchingWhisky.name}`);
-recommendedWhiskies.push(matchingWhisky);
-}
-});
-
-// マッチしたウィスキーがあれば表示
-if (recommendedWhiskies.length > 0) {
-console.log(`${recommendedWhiskies.length}個のウィスキーをチャットから抽出して表示します`);
-displayLocalRecommendations(recommendedWhiskies);
-
-// 最初のウィスキーを選択
-if (recommendedWhiskies.length > 0) {
-selectWhisky(recommendedWhiskies[0]);
-}
-
-// 推奨パネルを表示
-document.getElementById('splitLayoutContainer').style.display = 'grid';
-}
+        
+        // 推薦を更新
+        generateAIRecommendations();
+        
+        // スクロールを最下部に
+        chatHistoryDiv.scrollTop = chatHistoryDiv.scrollHeight;
+    }, 1500);
 }
 
 // チャットメッセージから好みを抽出する関数
@@ -2986,7 +2265,7 @@ preferences.region = 'Speyside';
 preferences.region = 'Highland';
 } else if (message.includes('日本') || message.includes('ジャパン') || message.includes('ジャパニーズ') || 
 message.includes('japan') || message.includes('japanese')) {
-preferences.region = 'Japan';  // 「Japan」または「Japanese」を含む場合
+preferences.region = 'Japan';
 }
 
 // 味の傾向の抽出
@@ -3053,31 +2332,8 @@ if (preferences.complexityY !== undefined && dot2) {
 dot2.style.top = `${preferences.complexityY * 100}%`;
 }
 
-// 座標表示の更新（安全に呼び出す）
-try {
-if (typeof updateCoordinatesDisplay === 'function') {
+// 座標表示の更新
 updateCoordinatesDisplay();
-} else {
-console.warn('updateCoordinatesDisplay関数が存在しないため、座標表示は更新されません');
-// 代替の座標表示更新処理
-const coords1 = document.getElementById('coordinates1');
-const coords2 = document.getElementById('coordinates2');
-
-if (dot1 && coords1) {
-const xCoord = (parseFloat(dot1.style.left) / 100).toFixed(2);
-const yCoord = (parseFloat(dot1.style.top) / 100).toFixed(2);
-coords1.textContent = `座標: X: ${xCoord}, Y: ${yCoord}`;
-}
-
-if (dot2 && coords2) {
-const xCoord = (parseFloat(dot2.style.left) / 100).toFixed(2);
-const yCoord = (parseFloat(dot2.style.top) / 100).toFixed(2);
-coords2.textContent = `座標: X: ${xCoord}, Y: ${yCoord}`;
-}
-}
-} catch (coordsErr) {
-console.warn('座標表示更新スキップ:', coordsErr);
-}
 } catch (error) {
 console.error('UI更新エラー:', error);
 }
@@ -4231,593 +3487,12 @@ notification.remove();
 }, 5000);
 }
 
-// 別の提案を受けるボタンの機能強化 - 重複なしのランダム選択
-document.addEventListener('DOMContentLoaded', function() {
-// ページ読み込み完了後に実行
-setTimeout(function() {
-// ボタンの参照を取得（ID、テキスト内容、または属性で検索）
-const refreshButton = document.querySelector('button:contains("別の提案")') || 
-document.getElementById('getAnotherRecommendation') ||
-document.querySelector('[id*="refresh"][id*="recommendation"]');
-
-// querySelectorの:containsがサポートされていない場合の代替手段
-if (!refreshButton) {
-const allButtons = Array.from(document.querySelectorAll('button'));
-const targetButton = allButtons.find(btn => 
-btn.textContent.includes('別の提案') || 
-btn.innerHTML.includes('別の提案')
-);
-
-if (targetButton) {
-setupRefreshButtonHandler(targetButton);
-} else {
-console.error('「別の提案を受ける」ボタンが見つかりませんでした');
-}
-} else {
-setupRefreshButtonHandler(refreshButton);
-}
-}, 1000); // DOMContentLoaded後に少し待つ
-
-// 以前に表示したウィスキーを記録する配列
-window.previouslyShownWhiskies = window.previouslyShownWhiskies || [];
-
-// ボタンのイベントハンドラを設定する関数
-function setupRefreshButtonHandler(button) {
-console.log('「別の提案を受ける」ボタンが見つかりました:', button);
-
-// 既存のイベントリスナーをクリア（二重登録防止）
-const newButton = button.cloneNode(true);
-button.parentNode.replaceChild(newButton, button);
-
-// 新しいイベントリスナーを追加
-newButton.addEventListener('click', function() {
-console.log('「別の提案を受ける」ボタンがクリックされました - 新しいウィスキーを選択します');
-
-// 現在表示中のウィスキー名を取得
-const currentlyShownNames = [];
-document.querySelectorAll('.whisky-card h3').forEach(h3 => {
-if (h3.textContent && h3.textContent.trim()) {
-currentlyShownNames.push(h3.textContent.trim());
-}
-});
-
-console.log('現在表示中のウィスキー:', currentlyShownNames);
-
-// 以前表示したウィスキー名リストを更新
-window.previouslyShownWhiskies = [
-...window.previouslyShownWhiskies,
-...currentlyShownNames
-];
-
-// 重複を排除
-window.previouslyShownWhiskies = [...new Set(window.previouslyShownWhiskies)];
-
-// リストが長すぎる場合は古いものから削除（最大50件）
-if (window.previouslyShownWhiskies.length > 50) {
-window.previouslyShownWhiskies = window.previouslyShownWhiskies.slice(-50);
+// エラー表示関数
+function showError(message) {
+console.error('Error:', message);
+// 必要に応じて追加のエラー表示ロジックをここに追加
 }
 
-console.log('表示履歴:', window.previouslyShownWhiskies);
-
-// 現在の価格設定を取得
-const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
-const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
-
-// 価格でフィルタリング
-const priceFiltered = whiskyData.filter(whisky => {
-try {
-const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
-return numericPrice >= minPrice && numericPrice <= maxPrice;
-} catch (err) {
-console.warn('価格解析エラー:', err);
-return false;
-}
-});
-
-console.log(`価格フィルター後: ${priceFiltered.length}件のウィスキー`);
-
-if (priceFiltered.length === 0) {
-alert('価格条件に合うウィスキーがありません。価格範囲を広げてください。');
-return;
-}
-
-// 以前表示したウィスキーを除外
-const newCandidates = priceFiltered.filter(whisky => 
-!window.previouslyShownWhiskies.includes(whisky.name)
-);
-
-console.log(`新しい候補: ${newCandidates.length}件`);
-
-// 候補が少ない場合は全体から選択（履歴をリセット）
-let sourceArray;
-if (newCandidates.length < 3) {
-console.log('候補が少ないため全体から選択します。履歴をリセットします。');
-window.previouslyShownWhiskies = [...currentlyShownNames]; // 現在表示中のもののみ履歴に残す
-sourceArray = priceFiltered.filter(w => !currentlyShownNames.includes(w.name));
-} else {
-sourceArray = newCandidates;
-}
-
-// ランダムに3つ選ぶ
-const selected = [];
-const usedIndices = new Set();
-
-// 最大100回のランダム選択を試みる
-let attempts = 0;
-while (selected.length < 3 && attempts < 100 && usedIndices.size < sourceArray.length) {
-attempts++;
-const randomIndex = Math.floor(Math.random() * sourceArray.length);
-
-// 既に選択済みのインデックスはスキップ
-if (usedIndices.has(randomIndex)) continue;
-
-usedIndices.add(randomIndex);
-selected.push(sourceArray[randomIndex]);
-}
-
-console.log('新しく選択されたウィスキー:', selected.map(w => w.name));
-
-// 選択が十分でない場合の対処
-if (selected.length < 3) {
-console.warn(`選択されたウィスキーが${selected.length}件しかありません。ランダム補完します。`);
-
-// ランダムに追加選択（現在表示中のものは除外）
-const remainingOptions = priceFiltered.filter(w => 
-!selected.map(s => s.name).includes(w.name) && 
-!currentlyShownNames.includes(w.name)
-);
-
-if (remainingOptions.length > 0) {
-while (selected.length < 3 && remainingOptions.length > 0) {
-const randomIndex = Math.floor(Math.random() * remainingOptions.length);
-selected.push(remainingOptions[randomIndex]);
-remainingOptions.splice(randomIndex, 1);
-}
-}
-
-// それでも足りない場合は全体から選択
-if (selected.length < 3) {
-const allRemaining = priceFiltered.filter(w => 
-!selected.map(s => s.name).includes(w.name)
-);
-
-while (selected.length < 3 && allRemaining.length > 0) {
-const randomIndex = Math.floor(Math.random() * allRemaining.length);
-selected.push(allRemaining[randomIndex]);
-allRemaining.splice(randomIndex, 1);
-}
-}
-
-console.log('最終的に選択されたウィスキー:', selected.map(w => w.name));
-}
-
-if (selected.length === 0) {
-console.error('ウィスキーの選択に失敗しました');
-return;
-}
-
-try {
-// 選択したウィスキーを表示
-displayLocalRecommendations(selected);
-
-// 最初のウィスキーを選択
-selectWhisky(selected[0]);
-
-console.log('ウィスキーの表示を更新しました');
-} catch (err) {
-console.error('ウィスキー表示中にエラー:', err);
-}
-});
-
-console.log('「別の提案を受ける」ボタンにランダム選択機能を追加しました');
-}
-});
-
-</script>
-<script>
-// 「別の提案を受ける」ボタン機能の修正パッチ - 正確なIDを使用
-(function() {
-// DOMが完全に読み込まれたことを確認
-function initializeCustomButton() {
-// 正確なIDでボタンを取得
-const refreshButton = document.getElementById('getAnotherRecommendation');
-
-if (refreshButton) {
-console.log('「別の提案を受ける」ボタンを正確なIDで発見しました');
-
-// 既存のすべてのイベントリスナーを削除してクローン
-const newButton = refreshButton.cloneNode(true);
-refreshButton.parentNode.replaceChild(newButton, refreshButton);
-
-// 新しいボタンに同じIDを設定（重要）
-newButton.id = 'getAnotherRecommendation';
-
-// 完全に新しいイベントリスナーを設定
-newButton.addEventListener('click', function(e) {
-// デフォルトの動作とイベント伝播を停止
-if (e) {
-e.preventDefault();
-e.stopPropagation();
-}
-
-console.log('完全ランダム選択の「別の提案を受ける」処理を実行');
-
-// 現在の価格設定を取得
-const minPrice = parseInt(document.getElementById('minPrice').value) * 1000;
-const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000;
-
-// 価格でフィルタリング
-const priceFiltered = whiskyData.filter(whisky => {
-try {
-const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
-return numericPrice >= minPrice && numericPrice <= maxPrice;
-} catch (err) {
-return false;
-}
-});
-
-if (priceFiltered.length < 3) {
-alert('条件に合うウィスキーが足りません。価格範囲を広げてください。');
-return false;
-}
-
-// 現在表示中のウィスキー名を取得して除外
-const currentlyShown = [];
-document.querySelectorAll('.whisky-card h3').forEach(h3 => {
-if (h3.textContent) currentlyShown.push(h3.textContent.trim());
-});
-
-// 現在表示されていないウィスキーのみをフィルタリング
-const notCurrentlyShown = priceFiltered.filter(w => 
-!currentlyShown.includes(w.name)
-);
-
-// 候補が十分にあるかチェック
-const sourceArray = notCurrentlyShown.length >= 3 ? notCurrentlyShown : priceFiltered;
-
-// 完全にランダム化して選択
-const randomWhiskies = [];
-const shuffled = [...sourceArray].sort(() => 0.5 - Math.random());
-
-// 最大3つ選択
-for (let i = 0; i < Math.min(3, shuffled.length); i++) {
-randomWhiskies.push(shuffled[i]);
-}
-
-console.log('ランダムに選択したウィスキー:', randomWhiskies.map(w => w.name));
-
-// 表示関数を呼び出し
-if (typeof displayLocalRecommendations === 'function') {
-try {
-displayLocalRecommendations(randomWhiskies);
-if (randomWhiskies.length > 0 && typeof selectWhisky === 'function') {
-selectWhisky(randomWhiskies[0]);
-}
-} catch (error) {
-console.error('表示処理中にエラーが発生:', error);
-}
-} else {
-console.error('displayLocalRecommendations関数が見つかりません');
-}
-
-return false;
-});
-
-console.log('「別の提案を受ける」ボタンの処理を完全に上書きしました');
-} else {
-console.error('ID「getAnotherRecommendation」のボタンが見つかりません');
-}
-}
-
-// 既存の処理が完了した後に実行されるようタイミングを調整
-if (document.readyState === 'complete') {
-// ページが既に完全に読み込まれている場合
-setTimeout(initializeCustomButton, 1500);
-} else {
-// まだページ読み込み中の場合はloadイベントを待つ
-window.addEventListener('load', function() {
-setTimeout(initializeCustomButton, 1500);
-});
-}
-})();
-</script>
-<script>
-// AIチャットからの銘柄抽出と推奨リストの連携を改善（類似度マッチング版）
-(function() {
-  // AIの応答を処理する関数を改善する
-  function enhanceAIResponseProcessing() {
-    // 元のgetAIResponse関数をバックアップ
-    const originalGetAIResponse = window.getAIResponse;
-    
-    // もし元の関数が存在しなければ終了
-    if (typeof originalGetAIResponse !== 'function') {
-      console.error('元のgetAIResponse関数が見つかりません');
-      return;
-    }
-    
-    // 拡張版のgetAIResponse関数
-    window.getAIResponse = async function(message) {
-      // まず銘柄名を探索
-      const mentionedWhiskies = findWhiskiesInText(message);
-      console.log('チャットメッセージから抽出した銘柄:', mentionedWhiskies);
-      
-      // 元の関数を呼び出して応答を取得
-      const result = await originalGetAIResponse.apply(this, arguments);
-      
-      // メッセージ内で言及された銘柄を表示リストに含める
-      if (mentionedWhiskies.length > 0) {
-        setTimeout(() => {
-          updateRecommendationsWithMentioned(mentionedWhiskies);
-        }, 1000); // AIの応答が表示された後に実行
-      }
-      
-      return result;
-    };
-    
-    console.log('getAIResponse関数を拡張しました - チャット内の銘柄名抽出と表示を連携');
-  }
-  
-  // テキスト内で言及されている銘柄を検出する関数（類似度を使用）
-  function findWhiskiesInText(text) {
-    if (!text || typeof text !== 'string') return [];
-    if (!window.whiskyData || !Array.isArray(window.whiskyData)) return [];
-    
-    // 結果を格納する配列
-    const result = [];
-    
-    // テキストを前処理（小文字化、空白の正規化）
-    const normalizedText = text.toLowerCase().replace(/\s+/g, ' ');
-    
-    // 特徴的なキーワード（主要銘柄名）
-    const commonWhiskyNames = [
-      '山崎', '白州', '響', '軽井沢', '長濱', 'タリスカー', 'マッカラン', 'アードベッグ', 
-      'ポートエレン', 'NAGAHAMA', 'DAILUAINE', 'キルホーマン', 'GLENLIVET', 'ABERFELDY', 
-      'SPRINGBANK', 'MORTLACH', 'CAOL ILA', 'KILCHOMAN', '秩父'
-    ];
-    
-    // 直接的な銘柄名の検索（完全一致または主要部分が一致）
-    const matches = [];
-    window.whiskyData.forEach(whisky => {
-      // 銘柄名を正規化
-      const whiskyName = whisky.name.toLowerCase();
-      
-      // 完全一致または部分一致
-      if (normalizedText.includes(whiskyName) || 
-          whiskyName.includes(normalizedText) || 
-          textSimilarity(normalizedText, whiskyName) > 0.7) {
-        matches.push({
-          whisky: whisky,
-          score: 1.0,
-          matchType: 'direct'
-        });
-        return;
-      }
-      
-      // 主要キーワードのチェック
-      for (const keyword of commonWhiskyNames) {
-        const normalizedKeyword = keyword.toLowerCase();
-        if ((whiskyName.includes(normalizedKeyword) || 
-             normalizedKeyword.includes(whiskyName)) && 
-            normalizedText.includes(normalizedKeyword)) {
-          matches.push({
-            whisky: whisky,
-            score: 0.9,
-            matchType: 'keyword'
-          });
-          return;
-        }
-      }
-      
-      // トークンベースの部分一致チェック
-      const whiskyTokens = whiskyName.split(/[\s\d]+/);
-      const textTokens = normalizedText.split(/[\s\d]+/);
-      
-      for (const whiskyToken of whiskyTokens) {
-        if (whiskyToken.length < 2) continue; // 短すぎるトークンは無視
-        
-        for (const textToken of textTokens) {
-          if (textToken.length < 2) continue; // 短すぎるトークンは無視
-          
-          if (whiskyToken === textToken || 
-              whiskyToken.includes(textToken) || 
-              textToken.includes(whiskyToken)) {
-            matches.push({
-              whisky: whisky,
-              score: 0.8,
-              matchType: 'token',
-              token: whiskyToken
-            });
-            return;
-          }
-        }
-      }
-    });
-    
-    // スコアでソート
-    matches.sort((a, b) => b.score - a.score);
-    
-    // 結果の抽出
-    return matches.map(match => match.whisky);
-  }
-  
-  // テキストの類似度を計算する関数
-  function textSimilarity(text1, text2) {
-    // 簡易的な類似度計算（Levenshtein距離の正規化版）
-    function levenshteinDistance(a, b) {
-      const matrix = [];
-      
-      // 初期化
-      for (let i = 0; i <= b.length; i++) {
-        matrix[i] = [i];
-      }
-      for (let j = 0; j <= a.length; j++) {
-        matrix[0][j] = j;
-      }
-      
-      // 計算
-      for (let i = 1; i <= b.length; i++) {
-        for (let j = 1; j <= a.length; j++) {
-          if (b.charAt(i-1) === a.charAt(j-1)) {
-            matrix[i][j] = matrix[i-1][j-1];
-          } else {
-            matrix[i][j] = Math.min(
-              matrix[i-1][j-1] + 1, // 置換
-              Math.min(
-                matrix[i][j-1] + 1, // 挿入
-                matrix[i-1][j] + 1  // 削除
-              )
-            );
-          }
-        }
-      }
-      
-      return matrix[b.length][a.length];
-    }
-    
-    // 最大の長さ
-    const maxLength = Math.max(text1.length, text2.length);
-    if (maxLength === 0) return 1.0; // 両方が空文字列
-    
-    // 距離を計算
-    const distance = levenshteinDistance(text1, text2);
-    
-    // 正規化（0-1の範囲に）
-    return 1.0 - (distance / maxLength);
-  }
-  
-  // AIの応答から銘柄名を抽出する関数
-  function extractWhiskyNamesFromAIResponse(response) {
-    if (!response || typeof response !== 'string') return [];
-    if (!window.whiskyData || !Array.isArray(window.whiskyData)) return [];
-    
-    // 結果を格納する配列
-    const result = [];
-    
-    // 「」や『』で囲まれた部分を抽出
-    const quotedMatches = response.match(/[「『]([^」』]+)[」』]/g) || [];
-    for (const match of quotedMatches) {
-      const extractedName = match.replace(/[「『」』]/g, '');
-      // データベース内で類似する銘柄を検索
-      const similarWhisky = findSimilarWhisky(extractedName);
-      if (similarWhisky && !result.includes(similarWhisky)) {
-        result.push(similarWhisky);
-      }
-    }
-    
-    // 年数を含む特徴的なパターンを抽出（例：タリスカー44年）
-    const ageMatches = response.match(/(\S+\s?\d+年[^\s、。,.]+)/g) || [];
-    for (const match of ageMatches) {
-      const similarWhisky = findSimilarWhisky(match);
-      if (similarWhisky && !result.includes(similarWhisky)) {
-        result.push(similarWhisky);
-      }
-    }
-    
-    return result;
-  }
-  
-  // テキストに最も類似した銘柄を見つける関数
-  function findSimilarWhisky(text) {
-    if (!text || !window.whiskyData) return null;
-    
-    let bestMatch = null;
-    let highestScore = 0;
-    
-    for (const whisky of window.whiskyData) {
-      const similarityScore = textSimilarity(
-        text.toLowerCase(), 
-        whisky.name.toLowerCase()
-      );
-      
-      if (similarityScore > highestScore && similarityScore > 0.6) {
-        highestScore = similarityScore;
-        bestMatch = whisky;
-      }
-    }
-    
-    return bestMatch;
-  }
-  
-  // 言及された銘柄を推奨リストに含める
-  function updateRecommendationsWithMentioned(mentionedWhiskies) {
-    if (!mentionedWhiskies || mentionedWhiskies.length === 0) return;
-    
-    console.log('銘柄推奨リストに含める:', mentionedWhiskies.map(w => w.name));
-    
-    // 現在の価格設定を取得
-    const minPrice = parseInt(document.getElementById('minPrice').value) * 1000 || 0;
-    const maxPrice = parseInt(document.getElementById('maxPrice').value) * 1000 || 100000;
-    
-    // 価格範囲内の言及銘柄をフィルタリング
-    const filteredWhiskies = mentionedWhiskies.filter(whisky => {
-      try {
-        const numericPrice = parseInt(whisky.price.replace(/[^\d]/g, '')) || 0;
-        return numericPrice >= minPrice && numericPrice <= maxPrice;
-      } catch (err) {
-        return true; // 価格解析エラーの場合は含める
-      }
-    });
-    
-    if (filteredWhiskies.length === 0) {
-      console.log('言及された銘柄が価格範囲外です');
-      return;
-    }
-    
-    // 足りない場合はランダムに追加
-    const finalSelection = [...filteredWhiskies];
-    if (finalSelection.length < 3) {
-      // 現在のウィスキーと言及されたものを除外してランダム選択
-      const currentNames = finalSelection.map(w => w.name);
-      const additionalCandidates = window.whiskyData.filter(w => {
-        try {
-          const numericPrice = parseInt(w.price.replace(/[^\d]/g, '')) || 0;
-          return numericPrice >= minPrice && numericPrice <= maxPrice && !currentNames.includes(w.name);
-        } catch (err) {
-          return false;
-        }
-      });
-      
-      // ランダムに並べ替えて必要な数だけ追加
-      const shuffled = additionalCandidates.sort(() => 0.5 - Math.random());
-      while (finalSelection.length < 3 && shuffled.length > 0) {
-        finalSelection.push(shuffled.pop());
-      }
-    }
-    
-    // 最終的な選択結果が得られた場合、表示を更新
-    if (finalSelection.length > 0) {
-      console.log('最終的に選択された銘柄:', finalSelection.map(w => w.name));
-      
-      try {
-        // 推奨パネルを表示
-        document.getElementById('splitLayoutContainer').style.display = 'grid';
-        
-        // 銘柄を表示
-        if (typeof displayLocalRecommendations === 'function') {
-          displayLocalRecommendations(finalSelection);
-          
-          // 最初の銘柄を選択（言及された銘柄を優先）
-          if (filteredWhiskies.length > 0 && typeof selectWhisky === 'function') {
-            selectWhisky(filteredWhiskies[0]);
-          } else if (finalSelection.length > 0 && typeof selectWhisky === 'function') {
-            selectWhisky(finalSelection[0]);
-          }
-        }
-      } catch (err) {
-        console.error('表示更新中にエラー:', err);
-      }
-    }
-  }
-  
-  // 実行タイミングの調整
-  if (document.readyState === 'complete') {
-    setTimeout(enhanceAIResponseProcessing, 2000);
-  } else {
-    window.addEventListener('load', function() {
-      setTimeout(enhanceAIResponseProcessing, 2000);
-    });
-  }
-})();
 </script>
 
 
