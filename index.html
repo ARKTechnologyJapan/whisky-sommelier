@@ -1439,18 +1439,18 @@ Powered by Nebula Hirozon Technology
 </div>
 
 <script>
-// グローバル変数
+// グローバル変数の修正（既存の部分を以下に置き換え）
 let whiskyData = [];
-let distilleryDatabase = {};
+let distilleryDatabase = {}; // ← これを distilleryData に統一
 let distilleryMarkers = {};
 let distilleryMap = null;
 let profileChartInstance = null;
-let brandToDistilleryMapping = {};
+let brandToDistilleryMapping = {}; // ← これを brandToDistilleryData に統一
 
 // チャット履歴を保存する配列
 let chatHistory = [];
-let distilleryData = {};
-let brandToDistilleryData = {};
+let distilleryData = {}; // メイン使用
+let brandToDistilleryData = {}; // メイン使用
 
 // ユーザー好みを保存するグローバル変数
 let savedUserPreferences = {
@@ -1559,7 +1559,7 @@ link.classList.remove('active');
 });
 }
 
-// 統合ウィスキーデータ読み込み
+// 統合ウィスキーデータ読み込み（修正版）
 async function loadUnifiedWhiskyData() {
     console.log('統合ウィスキーデータ読み込み開始...');
     
@@ -1573,10 +1573,12 @@ async function loadUnifiedWhiskyData() {
         const data = await response.json();
         console.log('JSONデータ読み込み成功:', data);
         
-        // データを各変数に格納
+        // データを各変数に格納（統一された変数名を使用）
         whiskyData = data.whiskies || [];
         distilleryData = data.distilleries || {};
+        distilleryDatabase = data.distilleries || {}; // 既存のマップ機能用
         brandToDistilleryData = data.brandToDistillery || {};
+        brandToDistilleryMapping = data.brandToDistillery || {}; // 既存のマップ機能用
         
         console.log('ウィスキーデータ:', whiskyData.length, '件');
         console.log('蒸溜所データ:', Object.keys(distilleryData).length, '件');
@@ -1843,29 +1845,59 @@ function generateSimpleAIResponse(userMessage) {
     return 'ありがとうございます。あなたのご質問を参考に、最適なウィスキーをお選びいたします。右側の推薦リストをご覧ください！';
 }
 
-// ウィスキーから蒸溜所を取得する関数（統合JSON対応）
+// ウィスキーから蒸溜所を取得する関数（統合JSON対応・修正版）
 function getDistilleryForWhisky(whisky) {
-// 1. brandToDistilleryMappingから直接取得を試す
-if (brandToDistilleryMapping[whisky.name]) {
-const distilleryKey = brandToDistilleryMapping[whisky.name];
-if (distilleryDatabase[distilleryKey]) {
-console.log(`ブランドマッピングで発見: ${whisky.name} -> ${distilleryKey}`);
-return distilleryDatabase[distilleryKey];
-}
-}
+    console.log('蒸溜所検索開始:', whisky.name);
+    
+    // 1. brandToDistilleryから直接取得を試す
+    if (brandToDistilleryData[whisky.name]) {
+        const distilleryKey = brandToDistilleryData[whisky.name];
+        console.log('ブランドマッピングで発見:', whisky.name, '->', distilleryKey);
+        
+        if (distilleryData[distilleryKey]) {
+            console.log('蒸溜所データ発見:', distilleryData[distilleryKey]);
+            return {
+                name: distilleryKey,
+                ...distilleryData[distilleryKey]
+            };
+        }
+    }
 
-// 2. 部分一致で検索
-const whiskyNameLower = whisky.name.toLowerCase();
-for (const distilleryKey in distilleryDatabase) {
-const distilleryNameLower = distilleryKey.toLowerCase().replace(/蒸溜所/g, '');
-if (whiskyNameLower.includes(distilleryNameLower)) {
-console.log(`部分一致で発見: ${whisky.name} -> ${distilleryKey}`);
-return distilleryDatabase[distilleryKey];
-}
-}
+    // 2. 部分一致で検索
+    const whiskyNameLower = whisky.name.toLowerCase();
+    console.log('部分一致検索開始:', whiskyNameLower);
+    
+    for (const distilleryKey in distilleryData) {
+        const distilleryNameLower = distilleryKey.toLowerCase().replace(/蒸溜所/g, '');
+        console.log('比較中:', whiskyNameLower, 'vs', distilleryNameLower);
+        
+        if (whiskyNameLower.includes(distilleryNameLower) || distilleryNameLower.includes(whiskyNameLower)) {
+            console.log('部分一致で発見:', whisky.name, '->', distilleryKey);
+            return {
+                name: distilleryKey,
+                ...distilleryData[distilleryKey]
+            };
+        }
+    }
 
-console.log(`蒸溜所が見つかりません: ${whisky.name}`);
-return null;
+    // 3. より柔軟な検索（キーワードベース）
+    const keywords = ['jura', 'nagahama', 'established'];
+    for (const keyword of keywords) {
+        if (whiskyNameLower.includes(keyword)) {
+            for (const distilleryKey in distilleryData) {
+                if (distilleryKey.toLowerCase().includes(keyword)) {
+                    console.log('キーワード一致で発見:', whisky.name, '->', distilleryKey);
+                    return {
+                        name: distilleryKey,
+                        ...distilleryData[distilleryKey]
+                    };
+                }
+            }
+        }
+    }
+
+    console.log('蒸溜所が見つかりません:', whisky.name);
+    return null;
 }
 
 // デフォルトウィスキーデータ
@@ -2439,164 +2471,171 @@ mapContainer.style.display = 'none';
 }
 }
 
-// 蒸溜所をマップに表示（統合JSON対応）
+// 蒸溜所をマップに表示（統合JSON対応・修正版）
 function showDistilleryOnMap(distillery) {
-if (!distilleryMap || !distillery.location) return;
+    if (!distilleryMap || !distillery.location) {
+        console.log('マップまたは位置情報が利用できません');
+        return;
+    }
 
-// マップの中心を更新
-distilleryMap.setView([distillery.location.lat, distillery.location.lng], distillery.zoomLevel || 10);
+    console.log('マップに蒸溜所を表示:', distillery);
 
-// グローバル変数でアクティブマーカーとパルスマーカーを管理
-if (window.activeMarker) {
-distilleryMap.removeLayer(window.activeMarker);
-}
-if (window.pulseMarker) {
-distilleryMap.removeLayer(window.pulseMarker);
-clearInterval(window.pulseInterval);
-}
+    // マップの中心を更新
+    distilleryMap.setView([distillery.location.lat, distillery.location.lng], distillery.zoomLevel || 10);
 
-// 既存のマーカーをクリア
-distilleryMap.eachLayer(function(layer) {
-if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
-distilleryMap.removeLayer(layer);
-}
-});
+    // グローバル変数でアクティブマーカーとパルスマーカーを管理
+    if (window.activeMarker) {
+        distilleryMap.removeLayer(window.activeMarker);
+    }
+    if (window.pulseMarker) {
+        distilleryMap.removeLayer(window.pulseMarker);
+        clearInterval(window.pulseInterval);
+    }
 
-// すべての蒸溜所をグリーンで表示
-Object.keys(distilleryDatabase).forEach(distilleryKey => {
-const dist = distilleryDatabase[distilleryKey];
-if (dist.location && dist.location.lat && dist.location.lng) {
-const marker = L.circleMarker([dist.location.lat, dist.location.lng], {
-radius: 6,
-fillColor: '#4ecdc4',  // グリーン
-color: '#4ecdc4',
-weight: 2,
-opacity: 1,
-fillOpacity: 0.7
-}).addTo(distilleryMap);
+    // 既存のマーカーをクリア
+    distilleryMap.eachLayer(function(layer) {
+        if (layer instanceof L.Marker || layer instanceof L.CircleMarker) {
+            distilleryMap.removeLayer(layer);
+        }
+    });
 
-// クリックイベントを追加
-marker.on('click', function() {
-// 現在の蒸留所情報を表示
-const clickedDistillery = {
-name: distilleryKey,
-...dist
-};
+    // すべての蒸溜所をグリーンで表示（修正されたデータ構造に対応）
+    Object.keys(distilleryData).forEach(distilleryKey => {
+        const dist = distilleryData[distilleryKey];
+        console.log('マーカー作成中:', distilleryKey, dist);
+        
+        if (dist.location && dist.location.lat && dist.location.lng) {
+            const marker = L.circleMarker([dist.location.lat, dist.location.lng], {
+                radius: 6,
+                fillColor: '#4ecdc4',  // グリーン
+                color: '#4ecdc4',
+                weight: 2,
+                opacity: 1,
+                fillOpacity: 0.7
+            }).addTo(distilleryMap);
 
-// 蒸留所情報を表示（既存の関数を再利用）
-displayDistilleryInfo(clickedDistillery);
+            // クリックイベントを追加
+            marker.on('click', function() {
+                // 現在の蒸留所情報を表示
+                const clickedDistillery = {
+                    name: distilleryKey,
+                    ...dist
+                };
 
-// 既存のアクティブマーカーを削除
-if (window.activeMarker) {
-distilleryMap.removeLayer(window.activeMarker);
-}
-if (window.pulseMarker) {
-distilleryMap.removeLayer(window.pulseMarker);
-clearInterval(window.pulseInterval);
-}
+                // 蒸留所情報を表示
+                displayDistilleryInfo(clickedDistillery);
 
-// 新しいアクティブマーカーを作成
-window.activeMarker = L.circleMarker([dist.location.lat, dist.location.lng], {
-radius: 10,
-fillColor: '#ff6b6b',  // 赤
-color: '#ff6b6b',
-weight: 3,
-opacity: 1,
-fillOpacity: 0.8
-}).addTo(distilleryMap);
+                // 既存のアクティブマーカーを削除
+                if (window.activeMarker) {
+                    distilleryMap.removeLayer(window.activeMarker);
+                }
+                if (window.pulseMarker) {
+                    distilleryMap.removeLayer(window.pulseMarker);
+                    clearInterval(window.pulseInterval);
+                }
 
-// パルスマーカーを作成
-window.pulseMarker = L.circleMarker([dist.location.lat, dist.location.lng], {
-radius: 15,
-fillColor: 'rgba(255, 107, 107, 0.3)',
-color: '#ff6b6b',
-weight: 1,
-opacity: 0.6,
-fillOpacity: 0.2
-}).addTo(distilleryMap);
+                // 新しいアクティブマーカーを作成
+                window.activeMarker = L.circleMarker([dist.location.lat, dist.location.lng], {
+                    radius: 10,
+                    fillColor: '#ff6b6b',  // 赤
+                    color: '#ff6b6b',
+                    weight: 3,
+                    opacity: 1,
+                    fillOpacity: 0.8
+                }).addTo(distilleryMap);
 
-// パルスアニメーション
-let currentRadius = 15;
-let growing = true;
-window.pulseInterval = setInterval(() => {
-if (growing) {
-currentRadius += 0.5;
-if (currentRadius >= 25) growing = false;
-} else {
-currentRadius -= 0.5;
-if (currentRadius <= 12) growing = true;
-}
-window.pulseMarker.setRadius(currentRadius);
-}, 100);
+                // パルスマーカーを作成
+                window.pulseMarker = L.circleMarker([dist.location.lat, dist.location.lng], {
+                    radius: 15,
+                    fillColor: 'rgba(255, 107, 107, 0.3)',
+                    color: '#ff6b6b',
+                    weight: 1,
+                    opacity: 0.6,
+                    fillOpacity: 0.2
+                }).addTo(distilleryMap);
 
-// マップの中心を更新
-distilleryMap.setView([dist.location.lat, dist.location.lng], 10);
-});
+                // パルスアニメーション
+                let currentRadius = 15;
+                let growing = true;
+                window.pulseInterval = setInterval(() => {
+                    if (growing) {
+                        currentRadius += 0.5;
+                        if (currentRadius >= 25) growing = false;
+                    } else {
+                        currentRadius -= 0.5;
+                        if (currentRadius <= 12) growing = true;
+                    }
+                    window.pulseMarker.setRadius(currentRadius);
+                }, 100);
 
-// ホバー効果
-marker.on('mouseover', function() {
-marker.setStyle({
-radius: 8,
-fillOpacity: 0.9
-});
+                // マップの中心を更新
+                distilleryMap.setView([dist.location.lat, dist.location.lng], 10);
+            });
 
-// ツールチップ表示
-marker.bindTooltip(distilleryKey, {
-permanent: false,
-direction: 'top',
-className: 'distillery-tooltip'
-}).openTooltip();
-});
+            // ホバー効果
+            marker.on('mouseover', function() {
+                marker.setStyle({
+                    radius: 8,
+                    fillOpacity: 0.9
+                });
 
-marker.on('mouseout', function() {
-marker.setStyle({
-radius: 6,
-fillOpacity: 0.7
-});
-});
-}
-});
+                // ツールチップ表示
+                marker.bindTooltip(distilleryKey, {
+                    permanent: false,
+                    direction: 'top',
+                    className: 'distillery-tooltip'
+                }).openTooltip();
+            });
 
-// 選択された蒸溜所を赤いビーコンで表示
-window.activeMarker = L.circleMarker([distillery.location.lat, distillery.location.lng], {
-radius: 10,
-fillColor: '#ff6b6b',  // 赤
-color: '#ff6b6b',
-weight: 3,
-opacity: 1,
-fillOpacity: 0.8
-}).addTo(distilleryMap);
+            marker.on('mouseout', function() {
+                marker.setStyle({
+                    radius: 6,
+                    fillOpacity: 0.7
+                });
+            });
+        }
+    });
 
-// ビーコン効果（パルス）
-window.pulseMarker = L.circleMarker([distillery.location.lat, distillery.location.lng], {
-radius: 15,
-fillColor: 'rgba(255, 107, 107, 0.3)',
-color: '#ff6b6b',
-weight: 1,
-opacity: 0.6,
-fillOpacity: 0.2
-}).addTo(distilleryMap);
+    // 選択された蒸溜所を赤いビーコンで表示
+    window.activeMarker = L.circleMarker([distillery.location.lat, distillery.location.lng], {
+        radius: 10,
+        fillColor: '#ff6b6b',  // 赤
+        color: '#ff6b6b',
+        weight: 3,
+        opacity: 1,
+        fillOpacity: 0.8
+    }).addTo(distilleryMap);
 
-// パルスアニメーション
-let currentRadius = 15;
-let growing = true;
-window.pulseInterval = setInterval(() => {
-if (growing) {
-currentRadius += 0.5;
-if (currentRadius >= 25) growing = false;
-} else {
-currentRadius -= 0.5;
-if (currentRadius <= 12) growing = true;
-}
-window.pulseMarker.setRadius(currentRadius);
-}, 100);
+    // ビーコン効果（パルス）
+    window.pulseMarker = L.circleMarker([distillery.location.lat, distillery.location.lng], {
+        radius: 15,
+        fillColor: 'rgba(255, 107, 107, 0.3)',
+        color: '#ff6b6b',
+        weight: 1,
+        opacity: 0.6,
+        fillOpacity: 0.2
+    }).addTo(distilleryMap);
 
-// マップのサイズを調整
-setTimeout(function() {
-if (distilleryMap) {
-distilleryMap.invalidateSize();
-}
-}, 100);
+    // パルスアニメーション
+    let currentRadius = 15;
+    let growing = true;
+    window.pulseInterval = setInterval(() => {
+        if (growing) {
+            currentRadius += 0.5;
+            if (currentRadius >= 25) growing = false;
+        } else {
+            currentRadius -= 0.5;
+            if (currentRadius <= 12) growing = true;
+        }
+        window.pulseMarker.setRadius(currentRadius);
+    }, 100);
+
+    // マップのサイズを調整
+    setTimeout(function() {
+        if (distilleryMap) {
+            distilleryMap.invalidateSize();
+        }
+    }, 100);
 }
 
 // 蒸留所情報を表示
@@ -2625,27 +2664,29 @@ distillery.description || '蒸留所の詳細情報は準備中です。';
 document.getElementById('distilleryInfoSection').style.display = 'block';
 }
 
-// 統計情報を更新
+// 統計情報を更新（修正版）
 function updateStatistics() {
-if (!whiskyData || !whiskyData.length) return;
+    if (!whiskyData || !whiskyData.length) return;
 
-// ウィスキーの総数（アニメーションに変更）
-document.getElementById('whiskyCount').textContent = whiskyData.length; // 元のまま
-animateCounter('totalWhiskies', whiskyData.length); // アニメーションに変更
+    // ウィスキーの総数
+    document.getElementById('whiskyCount').textContent = whiskyData.length;
+    animateCounter('totalWhiskies', whiskyData.length);
 
-// ユニークな産地数（アニメーションに変更）
-const uniqueRegions = new Set();
-whiskyData.forEach(whisky => {
-if (whisky.region) {
-uniqueRegions.add(whisky.region.split(',')[0].trim());
-}
-});
-animateCounter('uniqueRegions', uniqueRegions.size); // アニメーションに変更
+    // ユニークな産地数
+    const uniqueRegions = new Set();
+    whiskyData.forEach(whisky => {
+        if (whisky.region) {
+            uniqueRegions.add(whisky.region.split(',')[0].trim());
+        }
+    });
+    animateCounter('uniqueRegions', uniqueRegions.size);
 
-// 蒸溜所数のカウント
-if (distilleryDatabase && typeof distilleryDatabase === 'object') {
-const distilleryCount = Object.keys(distilleryDatabase).length;
-animateCounter('distilleryCount', distilleryCount);
+    // 蒸溜所数のカウント（修正）
+    if (distilleryData && typeof distilleryData === 'object') {
+        const distilleryCount = Object.keys(distilleryData).length;
+        animateCounter('distilleryCount', distilleryCount);
+        console.log('蒸溜所数カウント:', distilleryCount);
+    }
 }
 
 // 価格帯
@@ -2662,7 +2703,6 @@ maxPrice = Math.max(maxPrice, price);
 
 if (minPrice !== Infinity && maxPrice !== 0) {
 document.getElementById('priceRange').textContent = `¥${formatPrice(minPrice)}〜¥${formatPrice(maxPrice)}`;
-}
 }
 
 // 価格をフォーマット
