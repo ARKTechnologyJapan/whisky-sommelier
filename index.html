@@ -1944,7 +1944,7 @@ function sendChatMessage() {
   getAIResponse(message);
 }
 
-// AI応答の取得（HP経由対応版）
+// AI応答の取得（JSON検索統合版）
 async function getAIResponse(message) {
   const chatHistory = document.getElementById('chatHistory');
   
@@ -1982,11 +1982,8 @@ async function getAIResponse(message) {
 
     console.log('🚀 送信データ:', requestData);
     
-    // 🎯 絶対URLを使用（HP経由でも正常に動作）
     const apiUrl = 'https://ai-whisky-sommelier.netlify.app/.netlify/functions/claude-api';
-    console.log('🌐 送信先URL:', apiUrl);
-
-    // CORS対応のfetch
+    
     const response = await fetch(apiUrl, {
       method: 'POST',
       mode: 'cors',
@@ -1997,8 +1994,6 @@ async function getAIResponse(message) {
       },
       body: JSON.stringify(requestData)
     });
-
-    console.log('📥 レスポンス受信:', response.status, response.statusText);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -2024,13 +2019,8 @@ async function getAIResponse(message) {
       responseMessage.textContent = aiMessage;
       chatHistory.appendChild(responseMessage);
 
-      // 分析結果の表示（コンソール）
-      if (result.tasteAnalysis) {
-        console.log('🎯 味覚分析結果:', result.tasteAnalysis);
-      }
-      if (result.conversationInsights) {
-        console.log('💬 会話分析結果:', result.conversationInsights);
-      }
+      // 🎯 新機能：チャット推薦から実際のJSON銘柄を検索してAI提案に反映
+      await processAIRecommendationToPanel(aiMessage, result.tasteAnalysis);
 
     } else {
       throw new Error(result.error || 'API応答エラー');
@@ -2038,15 +2028,6 @@ async function getAIResponse(message) {
 
   } catch (error) {
     console.error('❌ AI応答取得エラー:', error);
-    
-    // 詳細なエラー情報をコンソールに出力
-    console.error('エラー詳細:', {
-      message: error.message,
-      stack: error.stack,
-      name: error.name,
-      currentURL: window.location.href,
-      origin: window.location.origin
-    });
     
     // エラーメッセージを表示
     const errorMessage = document.createElement('div');
@@ -2062,6 +2043,392 @@ async function getAIResponse(message) {
 
   // スクロールを最下部に
   chatHistory.scrollTop = chatHistory.scrollHeight;
+}
+// チャット推薦から実際のJSON銘柄を検索してAI提案パネルに反映
+async function processAIRecommendationToPanel(aiMessage, tasteAnalysis) {
+  try {
+    console.log('🔍 AI推薦からキーワード抽出を開始...');
+    
+    // 1. AIメッセージからウィスキーキーワードを抽出
+    const keywords = extractWhiskyKeywordsFromAI(aiMessage);
+    console.log('🏷️ 抽出されたキーワード:', keywords);
+    
+    if (keywords.length === 0) {
+      console.log('⚠️ キーワードが見つかりませんでした');
+      return;
+    }
+
+    // 2. グローバルのウィスキーデータから該当銘柄を検索
+    const matchingWhiskies = await searchWhiskiesFromKeywords(keywords);
+    console.log('🥃 検索結果:', matchingWhiskies);
+    
+    if (matchingWhiskies.length === 0) {
+      console.log('⚠️ 該当する銘柄が見つかりませんでした');
+      return;
+    }
+
+    // 3. AI提案パネルを更新
+    updateAIRecommendationPanel(matchingWhiskies, aiMessage, tasteAnalysis);
+    
+    // 4. 推薦を既存システムに統合
+    integrateRecommendationsToSystem(matchingWhiskies);
+    
+    console.log('✅ チャット推薦の統合が完了しました');
+    
+  } catch (error) {
+    console.error('❌ 推薦統合エラー:', error);
+  }
+}
+
+// AIメッセージからウィスキーキーワードを抽出
+function extractWhiskyKeywordsFromAI(aiMessage) {
+  const keywords = [];
+  
+  // よく使われるウィスキー名のパターンを定義
+  const whiskyPatterns = [
+    // 完全一致パターン
+    /タリスカー\d*年?/gi,
+    /マッカラン[\s\w\d年]*/gi,
+    /軽井沢\d*年?/gi,
+    /ポートエレン\d*年?/gi,
+    /キルホーマン[\s\w\d年]*/gi,
+    /グレンリベット\d*年?/gi,
+    /スプリングバンク\d*年?/gi,
+    /グレンフィディック\d*年?/gi,
+    /ラフロイグ\d*年?/gi,
+    /アードベッグ[\s\w]*/gi,
+    /ラガヴーリン\d*年?/gi,
+    /ボウモア\d*年?/gi,
+    /山崎\d*年?/gi,
+    /白州\d*年?/gi,
+    /余市\d*年?/gi,
+    /宮城峡\d*年?/gi,
+    /イチローズモルト[\s\w]*/gi,
+    /ジョニーウォーカー[\s\w]*/gi,
+    /シーバスリーガル\d*年?/gi,
+    /バランタイン\d*年?/gi,
+    /ロイヤルサルート\d*年?/gi,
+    
+    // 地域+一般名詞パターン
+    /アイラ[\s]*モルト/gi,
+    /スペイサイド[\s]*モルト/gi,
+    /ハイランド[\s]*モルト/gi,
+    /ローランド[\s]*モルト/gi,
+    /キャンベルタウン[\s]*モルト/gi,
+    /日本[\s]*ウィスキー/gi,
+    /ジャパニーズ[\s]*ウィスキー/gi,
+    /スコッチ[\s]*ウィスキー/gi,
+    
+    // 特徴的な表現
+    /シングルモルト/gi,
+    /ブレンデッド/gi,
+    /カスクストレングス/gi,
+    /ピーテッド/gi,
+    /シェリー樽/gi,
+    /バーボン樽/gi
+  ];
+
+  // パターンマッチングで抽出
+  whiskyPatterns.forEach(pattern => {
+    const matches = aiMessage.match(pattern);
+    if (matches) {
+      matches.forEach(match => {
+        const cleanedMatch = match.trim().replace(/[。、！？\s]+$/, '');
+        if (cleanedMatch.length > 2 && !keywords.includes(cleanedMatch)) {
+          keywords.push(cleanedMatch);
+        }
+      });
+    }
+  });
+
+  // 価格の言及があれば価格帯キーワードも追加
+  if (aiMessage.includes('¥') || aiMessage.includes('円')) {
+    const priceMatches = aiMessage.match(/[¥￥]?[\d,]+円?/g);
+    if (priceMatches) {
+      keywords.push('価格重視');
+    }
+  }
+
+  // 味覚特徴のキーワード
+  const tasteKeywords = ['スモーキー', 'フルーティー', 'スパイシー', '甘い', 'ピート', 'シェリー', 'バニラ', 'ハニー'];
+  tasteKeywords.forEach(taste => {
+    if (aiMessage.includes(taste)) {
+      keywords.push(taste);
+    }
+  });
+
+  return keywords;
+}
+
+// キーワードから実際のウィスキーJSONデータを検索
+async function searchWhiskiesFromKeywords(keywords) {
+  const matchingWhiskies = [];
+  
+  // グローバルのwhiskyDataが存在することを確認
+  if (!window.whiskyData || !Array.isArray(window.whiskyData)) {
+    console.error('❌ ウィスキーデータが読み込まれていません');
+    return matchingWhiskies;
+  }
+
+  console.log('🔍 検索対象データ数:', window.whiskyData.length);
+
+  // 各キーワードに対してウィスキーデータを検索
+  keywords.forEach(keyword => {
+    console.log(`🔎 "${keyword}" で検索中...`);
+    
+    const keywordMatches = window.whiskyData.filter(whisky => {
+      const searchText = `${whisky.name || ''} ${whisky.brand || ''} ${whisky.region || ''} ${whisky.description || ''}`.toLowerCase();
+      const keywordLower = keyword.toLowerCase();
+      
+      // 部分一致検索
+      const isMatch = searchText.includes(keywordLower) ||
+                     keywordLower.includes(searchText.split(' ')[0]) ||
+                     // 特別なマッチングルール
+                     (keywordLower.includes('タリスカー') && searchText.includes('talisker')) ||
+                     (keywordLower.includes('マッカラン') && searchText.includes('macallan')) ||
+                     (keywordLower.includes('軽井沢') && searchText.includes('karuizawa')) ||
+                     (keywordLower.includes('グレンリベット') && searchText.includes('glenlivet')) ||
+                     (keywordLower.includes('アイラ') && searchText.includes('islay')) ||
+                     (keywordLower.includes('スペイサイド') && searchText.includes('speyside'));
+      
+      return isMatch;
+    });
+
+    console.log(`📊 "${keyword}" の検索結果: ${keywordMatches.length}件`);
+    
+    // マッチした銘柄を追加（重複除去）
+    keywordMatches.forEach(whisky => {
+      if (!matchingWhiskies.find(existing => existing.name === whisky.name)) {
+        // スコアリング（関連度）を追加
+        whisky.relevanceScore = calculateRelevanceScore(whisky, keyword);
+        matchingWhiskies.push(whisky);
+      }
+    });
+  });
+
+  // 関連度でソートして上位を返す
+  const sortedMatches = matchingWhiskies
+    .sort((a, b) => (b.relevanceScore || 0) - (a.relevanceScore || 0))
+    .slice(0, 6); // 最大6銘柄
+
+  console.log('🏆 最終選択銘柄:', sortedMatches.map(w => ({ name: w.name, score: w.relevanceScore })));
+  
+  return sortedMatches;
+}
+
+// 関連度スコア計算
+function calculateRelevanceScore(whisky, keyword) {
+  let score = 0;
+  const whiskyText = `${whisky.name || ''} ${whisky.brand || ''} ${whisky.region || ''}`.toLowerCase();
+  const keywordLower = keyword.toLowerCase();
+  
+  // 名前での完全一致
+  if (whiskyText.includes(keywordLower)) score += 10;
+  
+  // ブランドでの一致
+  if ((whisky.brand || '').toLowerCase().includes(keywordLower)) score += 8;
+  
+  // 地域での一致
+  if ((whisky.region || '').toLowerCase().includes(keywordLower)) score += 6;
+  
+  // 価格帯での一致
+  if (whisky.price && keyword === '価格重視') score += 5;
+  
+  // 味覚特徴での一致
+  const tasteFeatures = whisky.taste_profile || whisky.description || '';
+  if (tasteFeatures.toLowerCase().includes(keywordLower)) score += 7;
+  
+  return score;
+}
+
+// AI推薦結果で提案パネルを更新
+function updateAIRecommendationPanel(matchingWhiskies, originalAIMessage, tasteAnalysis) {
+  console.log('🔄 AI提案パネルを更新開始...');
+  
+  // 既存の推薦パネルを取得または作成
+  let recommendationsPanel = document.querySelector('.recommendations-panel');
+  if (!recommendationsPanel) {
+    // パネルが存在しない場合は作成
+    const rightPanel = document.querySelector('.chart-panel') || document.body;
+    recommendationsPanel = document.createElement('div');
+    recommendationsPanel.className = 'recommendations-panel';
+    rightPanel.parentNode.insertBefore(recommendationsPanel, rightPanel);
+  }
+
+  // AIチャット推薦セクションを追加/更新
+  let aiChatSection = recommendationsPanel.querySelector('.ai-chat-recommendations');
+  if (!aiChatSection) {
+    aiChatSection = document.createElement('div');
+    aiChatSection.className = 'ai-chat-recommendations';
+    recommendationsPanel.insertBefore(aiChatSection, recommendationsPanel.firstChild);
+  } else {
+    // 既存の内容をクリア
+    aiChatSection.innerHTML = '';
+  }
+
+  // セクションヘッダー
+  const header = document.createElement('div');
+  header.className = 'recommendation-summary';
+  header.innerHTML = `
+    <h3 style="color: #4ecdc4; margin-bottom: 10px; display: flex; align-items: center;">
+      <span style="margin-right: 8px;">🤖💬</span>
+      チャット推薦から選出
+    </h3>
+    <p style="font-size: 14px; color: rgba(255, 255, 255, 0.8); margin-bottom: 15px;">
+      AIの推薦内容から当店の在庫${matchingWhiskies.length}銘柄を選出しました
+    </p>
+  `;
+  aiChatSection.appendChild(header);
+
+  // 各ウィスキーカードを作成
+  matchingWhiskies.forEach((whisky, index) => {
+    const whiskyCard = document.createElement('div');
+    whiskyCard.className = 'whisky-card ai-recommended featured';
+    whiskyCard.style.cssText = `
+      border: 2px solid #4ecdc4;
+      box-shadow: 0 0 20px rgba(78, 205, 196, 0.4);
+      margin-bottom: 15px;
+      position: relative;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    `;
+    
+    // フィーチャードラベル
+    const featuredLabel = document.createElement('div');
+    featuredLabel.className = 'featured-label';
+    featuredLabel.style.cssText = `
+      position: absolute;
+      top: -8px;
+      right: 10px;
+      background: linear-gradient(45deg, #4ecdc4, #66d9e8);
+      color: #000;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: bold;
+      z-index: 2;
+    `;
+    featuredLabel.textContent = `チャット推薦 #${index + 1}`;
+    whiskyCard.appendChild(featuredLabel);
+
+    // メインコンテンツ
+    const content = document.createElement('div');
+    content.innerHTML = `
+      <h4 style="color: #4ecdc4; margin-bottom: 8px; font-size: 16px; line-height: 1.3;">
+        ${whisky.name || 'ウィスキー名不明'}
+      </h4>
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <span style="color: #ff6b6b; font-weight: bold; font-size: 16px;">
+          ¥${whisky.price ? whisky.price.toLocaleString() : '価格要相談'}
+        </span>
+        <span style="color: rgba(255, 255, 255, 0.7); font-size: 14px;">
+          ${whisky.region || whisky.country || '産地不明'}
+        </span>
+      </div>
+
+      <div style="font-size: 14px; color: rgba(255, 255, 255, 0.9); line-height: 1.4; margin-bottom: 10px;">
+        ${whisky.description || whisky.flavor_profile || 'ソムリエにお尋ねください'}
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 10px;">
+        ${whisky.category ? `<span class="whisky-tag">${whisky.category}</span>` : ''}
+        ${whisky.age_statement ? `<span class="whisky-tag">${whisky.age_statement}</span>` : ''}
+        ${whisky.alcohol_content ? `<span class="whisky-tag">${whisky.alcohol_content}%</span>` : ''}
+        <span class="whisky-tag" style="background: rgba(78, 205, 196, 0.3);">
+          関連度: ${whisky.relevanceScore || 0}pt
+        </span>
+      </div>
+
+      <div style="font-size: 12px; color: #4ecdc4; font-style: italic; border-top: 1px solid rgba(78, 205, 196, 0.3); padding-top: 8px;">
+        💡 AIが分析した味覚プロファイルとマッチング
+      </div>
+    `;
+    
+    // タグのスタイル定義
+    const style = document.createElement('style');
+    style.textContent = `
+      .whisky-tag {
+        background: rgba(255, 255, 255, 0.1);
+        color: rgba(255, 255, 255, 0.8);
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-size: 11px;
+        display: inline-block;
+      }
+    `;
+    if (!document.head.querySelector('style[data-whisky-tags]')) {
+      style.setAttribute('data-whisky-tags', 'true');
+      document.head.appendChild(style);
+    }
+
+    whiskyCard.appendChild(content);
+
+    // クリックイベント
+    whiskyCard.addEventListener('click', () => {
+      // 既存の選択をクリア
+      document.querySelectorAll('.whisky-card.selected').forEach(card => {
+        card.classList.remove('selected');
+      });
+      
+      // 新しい選択を追加
+      whiskyCard.classList.add('selected');
+      
+      // 詳細表示やその他のアクション
+      console.log('🥃 ウィスキー選択:', whisky.name);
+      
+      // 味覚マトリクスに座標があれば反映
+      if (whisky.taste_x && whisky.taste_y && typeof updateTasteCoordinates === 'function') {
+        updateTasteCoordinates(whisky.taste_x, whisky.taste_y);
+      }
+    });
+
+    // ホバーエフェクト
+    whiskyCard.addEventListener('mouseenter', () => {
+      whiskyCard.style.transform = 'translateY(-3px)';
+      whiskyCard.style.boxShadow = '0 0 25px rgba(78, 205, 196, 0.6)';
+    });
+
+    whiskyCard.addEventListener('mouseleave', () => {
+      whiskyCard.style.transform = 'translateY(0)';
+      whiskyCard.style.boxShadow = '0 0 20px rgba(78, 205, 196, 0.4)';
+    });
+
+    aiChatSection.appendChild(whiskyCard);
+  });
+
+  console.log('✅ AI提案パネル更新完了');
+}
+
+// 推薦結果を既存システムに統合
+function integrateRecommendationsToSystem(matchingWhiskies) {
+  try {
+    // グローバルな推薦状態を更新
+    if (!window.currentRecommendations) {
+      window.currentRecommendations = [];
+    }
+    
+    // AI推薦を既存推薦の最上位に配置
+    window.currentRecommendations = [
+      ...matchingWhiskies.map(whisky => ({ ...whisky, source: 'ai_chat' })),
+      ...window.currentRecommendations.filter(w => w.source !== 'ai_chat')
+    ].slice(0, 20); // 最大20銘柄に制限
+
+    // 統計更新
+    if (typeof updateRecommendationStats === 'function') {
+      updateRecommendationStats(matchingWhiskies.length);
+    }
+
+    // チャートやグラフがある場合は更新
+    if (typeof updateRecommendationChart === 'function') {
+      updateRecommendationChart(window.currentRecommendations);
+    }
+
+    console.log('🔄 システム統合完了:', window.currentRecommendations.length, '銘柄');
+    
+  } catch (error) {
+    console.error('❌ システム統合エラー:', error);
+  }
 }
 
 // API送信用のチャット履歴収集関数
