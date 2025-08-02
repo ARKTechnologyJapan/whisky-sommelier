@@ -1973,9 +1973,9 @@ function normalizeDistilleryName(name) {
         .toLowerCase()
         .replace(/\s+/g, '') // 全ての空白を除去
         .replace(/[　]/g, '') // 全角スペースを除去
-        .replace(/+/g, '') // 「蒸溜所」文字を除去
-        .replace(/+/g, '') // 「蒸留所」文字を除去
-        .replace(/+/gi, '') // 「distillery」を除去
+        .replace(/蒸溜所+/g, '') // 「蒸溜所」文字を除去
+        .replace(/蒸留所+/g, '') // 「蒸留所」文字を除去
+        .replace(/distillery+/gi, '') // 「distillery」を除去
         .replace(/[ザ・]/g, '') // 冠詞を除去
         .replace(/[()（）\[\]]/g, '') // 括弧類を除去
         .replace(/[－\-]/g, '') // ハイフンを除去
@@ -3075,6 +3075,27 @@ function updateDistilleryInfo(whisky) {
     console.log('updateDistilleryInfo処理完了');
 }
 
+// 蒸留所名の重複を除去する関数を追加
+function cleanDistilleryName(name) {
+    if (!name) return '情報なし';
+    
+    // 日本語の重複チェック
+    if (name.includes('蒸溜所蒸溜所')) {
+        name = name.replace(/蒸溜所蒸溜所/g, '蒸溜所');
+    }
+    if (name.includes('蒸留所蒸留所')) {
+        name = name.replace(/蒸留所蒸留所/g, '蒸留所');
+    }
+    
+    // 英語の重複チェック
+    if (name.toLowerCase().includes('distillery distillery')) {
+        name = name.replace(/distillery distillery/gi, 'Distillery');
+    }
+    
+    return name;
+}
+
+
 // 蒸溜所をマップに表示（統合JSON対応・修正版）
 function showDistilleryOnMap(distillery) {
     if (!distilleryMap || !distillery.location) {
@@ -4076,24 +4097,30 @@ if (distillerySection) {
 distillerySection.classList.add('active');
 }
 
-// 蒸留所名の推測
+// 蒸留所名の推測（重複チェック付き）
 let distilleryName = "情報なし";
 if (whisky.name && whisky.name.includes('軽井沢')) {
-distilleryName = "軽井沢蒸溜所";
+    // 既に「蒸溜所」が含まれているかチェック
+    if (whisky.name.includes('蒸溜所') || whisky.name.includes('蒸留所')) {
+        distilleryName = whisky.name;
+    } else {
+        distilleryName = "軽井沢蒸溜所";
+    }
 } else if (whisky.name && whisky.name.includes('山崎')) {
-distilleryName = "山崎蒸溜所";
+    if (whisky.name.includes('蒸溜所') || whisky.name.includes('蒸留所')) {
+        distilleryName = whisky.name;
+    } else {
+        distilleryName = "山崎蒸溜所";
+    }
 } else if (whisky.name && whisky.name.includes('白州')) {
-distilleryName = "白州蒸溜所";
-} else if (whisky.region && whisky.region.includes('Japan')) {
-distilleryName = "日本の蒸溜所";
-} else if (whisky.region && whisky.region.includes('Islay')) {
-distilleryName = "アイラ島の蒸溜所";
-} else if (whisky.region && whisky.region.includes('Speyside')) {
-distilleryName = "スペイサイドの蒸溜所";
-} else if (whisky.region) {
-distilleryName = `${whisky.region}の蒸溜所`;
-}
+    if (whisky.name.includes('蒸溜所') || whisky.name.includes('蒸留所')) {
+        distilleryName = whisky.name;
+    } else {
+        distilleryName = "白州蒸溜所";
+    }
 
+    // 重複除去処理を適用
+distilleryName = cleanDistilleryName(distilleryName);
 // 蒸留所情報の表示（左寄せに修正）
 const distilleryNameElement = document.getElementById('distilleryName');
 if (distilleryNameElement) {
@@ -4205,8 +4232,9 @@ mapContainer.style.display = 'none';
 }
 }
 
-// 蒸留所情報の表示を更新
-document.getElementById('distilleryName').textContent = distillery.name || '情報なし';
+// 蒸留所情報の表示を更新（重複除去処理を追加）
+const cleanedName = cleanDistilleryName(distillery.name);
+document.getElementById('distilleryName').textContent = cleanedName || '情報なし';
 document.getElementById('distilleryRegion').textContent = distillery.region || '情報なし';
 document.getElementById('distilleryFounded').textContent = distillery.foundedYear ? distillery.foundedYear + '年' : '情報なし';
 
