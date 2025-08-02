@@ -2034,6 +2034,60 @@ document.getElementById('coordinates2').textContent = '座標: X: 0.50, Y: 0.50'
 
 // イベントリスナーの設定
 function setupEventListeners() {
+    // 推薦取得ボタン
+    const getRecommendationBtn = document.getElementById('getRecommendation');
+    if (getRecommendationBtn) {
+        getRecommendationBtn.addEventListener('click', getRecommendation);
+    }
+    
+    // 【修正1：別の提案を受けるボタン - 存在確認を追加】
+    const anotherRecommendationBtn = document.getElementById('anotherRecommendation');
+    if (anotherRecommendationBtn) {
+        anotherRecommendationBtn.addEventListener('click', function() {
+            const currentFilters = {
+                priceRange: document.getElementById('priceRange').value,
+                region: document.getElementById('region').value,
+                keywords: extractKeywordsFromChat()
+            };
+            
+            if (lastRecommendedWhisky) {
+                if (!excludedWhiskies.includes(lastRecommendedWhisky.name)) {
+                    excludedWhiskies.push(lastRecommendedWhisky.name);
+                }
+            }
+            
+            getRecommendation();
+        });
+    }
+    
+    // 【修正3：チャットメッセージ送信 - 存在確認を追加】
+    const sendMessageBtn = document.getElementById('sendMessage');
+    const chatInput = document.getElementById('chatInput');
+    
+    if (sendMessageBtn && chatInput) {
+        sendMessageBtn.addEventListener('click', function() {
+            const message = chatInput.value.trim();
+            if (message) {
+                addChatMessage('user', message);
+                chatInput.value = '';
+                
+                chatHistory.push({role: 'user', content: message});
+                
+                setTimeout(() => {
+                    const response = "ありがとうございます。お客様の好みを理解しました。推薦機能をお試しください。";
+                    addChatMessage('assistant', response);
+                    chatHistory.push({role: 'assistant', content: response});
+                }, 1000);
+            }
+        });
+        
+        // Enterキーでも送信可能にする
+        chatInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessageBtn.click();
+            }
+        });
+    }
 // 価格スライダーイベント - 連動機能追加
 document.getElementById('minPrice').addEventListener('input', function() {
 const minVal = parseInt(this.value);
