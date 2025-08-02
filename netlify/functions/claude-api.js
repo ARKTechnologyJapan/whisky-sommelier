@@ -1,16 +1,30 @@
 exports.handler = async (event, context) => {
   console.log('=== 🔥 昼の月AIソムリエ実行中 🔥 ===');
   console.log('HTTP Method:', event.httpMethod);
+  console.log('Origin:', event.headers.origin);
+  console.log('Referer:', event.headers.referer);
 
+  // 🌐 拡張CORS設定
   const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Content-Type': 'application/json'
+    'Access-Control-Allow-Origin': '*', // すべてのオリジンを許可
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With, Accept, Origin, Referer',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
+    'Access-Control-Allow-Credentials': 'true',
+    'Content-Type': 'application/json',
+    // キャッシュ制御
+    'Cache-Control': 'no-cache, no-store, must-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0'
   };
 
+  // プリフライトリクエストの処理
   if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 200, headers, body: '' };
+    console.log('📋 OPTIONSリクエスト処理中');
+    return { 
+      statusCode: 200, 
+      headers, 
+      body: JSON.stringify({ message: 'CORS preflight successful' })
+    };
   }
 
   if (event.httpMethod !== 'POST') {
@@ -24,19 +38,19 @@ exports.handler = async (event, context) => {
   try {
     const requestData = JSON.parse(event.body);
     console.log('📊 リクエストデータ受信');
+    console.log('🔍 リクエスト詳細:', {
+      origin: event.headers.origin,
+      userAgent: event.headers['user-agent'],
+      contentType: event.headers['content-type']
+    });
 
-    // 🔒 環境変数からセキュアに取得
+    // 🔒 環境変数から設定を取得
     const apiKey = process.env.CLAUDE_API_KEY;
     const baseUrl = process.env.CLAUDE_BASE_URL;
     const model = process.env.CLAUDE_MODEL;
 
-    // 必須環境変数のチェック
-    if (!apiKey || !baseUrl || !model) {
-      throw new Error('必要な環境変数が設定されていません');
-    }
-
     console.log('🎯 プロキシ使用中');
-    console.log('🤖 モデル設定済み');
+    console.log('🤖 モデル:', model);
     console.log('🔑 認証設定済み:', !!apiKey);
 
     // 味覚プロファイルの分析
@@ -48,13 +62,11 @@ exports.handler = async (event, context) => {
     // 統合推薦メッセージの構築
     const enhancedPrompt = buildEnhancedSystemMessage(tasteProfile, conversationContext, requestData);
 
-    // メッセージ構築（OpenAI形式）
-    const messages = [
-      {
-        role: 'user',
-        content: enhancedPrompt
-      }
-    ];
+    // メッセージ構築
+    const messages = [{
+      role: 'user',
+      content: enhancedPrompt
+    }];
 
     const requestBody = {
       model: model,
@@ -85,19 +97,17 @@ exports.handler = async (event, context) => {
     const responseData = await response.json();
     console.log('✅ プロキシAPI成功！');
 
-    // レスポンス形式の統一
-    const formattedResponse = {
-      success: true,
-      data: responseData,
-      tasteAnalysis: tasteProfile,
-      conversationInsights: conversationContext,
-      timestamp: new Date().toISOString()
-    };
-
     return {
       statusCode: 200,
-      headers,
-      body: JSON.stringify(formattedResponse)
+      headers, // 拡張されたヘッダーを使用
+      body: JSON.stringify({
+        success: true,
+        data: responseData,
+        tasteAnalysis: tasteProfile,
+        conversationInsights: conversationContext,
+        timestamp: new Date().toISOString(),
+        requestOrigin: event.headers.origin // デバッグ用
+      })
     };
 
   } catch (error) {
@@ -105,11 +115,12 @@ exports.handler = async (event, context) => {
 
     return {
       statusCode: 500,
-      headers,
+      headers, // 拡張されたヘッダーを使用
       body: JSON.stringify({ 
         error: 'プロキシAPIエラーが発生しました',
         details: error.message,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        requestOrigin: event.headers.origin // デバッグ用
       })
     };
   }
