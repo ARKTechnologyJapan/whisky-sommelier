@@ -2051,15 +2051,20 @@ dot2.style.top = '50%';
 document.getElementById('coordinates2').textContent = '座標: X: 0.50, Y: 0.50';
 }
 
-// イベントリスナーの設定（完全版）
-// イベントリスナーの設定（修正版・重複削除）
+// イベントリスナーの設定（完全修正版・二重binding防止）
 function setupEventListeners() {
-    // 推薦取得ボタン
+    console.log('setupEventListeners開始');
+    
+    // 1. AI提案開始ボタン（IDの統一と二重binding防止）
     const getRecommendationBtn = document.getElementById('getRecommendation');
     if (getRecommendationBtn) {
-        getRecommendationBtn.addEventListener('click', function() {
+        // 既存のイベントリスナーを削除（二重binding防止）
+        const newBtn = getRecommendationBtn.cloneNode(true);
+        getRecommendationBtn.parentNode.replaceChild(newBtn, getRecommendationBtn);
+        
+        newBtn.addEventListener('click', function() {
+            console.log('AI提案開始ボタンがクリックされました');
             getRecommendation();
-            
             // 提案結果エリアにスクロール
             setTimeout(() => {
                 const recommendationsPanel = document.getElementById('recommendationsPanel');
@@ -2068,14 +2073,19 @@ function setupEventListeners() {
                 }
             }, 500);
         });
+        console.log('AI提案開始ボタンのイベントリスナー設定完了');
+    } else {
+        console.warn('getRecommendationボタンが見つかりません');
     }
     
-    // 別の提案を受けるボタン（anotherRecommendation）
+    // 2. 別の提案を受けるボタン（二重binding防止）
     const anotherRecommendationBtn = document.getElementById('anotherRecommendation');
     if (anotherRecommendationBtn) {
-        anotherRecommendationBtn.addEventListener('click', function() {
+        const newAnotherBtn = anotherRecommendationBtn.cloneNode(true);
+        anotherRecommendationBtn.parentNode.replaceChild(newAnotherBtn, anotherRecommendationBtn);
+        
+        newAnotherBtn.addEventListener('click', function() {
             console.log('anotherRecommendationボタンがクリックされました');
-            
             // 前回推薦したウィスキーを除外リストに追加
             if (lastRecommendedWhisky) {
                 if (!excludedWhiskies.includes(lastRecommendedWhisky.name)) {
@@ -2083,18 +2093,19 @@ function setupEventListeners() {
                     console.log('除外リストに追加:', lastRecommendedWhisky.name);
                 }
             }
-            
             // 新しい推薦を実行
             getRecommendation();
         });
     }
     
-    // getAnotherRecommendationボタン（別のIDの場合）
+    // 3. getAnotherRecommendationボタン（別のIDの場合・二重binding防止）
     const getAnotherRecommendationBtn = document.getElementById('getAnotherRecommendation');
     if (getAnotherRecommendationBtn) {
-        getAnotherRecommendationBtn.addEventListener('click', function() {
+        const newGetAnotherBtn = getAnotherRecommendationBtn.cloneNode(true);
+        getAnotherRecommendationBtn.parentNode.replaceChild(newGetAnotherBtn, getAnotherRecommendationBtn);
+        
+        newGetAnotherBtn.addEventListener('click', function() {
             console.log('getAnotherRecommendationボタンがクリックされました');
-            
             // 前回推薦したウィスキーを除外リストに追加
             if (lastRecommendedWhisky) {
                 if (!excludedWhiskies.includes(lastRecommendedWhisky.name)) {
@@ -2102,25 +2113,25 @@ function setupEventListeners() {
                     console.log('除外リストに追加:', lastRecommendedWhisky.name);
                 }
             }
-            
             getRecommendation();
         });
     }
     
-    // チャットメッセージ送信（重複削除版）
+    // 4. チャットメッセージ送信（二重binding防止）
     const sendMessageBtn = document.getElementById('sendMessage');
     const sendChatBtn = document.getElementById('sendChatBtn');
     const chatInput = document.getElementById('chatInput');
     
     if (sendMessageBtn && chatInput) {
-        sendMessageBtn.addEventListener('click', function() {
+        const newSendMessageBtn = sendMessageBtn.cloneNode(true);
+        sendMessageBtn.parentNode.replaceChild(newSendMessageBtn, sendMessageBtn);
+        
+        newSendMessageBtn.addEventListener('click', function() {
             const message = chatInput.value.trim();
             if (message) {
                 addChatMessage('user', message);
                 chatInput.value = '';
-                
                 chatHistory.push({role: 'user', content: message});
-                
                 setTimeout(() => {
                     const response = "ありがとうございます。お客様の好みを理解しました。推薦機能をお試しください。";
                     addChatMessage('assistant', response);
@@ -2131,7 +2142,10 @@ function setupEventListeners() {
     }
     
     if (sendChatBtn && chatInput) {
-        sendChatBtn.addEventListener('click', function() {
+        const newSendChatBtn = sendChatBtn.cloneNode(true);
+        sendChatBtn.parentNode.replaceChild(newSendChatBtn, sendChatBtn);
+        
+        newSendChatBtn.addEventListener('click', function() {
             const input = chatInput.value.trim();
             if (input) {
                 sendChatMessage();
@@ -2139,9 +2153,13 @@ function setupEventListeners() {
         });
     }
     
-    // Enterキー処理（統一版・重複削除）
+    // 5. Enterキー処理（統一版・新しい要素に対して設定）
     if (chatInput) {
-        chatInput.addEventListener('keypress', function(e) {
+        // 既存のイベントリスナーを削除
+        const newChatInput = chatInput.cloneNode(true);
+        chatInput.parentNode.replaceChild(newChatInput, chatInput);
+        
+        newChatInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 // sendChatMessage関数があるかチェック
                 if (typeof sendChatMessage === 'function') {
@@ -2149,51 +2167,61 @@ function setupEventListeners() {
                     if (input) {
                         sendChatMessage();
                     }
-                } else if (sendMessageBtn) {
+                } else {
                     // フォールバック
-                    sendMessageBtn.click();
+                    const currentSendBtn = document.getElementById('sendMessage') || document.getElementById('sendChatBtn');
+                    if (currentSendBtn) {
+                        currentSendBtn.click();
+                    }
                 }
             }
         });
     }
     
-    // 質問例クリック
+    // 6. 質問例クリック（現在のDOM要素に対して新しくバインド）
     document.querySelectorAll('.question-example').forEach(function(elem) {
-        elem.addEventListener('click', function() {
+        // 既存のリスナーを削除して新しくバインド
+        const newElem = elem.cloneNode(true);
+        elem.parentNode.replaceChild(newElem, elem);
+        
+        newElem.addEventListener('click', function() {
             const question = this.getAttribute('data-question');
-            if (chatInput) {
-                chatInput.value = question;
+            const currentChatInput = document.getElementById('chatInput');
+            if (currentChatInput) {
+                currentChatInput.value = question;
                 if (typeof sendChatMessage === 'function') {
                     sendChatMessage();
-                } else if (sendMessageBtn) {
-                    sendMessageBtn.click();
+                } else {
+                    const currentSendBtn = document.getElementById('sendMessage') || document.getElementById('sendChatBtn');
+                    if (currentSendBtn) {
+                        currentSendBtn.click();
+                    }
                 }
             }
         });
     });
     
-    // 価格スライダー処理は既存のまま
+    // 7. 価格スライダー処理（二重binding防止）
     const minPriceSlider = document.getElementById('minPrice');
     const maxPriceSlider = document.getElementById('maxPrice');
     
     if (minPriceSlider) {
-        minPriceSlider.addEventListener('input', function() {
+        const newMinSlider = minPriceSlider.cloneNode(true);
+        minPriceSlider.parentNode.replaceChild(newMinSlider, minPriceSlider);
+        
+        newMinSlider.addEventListener('input', function() {
             const minVal = parseInt(this.value);
             const maxPriceElement = document.getElementById('maxPrice');
             const maxVal = maxPriceElement ? parseInt(maxPriceElement.value) : 80;
-            
-            console.log('最小価格調整:', minVal, '最大価格:', maxVal);
-            
             if (minVal > maxVal) {
                 this.value = maxVal;
                 const minPriceDisplay = document.getElementById('minPriceDisplay');
-                if (minPriceDisplay) {
+                if (minPriceDisplay && typeof formatPrice === 'function') {
                     minPriceDisplay.textContent = `¥${formatPrice(maxVal * 1000)}`;
                 }
-                console.log('最小価格を調整:', maxVal);
             } else {
                 const minPriceDisplay = document.getElementById('minPriceDisplay');
-                if (minPriceDisplay) {
+                if (minPriceDisplay && typeof formatPrice === 'function') {
                     minPriceDisplay.textContent = `¥${formatPrice(minVal * 1000)}`;
                 }
             }
@@ -2201,53 +2229,55 @@ function setupEventListeners() {
     }
     
     if (maxPriceSlider) {
-        maxPriceSlider.addEventListener('input', function() {
+        const newMaxSlider = maxPriceSlider.cloneNode(true);
+        maxPriceSlider.parentNode.replaceChild(newMaxSlider, maxPriceSlider);
+        
+        newMaxSlider.addEventListener('input', function() {
             const maxVal = parseInt(this.value);
             const minPriceElement = document.getElementById('minPrice');
             const minVal = minPriceElement ? parseInt(minPriceElement.value) : 1;
-            
-            console.log('最大価格調整:', maxVal, '最小価格:', minVal);
-            
             if (maxVal < minVal) {
                 this.value = minVal;
                 const maxPriceDisplay = document.getElementById('maxPriceDisplay');
-                if (maxPriceDisplay) {
+                if (maxPriceDisplay && typeof formatPrice === 'function') {
                     maxPriceDisplay.textContent = `¥${formatPrice(minVal * 1000)}`;
                 }
-                console.log('最大価格を調整:', minVal);
             } else {
                 const maxPriceDisplay = document.getElementById('maxPriceDisplay');
-                if (maxPriceDisplay) {
+                if (maxPriceDisplay && typeof formatPrice === 'function') {
                     maxPriceDisplay.textContent = `¥${formatPrice(maxVal * 1000)}`;
                 }
             }
         });
     }
     
-    // リフレッシュボタン
+    // 8. リフレッシュボタン（二重binding防止）
     const refreshRecommendationBtn = document.getElementById('refreshRecommendation');
     if (refreshRecommendationBtn) {
-        refreshRecommendationBtn.addEventListener('click', function() {
+        const newRefreshBtn = refreshRecommendationBtn.cloneNode(true);
+        refreshRecommendationBtn.parentNode.replaceChild(newRefreshBtn, refreshRecommendationBtn);
+        
+        newRefreshBtn.addEventListener('click', function() {
             // 四象限のリセットと履歴クリア
-            resetTasteMatrices();
-            clearChatHistory();
-            
+            if (typeof resetTasteMatrices === 'function') {
+                resetTasteMatrices();
+            }
+            if (typeof clearChatHistory === 'function') {
+                clearChatHistory();
+            }
             // 除外リストもクリア
             excludedWhiskies.length = 0;
             lastRecommendedWhisky = null;
-            
             // 提案パネルを非表示
             const splitLayoutContainer = document.getElementById('splitLayoutContainer');
             if (splitLayoutContainer) {
                 splitLayoutContainer.style.display = 'none';
             }
-            
             // チャート初期化
-            if (profileChartInstance) {
+            if (typeof profileChartInstance !== 'undefined' && profileChartInstance) {
                 profileChartInstance.destroy();
                 profileChartInstance = null;
             }
-            
             // 蒸留所セクション初期化
             const distillerySection = document.getElementById('distillerySection');
             if (distillerySection) {
@@ -2256,8 +2286,12 @@ function setupEventListeners() {
         });
     }
     
-    // マイク入力設定
-    setupVoiceInput();
+    // 9. マイク入力設定
+    if (typeof setupVoiceInput === 'function') {
+        setupVoiceInput();
+    }
+    
+    console.log('setupEventListeners完了');
 }
 
 // マイク入力の処理
@@ -3093,18 +3127,35 @@ async function getRecommendation() {
         }
 
         // 価格帯の取得（完全安全版）
-        const minPriceElement = document.getElementById('minPrice');
-        const maxPriceElement = document.getElementById('maxPrice');
-        
-        console.log('価格要素チェック:', {
-            minPriceElement: minPriceElement ? 'あり' : 'なし',
-            maxPriceElement: maxPriceElement ? 'あり' : 'なし'
-        });
-        
-        const minPrice = minPriceElement && minPriceElement.value ? 
-            parseInt(minPriceElement.value) * 1000 : 0;
-        const maxPrice = maxPriceElement && maxPriceElement.value ? 
-            parseInt(maxPriceElement.value) * 1000 : 999999;
+const minPriceElement = document.getElementById('minPrice');
+const maxPriceElement = document.getElementById('maxPrice');
+
+console.log('価格要素チェック:', {
+    minPriceElement: minPriceElement ? 'あり' : 'なし',
+    minPriceValue: minPriceElement ? minPriceElement.value : 'なし',
+    maxPriceElement: maxPriceElement ? 'あり' : 'なし',
+    maxPriceValue: maxPriceElement ? maxPriceElement.value : 'なし'
+});
+
+// より安全な価格取得
+let minPrice = 5000;  // デフォルト値
+let maxPrice = 100000; // デフォルト値
+
+if (minPriceElement && minPriceElement.value !== null && minPriceElement.value !== '') {
+    const minVal = parseInt(minPriceElement.value);
+    if (!isNaN(minVal)) {
+        minPrice = minVal * 1000;
+    }
+}
+
+if (maxPriceElement && maxPriceElement.value !== null && maxPriceElement.value !== '') {
+    const maxVal = parseInt(maxPriceElement.value);
+    if (!isNaN(maxVal)) {
+        maxPrice = maxVal * 1000;
+    }
+}
+
+console.log('最終価格設定:', { minPrice, maxPrice });
 
         console.log('パラメータ取得完了:', { 
             tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice 
