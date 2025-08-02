@@ -2056,6 +2056,7 @@ document.getElementById('coordinates2').textContent = '座標: X: 0.50, Y: 0.50'
 }
 
 // イベントリスナーの設定（完全版）
+// イベントリスナーの設定（修正版・重複削除）
 function setupEventListeners() {
     // 推薦取得ボタン
     const getRecommendationBtn = document.getElementById('getRecommendation');
@@ -2092,7 +2093,7 @@ function setupEventListeners() {
         });
     }
     
-    // getAnotherRecommendationボタン（既存）
+    // getAnotherRecommendationボタン（別のIDの場合）
     const getAnotherRecommendationBtn = document.getElementById('getAnotherRecommendation');
     if (getAnotherRecommendationBtn) {
         getAnotherRecommendationBtn.addEventListener('click', function() {
@@ -2110,8 +2111,9 @@ function setupEventListeners() {
         });
     }
     
-    // チャットメッセージ送信ボタン
+    // チャットメッセージ送信（重複削除版）
     const sendMessageBtn = document.getElementById('sendMessage');
+    const sendChatBtn = document.getElementById('sendChatBtn');
     const chatInput = document.getElementById('chatInput');
     
     if (sendMessageBtn && chatInput) {
@@ -2130,17 +2132,8 @@ function setupEventListeners() {
                 }, 1000);
             }
         });
-        
-        // Enterキーでも送信可能にする
-        chatInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendMessageBtn.click();
-            }
-        });
     }
     
-    // sendChatBtnボタン（もし存在する場合）
-    const sendChatBtn = document.getElementById('sendChatBtn');
     if (sendChatBtn && chatInput) {
         sendChatBtn.addEventListener('click', function() {
             const input = chatInput.value.trim();
@@ -2150,13 +2143,19 @@ function setupEventListeners() {
         });
     }
     
-    // チャット入力のEnterキー（sendChatBtn用）
+    // Enterキー処理（統一版・重複削除）
     if (chatInput) {
         chatInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                const input = this.value.trim();
-                if (input) {
-                    sendChatMessage();
+                // sendChatMessage関数があるかチェック
+                if (typeof sendChatMessage === 'function') {
+                    const input = this.value.trim();
+                    if (input) {
+                        sendChatMessage();
+                    }
+                } else if (sendMessageBtn) {
+                    // フォールバック
+                    sendMessageBtn.click();
                 }
             }
         });
@@ -2168,12 +2167,16 @@ function setupEventListeners() {
             const question = this.getAttribute('data-question');
             if (chatInput) {
                 chatInput.value = question;
-                sendChatMessage();
+                if (typeof sendChatMessage === 'function') {
+                    sendChatMessage();
+                } else if (sendMessageBtn) {
+                    sendMessageBtn.click();
+                }
             }
         });
     });
     
-    // 価格スライダーイベント - 連動機能追加
+    // 価格スライダー処理は既存のまま
     const minPriceSlider = document.getElementById('minPrice');
     const maxPriceSlider = document.getElementById('maxPrice');
     
@@ -2183,13 +2186,15 @@ function setupEventListeners() {
             const maxPriceElement = document.getElementById('maxPrice');
             const maxVal = maxPriceElement ? parseInt(maxPriceElement.value) : 80;
             
-            // 下限が上限を超えないように制限
+            console.log('最小価格調整:', minVal, '最大価格:', maxVal);
+            
             if (minVal > maxVal) {
                 this.value = maxVal;
                 const minPriceDisplay = document.getElementById('minPriceDisplay');
                 if (minPriceDisplay) {
                     minPriceDisplay.textContent = `¥${formatPrice(maxVal * 1000)}`;
                 }
+                console.log('最小価格を調整:', maxVal);
             } else {
                 const minPriceDisplay = document.getElementById('minPriceDisplay');
                 if (minPriceDisplay) {
@@ -2205,13 +2210,15 @@ function setupEventListeners() {
             const minPriceElement = document.getElementById('minPrice');
             const minVal = minPriceElement ? parseInt(minPriceElement.value) : 1;
             
-            // 上限が下限を下回らないように制限
+            console.log('最大価格調整:', maxVal, '最小価格:', minVal);
+            
             if (maxVal < minVal) {
                 this.value = minVal;
                 const maxPriceDisplay = document.getElementById('maxPriceDisplay');
                 if (maxPriceDisplay) {
                     maxPriceDisplay.textContent = `¥${formatPrice(minVal * 1000)}`;
                 }
+                console.log('最大価格を調整:', minVal);
             } else {
                 const maxPriceDisplay = document.getElementById('maxPriceDisplay');
                 if (maxPriceDisplay) {
@@ -3059,7 +3066,8 @@ document.getElementById('priceRange').textContent = `¥${formatPrice(minPrice)}�
 
 // 価格をフォーマット
 function formatPrice(price) {
-return pri
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
 // AI推薦を取得（完全版・統一版）
 async function getRecommendation() {
