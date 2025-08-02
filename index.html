@@ -3036,50 +3036,57 @@ return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 
 // AI推薦を取得（修正版）
 async function getRecommendation() {
+async function getRecommendation() {
 // ローディング表示
-document.getElementById('loadingIndicator').style.display = 'block';
+const loadingIndicator = document.getElementById('loadingIndicator');
+if (loadingIndicator) {
+    loadingIndicator.style.display = 'block';
+}
 
 try {
-// 味覚座標の取得（既存コード）
-const dot1 = document.getElementById('tasteDot1');
-const dot2 = document.getElementById('tasteDot2');
-const tasteX = parseFloat(dot1.style.left) / 100;
-const tasteY = parseFloat(dot1.style.top) / 100;
-const complexityX = parseFloat(dot2.style.left) / 100;
-const complexityY = parseFloat(dot2.style.top) / 100;
+    // 味覚座標の取得（安全版）
+    const dot1 = document.getElementById('tasteDot1');
+    const dot2 = document.getElementById('tasteDot2');
+    
+    const tasteX = dot1 && dot1.style.left ? parseFloat(dot1.style.left) / 100 : 0.5;
+    const tasteY = dot1 && dot1.style.top ? parseFloat(dot1.style.top) / 100 : 0.5;
+    const complexityX = dot2 && dot2.style.left ? parseFloat(dot2.style.left) / 100 : 0.5;
+    const complexityY = dot2 && dot2.style.top ? parseFloat(dot2.style.top) / 100 : 0.5;
 
-// 価格帯の取得（既存コード）
-const minPrice = document.getElementById('minPrice').value * 1000;
-const maxPrice = document.getElementById('maxPrice').value * 1000;
+    // 価格帯の取得（安全版）
+    const minPriceElement = document.getElementById('minPrice');
+    const maxPriceElement = document.getElementById('maxPrice');
+    const minPrice = minPriceElement ? parseInt(minPriceElement.value) * 1000 : 0;
+    const maxPrice = maxPriceElement ? parseInt(maxPriceElement.value) * 1000 : 999999;
 
-// 新しく追加: チャットから抽出した好みと現在のUI値を統合
-const combinedPreferences = {
-tasteX: savedUserPreferences.tasteX !== null ? savedUserPreferences.tasteX : tasteX,
-tasteY: savedUserPreferences.tasteY !== null ? savedUserPreferences.tasteY : tasteY,
-complexityX: savedUserPreferences.complexityX !== null ? savedUserPreferences.complexityX : complexityX,
-complexityY: savedUserPreferences.complexityY !== null ? savedUserPreferences.complexityY : complexityY,
-minPrice: savedUserPreferences.minPrice !== null ? savedUserPreferences.minPrice : minPrice,
-maxPrice: savedUserPreferences.maxPrice !== null ? savedUserPreferences.maxPrice : maxPrice,
-region: savedUserPreferences.region
-};
+    console.log('パラメータ取得完了:', { tasteX, tasteY, complexityX, complexityY, minPrice, maxPrice });
 
-// ここに新しいデバッグログを追加
-console.log('検索開始 - 好み情報:', {
-savedPreferences: savedUserPreferences,
-combinedPreferences: combinedPreferences
-});
+    // 新しく追加: チャットから抽出した好みと現在のUI値を統合
+    const combinedPreferences = {
+        tasteX: savedUserPreferences.tasteX !== null ? savedUserPreferences.tasteX : tasteX,
+        tasteY: savedUserPreferences.tasteY !== null ? savedUserPreferences.tasteY : tasteY,
+        complexityX: savedUserPreferences.complexityX !== null ? savedUserPreferences.complexityX : complexityX,
+        complexityY: savedUserPreferences.complexityY !== null ? savedUserPreferences.complexityY : complexityY,
+        minPrice: savedUserPreferences.minPrice !== null ? savedUserPreferences.minPrice : minPrice,
+        maxPrice: savedUserPreferences.maxPrice !== null ? savedUserPreferences.maxPrice : maxPrice,
+        region: savedUserPreferences.region
+    };
 
-// プログレスバーの表示（既存コード）
-document.getElementById('loadingIndicator').style.display = 'none';
-document.getElementById('progressContainer').style.display = 'block';
+    // 以下は既存のコードをそのまま続行...
+    console.log('検索開始 - 好み情報:', {
+        savedPreferences: savedUserPreferences,
+        combinedPreferences: combinedPreferences
+    });
 
-// プログレスバーを進行（既存コード）
-let progress = 0;
-const progressInterval = setInterval(() => {
-progress += 5;
-if (progress > 100) {
-clearInterval(progressInterval);
-document.getElementById('progressContainer').style.display = 'none';
+    // プログレスバーの表示（安全版）
+    if (loadingIndicator) {
+        loadingIndicator.style.display = 'none';
+    }
+    
+    const progressContainer = document.getElementById('progressContainer');
+    if (progressContainer) {
+        progressContainer.style.display = 'block';
+    }
 
 // 提案結果を表示（修正: 統合した好みを使用）
 showRecommendationResult(
