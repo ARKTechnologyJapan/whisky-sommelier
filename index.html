@@ -1901,174 +1901,215 @@ isRecording = false;
 };
 }
 
-// チャットメッセージ送信（修正版）
+// sendChatMessage関数の末尾に追加
 function sendChatMessage() {
-const input = document.getElementById('chatInput');
-const message = input.value.trim();
-if (!message) return;
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  if (!message) return;
 
-// チャット履歴を表示
-const chatHistory = document.getElementById('chatHistory');
-chatHistory.style.display = 'block';
+  // チャット履歴を表示
+  const chatHistory = document.getElementById('chatHistory');
+  chatHistory.style.display = 'block';
 
-// ユーザーメッセージを追加
-const userMessage = document.createElement('div');
-userMessage.className = 'chat-message user-message';
-userMessage.textContent = message;
-chatHistory.appendChild(userMessage);
+  // ユーザーメッセージを追加
+  const userMessage = document.createElement('div');
+  userMessage.className = 'chat-message user-message';
+  userMessage.textContent = message;
+  chatHistory.appendChild(userMessage);
 
-// 入力フィールドをクリア
-input.value = '';
+  // 入力フィールドをクリア
+  input.value = '';
 
-// スクロールを最下部に
-chatHistory.scrollTop = chatHistory.scrollHeight;
+  // スクロールを最下部に
+  chatHistory.scrollTop = chatHistory.scrollHeight;
 
-// 新しく追加: メッセージから好みを抽出
-try {
-const prefs = extractPreferencesFromMessage(message);
+  // 現在の味覚座標をグローバル変数に保存（統合分析用）
+  if (typeof currentX !== 'undefined' && typeof currentY !== 'undefined') {
+    window.currentX = currentX;
+    window.currentY = currentY;
+  }
 
-// 抽出した好みを保存
-if (prefs && Object.keys(prefs).length > 0) {
-Object.assign(savedUserPreferences, prefs);
+  // メッセージから好みを抽出
+  try {
+    const prefs = extractPreferencesFromMessage(message);
+    if (prefs && Object.keys(prefs).length > 0) {
+      Object.assign(savedUserPreferences, prefs);
+      updateUIWithPreferences(prefs);
+    }
+  } catch (error) {
+    console.error('好み抽出エラー:', error);
+  }
 
-// UI要素を更新
-updateUIWithPreferences(prefs);
+  // AIの応答を生成（統合分析対応版）
+  getAIResponse(message);
 }
-} catch (error) {
-console.error('好み抽出エラー:', error);
-}
 
-// AIの応答を生成
-getAIResponse(message);
-}
-
-// AI応答の取得（修正版）
+// AI応答の取得（統合分析対応版）
 async function getAIResponse(message) {
-// AIの応答を生成中であることを表示
-const chatHistory = document.getElementById('chatHistory');
-const aiMessage = document.createElement('div');
-aiMessage.className = 'chat-message ai-message thinking-animation';
-aiMessage.textContent = ''; // テキストは空に、アニメーションがコンテンツを表示します
-chatHistory.appendChild(aiMessage);
+  const chatHistory = document.getElementById('chatHistory');
+  
+  // 考え中のメッセージを追加
+  const thinkingMessage = document.createElement('div');
+  thinkingMessage.className = 'chat-message ai-message thinking-animation';
+  thinkingMessage.textContent = '考えています...';
+  chatHistory.appendChild(thinkingMessage);
+  chatHistory.scrollTop = chatHistory.scrollHeight;
 
-// スクロールを最下部に
-chatHistory.scrollTop = chatHistory.scrollHeight;
+  try {
+    // 現在の設定値を取得
+    const minPriceValue = parseInt(document.getElementById('minPrice').value);
+    const maxPriceValue = parseInt(document.getElementById('maxPrice').value);
+    const minPrice = minPriceValue * 1000;
+    const maxPrice = maxPriceValue * 1000;
 
-try {
-// 新しく追加: 好み通知メッセージの作成
-let prefsMessage = '';
-const prefs = extractPreferencesFromMessage(message);
+    // 味覚座標を取得（グローバル変数から、またはデフォルト値）
+    const tasteX = window.currentX || 150;
+    const tasteY = window.currentY || 150;
 
-if (prefs && Object.keys(prefs).length > 0) {
-prefsMessage = 'あなたの好みを理解しました：\n';
+    // チャット履歴を収集（統合分析用）
+    const chatHistoryData = collectChatHistoryForAPI();
 
-if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
-if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
-if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
-if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
-prefsMessage += '\n提案システムに反映しました。「AI提案を開始」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
+    // 統合データパッケージの構築
+    const requestData = {
+      minPrice: minPrice,
+      maxPrice: maxPrice,
+      tasteX: parseFloat(tasteX.toFixed(2)),
+      tasteY: parseFloat(tasteY.toFixed(2)),
+      additionalPreferences: message,
+      chatHistory: chatHistoryData,
+      timestamp: new Date().toISOString()
+    };
+
+    console.log('送信データ（統合版）:', requestData);
+
+    // Claude APIの呼び出し
+    const response = await fetch('/.netlify/functions/claude-api', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestData)
+    });
+
+    const result = await response.json();
+    console.log('受信データ:', result);
+
+    // 考え中メッセージを削除
+    thinkingMessage.remove();
+
+    if (result.success) {
+      // レスポンスからAIメッセージを取得
+      const aiMessage = result.data.choices?.[0]?.message?.content || 
+                       result.data.content?.[0]?.text ||
+                       'すみません、応答を取得できませんでした。';
+      
+      // AIメッセージを表示
+      const responseMessage = document.createElement('div');
+      responseMessage.className = 'chat-message ai-message';
+      responseMessage.textContent = aiMessage;
+      chatHistory.appendChild(responseMessage);
+
+      // 分析結果の表示（開発者コンソール）
+      if (result.tasteAnalysis) {
+        console.log('🎯 味覚分析結果:', result.tasteAnalysis);
+      }
+      if (result.conversationInsights) {
+        console.log('💬 会話分析結果:', result.conversationInsights);
+      }
+
+      // 推薦結果から好みの更新を試行
+      try {
+        const extractedPrefs = extractPreferencesFromAIResponse(aiMessage);
+        if (extractedPrefs && Object.keys(extractedPrefs).length > 0) {
+          Object.assign(savedUserPreferences, extractedPrefs);
+        }
+      } catch (error) {
+        console.error('AI応答からの好み抽出エラー:', error);
+      }
+
+    } else {
+      throw new Error(result.error || 'API呼び出しエラー');
+    }
+
+  } catch (error) {
+    console.error('AI応答取得エラー:', error);
+    
+    // エラーメッセージを表示
+    const errorMessage = document.createElement('div');
+    errorMessage.className = 'chat-message ai-message';
+    errorMessage.textContent = '申し訳ございません。一時的な問題が発生しました。しばらくしてから再度お試しください。';
+    chatHistory.appendChild(errorMessage);
+    
+    // 考え中メッセージがあれば削除
+    if (thinkingMessage.parentNode) {
+      thinkingMessage.remove();
+    }
+  }
+
+  // スクロールを最下部に
+  chatHistory.scrollTop = chatHistory.scrollHeight;
 }
 
-// 味覚座標の取得
-const dot1 = document.getElementById('tasteDot1');
-const dot2 = document.getElementById('tasteDot2');
-const tasteX = parseFloat(dot1.style.left) / 100;
-const tasteY = parseFloat(dot1.style.top) / 100;
+// API送信用のチャット履歴収集関数
+function collectChatHistoryForAPI() {
+  const chatHistory = document.getElementById('chatHistory');
+  if (!chatHistory) return [];
 
-// 価格帯の取得
-const minPrice = document.getElementById('minPrice').value * 1000;
-const maxPrice = document.getElementById('maxPrice').value * 1000;
+  const messages = [];
+  const messageElements = chatHistory.querySelectorAll('.chat-message');
 
-// チャット履歴を収集
-const chatHistoryData = collectChatHistory();
+  messageElements.forEach(element => {
+    // 考え中メッセージは除外
+    if (element.classList.contains('thinking-animation')) {
+      return;
+    }
 
-// API呼び出し
-const response = await fetch('/.netlify/functions/claude-api', {
-method: 'POST',
-headers: {
-'Content-Type': 'application/json'
-},
-body: JSON.stringify({
-minPrice: minPrice,
-maxPrice: maxPrice,
-tasteX: tasteX.toFixed(2),
-tasteY: tasteY.toFixed(2),
-additionalPreferences: message,
-chatHistory: chatHistoryData // チャット履歴を追加
-})
-});
+    const content = element.textContent.trim();
+    if (content && content !== '考えています...') {
+      if (element.classList.contains('user-message')) {
+        messages.push({
+          role: 'user',
+          content: content
+        });
+      } else if (element.classList.contains('ai-message')) {
+        messages.push({
+          role: 'assistant',
+          content: content
+        });
+      }
+    }
+  });
 
-if (!response.ok) {
-throw new Error(`API error: ${response.status}`);
+  // 直近10メッセージに制限（APIの制限対応）
+  return messages.slice(-10);
 }
 
-const data = await response.json();
+// AI応答から好みを抽出する関数
+function extractPreferencesFromAIResponse(aiResponse) {
+  const preferences = {};
+  const content = aiResponse.toLowerCase();
 
-// API応答を表示
-let aiResponseText = '';
-if (data.success && data.data) {
-if (data.data.choices && data.data.choices[0] && data.data.choices[0].message) {
-// 新しい構造: data.data.choices[0].message.content
-aiResponseText = data.data.choices[0].message.content;
-} else if (data.data.content && data.data.content.length > 0) {
-// 古い構造: data.data.content[0].text
-aiResponseText = data.data.content[0].text;
-} else {
-throw new Error('Invalid API response structure');
-}
-} else {
-throw new Error('API response missing success or data field');
-}
+  // 推薦された銘柄から価格帯の推定
+  if (content.includes('タリスカー44年')) {
+    preferences.suggestedPriceRange = 'premium';
+  } else if (content.includes('マッカラン') || content.includes('軽井沢')) {
+    preferences.suggestedPriceRange = 'high';
+  } else if (content.includes('グレンリベット') || content.includes('スプリングバンク')) {
+    preferences.suggestedPriceRange = 'medium';
+  } else if (content.includes('キルホーマン')) {
+    preferences.suggestedPriceRange = 'affordable';
+  }
 
-// 新しく追加: 好み通知を先頭に追加
-if (prefsMessage) {
-aiResponseText = prefsMessage + aiResponseText;
-}
+  // 推薦理由からの味覚傾向抽出
+  if (content.includes('スモーキー') || content.includes('ピート')) {
+    preferences.tastePreference = 'smoky';
+  } else if (content.includes('フルーティー') || content.includes('果実')) {
+    preferences.tastePreference = 'fruity';
+  } else if (content.includes('スパイシー')) {
+    preferences.tastePreference = 'spicy';
+  }
 
-aiMessage.textContent = aiResponseText;
-aiMessage.classList.remove('thinking-animation'); // この行を追加
-updateRecommendationsFromChat(aiResponseText); // この行を追加
-
-} catch (error) {
-console.error('Chat error:', error);
-
-// エラーの場合、既存のモックレスポンスを使用
-let aiResponseText;
-
-// 質問に基づいてモック応答を生成（既存のコード）
-if (message.includes('タリスカー44年')) {
-aiResponseText = '🍷 タリスカー44年オフィシャルボトルは...';
-} else if (message.includes('3000円以下') && message.includes('スモーキー') && message.includes('アイラ')) {
-aiResponseText = '🌊 キルホーマン2013-2021信濃屋（¥2,000）が...';
-} else if (message.includes('日本') && (message.includes('軽井沢') || message.includes('長濱'))) {
-aiResponseText = '🍯 軽井沢25年（¥25,000）は日本を代表する銘柄で...';
-} else if (message.includes('5000円前後') && message.includes('complexity5点')) {
-aiResponseText = '⭐ 5000円前後でcomplexity5点を持つおすすめは...';
-} else {
-aiResponseText = '申し訳ありません、現在AIチャット機能が使えません。味覚プロファイルからあなたに最適なウィスキーを提案します。';
-}
-
-// 新しく追加: 好みを抽出できていれば通知を追加
-const prefs = extractPreferencesFromMessage(message);
-if (prefs && Object.keys(prefs).length > 0) {
-let prefsMessage = 'あなたの好みを理解しました：\n';
-
-if (prefs.minPrice) prefsMessage += `・最低価格: ${prefs.minPrice}円\n`;
-if (prefs.maxPrice) prefsMessage += `・最高価格: ${prefs.maxPrice}円\n`;
-if (prefs.tasteY !== undefined) prefsMessage += `・味の傾向: ${prefs.tasteY > 0.5 ? 'スモーキー' : 'フルーティー'}\n`;
-if (prefs.region) prefsMessage += `・産地: ${prefs.region}\n`;
-prefsMessage += '\n提案システムに反映しました。「AI提案を開始」ボタンを押すと、あなたの好みに合わせたウィスキーを提案します。\n\n';
-
-aiResponseText = prefsMessage + aiResponseText;
-}
-
-aiMessage.textContent = aiResponseText;
-aiMessage.classList.remove('thinking-animation'); // この行を追加
-updateRecommendationsFromChat(aiResponseText); // この行を追加
-} finally {
-// スクロールを最下部に
-chatHistory.scrollTop = chatHistory.scrollHeight;
-}
+  return preferences;
 }
 
 // チャット履歴を収集する関数
