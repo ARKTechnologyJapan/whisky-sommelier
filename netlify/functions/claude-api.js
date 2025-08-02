@@ -25,13 +25,18 @@ exports.handler = async (event, context) => {
     const requestData = JSON.parse(event.body);
     console.log('📊 リクエストデータ受信');
 
-    // 提供されたAPI設定
-    const apiKey = "KLmy1EtC4jRcrlXSK2xPgesG5Hgc533A";
-    const baseUrl = "http://Bedroc-Proxy-wEBSZeIAE9sX-1369774611.us-east-1.elb.amazonaws.com/api/v1";
-    const model = "us.anthropic.claude-3-7-sonnet-20250219-v1:0";
+    // 🔒 環境変数からセキュアに取得
+    const apiKey = process.env.CLAUDE_API_KEY;
+    const baseUrl = process.env.CLAUDE_BASE_URL;
+    const model = process.env.CLAUDE_MODEL;
+
+    // 必須環境変数のチェック
+    if (!apiKey || !baseUrl || !model) {
+      throw new Error('必要な環境変数が設定されていません');
+    }
 
     console.log('🎯 プロキシ使用中');
-    console.log('🤖 モデル:', model);
+    console.log('🤖 モデル設定済み');
     console.log('🔑 認証設定済み:', !!apiKey);
 
     // 味覚プロファイルの分析
