@@ -2061,7 +2061,8 @@ function generateSimpleAIResponse(userMessage) {
         // 既に画像が追加されているかチェック
         if (card.querySelector('.whisky-image-container')) return;
         
-        const nameElement = card.querySelector('h3');
+        // h4またはh3タグからウィスキー名を取得
+        const nameElement = card.querySelector('h4') || card.querySelector('h3');
         const whiskyName = nameElement ? nameElement.textContent.trim() : '';
         
         const matchingWhisky = whiskyData.find(whisky => 
