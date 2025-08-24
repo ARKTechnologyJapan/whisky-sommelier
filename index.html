@@ -990,6 +990,92 @@ border-radius: 4px;
 background: rgba(78, 205, 196, 0.7);
 }
 
+  /* ウィスキー写真表示用スタイル */
+        .whisky-photo-section {
+            margin-top: 30px;
+            position: relative;
+        }
+
+        .whisky-photo-container {
+            position: relative;
+            height: 350px;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .whisky-photo-blur-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            filter: blur(15px);
+            opacity: 0.3;
+            transform: scale(1.1);
+        }
+
+        .whisky-photo-wrapper {
+            position: relative;
+            z-index: 1;
+            max-width: 80%;
+            max-height: 90%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .whisky-photo-img {
+            max-width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .whisky-photo-img:hover {
+            transform: scale(1.05);
+        }
+
+        .whisky-photo-caption {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 14px;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.7);
+            z-index: 2;
+            padding: 0 15px;
+        }
+
+        /* 写真未設定時のスタイル */
+        .whisky-photo-container.no-photo {
+            background: rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .no-photo-icon {
+            font-size: 50px;
+            color: rgba(255, 255, 255, 0.2);
+            margin-bottom: 15px;
+        }
+
+        .no-photo-text {
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+        }
+
 /* 蒸留所マップと情報パネル */
 .distillery-section {
 margin-top: 20px;
@@ -1403,6 +1489,28 @@ AIが総合的にプロファイルに基づいて、最適な3銘柄を厳選�
 </div>
 </div>
 </div>
+
+<div class="recommended-whisky-section" id="recommendedWhiskySection" style="display: none;">
+    <h3 class="text-lg font-bold mb-3">🌟 おすすめ</h3>
+    
+    <div class="whisky-photo-section" id="whiskyPhotoSection">
+        <div class="whisky-photo-container">
+            <div class="whisky-photo-blur-bg" id="recommendedWhiskyBlurBg"></div>
+            <div class="whisky-photo-wrapper">
+                <img id="recommendedWhiskyPhoto" src="" alt="ウィスキーボトル" class="whisky-photo-img">
+            </div>
+            <p id="recommendedWhiskyCaption" class="whisky-photo-caption"></p>
+        </div>
+    </div>
+    
+    <div class="recommended-whisky-details">
+        <h3 class="whisky-name" id="recommendedWhiskyName">SPRINGBANK21年 2022年</h3>
+        <p class="whisky-price" id="recommendedWhiskyPrice">¥2,100</p>
+        <p class="tag" id="recommendedWhiskyRegion">Scotland | Campbeltown Single Malt | 45.3% ABV</p>
+        <p class="whisky-description" id="recommendedWhiskyDescription">2022年リリースのこのスプリングバンク21年は、海の塩気、豊かなドライフルーツ、そして控えめなピート煙の複雑なプロファイルを提供します。</p>
+    </div>
+</div>
+
 <div id="recommendationContent"></div>
 <div class="text-center mt-6">
 <button id="getAnotherRecommendation" class="btn-secondary">
@@ -1864,7 +1972,114 @@ function generateSimpleAIResponse(userMessage) {
     return 'ありがとうございます。あなたのご質問を参考に、最適なウィスキーをお選びいたします。右側の推薦リストをご覧ください！';
 }
 
-// ウィスキーから蒸溜所を取得する関数（統合JSON対応・修正版）
+// 推奨ウィスキーの画像を更新する関数
+    function updateRecommendedWhiskyPhoto(whisky) {
+        const photoImg = document.getElementById('recommendedWhiskyPhoto');
+        const photoBg = document.getElementById('recommendedWhiskyBlurBg');
+        const photoCaption = document.getElementById('recommendedWhiskyCaption');
+        
+        if (!photoImg || !photoBg) return;
+        
+        // 写真URLの処理
+        if (whisky.photoUrl) {
+            console.log(`推奨ウィスキー写真URL: ${whisky.photoUrl}`);
+
+            // 写真のパスを試行 (whisky_list.htmlと同じロジック)
+            const photoId = whisky.id;
+            const possiblePaths = [
+                `photo/${photoId}.jpg`,
+                `./photo/${photoId}.jpg`,
+                `/photo/${photoId}.jpg`,
+                `photo/${whisky.photoUrl}`,
+                `./photo/${whisky.photoUrl}`,
+                `/photo/${whisky.photoUrl}`,
+                whisky.photoUrl,
+                `./images/${photoId}.jpg`,
+                `../photo/${photoId}.jpg`,
+                `images/${photoId}.jpg`,
+                `./images/${whisky.photoUrl}`
+            ];
+
+            // 最初のパスを試す
+            tryImagePath(0);
+
+            // 再帰的に画像パスを試す関数
+            function tryImagePath(index) {
+                if (index >= possiblePaths.length) {
+                    // すべてのパスが失敗した場合
+                    console.warn('推奨ウィスキーの写真パスが見つかりません');
+                    showNoPhotoState();
+                    return;
+                }
+
+                const path = possiblePaths[index];
+                const testImg = new Image();
+
+                testImg.onload = function() {
+                    // 画像を表示
+                    photoImg.src = path;
+                    photoImg.style.display = 'block';
+                    photoBg.style.backgroundImage = `url(${path})`;
+                    
+                    // キャプション設定
+                    if (photoCaption) {
+                        photoCaption.textContent = whisky.name;
+                    }
+                };
+
+                testImg.onerror = function() {
+                    // このパスは失敗、次を試す
+                    tryImagePath(index + 1);
+                };
+
+                // 読み込み開始
+                testImg.src = path;
+            }
+        } else {
+            showNoPhotoState();
+        }
+        
+        function showNoPhotoState() {
+            // 写真なしの状態を表示
+            photoImg.style.display = 'none';
+            photoBg.style.backgroundImage = 'none';
+            if (photoCaption) {
+                photoCaption.textContent = '写真準備中';
+            }
+        }
+    }
+
+    // JSONデータから推奨ウィスキーを取得して表示
+    function displayRecommendedWhisky() {
+        // 例：SPRINGBANK21年 2022年 (id: "7.0") を推奨表示
+        const recommendedWhiskyId = "7.0";
+        const whisky = whiskiesData.whiskies.find(w => w.id === recommendedWhiskyId);
+        
+        if (whisky) {
+            // セクションを表示
+            const section = document.getElementById('recommendedWhiskySection');
+            if (section) {
+                section.style.display = 'block';
+            }
+            
+            // 画像を更新
+            updateRecommendedWhiskyPhoto(whisky);
+            
+            // テキスト情報を更新
+            const nameElement = document.getElementById('recommendedWhiskyName');
+            const priceElement = document.getElementById('recommendedWhiskyPrice');
+            const regionElement = document.getElementById('recommendedWhiskyRegion');
+            const descriptionElement = document.getElementById('recommendedWhiskyDescription');
+            
+            if (nameElement) nameElement.textContent = whisky.name;
+            if (priceElement) priceElement.textContent = whisky.price;
+            if (regionElement) regionElement.textContent = 
+                `${whisky.region} | ${whisky.subcategory} | ${whisky.abv}% ABV`;
+            if (descriptionElement) descriptionElement.textContent = 
+                whisky.tastingNote_ja;
+        }
+    }
+
 // ウィスキーから蒸溜所を取得する関数（統合JSON対応・修正版）
 function getDistilleryForWhisky(whisky) {
     console.log('蒸溜所検索開始:', whisky.name);
