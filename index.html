@@ -1979,15 +1979,15 @@ function generateSimpleAIResponse(userMessage) {
 }
 
 // 推奨ウィスキーの画像を更新する関数
-    function updateRecommendedWhiskyPhoto(whisky) {
-        const photoImg = document.getElementById('recommendedWhiskyPhoto');
-        const photoBg = document.getElementById('recommendedWhiskyBlurBg');
-        const photoCaption = document.getElementById('recommendedWhiskyCaption');
-        
-        if (!photoImg || !photoBg) return;
-        
-        // 写真URLの処理
-            if (whisky.photoUrl) {
+function updateRecommendedWhiskyPhoto(whisky) {
+    const photoImg = document.getElementById('recommendedWhiskyPhoto');
+    const photoBg = document.getElementById('recommendedWhiskyBlurBg');
+    const photoCaption = document.getElementById('recommendedWhiskyCaption');
+    
+    if (!photoImg || !photoBg) return;
+    
+    // 写真URLの処理
+    if (whisky.photoUrl) {
         const photoId = whisky.id;
         const possiblePaths = [
             `photo/${photoId}.jpg`,
@@ -2002,57 +2002,55 @@ function generateSimpleAIResponse(userMessage) {
             `images/${photoId}.jpg`,
             `./images/${whisky.photoUrl}`
         ];
+        
+        // 最初のパスを試す
+        tryImagePath(0);
+
+        // 再帰的に画像パスを試す関数
+        function tryImagePath(index) {
+            if (index >= possiblePaths.length) {
+                // すべてのパスが失敗した場合
+                console.warn('推奨ウィスキーの写真パスが見つかりません');
+                showNoPhotoState();
+                return;
+            }
+
+            const path = possiblePaths[index];
+            const testImg = new Image();
+
+            testImg.onload = function() {
+                // 画像を表示
+                photoImg.src = path;
+                photoImg.style.display = 'block';
+                photoBg.style.backgroundImage = `url(${path})`;
+                
+                // キャプション設定
+                if (photoCaption) {
+                    photoCaption.textContent = whisky.name;
+                }
+            };
+
+            testImg.onerror = function() {
+                // このパスは失敗、次を試す
+                tryImagePath(index + 1);
+            };
+
+            // 読み込み開始
+            testImg.src = path;
+        }
+    } else {
+        showNoPhotoState();
+    }
+    
+    function showNoPhotoState() {
+        // 写真なしの状態を表示
+        photoImg.style.display = 'none';
+        photoBg.style.backgroundImage = 'none';
+        if (photoCaption) {
+            photoCaption.textContent = '写真準備中';
+        }
     }
 }
-
-            // 最初のパスを試す
-            tryImagePath(0);
-
-            // 再帰的に画像パスを試す関数
-            function tryImagePath(index) {
-                if (index >= possiblePaths.length) {
-                    // すべてのパスが失敗した場合
-                    console.warn('推奨ウィスキーの写真パスが見つかりません');
-                    showNoPhotoState();
-                    return;
-                }
-
-                const path = possiblePaths[index];
-                const testImg = new Image();
-
-                testImg.onload = function() {
-                    // 画像を表示
-                    photoImg.src = path;
-                    photoImg.style.display = 'block';
-                    photoBg.style.backgroundImage = `url(${path})`;
-                    
-                    // キャプション設定
-                    if (photoCaption) {
-                        photoCaption.textContent = whisky.name;
-                    }
-                };
-
-                testImg.onerror = function() {
-                    // このパスは失敗、次を試す
-                    tryImagePath(index + 1);
-                };
-
-                // 読み込み開始
-                testImg.src = path;
-            }
-        } else {
-            showNoPhotoState();
-        }
-        
-        function showNoPhotoState() {
-            // 写真なしの状態を表示
-            photoImg.style.display = 'none';
-            photoBg.style.backgroundImage = 'none';
-            if (photoCaption) {
-                photoCaption.textContent = '写真準備中';
-            }
-        }
-    }
 
     function addImagesToWhiskyCards() {
     const whiskyCards = document.querySelectorAll('.whisky-card');
