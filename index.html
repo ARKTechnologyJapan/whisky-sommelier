@@ -4140,6 +4140,44 @@ async function showRecommendationResult(tasteX, tasteY, complexityX, complexityY
     }
 }
 
+async function loadData() {
+    try {
+        const response = await fetch('unified_whisky_data.json');
+        const data = await response.json();
+        
+        whiskyData = data.whiskies || [];
+        distilleryData = data.distilleries || [];
+        brandDistilleryMapping = data.brandDistilleryMapping || [];
+        
+        console.log('✅ Whisky data loaded successfully');
+        console.log('📊 Loaded:', whiskyData.length, 'whiskies,', distilleryData.length, 'distilleries');
+        
+        displayWhiskyLibrary();
+        // ★この行を追加
+        addImagesToWhiskyCards();
+        
+    } catch (error) {
+        console.error('❌ Error loading whisky data:', error);
+    }
+}
+
+function selectWhisky(index) {
+    console.log('🎯 Selected whisky:', whiskyData[index].name);
+    
+    // 全てのカードから選択状態を削除
+    document.querySelectorAll('.whisky-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    // 選択されたカードに選択状態を追加
+    document.querySelectorAll('.whisky-card')[index].classList.add('selected');
+    
+    // ★この部分を追加
+    setTimeout(() => {
+        addImagesToWhiskyCards();
+    }, 100);
+}
+
 // チャットで言及された銘柄を取得する関数
 function getChatMentionedWhiskies() {
     const mentionedWhiskies = [];
