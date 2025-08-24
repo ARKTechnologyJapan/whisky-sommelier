@@ -2206,100 +2206,127 @@ function updateRecommendedWhiskyPhoto(whisky) {
     }
 
     function addImagesToWhiskyCards() {
-    const whiskyCards = document.querySelectorAll('.whisky-card');
+    console.log('ウィスキー画像追加開始');
     
-    whiskyCards.forEach((card, index) => {
-        // 既に画像が追加されているかチェック
-        if (card.querySelector('.whisky-image-container')) return;
+    const whiskyCards = document.querySelectorAll('.whisky-card');
+    console.log(`見つかったウィスキーカード数: ${whiskyCards.length}`);
+    
+    whiskyCards.forEach((card, cardIndex) => {
+        console.log(`\n=== カード ${cardIndex} 処理開始 ===`);
         
-        // h4またはh3タグからウィスキー名を取得
-        const nameElement = card.querySelector('h4') || card.querySelector('h3');
-        const whiskyName = nameElement ? nameElement.textContent.trim() : '';
-        
-        const matchingWhisky = whiskyData.find(whisky => 
-            whisky.name.includes(whiskyName) || whiskyName.includes(whisky.name)
-        );
-        
-        if (matchingWhisky) {
-            const imageContainer = document.createElement('div');
-            imageContainer.className = 'whisky-image-container mb-3';
-            imageContainer.style.cssText = `
-                width: 100%; height: 150px; display: flex;
-                align-items: center; justify-content: center;
-                background: rgba(0,0,0,0.2); border-radius: 8px; overflow: hidden;
-            `;
-            
-            const img = document.createElement('img');
-            img.alt = matchingWhisky.name;
-            img.style.cssText = `
-                max-width: 100%; max-height: 100%;
-                object-fit: contain; border-radius: 4px;
-            `;
-            
-            // 画像パスの候補を生成
-            const photoId = matchingWhisky.id ? matchingWhisky.id.toString().replace('.0', '') : '1';
-            const possiblePaths = [
-                `photo/${matchingWhisky.photoUrl}`,      // ★ 最優先！JSONの"1.jpg"が"photo/1.jpg"になる
-                `./photo/${matchingWhisky.photoUrl}`,    
-                `/photo/${matchingWhisky.photoUrl}`,     
-                `photo/${photoId}.jpg`,
-                `./photo/${photoId}.jpg`,
-                `/photo/${photoId}.jpg`,
-                matchingWhisky.photoUrl,                 // 元のまま試行
-                `./images/${photoId}.jpg`,
-                `../photo/${photoId}.jpg`,
-                `images/${photoId}.jpg`,
-                `./images/${matchingWhisky.photoUrl}`
-            ];
-            
-            // 画像なし状態を表示する関数
-            function showNoImageState() {
-                console.log(`ウィスキーカード画像なし: ${matchingWhisky.name}`);
-                imageContainer.innerHTML = `
-                    <div style="color: rgba(255,255,255,0.5); text-align: center; font-size: 12px;">
-                        <div style="font-size: 30px; margin-bottom: 5px;">🥃</div>
-                        <div>画像準備中</div>
-                    </div>
-                `;
-            }
-            
-            // 再帰的に画像パスを試す関数
-            function tryImagePath(pathIndex) {
-                if (pathIndex >= possiblePaths.length) {
-                    // すべてのパスが失敗した場合
-                    console.warn(`ウィスキーカード画像が見つかりません: ${matchingWhisky.name}`);
-                    showNoImageState();
-                    return;
-                }
-
-                const path = possiblePaths[pathIndex];
-                console.log(`ウィスキーカード画像パス試行中: ${path}`);
-                
-                const testImg = new Image();
-                testImg.onload = function() {
-                    console.log(`ウィスキーカード画像読み込み成功: ${path}`);
-                    // 画像読み込み成功
-                    img.src = path;
-                };
-                testImg.onerror = function() {
-                    console.log(`ウィスキーカード画像読み込み失敗: ${path}`);
-                    // 次のパスを試行
-                    tryImagePath(pathIndex + 1);
-                };
-                testImg.src = path;
-            }
-            
-            // エラーハンドリング（最終的なフォールバック）
-            img.onerror = function() {
-                showNoImageState();
-            };
-            
-            imageContainer.appendChild(img);
-            card.insertBefore(imageContainer, card.firstChild);
-            
-            // 最初のパスから試行開始
-            tryImagePath(0);
+        // 既に画像があるかチェック
+        if (card.querySelector('.whisky-image-container')) {
+            console.log(`カード${cardIndex}: 既に画像コンテナあり、スキップ`);
+            return;
         }
+        
+        // ウィスキー名を取得
+        const nameElement = card.querySelector('h4') || card.querySelector('h3') || card.querySelector('h2');
+        const whiskyName = nameElement ? nameElement.textContent.trim() : '';
+        console.log(`カード${cardIndex}: ウィスキー名 = "${whiskyName}"`);
+        
+        if (!whiskyName) {
+            console.log(`カード${cardIndex}: ウィスキー名が見つかりません`);
+            return;
+        }
+        
+        // マッチするウィスキーを検索
+        const matchingWhisky = whiskyData.find(whisky => {
+            const match = whisky.name.includes(whiskyName) || whiskyName.includes(whisky.name);
+            if (match) {
+                console.log(`カード${cardIndex}: マッチ発見 = "${whisky.name}" (ID: ${whisky.id}, photoUrl: ${whisky.photoUrl})`);
+            }
+            return match;
+        });
+        
+        if (!matchingWhisky) {
+            console.log(`カード${cardIndex}: マッチするウィスキーが見つかりません`);
+            return;
+        }
+        
+        // 画像コンテナを作成
+        const imageContainer = document.createElement('div');
+        imageContainer.className = 'whisky-image-container mb-3';
+        imageContainer.style.cssText = `
+            width: 100%; height: 180px; display: flex;
+            align-items: center; justify-content: center;
+            background: linear-gradient(135deg, rgba(139,69,19,0.3), rgba(160,82,45,0.3));
+            border-radius: 12px; overflow: hidden; margin-bottom: 15px;
+            border: 2px solid rgba(255,255,255,0.1);
+        `;
+        
+        const img = document.createElement('img');
+        img.alt = matchingWhisky.name;
+        img.style.cssText = `
+            max-width: 90%; max-height: 90%;
+            object-fit: contain; border-radius: 8px;
+            transition: transform 0.3s ease;
+        `;
+        
+        // 画像パス候補
+        const possiblePaths = [
+            `photo/${matchingWhisky.photoUrl}`,
+            `./photo/${matchingWhisky.photoUrl}`,
+            `/photo/${matchingWhisky.photoUrl}`,
+            `photo/${matchingWhisky.id}.jpg`,
+            `./photo/${matchingWhisky.id}.jpg`,
+            `/photo/${matchingWhisky.id}.jpg`,
+            matchingWhisky.photoUrl
+        ];
+        
+        // 画像なし状態を表示
+        function showNoImageState() {
+            console.log(`カード${cardIndex}: 画像なし状態を表示`);
+            imageContainer.innerHTML = `
+                <div style="color: rgba(255,255,255,0.7); text-align: center; font-size: 14px;">
+                    <div style="font-size: 40px; margin-bottom: 8px;">🥃</div>
+                    <div>${matchingWhisky.name}</div>
+                    <div style="font-size: 12px; opacity: 0.8; margin-top: 4px;">画像準備中</div>
+                </div>
+            `;
+        }
+        
+        // 画像パス試行関数
+        function tryImagePath(pathIndex) {
+            if (pathIndex >= possiblePaths.length) {
+                showNoImageState();
+                return;
+            }
+
+            const path = possiblePaths[pathIndex];
+            console.log(`カード${cardIndex}: 試行中 = ${path}`);
+            
+            const testImg = new Image();
+            testImg.onload = function() {
+                console.log(`カード${cardIndex}: ✅ 成功 = ${path}`);
+                img.src = path;
+                img.onload = function() {
+                    // ホバー効果を追加
+                    img.addEventListener('mouseenter', () => {
+                        img.style.transform = 'scale(1.05)';
+                    });
+                    img.addEventListener('mouseleave', () => {
+                        img.style.transform = 'scale(1)';
+                    });
+                };
+            };
+            testImg.onerror = function() {
+                console.log(`カード${cardIndex}: ❌ 失敗 = ${path}`);
+                tryImagePath(pathIndex + 1);
+            };
+            testImg.src = path;
+        }
+        
+        // 画像をコンテナに追加
+        imageContainer.appendChild(img);
+        
+        // カードの最初に画像コンテナを追加
+        card.insertBefore(imageContainer, card.firstChild);
+        
+        // 画像読み込み開始
+        tryImagePath(0);
+        
+        console.log(`カード${cardIndex}: 画像コンテナを追加しました`);
     });
 }
 
