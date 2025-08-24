@@ -4665,6 +4665,94 @@ console.error('Error:', message);
 // 必要に応じて追加のエラー表示ロジックをここに追加
 }
 
+// エラー表示関数
+function showError(message) {
+console.error('Error:', message);
+// 必要に応じて追加のエラー表示ロジックをここに追加
+}
+
+// ★★★ ここに updateWhiskyCardImage 関数を追加 ★★★
+// ウィスキーカード内の画像を更新する関数
+function updateWhiskyCardImage(whisky, cardIndex) {
+    console.log(`ウィスキーカード画像更新開始: ${whisky.name}, カードインデックス: ${cardIndex}`);
+    
+    // カード内の画像要素を取得
+    const cards = document.querySelectorAll('.whisky-card');
+    if (!cards || cardIndex >= cards.length) {
+        console.error('対応するカードが見つかりません:', cardIndex);
+        return;
+    }
+    
+    const card = cards[cardIndex];
+    const imageElement = card.querySelector('.whisky-card-image');
+    const placeholderElement = card.querySelector('.no-image-placeholder');
+    
+    if (!imageElement) {
+        console.error('画像要素が見つかりません:', cardIndex);
+        return;
+    }
+    
+    // 画像パスの候補を生成
+    const photoId = whisky.id ? whisky.id.replace('.0', '') : '1';
+    const possiblePaths = [
+        `photo/${photoId}.jpg`,
+        `./photo/${photoId}.jpg`,
+        `/photo/${photoId}.jpg`,
+        `photo/${whisky.photoUrl}`,
+        `./photo/${whisky.photoUrl}`,
+        `/photo/${whisky.photoUrl}`,
+        whisky.photoUrl,
+        `./images/${photoId}.jpg`,
+        `../photo/${photoId}.jpg`,
+        `images/${photoId}.jpg`,
+        `./images/${whisky.photoUrl}`
+    ];
+    
+    console.log(`画像パス候補:`, possiblePaths);
+    
+    // 画像パスを順次試行
+    let currentPathIndex = 0;
+    
+    function tryNextPath() {
+        if (currentPathIndex >= possiblePaths.length) {
+            // すべてのパスが失敗した場合
+            console.warn(`画像が見つかりません: ${whisky.name}`);
+            if (placeholderElement) {
+                placeholderElement.textContent = '画像なし';
+                placeholderElement.style.display = 'flex';
+            }
+            imageElement.style.display = 'none';
+            return;
+        }
+        
+        const currentPath = possiblePaths[currentPathIndex];
+        console.log(`試行中のパス ${currentPathIndex + 1}/${possiblePaths.length}: ${currentPath}`);
+        
+        const testImage = new Image();
+        
+        testImage.onload = function() {
+            console.log(`画像読み込み成功: ${currentPath}`);
+            imageElement.src = currentPath;
+            imageElement.style.display = 'block';
+            if (placeholderElement) {
+                placeholderElement.style.display = 'none';
+            }
+        };
+        
+        testImage.onerror = function() {
+            console.log(`画像読み込み失敗: ${currentPath}`);
+            currentPathIndex++;
+            tryNextPath();
+        };
+        
+        testImage.src = currentPath;
+    }
+    
+    // 最初のパスから試行開始
+    tryNextPath();
+}
+
+
 </script>
 
 
