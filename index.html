@@ -1916,7 +1916,7 @@ function generateAIRecommendations() {
         `;
     }
     
-    // 推薦リストを表示
+     // 推薦リストを表示
     if (recommendations) {
         recommendations.innerHTML = topRecommendations.map(whisky => `
             <div class="whisky-card ${keywords.brands.includes(whisky.name) ? 'featured' : ''}" 
@@ -1939,6 +1939,9 @@ function generateAIRecommendations() {
                 </div>
             </div>
         `).join('');
+        
+        // ★★★ この1行を追加 ★★★
+        addImagesToWhiskyCards();
     }
 }
 
