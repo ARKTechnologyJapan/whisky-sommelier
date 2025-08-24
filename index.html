@@ -4234,13 +4234,17 @@ function displayLocalRecommendations(whiskies) {
                 console.error(`ウィスキーカード ${index} の作成中にエラーが発生:`, err);
             }
         });
+
+        // **ここを追加：各ウィスキーカードに画像を設定**
+        whiskies.forEach((whisky, index) => {
+            updateWhiskyCardImage(whisky, index);
+        });
+
     } catch (error) {
         console.error('displayLocalRecommendations エラー:', error);
         displayDefaultRecommendations();
     }
 }
-
-
 
 // デフォルトの提案を表示
 function displayDefaultRecommendations() {
