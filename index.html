@@ -1984,24 +1984,23 @@ function generateSimpleAIResponse(userMessage) {
         if (!photoImg || !photoBg) return;
         
         // 写真URLの処理
-        if (whisky.photoUrl) {
-            console.log(`推奨ウィスキー写真URL: ${whisky.photoUrl}`);
-
-            // 写真のパスを試行 (whisky_list.htmlと同じロジック)
-            const photoId = whisky.id;
-            const possiblePaths = [
-                `photo/${photoId}.jpg`,
-                `./photo/${photoId}.jpg`,
-                `/photo/${photoId}.jpg`,
-                `photo/${whisky.photoUrl}`,
-                `./photo/${whisky.photoUrl}`,
-                `/photo/${whisky.photoUrl}`,
-                whisky.photoUrl,
-                `./images/${photoId}.jpg`,
-                `../photo/${photoId}.jpg`,
-                `images/${photoId}.jpg`,
-                `./images/${whisky.photoUrl}`
-            ];
+            if (whisky.photoUrl) {
+        const photoId = whisky.id;
+        const possiblePaths = [
+            `photo/${photoId}.jpg`,
+            `./photo/${photoId}.jpg`,
+            `/photo/${photoId}.jpg`,
+            `photo/${whisky.photoUrl}`,      // JSONの"1.jpg"が"photo/1.jpg"になる
+            `./photo/${whisky.photoUrl}`,    // JSONの"1.jpg"が"./photo/1.jpg"になる
+            `/photo/${whisky.photoUrl}`,     // JSONの"1.jpg"が"/photo/1.jpg"になる
+            whisky.photoUrl,                 // 元のまま試行
+            `./images/${photoId}.jpg`,
+            `../photo/${photoId}.jpg`,
+            `images/${photoId}.jpg`,
+            `./images/${whisky.photoUrl}`
+        ];
+    }
+}
 
             // 最初のパスを試す
             tryImagePath(0);
@@ -4698,15 +4697,16 @@ function updateWhiskyCardImage(whisky, cardIndex) {
         `photo/${photoId}.jpg`,
         `./photo/${photoId}.jpg`,
         `/photo/${photoId}.jpg`,
-        `photo/${whisky.photoUrl}`,
-        `./photo/${whisky.photoUrl}`,
-        `/photo/${whisky.photoUrl}`,
+        `photo/${whisky.photoUrl}`,      // この部分は既に正しい形式
+        `./photo/${whisky.photoUrl}`,    // この部分は既に正しい形式
+        `/photo/${whisky.photoUrl}`,     // この部分は既に正しい形式
         whisky.photoUrl,
         `./images/${photoId}.jpg`,
         `../photo/${photoId}.jpg`,
         `images/${photoId}.jpg`,
         `./images/${whisky.photoUrl}`
     ];
+}
     
     console.log(`画像パス候補:`, possiblePaths);
     
