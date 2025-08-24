@@ -1721,6 +1721,9 @@ async function loadUnifiedWhiskyData() {
         // 初期推薦を生成
         generateAIRecommendations();
         
+        // 推奨ウィスキーを表示
+        displayRecommendedWhisky();
+
         console.log('統合ウィスキーデータ読み込み完了');
         return true;
         
@@ -2050,35 +2053,35 @@ function generateSimpleAIResponse(userMessage) {
     }
 
     // JSONデータから推奨ウィスキーを取得して表示
-    function displayRecommendedWhisky() {
-        // 例：SPRINGBANK21年 2022年 (id: "7.0") を推奨表示
-        const recommendedWhiskyId = "7.0";
-        const whisky = whiskiesData.whiskies.find(w => w.id === recommendedWhiskyId);
-        
-        if (whisky) {
-            // セクションを表示
-            const section = document.getElementById('recommendedWhiskySection');
-            if (section) {
-                section.style.display = 'block';
-            }
-            
-            // 画像を更新
-            updateRecommendedWhiskyPhoto(whisky);
-            
-            // テキスト情報を更新
-            const nameElement = document.getElementById('recommendedWhiskyName');
-            const priceElement = document.getElementById('recommendedWhiskyPrice');
-            const regionElement = document.getElementById('recommendedWhiskyRegion');
-            const descriptionElement = document.getElementById('recommendedWhiskyDescription');
-            
-            if (nameElement) nameElement.textContent = whisky.name;
-            if (priceElement) priceElement.textContent = whisky.price;
-            if (regionElement) regionElement.textContent = 
-                `${whisky.region} | ${whisky.subcategory} | ${whisky.abv}% ABV`;
-            if (descriptionElement) descriptionElement.textContent = 
-                whisky.tastingNote_ja;
+function displayRecommendedWhisky() {
+    // 例：SPRINGBANK21年 2022年 (id: "7.0") を推奨表示
+    const recommendedWhiskyId = "7.0";
+    const whisky = whiskyData.find(w => w.id === recommendedWhiskyId); // whiskiesData → whiskyData に修正
+    
+    if (whisky) {
+        // セクションを表示
+        const section = document.getElementById('recommendedWhiskySection');
+        if (section) {
+            section.style.display = 'block';
         }
+        
+        // 画像を更新
+        updateRecommendedWhiskyPhoto(whisky);
+        
+        // テキスト情報を更新
+        const nameElement = document.getElementById('recommendedWhiskyName');
+        const priceElement = document.getElementById('recommendedWhiskyPrice');
+        const regionElement = document.getElementById('recommendedWhiskyRegion');
+        const descriptionElement = document.getElementById('recommendedWhiskyDescription');
+        
+        if (nameElement) nameElement.textContent = whisky.name;
+        if (priceElement) priceElement.textContent = whisky.price;
+        if (regionElement) regionElement.textContent = 
+            `${whisky.region} | ${whisky.subcategory} | ${whisky.abv}% ABV`;
+        if (descriptionElement) descriptionElement.textContent = 
+            whisky.tastingNote_ja;
     }
+}
 
 // ウィスキーから蒸溜所を取得する関数（統合JSON対応・修正版）
 function getDistilleryForWhisky(whisky) {
