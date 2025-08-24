@@ -2244,8 +2244,9 @@ function updateRecommendedWhiskyPhoto(whisky) {
     function addImagesToWhiskyCards() {
     console.log('addImagesToWhiskyCards 開始');
     
-    if (!globalWhiskyData || !globalWhiskyData.whiskies) {
-        console.error('globalWhiskyDataが利用できません');
+    // ★ 修正：globalWhiskyData → whiskyData に変更
+    if (!whiskyData || !whiskyData.length) {
+        console.error('whiskyDataが利用できません');
         return;
     }
     
@@ -2254,7 +2255,7 @@ function updateRecommendedWhiskyPhoto(whisky) {
     
     whiskyCards.forEach((card, cardIndex) => {
         // ウィスキー名を取得
-        const nameElement = card.querySelector('h4');
+        const nameElement = card.querySelector('h3, h4'); // h3も対象に追加
         if (!nameElement) {
             console.log(`カード ${cardIndex}: 名前要素が見つかりません`);
             return;
@@ -2263,8 +2264,8 @@ function updateRecommendedWhiskyPhoto(whisky) {
         const whiskyName = nameElement.textContent.trim();
         console.log(`カード ${cardIndex}: ${whiskyName}`);
         
-        // マッチするウィスキーを検索
-        const matchedWhisky = globalWhiskyData.whiskies.find(w => 
+        // ★ 修正：globalWhiskyData.whiskies → whiskyData に変更
+        const matchedWhisky = whiskyData.find(w => 
             w.name === whiskyName || 
             w.name.includes(whiskyName) || 
             whiskyName.includes(w.name)
@@ -2356,9 +2357,6 @@ function updateRecommendedWhiskyPhoto(whisky) {
     
     console.log('addImagesToWhiskyCards 完了');
 }
-
-// ページ読み込み時とデータ更新時に実行
-document.addEventListener('DOMContentLoaded', addImagesToWhiskyCards);
 
     // JSONデータから推奨ウィスキーを取得して表示
 function displayRecommendedWhisky() {
@@ -5175,6 +5173,48 @@ function updateWhiskyCardImage(whisky, cardIndex) {
     // 最初のパスから試行開始
     tryNextPath();
 
+    // 画像表示機能を確実に初期化する関数
+function initializeImageDisplay() {
+    console.log('画像表示機能を初期化...');
+    
+    // DOM読み込み完了を待つ
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initializeImageDisplay);
+        return;
+    }
+    
+    // 既存のウィスキーカードに画像を追加
+    setTimeout(() => {
+        addImagesToWhiskyCards();
+    }, 500);
+    
+    // MutationObserverで新しいカードの追加を監視
+    const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+                if (node.nodeType === 1 && node.classList && node.classList.contains('whisky-card')) {
+                    console.log('新しいウィスキーカードが追加されました');
+                    setTimeout(() => {
+                        addImagesToWhiskyCards();
+                    }, 100);
+                }
+            });
+        });
+    });
+    
+    const recommendationsPanel = document.getElementById('recommendationContent');
+    if (recommendationsPanel) {
+        observer.observe(recommendationsPanel, {
+            childList: true,
+            subtree: true
+        });
+    }
+    
+    console.log('画像表示機能の初期化完了');
+}
+
+// ページ読み込み時に初期化
+initializeImageDisplay();
 
 </script>
 
