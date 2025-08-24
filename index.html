@@ -5092,6 +5092,159 @@ console.log('💡 手動実行: addImagesToExistingCards()');
 
 </script>
 
+<!-- ★★★ 新しいscriptタグとして追加 ★★★ -->
+<script>
+// === ウィスキー画像表示システム ===
+let whiskyImageData = [];
+
+// JSONデータを読み込む関数
+async function loadWhiskyImageData() {
+    try {
+        console.log('📥 ウィスキーデータを読み込み中...');
+        const response = await fetch('https://page.gensparksite.com/get_upload_url/ed37237272cab7bf3d2036a6cf69a750a40a49cc0ee56c9c7ebf0088d6221061/default/52662c2b-08bc-42be-a738-4fc22b094146');
+        const data = await response.json();
+        whiskyImageData = data.whiskies;
+        console.log(`✅ ${whiskyImageData.length}本のウィスキーデータを読み込みました`);
+        return true;
+    } catch (error) {
+        console.error('❌ ウィスキーデータの読み込みに失敗:', error);
+        return false;
+    }
+}
+
+// GitHubの画像URLを生成する関数
+function getWhiskyImageUrl(photoUrl) {
+    const baseUrl = 'https://raw.githubusercontent.com/whisky-sommelier/photo/main/';
+    return baseUrl + photoUrl;
+}
+
+// 既存のウィスキーカードに画像を追加する関数
+async function addImagesToExistingCards() {
+    console.log('=== 既存ウィスキーカードに画像を追加開始 ===');
+    
+    // データが読み込まれていない場合は読み込む
+    if (whiskyImageData.length === 0) {
+        const loaded = await loadWhiskyImageData();
+        if (!loaded) {
+            console.error('❌ データ読み込み失敗のため処理を中止');
+            return;
+        }
+    }
+    
+    const whiskyCards = document.querySelectorAll('.whisky-card');
+    console.log(`処理対象カード数: ${whiskyCards.length}`);
+    
+    if (whiskyCards.length === 0) {
+        console.log('⚠️ 既存のウィスキーカードが見つかりません');
+        return;
+    }
+    
+    whiskyCards.forEach((card, index) => {
+        // 既存の画像コンテナを削除（重複を防ぐ）
+        const existingImageContainer = card.querySelector('.whisky-image-container');
+        if (existingImageContainer) {
+            existingImageContainer.remove();
+        }
+        
+        // カード内のウィスキー名を取得
+        const nameElement = card.querySelector('h3') || card.querySelector('h4');
+        const whiskyName = nameElement ? nameElement.textContent.trim() : '';
+        
+        console.log(`カード ${index + 1}: "${whiskyName}"`);
+        
+        // whiskyImageDataから対応するウィスキーを探す
+        const matchingWhisky = whiskyImageData.find(whisky => {
+            const dataName = whisky.name.replace(/\s+/g, '').toLowerCase();
+            const cardName = whiskyName.replace(/\s+/g, '').toLowerCase();
+            return dataName.includes(cardName) || cardName.includes(dataName) || 
+                   whisky.name.includes(whiskyName) || whiskyName.includes(whisky.name);
+        });
+        
+        if (matchingWhisky && matchingWhisky.photoUrl) {
+            console.log(`✅ マッチするウィスキーが見つかりました: ${matchingWhisky.name}`);
+            
+            // 画像コンテナを作成
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'whisky-image-container';
+            
+            // 画像要素を作成
+            const img = document.createElement('img');
+            img.src = getWhiskyImageUrl(matchingWhisky.photoUrl);
+            img.alt = matchingWhisky.name;
+            img.className = 'whisky-image';
+            img.style.display = 'none';
+            
+            // プレースホルダーを作成
+            const placeholder = document.createElement('div');
+            placeholder.className = 'image-placeholder';
+            placeholder.innerHTML = `
+                <div style="font-size: 30px; margin-bottom: 5px;">🥃</div>
+                <div>画像読み込み中...</div>
+            `;
+            
+            imageContainer.appendChild(img);
+            imageContainer.appendChild(placeholder);
+            
+            // 画像読み込み成功時の処理
+            img.onload = function() {
+                console.log(`✅ 画像読み込み成功: ${matchingWhisky.name}`);
+                img.style.display = 'block';
+                placeholder.style.display = 'none';
+            };
+            
+            // 画像読み込み失敗時の処理
+            img.onerror = function() {
+                console.log(`❌ 画像読み込み失敗: ${matchingWhisky.name}`);
+                placeholder.innerHTML = `
+                    <div style="font-size: 30px; margin-bottom: 5px;">🥃</div>
+                    <div>画像なし</div>
+                `;
+            };
+            
+            // カードの最初に画像を挿入
+            card.insertBefore(imageContainer, card.firstChild);
+            
+            console.log(`✅ カード ${index + 1} に画像を追加しました`);
+            
+        } else {
+            console.log(`❌ マッチするウィスキーが見つかりません: "${whiskyName}"`);
+            
+            // マッチしない場合もプレースホルダーを追加
+            const placeholderContainer = document.createElement('div');
+            placeholderContainer.className = 'whisky-image-container';
+            placeholderContainer.innerHTML = `
+                <div class="image-placeholder">
+                    <div style="font-size: 30px; margin-bottom: 5px;">🥃</div>
+                    <div>画像なし</div>
+                </div>
+            `;
+            
+            card.insertBefore(placeholderContainer, card.firstChild);
+        }
+    });
+    
+    console.log('=== 画像追加完了 ===');
+}
+
+// ページ読み込み完了後に自動実行
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(addImagesToExistingCards, 2000);
+    });
+} else {
+    setTimeout(addImagesToExistingCards, 2000);
+}
+
+// グローバル関数として公開
+window.addImagesToExistingCards = addImagesToExistingCards;
+window.loadWhiskyImageData = loadWhiskyImageData;
+
+console.log('🥃 ウィスキー画像表示システムが読み込まれました');
+console.log('💡 手動実行: addImagesToExistingCards()');
+</script>
+
+<script id="html_badge_script1">  ← 既存のscript
+
 
 <script id="html_badge_script1">
 window.__genspark_remove_badge_link = "https://www.genspark.ai/api/html_badge/" +
