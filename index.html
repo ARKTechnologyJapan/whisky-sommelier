@@ -2034,16 +2034,13 @@ function generateAIRecommendations() {
         `;
     }
     
-     // 推薦リストを表示
+    // 推薦リストを表示（★画像タグを削除）
     if (recommendations) {
         recommendations.innerHTML = topRecommendations.map(whisky => `
             <div class="whisky-card ${keywords.brands.includes(whisky.name) ? 'featured' : ''}" 
                  onclick="selectWhisky('${whisky.id}')">
                 ${keywords.brands.includes(whisky.name) ? '<div class="featured-label">🎯 チャット推薦</div>' : ''}
                 <div class="flex items-center mb-3">
-                    <img src="${whisky.photoUrl}" alt="${whisky.name}" 
-                         class="w-16 h-20 object-cover rounded mr-4"
-                         onerror="this.src='placeholder-whisky.jpg'">
                     <div class="flex-1">
                         <h4 class="font-bold text-lg mb-1">${whisky.name}</h4>
                         <p class="text-sm opacity-75 mb-1">${whisky.region} | ${whisky.subcategory}</p>
@@ -2058,7 +2055,7 @@ function generateAIRecommendations() {
             </div>
         `).join('');
         
-        // ★★★ この1行を追加 ★★★
+        // addImagesToWhiskyCards()を呼び出して動的に画像を追加
         addImagesToWhiskyCards();
     }
 }
