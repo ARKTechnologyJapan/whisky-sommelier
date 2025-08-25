@@ -2210,41 +2210,30 @@ function updateRecommendedWhiskyPhoto(whisky) {
         showNoPhotoState();
     }
     
-    function showNoPhotoState() {
-        console.log('No Photo状態を表示');
+function showNoPhotoState() {
+    console.log('No Photo状態を表示');
+    const photoImg = document.getElementById('recommendedWhiskyPhoto');
+    const photoBg = document.getElementById('recommendedWhiskyBlurBg');
+    const photoCaption = document.getElementById('recommendedWhiskyCaption');
+    
+    if (photoImg) {
         photoImg.style.display = 'none';
-        
-        if (photoBg) {
-            photoBg.style.backgroundImage = 'none';
-        }
-        if (photoCaption) {
-            photoCaption.textContent = '画像が見つかりません';
-        }
-        
-        const container = photoImg.closest('.whisky-photo-container');
-        if (container) {
-            container.classList.add('no-photo');
-        }
+    }
+    
+    if (photoBg) {
+        photoBg.style.backgroundImage = 'none';
+    }
+    
+    if (photoCaption) {
+        photoCaption.textContent = '画像が見つかりません';
+    }
+    
+    const container = photoImg?.closest('.whisky-photo-container');
+    if (container) {
+        container.classList.add('no-photo');
     }
 }
-    
-    function showNoPhotoState() {
-        // 写真なしの状態を表示
-        photoImg.style.display = 'none';
-        photoBg.style.backgroundImage = 'none';
-        if (photoCaption) {
-            photoCaption.textContent = '写真準備中';
-        }
-    }
-    
-    function showNoPhotoState() {
-        // 写真なしの状態を表示
-        photoImg.style.display = 'none';
-        photoBg.style.backgroundImage = 'none';
-        if (photoCaption) {
-            photoCaption.textContent = '写真準備中';
-        }
-    }
+}
 
     function addImagesToWhiskyCards() {
     console.log('addImagesToWhiskyCards 開始 - 画像要素を動的に追加');
@@ -4197,6 +4186,9 @@ function selectWhisky(index) {
     // 選択されたカードに選択状態を追加
     document.querySelectorAll('.whisky-card')[index].classList.add('selected');
     
+    console.log('selectWhisky実行完了、画像更新開始');
+    updateRecommendedWhiskyPhoto(selectedWhisky);
+
     // ★この部分を追加
     setTimeout(() => {
         addImagesToWhiskyCards();
