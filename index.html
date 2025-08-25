@@ -2257,15 +2257,17 @@ function showNoPhotoState() {
         
         console.log(`カード ${cardIndex} マッチしたウィスキー:`, matchedWhisky);
         
-        // ★重要：画像要素が存在しない場合は作成
+        // ★重要：既存の画像コンテナをチェック
+        let imageContainer = card.querySelector('.whisky-image-container');
         let img = card.querySelector('.whisky-card-image');
-        if (!img) {
+        
+        if (!imageContainer) {
             // 画像コンテナを作成
-            const imageContainer = document.createElement('div');
+            imageContainer = document.createElement('div');
             imageContainer.className = 'whisky-image-container mb-3';
             imageContainer.style.cssText = 'width: 100%; height: 200px; overflow: hidden; border-radius: 8px; background: rgba(255,255,255,0.1);';
             
-            // 画像要素を作成（クリック機能を含む）
+            // 画像要素を作成
             img = document.createElement('img');
             img.className = 'whisky-card-image';
             img.style.cssText = 'width: 100%; height: 100%; object-fit: cover; display: none; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;';
@@ -2297,7 +2299,6 @@ function showNoPhotoState() {
         const photoId = matchedWhisky.id;
         const photoUrl = matchedWhisky.photoUrl;
         const possiblePaths = [
-            // 基本的なphotoフォルダのパターン
             `photo/${photoUrl}`,
             `./photo/${photoUrl}`,
             `/photo/${photoUrl}`,
@@ -2306,8 +2307,6 @@ function showNoPhotoState() {
             `/photo/${photoId}.jpg`,
             `photo/${photoId}.png`,
             `./photo/${photoId}.png`,
-            
-            // imagesフォルダのパターン
             `images/${photoUrl}`,
             `./images/${photoUrl}`,
             `/images/${photoUrl}`,
@@ -2316,8 +2315,6 @@ function showNoPhotoState() {
             `/images/${photoId}.jpg`,
             `images/${photoId}.png`,
             `./images/${photoId}.png`,
-            
-            // ルート直下のパターン
             photoUrl,
             `${photoId}.jpg`,
             `${photoId}.png`
@@ -2325,7 +2322,7 @@ function showNoPhotoState() {
         
         console.log(`カード ${cardIndex} 画像パス候補:`, possiblePaths);
         
-        // 画像読み込みを試行する関数（クリック機能を統合）
+        // 画像読み込みを試行する関数（修正版）
         function tryLoadingImageRecursive(imagePaths, index, imgElement, placeholderElement) {
             if (index >= imagePaths.length) {
                 console.log('すべての画像パスで読み込みに失敗しました');
@@ -2346,7 +2343,7 @@ function showNoPhotoState() {
                     placeholderElement.style.display = 'none';
                 }
                 
-                // 画像読み込み成功時にイベントリスナーを追加
+                // ★修正：要素を複製せずに直接イベントを追加
                 addImageInteractions(imgElement);
             };
             
@@ -2358,30 +2355,34 @@ function showNoPhotoState() {
             imgElement.src = currentPath;
         }
         
-        // 画像インタラクション（ホバー効果とクリックイベント）を追加する関数
+        // 画像インタラクション（修正版 - 複製なし）
         function addImageInteractions(imgElement) {
-            // 既存のイベントリスナーを削除（重複防止）
-            const newImg = imgElement.cloneNode(true);
-            imgElement.parentNode.replaceChild(newImg, imgElement);
+            // ★修正：複製を削除し、既存のイベントリスナーをチェック
+            if (imgElement.hasAttribute('data-events-added')) {
+                return; // 既にイベントが追加済み
+            }
             
             // ホバー効果
-            newImg.addEventListener('mouseenter', () => {
-                newImg.style.transform = 'scale(1.02)';
-                newImg.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
+            imgElement.addEventListener('mouseenter', () => {
+                imgElement.style.transform = 'scale(1.02)';
+                imgElement.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.15)';
             });
             
-            newImg.addEventListener('mouseleave', () => {
-                newImg.style.transform = 'scale(1)';
-                newImg.style.boxShadow = 'none';
+            imgElement.addEventListener('mouseleave', () => {
+                imgElement.style.transform = 'scale(1)';
+                imgElement.style.boxShadow = 'none';
             });
             
             // クリックイベント（拡大表示）
-            newImg.addEventListener('click', (e) => {
+            imgElement.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
-                console.log('画像がクリックされました:', newImg.src);
-                showFullScreenImage(newImg.src);
+                console.log('画像がクリックされました:', imgElement.src);
+                showFullScreenImage(imgElement.src);
             });
+            
+            // イベント追加済みフラグを設定
+            imgElement.setAttribute('data-events-added', 'true');
             
             console.log(`画像インタラクションを追加しました: ${whiskyName}`);
         }
