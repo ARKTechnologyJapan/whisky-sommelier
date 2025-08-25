@@ -1806,11 +1806,6 @@ async function loadUnifiedWhiskyData() {
         
         const data = await response.json();
         console.log('JSONデータ読み込み成功:', data);
-
-        // 初期画像表示
-setTimeout(() => {
-    updateAllCardImages();
-}, 200);
         
         // データを各変数に格納（統一された変数名を使用）
         whiskyData = data.whiskies || [];
@@ -1836,11 +1831,6 @@ setTimeout(() => {
         setTimeout(() => {
             addImagesToWhiskyCards();
         }, 500);
-
-                // 初期画像表示
-setTimeout(() => {
-    updateAllCardImages();
-}, 200);
 
         console.log('統合ウィスキーデータ読み込み完了');
         return true;
@@ -4187,8 +4177,6 @@ async function loadData() {
         console.log('📊 Loaded:', whiskyData.length, 'whiskies,', distilleryData.length, 'distilleries');
         
         displayWhiskyLibrary();
-        // ★この行を追加
-        addImagesToWhiskyCards();
         
     } catch (error) {
         console.error('❌ Error loading whisky data:', error);
@@ -4660,11 +4648,6 @@ function displayLocalRecommendations(whiskies) {
             }
         }, 150);
 
-        // 画像更新を追加（関数の最後に）
-setTimeout(() => {
-    updateAllCardImages();
-}, 100);
-
         console.log('displayLocalRecommendations 完了');
 
     } catch (error) {
@@ -4781,14 +4764,6 @@ function selectWhisky(whisky) {
 
     // 選択されたウィスキー情報を保存
     window.selectedWhisky = whisky;
-
-    // 画像更新を追加（関数の最後に）
-setTimeout(() => {
-    updateAllCardImages();
-}, 100);
-
-    // 画像更新を追加
-    updateRecommendedWhiskyPhoto(whisky);
     
     console.log('selectWhisky 処理完了:', whisky.name);
 }
