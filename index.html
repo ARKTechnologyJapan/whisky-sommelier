@@ -1848,6 +1848,11 @@ async function loadUnifiedWhiskyData() {
         // 推奨ウィスキーを表示
         displayRecommendedWhisky();
 
+        // ★この行を追加
+        setTimeout(() => {
+            addImagesToWhiskyCards();
+        }, 500);
+
         console.log('統合ウィスキーデータ読み込み完了');
         return true;
         
@@ -4646,6 +4651,130 @@ function displayLocalRecommendations(whiskies) {
         console.error('displayLocalRecommendations エラー:', error);
         displayDefaultRecommendations();
     }
+}
+
+function addImagesToWhiskyCards() {
+    console.log('addImagesToWhiskyCards 開始 - 画像要素を動的に追加');
+    
+    if (!whiskyData || !whiskyData.length) {
+        console.error('whiskyDataが利用できません');
+        return;
+    }
+    
+    const whiskyCards = document.querySelectorAll('.whisky-card');
+    console.log('ウィスキーカード数:', whiskyCards.length);
+    
+    whiskyCards.forEach((card, cardIndex) => {
+        // ウィスキー名を取得
+        const nameElement = card.querySelector('h3');
+        if (!nameElement) {
+            console.log(`カード ${cardIndex}: 名前要素が見つかりません`);
+            return;
+        }
+        
+        const whiskyName = nameElement.textContent.trim();
+        console.log(`カード ${cardIndex}: ${whiskyName}`);
+        
+        // マッチするウィスキーを検索
+        const matchedWhisky = whiskyData.find(w => 
+            w.name === whiskyName || 
+            w.name.includes(whiskyName) || 
+            whiskyName.includes(w.name)
+        );
+        
+        if (!matchedWhisky) {
+            console.log('マッチするウィスキーが見つかりません:', whiskyName);
+            return;
+        }
+        
+        console.log(`カード ${cardIndex} マッチしたウィスキー:`, matchedWhisky);
+        
+        // ★重要：画像要素が存在しない場合は作成
+        let img = card.querySelector('.whisky-card-image');
+        if (!img) {
+            // 画像コンテナを作成
+            const imageContainer = document.createElement('div');
+            imageContainer.className = 'whisky-image-container';
+            imageContainer.style.cssText = 'width: 100%; height: 180px; overflow: hidden; border-radius: 8px; background: rgba(255,255,255,0.1); margin-bottom: 15px; display: flex; align-items: center; justify-content: center;';
+            
+            // 画像要素を作成
+            img = document.createElement('img');
+            img.className = 'whisky-card-image';
+            img.style.cssText = 'max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 4px; display: none;';
+            img.alt = whiskyName;
+            
+            // プレースホルダーを作成
+            const placeholder = document.createElement('div');
+            placeholder.className = 'no-image-placeholder';
+            placeholder.style.cssText = 'display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 100%; color: rgba(255,255,255,0.5); text-align: center;';
+            placeholder.innerHTML = `
+                <div style="font-size: 40px; margin-bottom: 10px;">🥃</div>
+                <div style="font-size: 12px;">読み込み中...</div>
+            `;
+            
+            imageContainer.appendChild(img);
+            imageContainer.appendChild(placeholder);
+            
+            // カードの最初に画像コンテナを追加
+            card.insertBefore(imageContainer, card.firstChild);
+            
+            console.log(`カード ${cardIndex}: 画像要素を作成しました`);
+        }
+        
+        const placeholder = card.querySelector('.no-image-placeholder');
+        
+        // 画像パス候補
+        const photoUrl = matchedWhisky.photoUrl;
+        const photoId = matchedWhisky.id.replace('.0', '');
+        const possiblePaths = [
+            `photo/${photoUrl}`,
+            `./photo/${photoUrl}`,
+            `/photo/${photoUrl}`,
+            `photo/${photoId}.jpg`,
+            `./photo/${photoId}.jpg`,
+            `images/${photoUrl}`,
+            photoUrl
+        ].filter(path => path && !path.includes('undefined'));
+        
+        console.log(`カード ${cardIndex} 画像パス候補:`, possiblePaths);
+        
+        function tryCardImagePath(index) {
+            if (index >= possiblePaths.length) {
+                console.log(`カード ${cardIndex}: 全ての画像パスで失敗`);
+                img.style.display = 'none';
+                if (placeholder) {
+                    placeholder.innerHTML = `
+                        <div style="font-size: 40px; margin-bottom: 10px;">🥃</div>
+                        <div style="font-size: 12px;">画像なし</div>
+                    `;
+                    placeholder.style.display = 'flex';
+                }
+                return;
+            }
+            
+            const path = possiblePaths[index];
+            console.log(`カード ${cardIndex} 画像パス試行 ${index + 1}/${possiblePaths.length}:`, path);
+            
+            const testImg = new Image();
+            testImg.onload = function() {
+                console.log(`カード ${cardIndex} 画像読み込み成功:`, path);
+                img.src = path;
+                img.style.display = 'block';
+                if (placeholder) placeholder.style.display = 'none';
+            };
+            
+            testImg.onerror = function() {
+                console.log(`カード ${cardIndex} 画像読み込み失敗:`, path);
+                tryCardImagePath(index + 1);
+            };
+            
+            testImg.src = path;
+        }
+        
+        tryCardImagePath(0);
+    });
+    
+    console.log('addImagesToWhiskyCards 完了');
 }
 
 // デフォルトの提案を表示
