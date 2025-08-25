@@ -2368,7 +2368,7 @@ function showNoPhotoState() {
                 e.preventDefault();
                 e.stopPropagation();
                 console.log('画像がクリックされました:', imgElement.src);
-                showFullScreenImage(imgElement.src);
+                showFullScreenImage(imgElement.src, whiskyName); // ← whiskyName を追加
             });
             
             // イベント追加済みフラグを設定
@@ -5381,7 +5381,11 @@ function addImageToWhiskyCard(whiskyData, cardElement) {
 }
 
 // 全画面画像表示機能
+// 全画面画像表示機能（修正版）
 function showFullScreenImage(imageSrc, whiskyName) {
+    // whiskyNameが未定義の場合のデフォルト値を設定
+    const displayName = whiskyName || 'ウィスキー詳細';
+    
     const existingModal = document.getElementById('fullScreenModal');
     if (existingModal) {
         existingModal.remove();
@@ -5405,10 +5409,10 @@ function showFullScreenImage(imageSrc, whiskyName) {
     
     modal.innerHTML = `
         <div style="text-align: center; max-width: 90%; max-height: 90%;">
-            <h3 style="color: #00d4ff; margin-bottom: 20px; font-size: 24px;">${whiskyName}</h3>
+            <h3 style="color: #4ecdc4; margin-bottom: 20px; font-size: 24px; font-weight: bold;">${displayName}</h3>
             <img src="${imageSrc}" 
                  style="max-width: 100%; max-height: 70vh; object-fit: contain; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.5);"
-                 alt="${whiskyName}">
+                 alt="${displayName}">
             <p style="color: #ccc; margin-top: 20px; font-size: 14px;">クリックして閉じる</p>
         </div>
     `;
