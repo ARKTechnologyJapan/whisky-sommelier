@@ -1858,6 +1858,11 @@ setTimeout(() => {
             addImagesToWhiskyCards();
         }, 500);
 
+                // 初期画像表示
+setTimeout(() => {
+    updateAllCardImages();
+}, 200);
+
         console.log('統合ウィスキーデータ読み込み完了');
         return true;
         
@@ -4630,7 +4635,7 @@ function displayLocalRecommendations(whiskies) {
             }
         });
 
-        // ★ カード生成後に画像処理を実行（統一処理）
+         // ★ カード生成後に画像処理を実行（統一処理）
         setTimeout(() => {
             console.log('画像読み込み処理を開始...');
             addImagesToWhiskyCards();
@@ -4642,7 +4647,8 @@ function displayLocalRecommendations(whiskies) {
             }
         }, 150);
 
-        setTimeout(() => {
+        // 画像更新を追加（関数の最後に）
+setTimeout(() => {
     updateAllCardImages();
 }, 100);
 
@@ -4890,6 +4896,9 @@ function selectWhisky(whisky) {
 setTimeout(() => {
     updateAllCardImages();
 }, 100);
+
+    // 画像更新を追加
+    updateRecommendedWhiskyPhoto(whisky);
     
     console.log('selectWhisky 処理完了:', whisky.name);
 }
